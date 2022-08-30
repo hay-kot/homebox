@@ -1,0 +1,10 @@
+node_modules
+.DS_Store
+dist
+dist-ssr
+*.local
+.*-debug.log
+*.log
+.vercel
+.vite-ssg-temp
+.idea

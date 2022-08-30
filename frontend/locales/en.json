@@ -1,0 +1,22 @@
+{
+	"pages": {
+		"home": "Home",
+		"other": {
+			"menu": "Other Page",
+			"desc": "An example of other pages"
+		},
+		"not-found": "Page not found"
+	},
+	"app": {
+		"offline": "App ready to work offline",
+		"new-content": "New content available, click on reload button to update."
+	},
+	"intro": {
+		"desc": "Welcome to Vitailse, Vite starter template with {tailwindurl}",
+		"github": "Please give stars and report any issues on our {githuburl}"
+	},
+	"button": {
+		"reload": "Reload",
+		"close": "Close"
+	}
+}

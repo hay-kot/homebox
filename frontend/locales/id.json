@@ -1,0 +1,22 @@
+{
+	"pages": {
+		"home": "Beranda",
+		"other": {
+			"menu": "Halaman lain",
+			"desc": "Contoh untuk halaman lain"
+		},
+		"not-found": "Laman tidak ditemukan"
+	},
+	"app": {
+		"offline": "Aplikasi siap digunakan tanpa jaringan internet",
+		"new-content": "Konten baru ditemukan, Tekan tombol perbarui untuk memperbarui laman."
+	},
+	"intro": {
+		"desc": "Selamat datang di Vitailse, Template awal vite dengan ",
+		"github": "Mohon berikan bintang dan laporkan masalah pada "
+	},
+	"button": {
+		"reload": "Perbarui",
+		"close": "Tutup"
+	}
+}
