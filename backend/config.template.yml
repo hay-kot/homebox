@@ -20,6 +20,7 @@ mailer:
   from: example@email.com
 seed:
   enabled: true
+  group: Default
   users:
     - name: Admin
       email: admin@admin.com

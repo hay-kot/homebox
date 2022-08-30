@@ -23,10 +23,11 @@ type UserIn struct {
 // in the database. It should to create users from an API unless the user has
 // rights to create SuperUsers. For regular user in data use the UserIn struct.
 type UserCreate struct {
-	Name        string `json:"name"`
-	Email       string `json:"email"`
-	Password    string `json:"password"`
-	IsSuperuser bool   `json:"isSuperuser"`
+	Name        string    `json:"name"`
+	Email       string    `json:"email"`
+	Password    string    `json:"password"`
+	IsSuperuser bool      `json:"isSuperuser"`
+	GroupID     uuid.UUID `json:"groupID"`
 }
 
 func (u *UserCreate) Validate() error {
@@ -39,20 +40,12 @@ func (u *UserCreate) Validate() error {
 	return nil
 }
 
-type UserOut struct {
-	ID          uuid.UUID `json:"id"`
-	Name        string    `json:"name"`
-	Email       string    `json:"email"`
-	Password    string    `json:"-"`
-	IsSuperuser bool      `json:"isSuperuser"`
-}
-
-// IsNull is a proxy call for `usr.Id == uuid.Nil`
-func (usr *UserOut) IsNull() bool {
-	return usr.ID == uuid.Nil
-}
-
 type UserUpdate struct {
 	Name  *string `json:"name"`
 	Email *string `json:"email"`
+}
+
+type UserRegistration struct {
+	User      UserIn `json:"user"`
+	GroupName string `json:"groupName"`
 }

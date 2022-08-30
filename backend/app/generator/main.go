@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/hay-kot/content/backend/ent"
 	"github.com/hay-kot/content/backend/internal/types"
 	"github.com/hay-kot/content/backend/pkgs/automapper"
 	"github.com/tkrajina/typescriptify-golang-structs/typescriptify"
@@ -12,22 +11,7 @@ import (
 
 // generateMappers serialized the config file into a list of automapper struct
 func generateMappers() []automapper.AutoMapper {
-	return []automapper.AutoMapper{
-		{
-			Package: "mapper",
-			Prefix:  "users",
-			Name:    "User Out",
-			Schema: automapper.Schema{
-				Type:   types.UserOut{},
-				Prefix: "types",
-			},
-			Model: automapper.Model{
-				Type:   ent.User{},
-				Prefix: "ent",
-			},
-			Imports: []string{},
-		},
-	}
+	return []automapper.AutoMapper{}
 }
 
 func generateTypeScript() {
@@ -43,7 +27,6 @@ func generateTypeScript() {
 		types.ApiSummary{},
 
 		// User Types
-		types.UserOut{},
 		types.UserCreate{},
 		types.UserIn{},
 		types.UserUpdate{},

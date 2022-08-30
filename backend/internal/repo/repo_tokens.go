@@ -6,7 +6,6 @@ import (
 
 	"github.com/hay-kot/content/backend/ent"
 	"github.com/hay-kot/content/backend/ent/authtokens"
-	"github.com/hay-kot/content/backend/internal/mapper"
 	"github.com/hay-kot/content/backend/internal/types"
 )
 
@@ -15,7 +14,7 @@ type EntTokenRepository struct {
 }
 
 // GetUserFromToken get's a user from a token
-func (r *EntTokenRepository) GetUserFromToken(ctx context.Context, token []byte) (types.UserOut, error) {
+func (r *EntTokenRepository) GetUserFromToken(ctx context.Context, token []byte) (*ent.User, error) {
 	dbToken, err := r.db.AuthTokens.Query().
 		Where(authtokens.Token(token)).
 		Where(authtokens.ExpiresAtGTE(time.Now())).
@@ -23,10 +22,10 @@ func (r *EntTokenRepository) GetUserFromToken(ctx context.Context, token []byte)
 		Only(ctx)
 
 	if err != nil {
-		return types.UserOut{}, err
+		return nil, err
 	}
 
-	return mapper.UserOutFromModel(*dbToken.Edges.User), nil
+	return dbToken.Edges.User, nil
 }
 
 // Creates a token for a user

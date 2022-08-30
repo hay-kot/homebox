@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/hay-kot/content/backend/internal/services"
 	"github.com/hay-kot/content/backend/internal/types"
 	"github.com/hay-kot/content/backend/pkgs/logger"
@@ -11,17 +12,45 @@ import (
 )
 
 // HandleUserSelf godoc
+// @Summary  Get the current user
+// @Tags     User
+// @Produce  json
+// @Param    payload  body      types.UserRegistration  true  "User Data"
+// @Success  200      {object}  server.Result{item=ent.User}
+// @Router   /v1/users/register [Post]
+func (ctrl *V1Controller) HandleUserRegistration() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		regData := types.UserRegistration{}
+
+		if err := server.Decode(r, &regData); err != nil {
+			ctrl.log.Error(err, nil)
+			server.RespondError(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		usr, err := ctrl.svc.User.RegisterUser(r.Context(), regData)
+		if err != nil {
+			ctrl.log.Error(err, nil)
+			server.RespondError(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		_ = server.Respond(w, http.StatusOK, server.Wrap(usr))
+	}
+}
+
+// HandleUserSelf godoc
 // @Summary   Get the current user
 // @Tags      User
 // @Produce   json
-// @Success   200  {object}  server.Result{item=types.UserOut}
+// @Success   200  {object}  server.Result{item=ent.User}
 // @Router    /v1/users/self [GET]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleUserSelf() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		token := services.UseTokenCtx(r.Context())
 		usr, err := ctrl.svc.User.GetSelf(r.Context(), token)
-		if usr.IsNull() || err != nil {
+		if usr.ID == uuid.Nil || err != nil {
 			ctrl.log.Error(errors.New("no user within request context"), nil)
 			server.RespondInternalServerError(w)
 			return

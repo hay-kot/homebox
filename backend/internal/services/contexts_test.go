@@ -5,12 +5,12 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	"github.com/hay-kot/content/backend/internal/types"
+	"github.com/hay-kot/content/backend/ent"
 	"github.com/stretchr/testify/assert"
 )
 
 func Test_SetAuthContext(t *testing.T) {
-	user := &types.UserOut{
+	user := &ent.User{
 		ID: uuid.New(),
 	}
 

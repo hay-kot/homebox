@@ -36,26 +36,30 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 
 	// =========================================================================
 	// API Version 1
-	v1Base := v1.BaseUrlFunc(prefix)
-	v1Handlers := v1.NewControllerV1(a.logger, a.services)
-	r.Post(v1Base("/users/login"), v1Handlers.HandleAuthLogin())
-	r.Group(func(r chi.Router) {
-		r.Use(a.mwAuthToken)
-		r.Get(v1Base("/users/self"), v1Handlers.HandleUserSelf())
-		r.Put(v1Base("/users/self"), v1Handlers.HandleUserUpdate())
-		r.Put(v1Base("/users/self/password"), v1Handlers.HandleUserUpdatePassword())
-		r.Post(v1Base("/users/logout"), v1Handlers.HandleAuthLogout())
-		r.Get(v1Base("/users/refresh"), v1Handlers.HandleAuthRefresh())
-	})
 
-	r.Group(func(r chi.Router) {
-		r.Use(a.mwAdminOnly)
-		r.Get(v1Base("/admin/users"), v1Handlers.HandleAdminUserGetAll())
-		r.Post(v1Base("/admin/users"), v1Handlers.HandleAdminUserCreate())
-		r.Get(v1Base("/admin/users/{id}"), v1Handlers.HandleAdminUserGet())
-		r.Put(v1Base("/admin/users/{id}"), v1Handlers.HandleAdminUserUpdate())
-		r.Delete(v1Base("/admin/users/{id}"), v1Handlers.HandleAdminUserDelete())
-	})
+	v1Base := v1.BaseUrlFunc(prefix)
+	{
+		v1Handlers := v1.NewControllerV1(a.logger, a.services)
+		r.Post(v1Base("/users/register"), v1Handlers.HandleUserRegistration())
+		r.Post(v1Base("/users/login"), v1Handlers.HandleAuthLogin())
+		r.Group(func(r chi.Router) {
+			r.Use(a.mwAuthToken)
+			r.Get(v1Base("/users/self"), v1Handlers.HandleUserSelf())
+			r.Put(v1Base("/users/self"), v1Handlers.HandleUserUpdate())
+			r.Put(v1Base("/users/self/password"), v1Handlers.HandleUserUpdatePassword())
+			r.Post(v1Base("/users/logout"), v1Handlers.HandleAuthLogout())
+			r.Get(v1Base("/users/refresh"), v1Handlers.HandleAuthRefresh())
+		})
+
+		r.Group(func(r chi.Router) {
+			r.Use(a.mwAdminOnly)
+			r.Get(v1Base("/admin/users"), v1Handlers.HandleAdminUserGetAll())
+			r.Post(v1Base("/admin/users"), v1Handlers.HandleAdminUserCreate())
+			r.Get(v1Base("/admin/users/{id}"), v1Handlers.HandleAdminUserGet())
+			r.Put(v1Base("/admin/users/{id}"), v1Handlers.HandleAdminUserUpdate())
+			r.Delete(v1Base("/admin/users/{id}"), v1Handlers.HandleAdminUserDelete())
+		})
+	}
 
 	return r
 }

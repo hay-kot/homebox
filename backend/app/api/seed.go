@@ -11,6 +11,7 @@ import (
 )
 
 const (
+	DefaultGroup    = "Default"
 	DefaultName     = "Admin"
 	DefaultEmail    = "admin@admin.com"
 	DefaultPassword = "admin"
@@ -22,15 +23,13 @@ func (a *app) EnsureAdministrator() {
 	superusers, err := a.repos.Users.GetSuperusers(context.Background())
 
 	if err != nil {
-		a.logger.Error(err, nil)
+		a.logger.Fatal(err, nil)
 	}
-
 	if len(superusers) > 0 {
 		return
 	}
 
 	pw, _ := hasher.HashPassword(DefaultPassword)
-
 	newSuperUser := types.UserCreate{
 		Name:        DefaultName,
 		Email:       DefaultEmail,
@@ -54,6 +53,11 @@ func (a *app) EnsureAdministrator() {
 func (a *app) SeedDatabase(repos *repo.AllRepos) {
 	if !a.conf.Seed.Enabled {
 		return
+	}
+
+	group, err := repos.Groups.Create(context.Background(), DefaultGroup)
+	if err != nil {
+		a.logger.Fatal(err, nil)
 	}
 
 	for _, user := range a.conf.Seed.Users {
@@ -82,6 +86,7 @@ func (a *app) SeedDatabase(repos *repo.AllRepos) {
 			Email:       user.Email,
 			IsSuperuser: user.IsSuperuser,
 			Password:    hashedPw,
+			GroupID:     group.ID,
 		})
 
 		if err != nil {

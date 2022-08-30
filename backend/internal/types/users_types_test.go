@@ -2,9 +2,6 @@ package types
 
 import (
 	"testing"
-
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestUserCreate_Validate(t *testing.T) {
@@ -63,14 +60,4 @@ func TestUserCreate_Validate(t *testing.T) {
 			}
 		})
 	}
-}
-
-func TestUserOut_IsNull(t *testing.T) {
-	nullUser := UserOut{}
-
-	assert.True(t, nullUser.IsNull())
-
-	nullUser.ID = uuid.New()
-
-	assert.False(t, nullUser.IsNull())
 }

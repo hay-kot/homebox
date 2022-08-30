@@ -4,13 +4,14 @@ import (
 	"context"
 	"testing"
 
+	"github.com/hay-kot/content/backend/ent"
 	"github.com/hay-kot/content/backend/internal/mocks"
 	"github.com/hay-kot/content/backend/internal/mocks/factories"
 	"github.com/hay-kot/content/backend/internal/types"
 )
 
 var mockHandler = &V1Controller{}
-var users = []types.UserOut{}
+var users = []*ent.User{}
 
 func userPool() func() {
 	create := []types.UserCreate{
@@ -20,7 +21,7 @@ func userPool() func() {
 		factories.UserFactory(),
 	}
 
-	userOut := []types.UserOut{}
+	userOut := []*ent.User{}
 
 	for _, user := range create {
 		usrOut, _ := mockHandler.svc.Admin.Create(context.Background(), user)

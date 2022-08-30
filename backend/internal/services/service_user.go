@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/hay-kot/content/backend/ent"
 	"github.com/hay-kot/content/backend/internal/repo"
 	"github.com/hay-kot/content/backend/internal/types"
 	"github.com/hay-kot/content/backend/pkgs/hasher"
@@ -22,17 +23,41 @@ type UserService struct {
 	repos *repo.AllRepos
 }
 
+func (svc *UserService) RegisterUser(ctx context.Context, data types.UserRegistration) (*ent.User, error) {
+	group, err := svc.repos.Groups.Create(ctx, data.GroupName)
+	if err != nil {
+		return &ent.User{}, err
+	}
+
+	hashed, _ := hasher.HashPassword(data.User.Password)
+
+	usrCreate := types.UserCreate{
+		Name:        data.User.Name,
+		Email:       data.User.Email,
+		Password:    hashed,
+		IsSuperuser: false,
+		GroupID:     group.ID,
+	}
+
+	usr, err := svc.repos.Users.Create(ctx, usrCreate)
+	if err != nil {
+		return &ent.User{}, err
+	}
+
+	return usr, nil
+}
+
 // GetSelf returns the user that is currently logged in based of the token provided within
-func (svc *UserService) GetSelf(ctx context.Context, requestToken string) (types.UserOut, error) {
+func (svc *UserService) GetSelf(ctx context.Context, requestToken string) (*ent.User, error) {
 	hash := hasher.HashToken(requestToken)
 	return svc.repos.AuthTokens.GetUserFromToken(ctx, hash)
 }
 
-func (svc *UserService) UpdateSelf(ctx context.Context, ID uuid.UUID, data types.UserUpdate) (types.UserOut, error) {
+func (svc *UserService) UpdateSelf(ctx context.Context, ID uuid.UUID, data types.UserUpdate) (*ent.User, error) {
 	err := svc.repos.Users.Update(ctx, ID, data)
 
 	if err != nil {
-		return types.UserOut{}, err
+		return &ent.User{}, err
 	}
 
 	return svc.repos.Users.GetOneId(ctx, ID)

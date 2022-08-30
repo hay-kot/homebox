@@ -13,66 +13,41 @@ type EntUserRepository struct {
 	db *ent.Client
 }
 
-func (e *EntUserRepository) toUserOut(usr *types.UserOut, entUsr *ent.User) {
-	usr.ID = entUsr.ID
-	usr.Password = entUsr.Password
-	usr.Name = entUsr.Name
-	usr.Email = entUsr.Email
-	usr.IsSuperuser = entUsr.IsSuperuser
-}
-
-func (e *EntUserRepository) GetOneId(ctx context.Context, id uuid.UUID) (types.UserOut, error) {
+func (e *EntUserRepository) GetOneId(ctx context.Context, id uuid.UUID) (*ent.User, error) {
 	usr, err := e.db.User.Query().Where(user.ID(id)).Only(ctx)
 
-	usrOut := types.UserOut{}
-
 	if err != nil {
-		return usrOut, err
+		return usr, err
 	}
 
-	e.toUserOut(&usrOut, usr)
-
-	return usrOut, nil
+	return usr, nil
 }
 
-func (e *EntUserRepository) GetOneEmail(ctx context.Context, email string) (types.UserOut, error) {
+func (e *EntUserRepository) GetOneEmail(ctx context.Context, email string) (*ent.User, error) {
 	usr, err := e.db.User.Query().Where(user.Email(email)).Only(ctx)
 
-	usrOut := types.UserOut{}
-
 	if err != nil {
-		return usrOut, err
+		return usr, err
 	}
 
-	e.toUserOut(&usrOut, usr)
-
-	return usrOut, nil
+	return usr, nil
 }
 
-func (e *EntUserRepository) GetAll(ctx context.Context) ([]types.UserOut, error) {
+func (e *EntUserRepository) GetAll(ctx context.Context) ([]*ent.User, error) {
 	users, err := e.db.User.Query().All(ctx)
 
 	if err != nil {
 		return nil, err
 	}
 
-	var usrs []types.UserOut
-
-	for _, usr := range users {
-		usrOut := types.UserOut{}
-		e.toUserOut(&usrOut, usr)
-		usrs = append(usrs, usrOut)
-	}
-
-	return usrs, nil
+	return users, nil
 }
 
-func (e *EntUserRepository) Create(ctx context.Context, usr types.UserCreate) (types.UserOut, error) {
+func (e *EntUserRepository) Create(ctx context.Context, usr types.UserCreate) (*ent.User, error) {
 	err := usr.Validate()
-	usrOut := types.UserOut{}
 
 	if err != nil {
-		return usrOut, err
+		return &ent.User{}, err
 	}
 
 	entUser, err := e.db.User.
@@ -81,11 +56,10 @@ func (e *EntUserRepository) Create(ctx context.Context, usr types.UserCreate) (t
 		SetEmail(usr.Email).
 		SetPassword(usr.Password).
 		SetIsSuperuser(usr.IsSuperuser).
+		SetGroupID(usr.GroupID).
 		Save(ctx)
 
-	e.toUserOut(&usrOut, entUser)
-
-	return usrOut, err
+	return entUser, err
 }
 
 func (e *EntUserRepository) Update(ctx context.Context, ID uuid.UUID, data types.UserUpdate) error {
@@ -122,20 +96,12 @@ func (e *EntUserRepository) DeleteAll(ctx context.Context) error {
 	return err
 }
 
-func (e *EntUserRepository) GetSuperusers(ctx context.Context) ([]types.UserOut, error) {
+func (e *EntUserRepository) GetSuperusers(ctx context.Context) ([]*ent.User, error) {
 	users, err := e.db.User.Query().Where(user.IsSuperuser(true)).All(ctx)
 
 	if err != nil {
 		return nil, err
 	}
 
-	var usrs []types.UserOut
-
-	for _, usr := range users {
-		usrOut := types.UserOut{}
-		e.toUserOut(&usrOut, usr)
-		usrs = append(usrs, usrOut)
-	}
-
-	return usrs, nil
+	return users, nil
 }

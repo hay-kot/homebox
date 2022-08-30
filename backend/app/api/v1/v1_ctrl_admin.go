@@ -17,7 +17,7 @@ import (
 // @Summary   Gets all users from the database
 // @Tags      Admin: Users
 // @Produce   json
-// @Success   200  {object}  server.Result{item=[]types.UserOut}
+// @Success   200  {object}  server.Result{item=[]ent.User}
 // @Router    /v1/admin/users [get]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleAdminUserGetAll() http.HandlerFunc {
@@ -38,7 +38,7 @@ func (ctrl *V1Controller) HandleAdminUserGetAll() http.HandlerFunc {
 // @Tags      Admin: Users
 // @Produce   json
 // @Param     id  path  string  true  "User ID"
-// @Success   200      {object}  server.Result{item=types.UserOut}
+// @Success   200      {object}  server.Result{item=ent.User}
 // @Router    /v1/admin/users/{id} [get]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleAdminUserGet() http.HandlerFunc {
@@ -71,7 +71,7 @@ func (ctrl *V1Controller) HandleAdminUserGet() http.HandlerFunc {
 // @Tags      Admin: Users
 // @Produce   json
 // @Param     payload  body      types.UserCreate  true  "User Data"
-// @Success   200  {object}  server.Result{item=types.UserOut}
+// @Success   200  {object}  server.Result{item=ent.User}
 // @Router    /v1/admin/users [POST]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleAdminUserCreate() http.HandlerFunc {
@@ -129,7 +129,7 @@ func (ctrl *V1Controller) HandleAdminUserCreate() http.HandlerFunc {
 // @Param     id       path  string            true  "User ID"
 // @Param     payload  body  types.UserUpdate  true  "User Data"
 // @Produce   json
-// @Success   200  {object}  server.Result{item=types.UserOut}
+// @Success   200  {object}  server.Result{item=ent.User}
 // @Router    /v1/admin/users/{id} [PUT]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleAdminUserUpdate() http.HandlerFunc {

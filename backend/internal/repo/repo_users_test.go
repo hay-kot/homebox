@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/hay-kot/content/backend/ent"
 	"github.com/hay-kot/content/backend/internal/types"
 	"github.com/hay-kot/content/backend/pkgs/faker"
 	"github.com/stretchr/testify/assert"
@@ -66,7 +67,7 @@ func Test_EntUserRepo_GetAll(t *testing.T) {
 
 	ctx := context.Background()
 
-	created := []types.UserOut{}
+	created := []*ent.User{}
 
 	for _, usr := range toCreate {
 		usrOut, _ := testRepos.Users.Create(ctx, usr)

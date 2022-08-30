@@ -10,4 +10,5 @@ type SeedUser struct {
 type Seed struct {
 	Enabled bool       `yaml:"enabled" conf:"default:false"`
 	Users   []SeedUser `yaml:"users"`
+	Group   string     `yaml:"group"`
 }
