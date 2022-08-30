@@ -4,7 +4,7 @@ tasks:
   api:
     cmds:
       - cd backend/app/api/ && swag fmt
-      - cd backend/app/api/ && swag init --dir=./,../../internal,../../pkgs
+      - cd backend/app/api/ && swag init --dir=./,../../internal,../../pkgs,../../ent
       # - |
       #   npx swagger-typescript-api \
       #     --path ./backend/app/api/docs/swagger.json \
