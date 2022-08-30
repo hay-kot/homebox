@@ -7,11 +7,18 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
+	"github.com/hay-kot/content/backend/ent/schema/mixins"
 )
 
 // AuthTokens holds the schema definition for the AuthTokens entity.
 type AuthTokens struct {
 	ent.Schema
+}
+
+func (AuthTokens) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		mixins.BaseMixin{},
+	}
 }
 
 // Fields of the AuthTokens.
@@ -21,8 +28,6 @@ func (AuthTokens) Fields() []ent.Field {
 			Unique(),
 		field.Time("expires_at").
 			Default(func() time.Time { return time.Now().Add(time.Hour * 24 * 7) }),
-		field.Time("created_at").
-			Default(time.Now),
 	}
 }
 
