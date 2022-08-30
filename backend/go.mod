@@ -1,4 +1,4 @@
-module github.com/hay-kot/git-web-template/backend
+module github.com/hay-kot/content/backend
 
 go 1.18
 

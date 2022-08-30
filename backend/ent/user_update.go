@@ -10,9 +10,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/hay-kot/git-web-template/backend/ent/authtokens"
-	"github.com/hay-kot/git-web-template/backend/ent/predicate"
-	"github.com/hay-kot/git-web-template/backend/ent/user"
+	"github.com/hay-kot/content/backend/ent/authtokens"
+	"github.com/hay-kot/content/backend/ent/predicate"
+	"github.com/hay-kot/content/backend/ent/user"
 )
 
 // UserUpdate is the builder for updating User entities.

@@ -1,13 +1,13 @@
 <h1 align="center"> Go Web Template</h1>
 <p align="center" style="width: 100%">
-  <a href="https://github.com/hay-kot/go-web-template/actions/workflows/go.yaml">
-    <img src="https://github.com/hay-kot/go-web-template/actions/workflows/go.yaml/badge.svg?branch=master"/>
+  <a href="https://github.com/hay-kot/content/actions/workflows/go.yaml">
+    <img src="https://github.com/hay-kot/content/actions/workflows/go.yaml/badge.svg?branch=master"/>
   </a>
-  <a href="https://codecov.io/gh/hay-kot/go-web-template">
-    <img src="https://codecov.io/gh/hay-kot/go-web-template/branch/master/graph/badge.svg?token=8EN4BQLIUS"/>
+  <a href="https://codecov.io/gh/hay-kot/content">
+    <img src="https://codecov.io/gh/hay-kot/content/branch/master/graph/badge.svg?token=8EN4BQLIUS"/>
   </a>
 </p>
-    
+
 This Go Web Template is a simple starter template for a Go web application. It includes a web server API, as well as a starter CLI to manage the web server/database inside the container. It should be noted that while while use of the standard library is a high priority, this template does make use of multiple external packages. It does however abide by the standard http handler pattern.
 
 - [Template Features](#template-features)

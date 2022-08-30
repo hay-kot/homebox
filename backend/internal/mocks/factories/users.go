@@ -1,8 +1,8 @@
 package factories
 
 import (
-	"github.com/hay-kot/git-web-template/backend/internal/types"
-	"github.com/hay-kot/git-web-template/backend/pkgs/faker"
+	"github.com/hay-kot/content/backend/internal/types"
+	"github.com/hay-kot/content/backend/pkgs/faker"
 )
 
 func UserFactory() types.UserCreate {

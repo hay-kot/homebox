@@ -1,6 +1,6 @@
 package services
 
-import "github.com/hay-kot/git-web-template/backend/internal/repo"
+import "github.com/hay-kot/content/backend/internal/repo"
 
 type AllServices struct {
 	User  *UserService

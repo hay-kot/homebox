@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/hay-kot/git-web-template/backend/ent/authtokens"
-	"github.com/hay-kot/git-web-template/backend/ent/schema"
-	"github.com/hay-kot/git-web-template/backend/ent/user"
+	"github.com/hay-kot/content/backend/ent/authtokens"
+	"github.com/hay-kot/content/backend/ent/schema"
+	"github.com/hay-kot/content/backend/ent/user"
 )
 
 // The init function reads all schema descriptors with runtime code

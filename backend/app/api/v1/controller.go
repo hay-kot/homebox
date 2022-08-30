@@ -1,8 +1,8 @@
 package v1
 
 import (
-	"github.com/hay-kot/git-web-template/backend/internal/services"
-	"github.com/hay-kot/git-web-template/backend/pkgs/logger"
+	"github.com/hay-kot/content/backend/internal/services"
+	"github.com/hay-kot/content/backend/pkgs/logger"
 )
 
 type V1Controller struct {

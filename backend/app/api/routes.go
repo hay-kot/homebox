@@ -5,10 +5,10 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/hay-kot/git-web-template/backend/app/api/base"
-	_ "github.com/hay-kot/git-web-template/backend/app/api/docs"
-	v1 "github.com/hay-kot/git-web-template/backend/app/api/v1"
-	"github.com/hay-kot/git-web-template/backend/internal/repo"
+	"github.com/hay-kot/content/backend/app/api/base"
+	_ "github.com/hay-kot/content/backend/app/api/docs"
+	v1 "github.com/hay-kot/content/backend/app/api/v1"
+	"github.com/hay-kot/content/backend/internal/repo"
 	httpSwagger "github.com/swaggo/http-swagger" // http-swagger middleware
 )
 

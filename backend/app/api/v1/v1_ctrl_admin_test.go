@@ -9,10 +9,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/hay-kot/git-web-template/backend/internal/mocks/chimocker"
-	"github.com/hay-kot/git-web-template/backend/internal/mocks/factories"
-	"github.com/hay-kot/git-web-template/backend/internal/types"
-	"github.com/hay-kot/git-web-template/backend/pkgs/server"
+	"github.com/hay-kot/content/backend/internal/mocks/chimocker"
+	"github.com/hay-kot/content/backend/internal/mocks/factories"
+	"github.com/hay-kot/content/backend/internal/types"
+	"github.com/hay-kot/content/backend/pkgs/server"
 	"github.com/stretchr/testify/assert"
 )
 

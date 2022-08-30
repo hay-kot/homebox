@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/hay-kot/git-web-template/backend/internal/mocks"
+	"github.com/hay-kot/content/backend/internal/mocks"
 )
 
 func GetTestHandler(t *testing.T) *BaseController {

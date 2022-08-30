@@ -3,13 +3,13 @@ package main
 import (
 	"time"
 
-	"github.com/hay-kot/git-web-template/backend/ent"
-	"github.com/hay-kot/git-web-template/backend/internal/config"
-	"github.com/hay-kot/git-web-template/backend/internal/repo"
-	"github.com/hay-kot/git-web-template/backend/internal/services"
-	"github.com/hay-kot/git-web-template/backend/pkgs/logger"
-	"github.com/hay-kot/git-web-template/backend/pkgs/mailer"
-	"github.com/hay-kot/git-web-template/backend/pkgs/server"
+	"github.com/hay-kot/content/backend/ent"
+	"github.com/hay-kot/content/backend/internal/config"
+	"github.com/hay-kot/content/backend/internal/repo"
+	"github.com/hay-kot/content/backend/internal/services"
+	"github.com/hay-kot/content/backend/pkgs/logger"
+	"github.com/hay-kot/content/backend/pkgs/mailer"
+	"github.com/hay-kot/content/backend/pkgs/server"
 )
 
 type app struct {

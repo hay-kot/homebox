@@ -8,7 +8,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
-	"github.com/hay-kot/git-web-template/backend/ent/user"
+	"github.com/hay-kot/content/backend/ent/user"
 )
 
 // User is the model entity for the User schema.

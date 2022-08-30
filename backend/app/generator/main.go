@@ -4,9 +4,9 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/hay-kot/git-web-template/backend/ent"
-	"github.com/hay-kot/git-web-template/backend/internal/types"
-	"github.com/hay-kot/git-web-template/backend/pkgs/automapper"
+	"github.com/hay-kot/content/backend/ent"
+	"github.com/hay-kot/content/backend/internal/types"
+	"github.com/hay-kot/content/backend/pkgs/automapper"
 	"github.com/tkrajina/typescriptify-golang-structs/typescriptify"
 )
 

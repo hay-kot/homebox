@@ -8,11 +8,11 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/hay-kot/git-web-template/backend/internal/config"
-	"github.com/hay-kot/git-web-template/backend/internal/services"
-	"github.com/hay-kot/git-web-template/backend/pkgs/hasher"
-	"github.com/hay-kot/git-web-template/backend/pkgs/logger"
-	"github.com/hay-kot/git-web-template/backend/pkgs/server"
+	"github.com/hay-kot/content/backend/internal/config"
+	"github.com/hay-kot/content/backend/internal/services"
+	"github.com/hay-kot/content/backend/pkgs/hasher"
+	"github.com/hay-kot/content/backend/pkgs/logger"
+	"github.com/hay-kot/content/backend/pkgs/server"
 )
 
 func (a *app) setGlobalMiddleware(r *chi.Mux) {

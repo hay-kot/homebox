@@ -3,7 +3,7 @@ package repo
 import (
 	"context"
 
-	"github.com/hay-kot/git-web-template/backend/internal/types"
+	"github.com/hay-kot/content/backend/internal/types"
 )
 
 type TokenRepository interface {

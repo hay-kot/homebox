@@ -3,7 +3,7 @@ package mocks
 import (
 	"os"
 
-	"github.com/hay-kot/git-web-template/backend/pkgs/logger"
+	"github.com/hay-kot/content/backend/pkgs/logger"
 )
 
 func GetStructLogger() *logger.Logger {

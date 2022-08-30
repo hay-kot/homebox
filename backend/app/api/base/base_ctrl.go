@@ -3,9 +3,9 @@ package base
 import (
 	"net/http"
 
-	"github.com/hay-kot/git-web-template/backend/internal/types"
-	"github.com/hay-kot/git-web-template/backend/pkgs/logger"
-	"github.com/hay-kot/git-web-template/backend/pkgs/server"
+	"github.com/hay-kot/content/backend/internal/types"
+	"github.com/hay-kot/content/backend/pkgs/logger"
+	"github.com/hay-kot/content/backend/pkgs/server"
 )
 
 type ReadyFunc func() bool

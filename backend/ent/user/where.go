@@ -6,7 +6,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/google/uuid"
-	"github.com/hay-kot/git-web-template/backend/ent/predicate"
+	"github.com/hay-kot/content/backend/ent/predicate"
 )
 
 // ID filters vertices based on their ID field.

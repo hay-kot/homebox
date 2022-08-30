@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hay-kot/git-web-template/backend/ent"
+	"github.com/hay-kot/content/backend/ent"
 	_ "github.com/mattn/go-sqlite3"
 )
 

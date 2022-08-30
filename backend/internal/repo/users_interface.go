@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/hay-kot/git-web-template/backend/internal/types"
+	"github.com/hay-kot/content/backend/internal/types"
 )
 
 type UserRepository interface {

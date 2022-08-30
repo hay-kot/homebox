@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/hay-kot/git-web-template/backend/ent"
+	"github.com/hay-kot/content/backend/ent"
 )
 
 // The AuthTokensFunc type is an adapter to allow the use of ordinary

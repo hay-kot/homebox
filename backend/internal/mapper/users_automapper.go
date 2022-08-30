@@ -2,8 +2,8 @@
 package mapper
 
 import (
-	"github.com/hay-kot/git-web-template/backend/ent"
-	"github.com/hay-kot/git-web-template/backend/internal/types"
+	"github.com/hay-kot/content/backend/ent"
+	"github.com/hay-kot/content/backend/internal/types"
 )
 
 func UserOutFromModel(from ent.User) types.UserOut {

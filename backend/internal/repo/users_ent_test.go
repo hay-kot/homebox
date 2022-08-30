@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hay-kot/git-web-template/backend/internal/types"
-	"github.com/hay-kot/git-web-template/backend/pkgs/faker"
+	"github.com/hay-kot/content/backend/internal/types"
+	"github.com/hay-kot/content/backend/pkgs/faker"
 	"github.com/stretchr/testify/assert"
 )
 

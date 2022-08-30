@@ -8,10 +8,10 @@ import (
 	"log"
 
 	"github.com/google/uuid"
-	"github.com/hay-kot/git-web-template/backend/ent/migrate"
+	"github.com/hay-kot/content/backend/ent/migrate"
 
-	"github.com/hay-kot/git-web-template/backend/ent/authtokens"
-	"github.com/hay-kot/git-web-template/backend/ent/user"
+	"github.com/hay-kot/content/backend/ent/authtokens"
+	"github.com/hay-kot/content/backend/ent/user"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"

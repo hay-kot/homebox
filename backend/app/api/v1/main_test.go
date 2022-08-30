@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/hay-kot/git-web-template/backend/internal/mocks"
-	"github.com/hay-kot/git-web-template/backend/internal/mocks/factories"
-	"github.com/hay-kot/git-web-template/backend/internal/types"
+	"github.com/hay-kot/content/backend/internal/mocks"
+	"github.com/hay-kot/content/backend/internal/mocks/factories"
+	"github.com/hay-kot/content/backend/internal/types"
 )
 
 var mockHandler = &V1Controller{}

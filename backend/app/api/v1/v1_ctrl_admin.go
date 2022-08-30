@@ -6,11 +6,11 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
-	"github.com/hay-kot/git-web-template/backend/internal/services"
-	"github.com/hay-kot/git-web-template/backend/internal/types"
-	"github.com/hay-kot/git-web-template/backend/pkgs/hasher"
-	"github.com/hay-kot/git-web-template/backend/pkgs/logger"
-	"github.com/hay-kot/git-web-template/backend/pkgs/server"
+	"github.com/hay-kot/content/backend/internal/services"
+	"github.com/hay-kot/content/backend/internal/types"
+	"github.com/hay-kot/content/backend/pkgs/hasher"
+	"github.com/hay-kot/content/backend/pkgs/logger"
+	"github.com/hay-kot/content/backend/pkgs/server"
 )
 
 // HandleAdminUserGetAll godoc

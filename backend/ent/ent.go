@@ -8,8 +8,8 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/hay-kot/git-web-template/backend/ent/authtokens"
-	"github.com/hay-kot/git-web-template/backend/ent/user"
+	"github.com/hay-kot/content/backend/ent/authtokens"
+	"github.com/hay-kot/content/backend/ent/user"
 )
 
 // ent aliases to avoid import conflicts in user's code.

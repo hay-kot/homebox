@@ -4,10 +4,10 @@ import (
 	"context"
 	"time"
 
-	"github.com/hay-kot/git-web-template/backend/ent"
-	"github.com/hay-kot/git-web-template/backend/ent/authtokens"
-	"github.com/hay-kot/git-web-template/backend/internal/mapper"
-	"github.com/hay-kot/git-web-template/backend/internal/types"
+	"github.com/hay-kot/content/backend/ent"
+	"github.com/hay-kot/content/backend/ent/authtokens"
+	"github.com/hay-kot/content/backend/internal/mapper"
+	"github.com/hay-kot/content/backend/internal/types"
 )
 
 type EntTokenRepository struct {
