@@ -1,16 +1,6 @@
 version: "3"
 
 tasks:
-  cli:
-    cmds:
-      - cd backend && go run ./app/cli/ {{.CLI_ARGS}}
-    silent: false
-
-  cli:build:
-    cmds:
-      - cd backend && go build ./app/cli/
-    silent: false
-
   api:
     cmds:
       - cd backend/app/api/ && swag fmt
