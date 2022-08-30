@@ -1,0 +1,318 @@
+basePath: /api
+definitions:
+  server.Result:
+    properties:
+      details: {}
+      error:
+        type: boolean
+      item: {}
+      message:
+        type: string
+    type: object
+  types.ApiSummary:
+    properties:
+      health:
+        type: boolean
+      message:
+        type: string
+      title:
+        type: string
+      versions:
+        items:
+          type: string
+        type: array
+    type: object
+  types.TokenResponse:
+    properties:
+      expiresAt:
+        type: string
+      token:
+        type: string
+    type: object
+  types.UserCreate:
+    properties:
+      email:
+        type: string
+      isSuperuser:
+        type: boolean
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  types.UserOut:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      isSuperuser:
+        type: boolean
+      name:
+        type: string
+    type: object
+  types.UserUpdate:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+    type: object
+info:
+  contact:
+    name: Don't
+  description: This is a simple Rest API Server Template that implements some basic
+    User and Authentication patterns to help you get started and bootstrap your next
+    project!.
+  license:
+    name: MIT
+  title: Go API Templates
+  version: "1.0"
+paths:
+  /status:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/server.Result'
+            - properties:
+                item:
+                  $ref: '#/definitions/types.ApiSummary'
+              type: object
+      summary: Retrieves the basic information about the API
+      tags:
+      - Base
+  /v1/admin/users:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/server.Result'
+            - properties:
+                item:
+                  items:
+                    $ref: '#/definitions/types.UserOut'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: Gets all users from the database
+      tags:
+      - 'Admin: Users'
+    post:
+      parameters:
+      - description: User Data
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.UserCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/server.Result'
+            - properties:
+                item:
+                  $ref: '#/definitions/types.UserOut'
+              type: object
+      security:
+      - Bearer: []
+      summary: Create a new user
+      tags:
+      - 'Admin: Users'
+  /v1/admin/users/{id}:
+    delete:
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      security:
+      - Bearer: []
+      summary: Delete a User
+      tags:
+      - 'Admin: Users'
+    get:
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/server.Result'
+            - properties:
+                item:
+                  $ref: '#/definitions/types.UserOut'
+              type: object
+      security:
+      - Bearer: []
+      summary: Get a user from the database
+      tags:
+      - 'Admin: Users'
+    put:
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User Data
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.UserUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/server.Result'
+            - properties:
+                item:
+                  $ref: '#/definitions/types.UserOut'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update a User
+      tags:
+      - 'Admin: Users'
+  /v1/users/login:
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      - application/json
+      parameters:
+      - description: string
+        example: admin@admin.com
+        in: formData
+        name: username
+        type: string
+      - description: string
+        example: admin
+        in: formData
+        name: password
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.TokenResponse'
+      summary: User Login
+      tags:
+      - Authentication
+  /v1/users/logout:
+    post:
+      responses:
+        "204":
+          description: ""
+      security:
+      - Bearer: []
+      summary: User Logout
+      tags:
+      - Authentication
+  /v1/users/refresh:
+    get:
+      description: |-
+        handleAuthRefresh returns a handler that will issue a new token from an existing token.
+        This does not validate that the user still exists within the database.
+      responses:
+        "200":
+          description: ""
+      security:
+      - Bearer: []
+      summary: User Token Refresh
+      tags:
+      - Authentication
+  /v1/users/self:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/server.Result'
+            - properties:
+                item:
+                  $ref: '#/definitions/types.UserOut'
+              type: object
+      security:
+      - Bearer: []
+      summary: Get the current user
+      tags:
+      - User
+    put:
+      parameters:
+      - description: User Data
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.UserUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/server.Result'
+            - properties:
+                item:
+                  $ref: '#/definitions/types.UserUpdate'
+              type: object
+      security:
+      - Bearer: []
+      summary: Update the current user
+      tags:
+      - User
+  /v1/users/self/password:
+    put:
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      security:
+      - Bearer: []
+      summary: 'Update the current user''s password // TODO:'
+      tags:
+      - User
+securityDefinitions:
+  Bearer:
+    description: '"Type ''Bearer TOKEN'' to correctly set the API Key"'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

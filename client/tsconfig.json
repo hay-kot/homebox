@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "commonjs",
+    "outDir": "build",
+    "sourceMap": true,
+    "allowJs": true,
+    "checkJs": false,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "esModuleInterop": true,
+    "removeComments": true
+  },
+  "include": ["client/**/*", "test/**/*"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
+}

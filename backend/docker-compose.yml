@@ -1,0 +1,10 @@
+version: "3.4"
+
+services:
+  gowebtemplate:
+    image: gowebtemplate
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 3001:7745

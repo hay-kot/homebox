@@ -1,0 +1,31 @@
+---
+mode: development
+swagger:
+  host: localhost:7745
+  scheme: http
+web:
+  port: 3915
+  host: 127.0.0.1
+database:
+  driver: sqlite3
+  sqlite-url: ./ent.db?_fk=1
+logger:
+  level: debug
+  file: api.log
+mailer:
+  host: smtp.example.com
+  port: 465
+  username:
+  password:
+  from: example@email.com
+seed:
+  enabled: true
+  users:
+    - name: Admin
+      email: admin@admin.com
+      password: admin
+      isSuperuser: true
+    - name: User
+      email: user@user.com
+      password: user
+      isSuperuser: false

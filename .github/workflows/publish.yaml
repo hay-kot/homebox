@@ -1,0 +1,23 @@
+name: Build Docker Image
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.18
+      - name: login to container registry
+        run: docker login ghcr.io --username hay-kot --password $CR_PAT
+        env:
+          CR_PAT: ${{ secrets.CR_PAT }}
+      - name: Build Docker Image
+        run: cd backend && docker build -t ghcr.io/hay-kot/go-web-template:latest .
+      - name: push to container registry
+        run: docker push ghcr.io/hay-kot/go-web-template:latest
