@@ -9,9 +9,9 @@ import { Requests } from '../../lib/requests';
 // >
 
 export class BaseAPI {
-	http: Requests;
+  http: Requests;
 
-	constructor(requests: Requests) {
-		this.http = requests;
-	}
+  constructor(requests: Requests) {
+    this.http = requests;
+  }
 }
