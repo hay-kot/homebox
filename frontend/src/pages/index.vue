@@ -1,5 +1,8 @@
 <script setup lang="ts">
 	import TextField from '@/components/Form/TextField.vue';
+	import { useNotifier } from '@/composables/use-notifier';
+	import { usePublicApi } from '@/composables/use-api';
+	import { useAuthStore } from '@/store/auth';
 	useHead({
 		title: 'Homebox | Organize and Tag Your Stuff',
 	});
@@ -29,12 +32,29 @@
 		},
 	];
 
-	function registerUser() {
+	const api = usePublicApi();
+
+	async function registerUser() {
+		loading.value = true;
 		// Print Values of registerFields
 
-		for (let i = 0; i < registerFields.length; i++) {
-			console.log(registerFields[i].label, registerFields[i].value);
+		const { data, error } = await api.register({
+			user: {
+				name: registerFields[0].value,
+				email: registerFields[1].value,
+				password: registerFields[3].value,
+			},
+			groupName: registerFields[2].value,
+		});
+
+		if (error) {
+			toast.error('Problem registering user');
+		} else {
+			toast.success('User registered');
 		}
+
+		console.log(data);
+		loading.value = false;
 	}
 
 	const loginFields = [
@@ -49,8 +69,38 @@
 		},
 	];
 
-	const registerForm = ref(false);
+	const authStore = useAuthStore();
 
+	const toast = useNotifier();
+	const loading = ref(false);
+
+	const router = useRouter();
+
+	async function login() {
+		loading.value = true;
+		const { data, error } = await api.login(
+			loginFields[0].value,
+			loginFields[1].value
+		);
+
+		if (error) {
+			toast.error('Invalid email or password');
+		} else {
+			toast.success('Logged in successfully');
+
+			console.log(data);
+
+			authStore.$patch({
+				token: data.token,
+				expires: data.expiresAt,
+			});
+
+			router.push({ name: 'home' });
+		}
+		loading.value = false;
+	}
+
+	const registerForm = ref(false);
 	function toggleLogin() {
 		registerForm.value = !registerForm.value;
 	}
@@ -83,17 +133,19 @@
 							:type="field.type"
 						/>
 						<div class="card-actions justify-end">
-							<button type="submit" class="btn btn-primary mt-2">
+							<button
+								type="submit"
+								class="btn btn-primary mt-2"
+								:class="loading ? 'loading' : ''"
+								:disabled="loading"
+							>
 								Register
 							</button>
 						</div>
 					</div>
 				</div>
-				<div class="text-center mt-2">
-					<button @click="toggleLogin">Already a User? Login</button>
-				</div>
 			</form>
-			<div v-else>
+			<form v-else @submit.prevent="login">
 				<div
 					class="card w-max-[500px] md:w-[500px] bg-base-100 shadow-xl"
 				>
@@ -107,15 +159,28 @@
 							:type="field.type"
 						/>
 						<div class="card-actions justify-end mt-2">
-							<button class="btn btn-primary">Login</button>
+							<button
+								type="submit"
+								class="btn btn-primary"
+								:class="loading ? 'loading' : ''"
+								:disabled="loading"
+							>
+								Login
+							</button>
 						</div>
 					</div>
 				</div>
-				<div class="text-center mt-2">
-					<button @click="toggleLogin">Not a User? Register</button>
-				</div>
-			</div>
+			</form>
 		</Transition>
+		<div class="text-center mt-2">
+			<button @click="toggleLogin">
+				{{
+					registerForm
+						? 'Already a User? Login'
+						: 'Not a User? Register'
+				}}
+			</button>
+		</div>
 	</div>
 	<div class="min-w-full absolute bottom-0 z-[-1]">
 		<svg
@@ -140,10 +205,10 @@
 </template>
 
 <route lang="yaml">
-name: home
+name: login
 </route>
 
-<style lang="css">
+<style lang="css" scoped>
 	.slide-fade-enter-active {
 		transition: all 0.2s ease-out;
 	}

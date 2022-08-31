@@ -102,6 +102,11 @@ export default defineConfig({
 		fs: {
 			strict: true,
 		},
+		proxy: {
+			'/api': {
+				target: 'http://localhost:7745',
+			},
+		},
 	},
 	optimizeDeps: {
 		include: ['vue', 'vue-router', '@vueuse/core', '@vueuse/head'],
@@ -114,11 +119,15 @@ export default defineConfig({
 		onFinished() {
 			generateSitemap();
 		},
-		mock: true
+		mock: true,
 	},
 	// https://github.com/vitest-dev/vitest
 	test: {
-		include: ['src/__test__/**/*.test.ts', 'src/__test__/**/*.spec.ts'],
+		include: [
+			'src/__test__/**/*.test.ts',
+			'src/**/*.test.ts',
+			'src/__test__/**/*.spec.ts',
+		],
 		environment: 'jsdom',
 		deps: {
 			inline: ['@vue', '@vueuse', 'vue-demi'],

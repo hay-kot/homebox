@@ -23,6 +23,7 @@
 		"dev": "vite",
 		"build": "vite-ssg build",
 		"serve": "vite preview",
+		"test:watch": "vitest --watch",
 		"https-preview": "serve dist"
 	},
 	"dependencies": {
@@ -46,6 +47,7 @@
 	},
 	"devDependencies": {
 		"@iconify/json": "^2.1.78",
+		"@iconify/vue": "^3.2.1",
 		"@intlify/vite-plugin-vue-i18n": "^5.0.0",
 		"@vitejs/plugin-vue": "^3.0.0",
 		"@vue/compiler-sfc": "^3.2.37",

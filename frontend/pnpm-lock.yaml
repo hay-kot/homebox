@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@iconify/json': ^2.1.78
+  '@iconify/vue': ^3.2.1
   '@intlify/vite-plugin-vue-i18n': ^5.0.0
   '@tailwindcss/aspect-ratio': ^0.4.0
   '@tailwindcss/forms': ^0.5.2
@@ -60,6 +61,7 @@ dependencies:
 
 devDependencies:
   '@iconify/json': 2.1.78
+  '@iconify/vue': 3.2.1_vue@3.2.37
   '@intlify/vite-plugin-vue-i18n': 5.0.0_vite@3.0.0+vue-i18n@9.1.10
   '@vitejs/plugin-vue': 3.0.0_vite@3.0.0+vue@3.2.37
   '@vue/compiler-sfc': 3.2.37
@@ -1267,6 +1269,14 @@ packages:
       local-pkg: 0.4.2
     transitivePeerDependencies:
       - supports-color
+    dev: true
+
+  /@iconify/vue/3.2.1_vue@3.2.37:
+    resolution: {integrity: sha512-c4R6ZgFo1JrJ8aPMMgOPgfU7lBswihMGR+yWe/P4ZukC3kTkeT4+lkt9Pc/itVFMkwva/S/7u9YofmYv57fnNQ==}
+    peerDependencies:
+      vue: 3.x
+    dependencies:
+      vue: 3.2.37
     dev: true
 
   /@intlify/bundle-utils/3.1.0_vue-i18n@9.1.10:
