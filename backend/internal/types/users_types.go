@@ -30,7 +30,7 @@ type UserCreate struct {
 	GroupID     uuid.UUID `json:"groupID"`
 }
 
-func (u *UserCreate) Validate() error {
+func (u UserCreate) Validate() error {
 	if u.Name == "" {
 		return ErrNameEmpty
 	}

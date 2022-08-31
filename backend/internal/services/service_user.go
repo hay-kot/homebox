@@ -23,11 +23,11 @@ type UserService struct {
 	repos *repo.AllRepos
 }
 
-func (UserService) toOutUser(user *ent.User, err error) (types.UserOut, error) {
+func (UserService) toOutUser(user *ent.User, err error) (*types.UserOut, error) {
 	if err != nil {
-		return types.UserOut{}, err
+		return &types.UserOut{}, err
 	}
-	return types.UserOut{
+	return &types.UserOut{
 		ID:          user.ID,
 		Name:        user.Name,
 		Email:       user.Email,
@@ -37,10 +37,10 @@ func (UserService) toOutUser(user *ent.User, err error) (types.UserOut, error) {
 	}, nil
 }
 
-func (svc *UserService) RegisterUser(ctx context.Context, data types.UserRegistration) (*ent.User, error) {
+func (svc *UserService) RegisterUser(ctx context.Context, data types.UserRegistration) (*types.UserOut, error) {
 	group, err := svc.repos.Groups.Create(ctx, data.GroupName)
 	if err != nil {
-		return &ent.User{}, err
+		return &types.UserOut{}, err
 	}
 
 	hashed, _ := hasher.HashPassword(data.User.Password)
@@ -53,28 +53,23 @@ func (svc *UserService) RegisterUser(ctx context.Context, data types.UserRegistr
 		GroupID:     group.ID,
 	}
 
-	usr, err := svc.repos.Users.Create(ctx, usrCreate)
-	if err != nil {
-		return &ent.User{}, err
-	}
-
-	return usr, nil
+	return svc.toOutUser(svc.repos.Users.Create(ctx, usrCreate))
 }
 
 // GetSelf returns the user that is currently logged in based of the token provided within
-func (svc *UserService) GetSelf(ctx context.Context, requestToken string) (types.UserOut, error) {
+func (svc *UserService) GetSelf(ctx context.Context, requestToken string) (*types.UserOut, error) {
 	hash := hasher.HashToken(requestToken)
 	return svc.toOutUser(svc.repos.AuthTokens.GetUserFromToken(ctx, hash))
 }
 
-func (svc *UserService) UpdateSelf(ctx context.Context, ID uuid.UUID, data types.UserUpdate) (*ent.User, error) {
+func (svc *UserService) UpdateSelf(ctx context.Context, ID uuid.UUID, data types.UserUpdate) (*types.UserOut, error) {
 	err := svc.repos.Users.Update(ctx, ID, data)
 
 	if err != nil {
-		return &ent.User{}, err
+		return &types.UserOut{}, err
 	}
 
-	return svc.repos.Users.GetOneId(ctx, ID)
+	return svc.toOutUser(svc.repos.Users.GetOneId(ctx, ID))
 }
 
 // ============================================================================
