@@ -8,17 +8,16 @@ import (
 
 // Respond converts a Go value to JSON and sends it to the client.
 // Adapted from https://github.com/ardanlabs/service/tree/master/foundation/web
-func Respond(w http.ResponseWriter, statusCode int, data interface{}) error {
-	// If there is nothing to marshal then set status code and return.
+func Respond(w http.ResponseWriter, statusCode int, data interface{}) {
 	if statusCode == http.StatusNoContent {
 		w.WriteHeader(statusCode)
-		return nil
+		return
 	}
 
 	// Convert the response value to JSON.
 	jsonData, err := json.Marshal(data)
 	if err != nil {
-		return err
+		panic(err)
 	}
 
 	// Set the content type and headers once we know marshaling has succeeded.
@@ -29,10 +28,8 @@ func Respond(w http.ResponseWriter, statusCode int, data interface{}) error {
 
 	// Send the result back to the client.
 	if _, err := w.Write(jsonData); err != nil {
-		return err
+		panic(err)
 	}
-
-	return nil
 }
 
 // ResponseError is a helper function that sends a JSON response of an error message
@@ -42,9 +39,9 @@ func RespondError(w http.ResponseWriter, statusCode int, err error) {
 	eb.Respond(w, statusCode)
 }
 
-// RespondInternalServerError is a wrapper around RespondError that sends a 500 internal server error. Useful for
+// RespondServerError is a wrapper around RespondError that sends a 500 internal server error. Useful for
 // Sending generic errors when everything went wrong.
-func RespondInternalServerError(w http.ResponseWriter) {
+func RespondServerError(w http.ResponseWriter) {
 	RespondError(w, http.StatusInternalServerError, errors.New("internal server error"))
 }
 

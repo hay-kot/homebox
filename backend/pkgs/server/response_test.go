@@ -52,7 +52,7 @@ func Test_RespondError(t *testing.T) {
 func Test_RespondInternalServerError(t *testing.T) {
 	recorder := httptest.NewRecorder()
 
-	RespondInternalServerError(recorder)
+	RespondServerError(recorder)
 
 	assert.Equal(t, http.StatusInternalServerError, recorder.Code)
 	assert.JSONEq(t, recorder.Body.String(), `{"details":["internal server error"], "message":"Internal Server Error", "error":true}`)

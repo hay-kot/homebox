@@ -11,6 +11,10 @@ import (
 
 type Level int8
 
+var (
+	IncludeTrace = false
+)
+
 const (
 	LevelDebug Level = iota
 	LevelInfo
@@ -88,8 +92,12 @@ func (l *Logger) print(level Level, message string, properties map[string]string
 	}
 
 	// Include a stack trace for entries at the ERROR and FATAL levels.
+	dumpTrace := false
 	if level >= LevelError {
-		aux.Trace = string(debug.Stack())
+		dumpTrace = true
+		if IncludeTrace {
+			aux.Trace = string(debug.Stack())
+		}
 	}
 
 	// Declare a line variable for holding the actual log entry text.
@@ -109,8 +117,11 @@ func (l *Logger) print(level Level, message string, properties map[string]string
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
-	// Write the log entry followed by a newline.
-	return l.out.Write(append(line, '\n'))
+	n, err := l.out.Write(line)
+	if dumpTrace {
+		l.out.Write(debug.Stack())
+	}
+	return n, err
 }
 
 // We also implement a Write() method on our Logger type so that it satisfies the
