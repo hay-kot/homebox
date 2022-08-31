@@ -31,9 +31,9 @@ func (ctrl *V1Controller) HandleAuthLogin() http.HandlerFunc {
 
 		if r.Header.Get("Content-Type") == HeaderFormData {
 			err := r.ParseForm()
-
 			if err != nil {
 				server.Respond(w, http.StatusBadRequest, server.Wrap(err))
+				ctrl.log.Error(errors.New("failed to decode login form (FORM)"), logger.Props{"error": err.Error()})
 				return
 			}
 
@@ -43,6 +43,9 @@ func (ctrl *V1Controller) HandleAuthLogin() http.HandlerFunc {
 			err := server.Decode(r, loginForm)
 
 			if err != nil {
+				ctrl.log.Error(errors.New("failed to decode login form (JSON)"), logger.Props{
+					"error": err.Error(),
+				})
 				server.Respond(w, http.StatusBadRequest, server.Wrap(err))
 				return
 			}
@@ -99,7 +102,7 @@ func (ctrl *V1Controller) HandleAuthLogout() http.HandlerFunc {
 			return
 		}
 
-		err = server.Respond(w, http.StatusNoContent, nil)
+		server.Respond(w, http.StatusNoContent, nil)
 	}
 }
 
