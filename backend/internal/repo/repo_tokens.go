@@ -15,17 +15,19 @@ type EntTokenRepository struct {
 
 // GetUserFromToken get's a user from a token
 func (r *EntTokenRepository) GetUserFromToken(ctx context.Context, token []byte) (*ent.User, error) {
-	dbToken, err := r.db.AuthTokens.Query().
+	user, err := r.db.AuthTokens.Query().
 		Where(authtokens.Token(token)).
 		Where(authtokens.ExpiresAtGTE(time.Now())).
 		WithUser().
+		QueryUser().
+		WithGroup().
 		Only(ctx)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return dbToken.Edges.User, nil
+	return user, nil
 }
 
 // Creates a token for a user

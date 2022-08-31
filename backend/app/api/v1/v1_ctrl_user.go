@@ -28,14 +28,14 @@ func (ctrl *V1Controller) HandleUserRegistration() http.HandlerFunc {
 			return
 		}
 
-		usr, err := ctrl.svc.User.RegisterUser(r.Context(), regData)
+		_, err := ctrl.svc.User.RegisterUser(r.Context(), regData)
 		if err != nil {
 			ctrl.log.Error(err, nil)
 			server.RespondError(w, http.StatusInternalServerError, err)
 			return
 		}
 
-		_ = server.Respond(w, http.StatusOK, server.Wrap(usr))
+		server.Respond(w, http.StatusNoContent, nil)
 	}
 }
 
@@ -52,11 +52,11 @@ func (ctrl *V1Controller) HandleUserSelf() http.HandlerFunc {
 		usr, err := ctrl.svc.User.GetSelf(r.Context(), token)
 		if usr.ID == uuid.Nil || err != nil {
 			ctrl.log.Error(errors.New("no user within request context"), nil)
-			server.RespondInternalServerError(w)
+			server.RespondServerError(w)
 			return
 		}
 
-		_ = server.Respond(w, http.StatusOK, server.Wrap(usr))
+		server.Respond(w, http.StatusOK, server.Wrap(usr))
 	}
 }
 
@@ -92,7 +92,7 @@ func (ctrl *V1Controller) HandleUserUpdate() http.HandlerFunc {
 			return
 		}
 
-		_ = server.Respond(w, http.StatusOK, server.Wrap(newData))
+		server.Respond(w, http.StatusOK, server.Wrap(newData))
 	}
 }
 

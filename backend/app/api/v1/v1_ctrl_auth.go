@@ -10,11 +10,6 @@ import (
 	"github.com/hay-kot/content/backend/pkgs/server"
 )
 
-var (
-	HeaderFormData = "application/x-www-form-urlencoded"
-	HeaderJSON     = "application/json"
-)
-
 // HandleAuthLogin godoc
 // @Summary  User Login
 // @Tags     Authentication
@@ -29,7 +24,7 @@ func (ctrl *V1Controller) HandleAuthLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		loginForm := &types.LoginForm{}
 
-		if r.Header.Get("Content-Type") == HeaderFormData {
+		if r.Header.Get("Content-Type") == server.ContentFormUrlEncoded {
 			err := r.ParseForm()
 			if err != nil {
 				server.Respond(w, http.StatusBadRequest, server.Wrap(err))
@@ -39,7 +34,7 @@ func (ctrl *V1Controller) HandleAuthLogin() http.HandlerFunc {
 
 			loginForm.Username = r.PostFormValue("username")
 			loginForm.Password = r.PostFormValue("password")
-		} else if r.Header.Get("Content-Type") == HeaderJSON {
+		} else if r.Header.Get("Content-Type") == server.ContentJSON {
 			err := server.Decode(r, loginForm)
 
 			if err != nil {
@@ -66,17 +61,10 @@ func (ctrl *V1Controller) HandleAuthLogin() http.HandlerFunc {
 			return
 		}
 
-		err = server.Respond(w, http.StatusOK, types.TokenResponse{
+		server.Respond(w, http.StatusOK, types.TokenResponse{
 			BearerToken: "Bearer " + newToken.Raw,
 			ExpiresAt:   newToken.ExpiresAt,
 		})
-
-		if err != nil {
-			ctrl.log.Error(err, logger.Props{
-				"user": loginForm.Username,
-			})
-			return
-		}
 	}
 }
 
@@ -130,10 +118,6 @@ func (ctrl *V1Controller) HandleAuthRefresh() http.HandlerFunc {
 			return
 		}
 
-		err = server.Respond(w, http.StatusOK, newToken)
-
-		if err != nil {
-			return
-		}
+		server.Respond(w, http.StatusOK, newToken)
 	}
 }

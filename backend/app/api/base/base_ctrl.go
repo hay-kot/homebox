@@ -38,11 +38,6 @@ func (ctrl *BaseController) HandleBase(ready ReadyFunc, versions ...string) http
 			Message:  "Welcome to the Go API Template Application!",
 		}
 
-		err := server.Respond(w, http.StatusOK, server.Wrap(data))
-
-		if err != nil {
-			ctrl.log.Error(err, nil)
-			server.RespondInternalServerError(w)
-		}
+		server.Respond(w, http.StatusOK, server.Wrap(data))
 	}
 }

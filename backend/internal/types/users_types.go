@@ -49,3 +49,12 @@ type UserRegistration struct {
 	User      UserIn `json:"user"`
 	GroupName string `json:"groupName"`
 }
+
+type UserOut struct {
+	ID          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	Email       string    `json:"email"`
+	IsSuperuser bool      `json:"isSuper"`
+	GroupID     uuid.UUID `json:"groupId"`
+	GroupName   string    `json:"groupName"`
+}
