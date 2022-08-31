@@ -10,7 +10,6 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/hay-kot/content/backend/internal/config"
 	"github.com/hay-kot/content/backend/internal/services"
-	"github.com/hay-kot/content/backend/pkgs/hasher"
 	"github.com/hay-kot/content/backend/pkgs/logger"
 	"github.com/hay-kot/content/backend/pkgs/server"
 )
@@ -49,17 +48,11 @@ func (a *app) mwAuthToken(next http.Handler) http.Handler {
 		}
 
 		requestToken = strings.TrimPrefix(requestToken, "Bearer ")
-
-		hash := hasher.HashToken(requestToken)
+		usr, err := a.services.User.GetSelf(r.Context(), requestToken)
 
 		// Check the database for the token
-		usr, err := a.repos.AuthTokens.GetUserFromToken(r.Context(), hash)
 
 		if err != nil {
-			a.logger.Error(err, logger.Props{
-				"token": requestToken,
-				"hash":  fmt.Sprintf("%x", hash),
-			})
 			server.RespondUnauthorized(w)
 			return
 		}

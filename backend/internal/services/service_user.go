@@ -23,7 +23,7 @@ type UserService struct {
 	repos *repo.AllRepos
 }
 
-func (UserService) toOutUser(user *ent.User, err error) (*types.UserOut, error) {
+func ToOutUser(user *ent.User, err error) (*types.UserOut, error) {
 	if err != nil {
 		return &types.UserOut{}, err
 	}
@@ -35,6 +35,10 @@ func (UserService) toOutUser(user *ent.User, err error) (*types.UserOut, error) 
 		GroupName:   user.Edges.Group.Name,
 		GroupID:     user.Edges.Group.ID,
 	}, nil
+}
+
+func (UserService) toOutUser(user *ent.User, err error) (*types.UserOut, error) {
+	return ToOutUser(user, err)
 }
 
 func (svc *UserService) RegisterUser(ctx context.Context, data types.UserRegistration) (*types.UserOut, error) {

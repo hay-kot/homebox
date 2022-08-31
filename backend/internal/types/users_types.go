@@ -54,7 +54,7 @@ type UserOut struct {
 	ID          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
 	Email       string    `json:"email"`
-	IsSuperuser bool      `json:"isSuper"`
+	IsSuperuser bool      `json:"isSuperuser"`
 	GroupID     uuid.UUID `json:"groupId"`
 	GroupName   string    `json:"groupName"`
 }
