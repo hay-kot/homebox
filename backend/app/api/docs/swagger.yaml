@@ -320,6 +320,11 @@ definitions:
       message:
         type: string
     type: object
+  server.Results:
+    properties:
+      items:
+        type: any
+    type: object
   types.ApiSummary:
     properties:
       health:
@@ -332,6 +337,28 @@ definitions:
         items:
           type: string
         type: array
+    type: object
+  types.LocationCreate:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+  types.LocationOut:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      groupId:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updatedAt:
+        type: string
     type: object
   types.TokenResponse:
     properties:
@@ -522,6 +549,47 @@ paths:
       summary: Update a User
       tags:
       - 'Admin: Users'
+  /v1/locations:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/server.Results'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/types.LocationOut'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: Get All Locations
+      tags:
+      - Locations
+    post:
+      parameters:
+      - description: Location Data
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.LocationCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.LocationOut'
+      security:
+      - Bearer: []
+      summary: Create a new location
+      tags:
+      - Locations
   /v1/users/login:
     post:
       consumes:
@@ -583,15 +651,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/server.Result'
-            - properties:
-                item:
-                  $ref: '#/definitions/ent.User'
-              type: object
+        "204":
+          description: ""
       summary: Get the current user
       tags:
       - User

@@ -15,8 +15,8 @@ import (
 // @Summary  Get the current user
 // @Tags     User
 // @Produce  json
-// @Param    payload  body      types.UserRegistration  true  "User Data"
-// @Success  200      {object}  server.Result{item=ent.User}
+// @Param    payload  body  types.UserRegistration  true  "User Data"
+// @Success  204
 // @Router   /v1/users/register [Post]
 func (ctrl *V1Controller) HandleUserRegistration() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

@@ -24,6 +24,22 @@ func ToLocationOut(location *ent.Location, err error) (*types.LocationOut, error
 	}, err
 }
 
+func (svc *LocationService) Create(ctx context.Context, groupId uuid.UUID, data types.LocationCreate) (*types.LocationOut, error) {
+	location, err := svc.repos.Locations.Create(ctx, groupId, data)
+	return ToLocationOut(location, err)
+}
+
 func (svc *LocationService) GetAll(ctx context.Context, groupId uuid.UUID) ([]*types.LocationOut, error) {
-	panic("not implemented")
+	locations, err := svc.repos.Locations.GetAll(ctx, groupId)
+	if err != nil {
+		return nil, err
+	}
+
+	locationsOut := make([]*types.LocationOut, len(locations))
+	for i, location := range locations {
+		locationOut, _ := ToLocationOut(location, nil)
+		locationsOut[i] = locationOut
+	}
+
+	return locationsOut, nil
 }

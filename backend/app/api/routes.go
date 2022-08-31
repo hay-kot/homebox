@@ -49,6 +49,9 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 			r.Put(v1Base("/users/self/password"), v1Handlers.HandleUserUpdatePassword())
 			r.Post(v1Base("/users/logout"), v1Handlers.HandleAuthLogout())
 			r.Get(v1Base("/users/refresh"), v1Handlers.HandleAuthRefresh())
+
+			r.Get(v1Base("/locations"), v1Handlers.HandleLocationGetAll())
+			r.Post(v1Base("/locations"), v1Handlers.HandleLocationCreate())
 		})
 
 		r.Group(func(r chi.Router) {

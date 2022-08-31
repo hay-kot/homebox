@@ -21,6 +21,7 @@ func (r *EntLocationRepository) Get(ctx context.Context, ID uuid.UUID) (*ent.Loc
 func (r *EntLocationRepository) GetAll(ctx context.Context, groupId uuid.UUID) ([]*ent.Location, error) {
 	return r.db.Location.Query().
 		Where(location.HasGroupWith(group.ID(groupId))).
+		WithGroup().
 		All(ctx)
 }
 
