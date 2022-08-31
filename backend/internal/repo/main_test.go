@@ -12,8 +12,23 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var testEntClient *ent.Client
-var testRepos *AllRepos
+var (
+	testEntClient *ent.Client
+	testRepos     *AllRepos
+	testUser      *ent.User
+	testGroup     *ent.Group
+)
+
+func bootstrap() {
+	ctx := context.Background()
+	testGroup, _ = testRepos.Groups.Create(ctx, "test-group")
+	testUser, _ = testRepos.Users.Create(ctx, UserFactory())
+
+	if testGroup == nil || testUser == nil {
+		log.Fatal("Failed to bootstrap test data")
+	}
+
+}
 
 func TestMain(m *testing.M) {
 	rand.Seed(int64(time.Now().Unix()))
@@ -29,10 +44,9 @@ func TestMain(m *testing.M) {
 
 	testEntClient = client
 	testRepos = EntAllRepos(testEntClient)
-
 	defer client.Close()
 
-	m.Run()
+	bootstrap()
 
 	os.Exit(m.Run())
 }

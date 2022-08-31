@@ -12,18 +12,9 @@ type EntGroupRepository struct {
 }
 
 func (r *EntGroupRepository) Create(ctx context.Context, name string) (*ent.Group, error) {
-	dbGroup, err := r.db.Group.Create().SetName(name).Save(ctx)
-
-	if err != nil {
-		return dbGroup, err
-	}
-	return dbGroup, nil
+	return r.db.Group.Create().SetName(name).Save(ctx)
 }
 
 func (r *EntGroupRepository) GetOneId(ctx context.Context, id uuid.UUID) (*ent.Group, error) {
-	dbGroup, err := r.db.Group.Get(ctx, id)
-	if err != nil {
-		return dbGroup, err
-	}
-	return dbGroup, nil
+	return r.db.Group.Get(ctx, id)
 }

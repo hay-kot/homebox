@@ -34,7 +34,7 @@ func (e *EntUserRepository) GetOneEmail(ctx context.Context, email string) (*ent
 }
 
 func (e *EntUserRepository) GetAll(ctx context.Context) ([]*ent.User, error) {
-	users, err := e.db.User.Query().All(ctx)
+	users, err := e.db.User.Query().WithGroup().All(ctx)
 
 	if err != nil {
 		return nil, err

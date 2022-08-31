@@ -13,11 +13,13 @@ import (
 
 func UserFactory() types.UserCreate {
 	f := faker.NewFaker()
+
 	return types.UserCreate{
 		Name:        f.RandomString(10),
 		Email:       f.RandomEmail(),
 		Password:    f.RandomString(10),
 		IsSuperuser: f.RandomBool(),
+		GroupID:     testGroup.ID,
 	}
 }
 
@@ -77,12 +79,19 @@ func Test_EntUserRepo_GetAll(t *testing.T) {
 	// Validate
 	allUsers, err := testRepos.Users.GetAll(ctx)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, len(created), len(allUsers))
 
 	for _, usr := range created {
 		fmt.Printf("%+v\n", usr)
-		assert.Contains(t, allUsers, usr)
+		for _, usr2 := range allUsers {
+			if usr.ID == usr2.ID {
+				assert.Equal(t, usr.Email, usr2.Email)
+
+				// Check groups are loaded
+				assert.NotNil(t, usr2.Edges.Group)
+			}
+		}
 	}
 
 	for _, usr := range created {
