@@ -15,7 +15,11 @@ type EntLocationRepository struct {
 }
 
 func (r *EntLocationRepository) Get(ctx context.Context, ID uuid.UUID) (*ent.Location, error) {
-	return r.db.Location.Get(ctx, ID)
+	return r.db.Location.Query().
+		Where(location.ID(ID)).
+		WithGroup().
+		WithItems().
+		Only(ctx)
 }
 
 func (r *EntLocationRepository) GetAll(ctx context.Context, groupId uuid.UUID) ([]*ent.Location, error) {
@@ -37,10 +41,16 @@ func (r *EntLocationRepository) Create(ctx context.Context, groupdId uuid.UUID, 
 }
 
 func (r *EntLocationRepository) Update(ctx context.Context, data types.LocationUpdate) (*ent.Location, error) {
-	return r.db.Location.UpdateOneID(data.ID).
+	_, err := r.db.Location.UpdateOneID(data.ID).
 		SetName(data.Name).
 		SetDescription(data.Description).
 		Save(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return r.Get(ctx, data.ID)
 }
 
 func (r *EntLocationRepository) Delete(ctx context.Context, id uuid.UUID) error {

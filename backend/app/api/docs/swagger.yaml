@@ -338,6 +338,21 @@ definitions:
           type: string
         type: array
     type: object
+  types.ItemSummary:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      locationId:
+        type: string
+      name:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   types.LocationCreate:
     properties:
       description:
@@ -346,6 +361,25 @@ definitions:
         type: string
     type: object
   types.LocationOut:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      groupId:
+        type: string
+      id:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/types.ItemSummary'
+        type: array
+      name:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  types.LocationSummary:
     properties:
       createdAt:
         type: string
@@ -584,10 +618,66 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.LocationOut'
+            $ref: '#/definitions/types.LocationSummary'
       security:
       - Bearer: []
       summary: Create a new location
+      tags:
+      - Locations
+  /v1/locations/{id}:
+    delete:
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      security:
+      - Bearer: []
+      summary: deletes a location
+      tags:
+      - Locations
+    get:
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.LocationOut'
+      security:
+      - Bearer: []
+      summary: Gets a location and fields
+      tags:
+      - Locations
+    put:
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.LocationOut'
+      security:
+      - Bearer: []
+      summary: updates a location
       tags:
       - Locations
   /v1/users/login:

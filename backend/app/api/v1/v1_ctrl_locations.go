@@ -3,12 +3,15 @@ package v1
 import (
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 	"github.com/hay-kot/content/backend/internal/services"
 	"github.com/hay-kot/content/backend/internal/types"
+	"github.com/hay-kot/content/backend/pkgs/logger"
 	"github.com/hay-kot/content/backend/pkgs/server"
 )
 
-// HandleUserSelf godoc
+// HandleLocationGetAll godoc
 // @Summary   Get All Locations
 // @Tags      Locations
 // @Produce   json
@@ -29,12 +32,12 @@ func (ctrl *V1Controller) HandleLocationGetAll() http.HandlerFunc {
 	}
 }
 
-// HandleUserSelf godoc
+// HandleLocationCreate godoc
 // @Summary   Create a new location
 // @Tags      Locations
 // @Produce   json
 // @Param     payload  body      types.LocationCreate  true  "Location Data"
-// @Success   200      {object}  types.LocationOut
+// @Success   200      {object}  types.LocationSummary
 // @Router    /v1/locations [POST]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleLocationCreate() http.HandlerFunc {
@@ -55,5 +58,103 @@ func (ctrl *V1Controller) HandleLocationCreate() http.HandlerFunc {
 		}
 
 		server.Respond(w, http.StatusCreated, location)
+	}
+}
+
+func (ctrl *V1Controller) partialParseIdAndUser(w http.ResponseWriter, r *http.Request) (uuid.UUID, *types.UserOut, error) {
+	uid, err := uuid.Parse(chi.URLParam(r, "id"))
+	if err != nil {
+		ctrl.log.Debug(err.Error(), logger.Props{
+			"details": "failed to convert id to valid UUID",
+		})
+		server.RespondError(w, http.StatusBadRequest, err)
+		return uuid.Nil, nil, err
+	}
+
+	user := services.UseUserCtx(r.Context())
+	return uid, user, nil
+}
+
+// HandleLocationDelete godocs
+// @Summary   deletes a location
+// @Tags      Locations
+// @Produce   json
+// @Param     id   path      string  true  "Location ID"
+// @Success   204
+// @Router    /v1/locations/{id} [DELETE]
+// @Security  Bearer
+func (ctrl *V1Controller) HandleLocationDelete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		uid, user, err := ctrl.partialParseIdAndUser(w, r)
+		if err != nil {
+			return
+		}
+
+		err = ctrl.svc.Location.Delete(r.Context(), user.GroupID, uid)
+		if err != nil {
+			ctrl.log.Error(err, nil)
+			server.RespondServerError(w)
+			return
+		}
+		server.Respond(w, http.StatusNoContent, nil)
+	}
+}
+
+// HandleLocationGet godocs
+// @Summary   Gets a location and fields
+// @Tags      Locations
+// @Produce   json
+// @Param     id   path      string  true  "Location ID"
+// @Success   200  {object}  types.LocationOut
+// @Router    /v1/locations/{id} [GET]
+// @Security  Bearer
+func (ctrl *V1Controller) HandleLocationGet() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		uid, user, err := ctrl.partialParseIdAndUser(w, r)
+		if err != nil {
+			return
+		}
+
+		location, err := ctrl.svc.Location.GetOne(r.Context(), user.GroupID, uid)
+		if err != nil {
+			ctrl.log.Error(err, nil)
+			server.RespondServerError(w)
+			return
+		}
+		server.Respond(w, http.StatusOK, location)
+	}
+}
+
+// HandleLocationUpdate godocs
+// @Summary   updates a location
+// @Tags      Locations
+// @Produce   json
+// @Param     id  path  string  true  "Location ID"
+// @Success   200  {object}  types.LocationOut
+// @Router    /v1/locations/{id} [PUT]
+// @Security  Bearer
+func (ctrl *V1Controller) HandleLocationUpdate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		body := types.LocationUpdate{}
+		if err := server.Decode(r, &body); err != nil {
+			ctrl.log.Error(err, nil)
+			server.RespondError(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		uid, user, err := ctrl.partialParseIdAndUser(w, r)
+		if err != nil {
+			return
+		}
+
+		body.ID = uid
+
+		result, err := ctrl.svc.Location.Update(r.Context(), user.GroupID, body)
+		if err != nil {
+			ctrl.log.Error(err, nil)
+			server.RespondServerError(w)
+			return
+		}
+		server.Respond(w, http.StatusOK, result)
 	}
 }

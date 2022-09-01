@@ -17,11 +17,25 @@ type LocationUpdate struct {
 	Description string    `json:"description"`
 }
 
-type LocationOut struct {
+type LocationSummary struct {
 	ID          uuid.UUID `json:"id"`
 	GroupID     uuid.UUID `json:"groupId"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
+}
+
+type ItemSummary struct {
+	ID          uuid.UUID `json:"id"`
+	LocationID  uuid.UUID `json:"locationId"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
+}
+
+type LocationOut struct {
+	LocationSummary
+	Items []*ItemSummary `json:"items"`
 }

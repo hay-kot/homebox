@@ -52,6 +52,9 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 
 			r.Get(v1Base("/locations"), v1Handlers.HandleLocationGetAll())
 			r.Post(v1Base("/locations"), v1Handlers.HandleLocationCreate())
+			r.Get(v1Base("/locations/{id}"), v1Handlers.HandleLocationGet())
+			r.Put(v1Base("/locations/{id}"), v1Handlers.HandleLocationUpdate())
+			r.Delete(v1Base("/locations/{id}"), v1Handlers.HandleLocationDelete())
 		})
 
 		r.Group(func(r chi.Router) {
