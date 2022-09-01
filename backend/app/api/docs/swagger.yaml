@@ -353,6 +353,12 @@ definitions:
       updatedAt:
         type: string
     type: object
+  types.LabelCreate:
+    type: object
+  types.LabelOut:
+    type: object
+  types.LabelSummary:
+    type: object
   types.LocationCreate:
     properties:
       description:
@@ -583,6 +589,103 @@ paths:
       summary: Update a User
       tags:
       - 'Admin: Users'
+  /v1/labels:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/server.Results'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/types.LabelOut'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: Get All Labels
+      tags:
+      - Labels
+    post:
+      parameters:
+      - description: Label Data
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.LabelCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.LabelSummary'
+      security:
+      - Bearer: []
+      summary: Create a new label
+      tags:
+      - Labels
+  /v1/labels/{id}:
+    delete:
+      parameters:
+      - description: Label ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      security:
+      - Bearer: []
+      summary: deletes a label
+      tags:
+      - Labels
+    get:
+      parameters:
+      - description: Label ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.LabelOut'
+      security:
+      - Bearer: []
+      summary: Gets a label and fields
+      tags:
+      - Labels
+    put:
+      parameters:
+      - description: Label ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.LabelOut'
+      security:
+      - Bearer: []
+      summary: updates a label
+      tags:
+      - Labels
   /v1/locations:
     get:
       produces:
