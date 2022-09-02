@@ -1,8 +1,8 @@
 <template>
-  <div class="z-[9999]">
+  <div class="z-[999]">
     <input type="checkbox" :id="modalId" class="modal-toggle" v-model="modal" />
-    <div class="modal">
-      <div class="modal-box relative">
+    <div class="modal modal-bottom sm:modal-middle overflow-visible">
+      <div class="modal-box overflow-visible relative">
         <button @click="close" :for="modalId" class="btn btn-sm btn-circle absolute right-2 top-2">✕</button>
 
         <h3 class="font-bold text-lg">

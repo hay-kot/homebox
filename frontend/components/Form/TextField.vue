@@ -9,13 +9,13 @@
 
 <script lang="ts" setup>
   const props = defineProps({
-    modelValue: {
-      type: String,
-      required: true,
-    },
     label: {
       type: String,
-      required: true,
+      default: '',
+    },
+    modelValue: {
+      type: String,
+      default: null,
     },
     type: {
       type: String,

@@ -7,7 +7,10 @@ export type LabelCreate = Details & {
 
 export type LabelUpdate = LabelCreate;
 
-export type Label = LabelCreate & OutType;
+export type Label = LabelCreate &
+  OutType & {
+    groupId: string;
+  };
 
 export class LabelsApi extends BaseAPI {
   async getAll() {

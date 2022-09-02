@@ -5,10 +5,10 @@ export type LocationViewPreferences = {
 };
 
 /**
- * useLocationViewPreferences loads the view preferences from local storage and hydrates
+ * useViewPreferences loads the view preferences from local storage and hydrates
  * them. These are reactive and will update the local storage when changed.
  */
-export function useLocationViewPreferences(): Ref<LocationViewPreferences> {
+export function useViewPreferences(): Ref<LocationViewPreferences> {
   const results = useLocalStorage(
     'homebox/preferences/location',
     {

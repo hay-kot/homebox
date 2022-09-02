@@ -26,22 +26,22 @@
   ];
 
   const modals = reactive({
+    item: false,
     location: false,
     label: false,
-    item: false,
   });
 
   const dropdown = [
     {
-      name: 'Location',
-      action: () => {
-        modals.location = true;
-      },
-    },
-    {
       name: 'Item / Asset',
       action: () => {
         modals.item = true;
+      },
+    },
+    {
+      name: 'Location',
+      action: () => {
+        modals.location = true;
       },
     },
     {
@@ -60,6 +60,7 @@
     up the tree
    -->
   <ModalConfirm />
+  <ItemCreateModal v-model="modals.item" />
   <LabelCreateModal v-model="modals.label" />
   <LocationCreateModal v-model="modals.location" />
 
@@ -93,7 +94,7 @@
       <div class="dropdown">
         <label tabindex="0" class="btn btn-sm">
           <span>
-            <Icon name="mdi-plus" class="w-5 h-5 mr-2" />
+            <Icon name="mdi-plus" class="mr-1 -ml-1" />
           </span>
           Create
         </label>
