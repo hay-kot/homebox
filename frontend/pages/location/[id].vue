@@ -12,8 +12,17 @@
 
   const preferences = useLocationViewPreferences();
 
-  const location = ref<Location | null>(null);
   const locationId = computed<string>(() => route.params.id as string);
+
+  const { data: location } = useAsyncData(locationId.value, async () => {
+    const { data, error } = await api.locations.get(locationId.value);
+    if (error) {
+      toast.error('Failed to load location');
+      navigateTo('/home');
+      return;
+    }
+    return data;
+  });
 
   function maybeTimeAgo(date?: string): string {
     if (!date) {
@@ -39,17 +48,6 @@
     }
 
     return dt;
-  });
-
-  onMounted(async () => {
-    const { data, error } = await api.locations.get(locationId.value);
-
-    if (error) {
-      toast.error('Failed to load location');
-      navigateTo('/home');
-      return;
-    }
-    location.value = data;
   });
 
   const { reveal } = useConfirm();

@@ -6,6 +6,7 @@ type AllServices struct {
 	User     *UserService
 	Admin    *AdminService
 	Location *LocationService
+	Labels   *LabelService
 }
 
 func NewServices(repos *repo.AllRepos) *AllServices {
@@ -13,5 +14,6 @@ func NewServices(repos *repo.AllRepos) *AllServices {
 		User:     &UserService{repos},
 		Admin:    &AdminService{repos},
 		Location: &LocationService{repos},
+		Labels:   &LabelService{repos},
 	}
 }

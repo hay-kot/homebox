@@ -25,79 +25,50 @@
     },
   ];
 
+  const modals = reactive({
+    location: false,
+    label: false,
+    item: false,
+  });
+
   const dropdown = [
     {
       name: 'Location',
       action: () => {
-        modal.value = true;
+        modals.location = true;
       },
     },
     {
       name: 'Item / Asset',
-      action: () => {},
+      action: () => {
+        modals.item = true;
+      },
     },
     {
       name: 'Label',
-      action: () => {},
+      action: () => {
+        modals.label = true;
+      },
     },
   ];
-
-  // ----------------------------
-  // Location Stuff
-  // Should move to own component
-  const locationLoading = ref(false);
-  const locationForm = reactive({
-    name: '',
-    description: '',
-  });
-
-  const locationNameRef = ref(null);
-  const triggerFocus = ref(false);
-  const modal = ref(false);
-
-  whenever(
-    () => modal.value,
-    () => {
-      triggerFocus.value = true;
-    }
-  );
-
-  async function createLocation() {
-    locationLoading.value = true;
-    const { data } = await api.locations.create(locationForm);
-
-    if (data) {
-      navigateTo(`/location/${data.id}`);
-    }
-
-    locationLoading.value = false;
-    modal.value = false;
-    locationForm.name = '';
-    locationForm.description = '';
-    triggerFocus.value = false;
-  }
 </script>
 
 <template>
+  <!--
+    Confirmation Modal is a singleton used by all components so we render
+    it here to ensure it's always available. Possibly could move this further
+    up the tree
+   -->
   <ModalConfirm />
-  <BaseModal v-model="modal">
-    <template #title> Create Location </template>
-    <form @submit.prevent="createLocation">
-      <FormTextField
-        :trigger-focus="triggerFocus"
-        ref="locationNameRef"
-        :autofocus="true"
-        label="Location Name"
-        v-model="locationForm.name"
-      />
-      <FormTextField label="Location Description" v-model="locationForm.description" />
-      <div class="modal-action">
-        <BaseButton type="submit" :loading="locationLoading"> Create </BaseButton>
-      </div>
-    </form>
-  </BaseModal>
+  <LabelCreateModal v-model="modals.label" />
+  <LocationCreateModal v-model="modals.location" />
+
   <BaseContainer is="header" class="py-6">
-    <h2 class="mt-1 text-4xl font-bold tracking-tight text-base-content sm:text-5xl lg:text-6xl">Homebox</h2>
+    <h2 class="mt-1 text-4xl font-bold tracking-tight text-base-content sm:text-5xl lg:text-6xl flex">
+      HomeB
+      <AppLogo class="w-12 -mb-4" style="padding-left: 3px; padding-right: 2px" />
+      x
+    </h2>
     <div class="ml-1 mt-2 text-lg text-base-content/50 space-x-2">
       <template v-for="link in links">
         <NuxtLink

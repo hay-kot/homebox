@@ -1,4 +1,4 @@
-import { BaseAPI, UrlBuilder } from "./base";
+import { BaseAPI, UrlBuilder } from './base';
 
 export type LoginResult = {
   token: string;
@@ -21,19 +21,13 @@ export type RegisterPayload = {
 
 export class PublicApi extends BaseAPI {
   public login(username: string, password: string) {
-    return this.http.post<LoginPayload, LoginResult>(
-      UrlBuilder("/users/login"),
-      {
-        username,
-        password,
-      }
-    );
+    return this.http.post<LoginPayload, LoginResult>(UrlBuilder('/users/login'), {
+      username,
+      password,
+    });
   }
 
   public register(payload: RegisterPayload) {
-    return this.http.post<RegisterPayload, LoginResult>(
-      UrlBuilder("/users/register"),
-      payload
-    );
+    return this.http.post<RegisterPayload, LoginResult>(UrlBuilder('/users/register'), payload);
   }
 }

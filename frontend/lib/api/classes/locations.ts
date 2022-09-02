@@ -1,17 +1,12 @@
 import { BaseAPI, UrlBuilder } from '../base';
-import { type Results } from '../base/base-types';
+import { Details, OutType, Results } from './types';
 
-export type LocationCreate = {
-  name: string;
-  description: string;
-};
+export type LocationCreate = Details;
 
-export type Location = LocationCreate & {
-  id: string;
-  groupId: string;
-  createdAt: string;
-  updatedAt: string;
-};
+export type Location = LocationCreate &
+  OutType & {
+    groupId: string;
+  };
 
 export type LocationUpdate = LocationCreate;
 

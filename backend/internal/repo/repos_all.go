@@ -8,6 +8,7 @@ type AllRepos struct {
 	AuthTokens *EntTokenRepository
 	Groups     *EntGroupRepository
 	Locations  *EntLocationRepository
+	Labels     *EntLabelRepository
 }
 
 func EntAllRepos(db *ent.Client) *AllRepos {
@@ -16,5 +17,6 @@ func EntAllRepos(db *ent.Client) *AllRepos {
 		AuthTokens: &EntTokenRepository{db},
 		Groups:     &EntGroupRepository{db},
 		Locations:  &EntLocationRepository{db},
+		Labels:     &EntLabelRepository{db},
 	}
 }

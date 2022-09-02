@@ -354,10 +354,47 @@ definitions:
         type: string
     type: object
   types.LabelCreate:
+    properties:
+      color:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
     type: object
   types.LabelOut:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      groupId:
+        type: string
+      id:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/types.ItemSummary'
+        type: array
+      name:
+        type: string
+      updatedAt:
+        type: string
     type: object
   types.LabelSummary:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      groupId:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updatedAt:
+        type: string
     type: object
   types.LocationCreate:
     properties:

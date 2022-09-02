@@ -105,7 +105,11 @@
 <template>
   <div>
     <header class="sm:px-6 py-2 lg:p-14 sm:py-6">
-      <h2 class="mt-1 text-4xl font-bold tracking-tight text-base-content sm:text-5xl lg:text-6xl">Homebox</h2>
+      <h2 class="mt-1 text-4xl font-bold tracking-tight text-base-content sm:text-5xl lg:text-6xl flex">
+        HomeB
+        <AppLogo class="w-12 -mb-4" style="padding-left: 3px; padding-right: 2px" />
+        x
+      </h2>
       <p class="ml-1 text-lg text-base-content/50">Track, Organize, and Manage your Shit.</p>
     </header>
     <div class="grid p-6 sm:place-items-center min-h-[50vh]">
