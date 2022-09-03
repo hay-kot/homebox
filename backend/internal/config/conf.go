@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 
 	"github.com/ardanlabs/conf/v2"
 	"github.com/ardanlabs/conf/v2/yaml"
@@ -48,7 +47,7 @@ func NewConfig(file string) (*Config, error) {
 		if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
 			return conf.Parse(prefix, &cfg)
 		} else {
-			yamlData, err := ioutil.ReadFile(file)
+			yamlData, err := os.ReadFile(file)
 			if err != nil {
 				return "", err
 			}

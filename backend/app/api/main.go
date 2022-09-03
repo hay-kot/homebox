@@ -108,7 +108,12 @@ func run(cfg *config.Config) error {
 	// Start Reoccurring Tasks
 
 	go app.StartReoccurringTasks(time.Duration(24)*time.Hour, func() {
-		app.repos.AuthTokens.PurgeExpiredTokens(context.Background())
+		_, err := app.repos.AuthTokens.PurgeExpiredTokens(context.Background())
+		if err != nil {
+			app.logger.Error(err, logger.Props{
+				"details": "failed to purge expired tokens",
+			})
+		}
 	})
 
 	return app.server.Start(routes)

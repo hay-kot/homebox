@@ -2,7 +2,7 @@ package mailer
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,7 +14,7 @@ const (
 
 func GetTestMailer() (*Mailer, error) {
 	// Read JSON File
-	bytes, err := ioutil.ReadFile(TestMailerConfig)
+	bytes, err := os.ReadFile(TestMailerConfig)
 
 	mailer := &Mailer{}
 

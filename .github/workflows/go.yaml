@@ -26,6 +26,15 @@ jobs:
       - name: Install Task
         uses: arduino/setup-task@v1
 
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          # Optional: version of golangci-lint to use in form of v1.2 or v1.2.3 or `latest` to use the latest version
+          version: latest
+
+          # Optional: working directory, useful for monorepos
+          working-directory: backend
+
       - name: Build API
         run: task api:build
 
