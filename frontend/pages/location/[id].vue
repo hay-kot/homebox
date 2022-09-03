@@ -112,7 +112,7 @@
       </form>
     </BaseModal>
     <section>
-      <BaseSectionHeader class="mb-5">
+      <BaseSectionHeader class="mb-5" dark>
         {{ location ? location.name : '' }}
       </BaseSectionHeader>
       <BaseDetails class="mb-2" :details="details">
@@ -127,8 +127,11 @@
       <ActionsDivider @delete="confirmDelete" @edit="openUpdate" />
     </section>
 
-    <!-- <section>
-      <BaseSectionHeader> Items </BaseSectionHeader>
-    </section> -->
+    <section v-if="location">
+      <BaseSectionHeader class="mb-5"> Items </BaseSectionHeader>
+      <div class="grid gap-2 grid-cols-2">
+        <ItemCard v-for="item in location.items" :item="item" :key="item.id" />
+      </div>
+    </section>
   </BaseContainer>
 </template>

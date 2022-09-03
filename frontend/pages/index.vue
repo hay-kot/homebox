@@ -11,6 +11,11 @@
     layout: 'empty',
   });
 
+  const authStore = useAuthStore();
+  if (!authStore.isTokenExpired) {
+    navigateTo('/home');
+  }
+
   const registerFields = [
     {
       label: "What's your name?",
@@ -71,8 +76,6 @@
       type: 'password',
     },
   ];
-
-  const authStore = useAuthStore();
 
   const toast = useNotifier();
   const loading = ref(false);

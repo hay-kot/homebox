@@ -1,6 +1,12 @@
 <template>
-  <div class="border-b border-base-200 pb-3">
-    <h3 class="text-xl font-medium leading-4 text-base-content">
+  <div class="pb-3">
+    <h3
+      class="text-3xl font-bold tracking-tight"
+      :class="{
+        'text-neutral-content': dark,
+        'text-content': !dark,
+      }"
+    >
       <slot />
     </h3>
     <p v-if="$slots.description" class="mt-2 max-w-4xl text-sm text-gray-500">
@@ -8,3 +14,12 @@
     </p>
   </div>
 </template>
+
+<script lang="ts" setup>
+  defineProps({
+    dark: {
+      type: Boolean,
+      default: false,
+    },
+  });
+</script>

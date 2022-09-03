@@ -1,5 +1,6 @@
 import { Requests } from '~~/lib/requests';
 import { BaseAPI, UrlBuilder } from './base';
+import { ItemsApi } from './classes/items';
 import { LabelsApi } from './classes/labels';
 import { LocationsApi } from './classes/locations';
 
@@ -17,11 +18,13 @@ export type User = {
 export class UserApi extends BaseAPI {
   locations: LocationsApi;
   labels: LabelsApi;
+  items: ItemsApi;
   constructor(requests: Requests) {
     super(requests);
 
     this.locations = new LocationsApi(requests);
     this.labels = new LabelsApi(requests);
+    this.items = new ItemsApi(requests);
 
     Object.freeze(this);
   }

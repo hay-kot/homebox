@@ -112,7 +112,7 @@
       </form>
     </BaseModal>
     <section>
-      <BaseSectionHeader class="mb-5">
+      <BaseSectionHeader class="mb-5" dark>
         {{ label ? label.name : '' }}
       </BaseSectionHeader>
       <BaseDetails class="mb-2" :details="details">

@@ -4,6 +4,10 @@ import { defineNuxtConfig } from 'nuxt';
 export default defineNuxtConfig({
   ssr: false,
   modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', '@vueuse/nuxt'],
+  meta: {
+    title: 'Homebox',
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.svg' }],
+  },
   vite: {
     server: {
       proxy: {

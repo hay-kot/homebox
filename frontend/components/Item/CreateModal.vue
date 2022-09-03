@@ -26,6 +26,7 @@
 </template>
 
 <script setup lang="ts">
+  import { type Location } from '~~/lib/api/classes/locations';
   const props = defineProps({
     modelValue: {
       type: Boolean,
@@ -39,7 +40,7 @@
   const loading = ref(false);
   const focused = ref(false);
   const form = reactive({
-    location: {},
+    location: {} as Location,
     name: '',
     description: '',
     color: '', // Future!
@@ -75,7 +76,18 @@
   });
 
   async function create() {
-    const { data, error } = await api.labels.create(form);
+    if (!form.location) {
+      return;
+    }
+
+    const out = {
+      name: form.name,
+      description: form.description,
+      locationId: form.location.id as string,
+      labelIds: form.labels.map(l => l.id) as string[],
+    };
+
+    const { data, error } = await api.items.create(out);
     if (error) {
       toast.error("Couldn't create label");
       return;

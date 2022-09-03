@@ -1,4 +1,5 @@
 import { BaseAPI, UrlBuilder } from '../base';
+import { Item } from './items';
 import { Details, OutType, Results } from './types';
 
 export type LocationCreate = Details;
@@ -6,6 +7,8 @@ export type LocationCreate = Details;
 export type Location = LocationCreate &
   OutType & {
     groupId: string;
+    items: Item[];
+    itemCount: number;
   };
 
 export type LocationUpdate = LocationCreate;
