@@ -5,12 +5,10 @@ on:
     branches: [main]
     paths:
       - "**.go"
-      - "client/**/*.ts"
   pull_request:
     branches: [main]
     paths:
       - "**.go"
-      - "client/**/*.ts"
 
 jobs:
   Go:
