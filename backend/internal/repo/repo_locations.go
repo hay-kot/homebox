@@ -5,7 +5,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/hay-kot/content/backend/ent"
-	"github.com/hay-kot/content/backend/ent/group"
 	"github.com/hay-kot/content/backend/ent/location"
 	"github.com/hay-kot/content/backend/internal/types"
 )
@@ -14,19 +13,62 @@ type EntLocationRepository struct {
 	db *ent.Client
 }
 
+type LocationWithCount struct {
+	*ent.Location
+	ItemCount int `json:"itemCount"`
+}
+
+// GetALlWithCount returns all locations with item count field populated
+func (r *EntLocationRepository) GetAll(ctx context.Context, groupId uuid.UUID) ([]LocationWithCount, error) {
+	query := `
+		SELECT
+			id,
+			name,
+			description,
+			created_at,
+			updated_at,
+			(
+				SELECT
+					COUNT(*)
+				FROM
+					items
+				WHERE
+					items.location_items = locations.id
+			) as item_count
+		FROM
+			locations
+		WHERE
+			locations.group_locations = ?
+	`
+
+	rows, err := r.db.Sql().QueryContext(ctx, query, groupId)
+	if err != nil {
+		return nil, err
+	}
+
+	list := []LocationWithCount{}
+	for rows.Next() {
+		var loc ent.Location
+		var ct LocationWithCount
+		err := rows.Scan(&loc.ID, &loc.Name, &loc.Description, &loc.CreatedAt, &loc.UpdatedAt, &ct.ItemCount)
+		if err != nil {
+			return nil, err
+		}
+		ct.Location = &loc
+		list = append(list, ct)
+	}
+
+	return list, err
+}
+
 func (r *EntLocationRepository) Get(ctx context.Context, ID uuid.UUID) (*ent.Location, error) {
 	return r.db.Location.Query().
 		Where(location.ID(ID)).
 		WithGroup().
-		WithItems().
+		WithItems(func(iq *ent.ItemQuery) {
+			iq.WithLabel()
+		}).
 		Only(ctx)
-}
-
-func (r *EntLocationRepository) GetAll(ctx context.Context, groupId uuid.UUID) ([]*ent.Location, error) {
-	return r.db.Location.Query().
-		Where(location.HasGroupWith(group.ID(groupId))).
-		WithGroup().
-		All(ctx)
 }
 
 func (r *EntLocationRepository) Create(ctx context.Context, groupdId uuid.UUID, data types.LocationCreate) (*ent.Location, error) {

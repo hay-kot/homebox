@@ -261,6 +261,170 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/items": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Items"
+                ],
+                "summary": "Get All Items",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/server.Results"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/types.ItemOut"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Items"
+                ],
+                "summary": "Create a new item",
+                "parameters": [
+                    {
+                        "description": "Item Data",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.ItemCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.ItemSummary"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/items/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Items"
+                ],
+                "summary": "Gets a item and fields",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.ItemOut"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Items"
+                ],
+                "summary": "updates a item",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.ItemOut"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Items"
+                ],
+                "summary": "deletes a item",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/v1/labels": {
             "get": {
                 "security": [
@@ -453,7 +617,7 @@ const docTemplate = `{
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/types.LocationOut"
+                                                "$ref": "#/definitions/types.LocationCount"
                                             }
                                         }
                                     }
@@ -1249,6 +1413,94 @@ const docTemplate = `{
                 }
             }
         },
+        "types.ItemCreate": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "labelIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "locationId": {
+                    "description": "Edges",
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.ItemOut": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "labels": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.LabelSummary"
+                    }
+                },
+                "location": {
+                    "description": "Edges",
+                    "$ref": "#/definitions/types.LocationSummary"
+                },
+                "manufacturer": {
+                    "type": "string"
+                },
+                "modelNumber": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "notes": {
+                    "description": "Extras",
+                    "type": "string"
+                },
+                "purchaseFrom": {
+                    "type": "string"
+                },
+                "purchasePrice": {
+                    "type": "number"
+                },
+                "purchaseTime": {
+                    "description": "Purchase",
+                    "type": "string"
+                },
+                "serialNumber": {
+                    "description": "Identifications",
+                    "type": "string"
+                },
+                "soldNotes": {
+                    "type": "string"
+                },
+                "soldPrice": {
+                    "type": "number"
+                },
+                "soldTime": {
+                    "description": "Sold",
+                    "type": "string"
+                },
+                "soldTo": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
         "types.ItemSummary": {
             "type": "object",
             "properties": {
@@ -1261,10 +1513,54 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "locationId": {
+                "labels": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.LabelSummary"
+                    }
+                },
+                "location": {
+                    "description": "Edges",
+                    "$ref": "#/definitions/types.LocationSummary"
+                },
+                "manufacturer": {
+                    "type": "string"
+                },
+                "modelNumber": {
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "notes": {
+                    "description": "Extras",
+                    "type": "string"
+                },
+                "purchaseFrom": {
+                    "type": "string"
+                },
+                "purchasePrice": {
+                    "type": "number"
+                },
+                "purchaseTime": {
+                    "description": "Purchase",
+                    "type": "string"
+                },
+                "serialNumber": {
+                    "description": "Identifications",
+                    "type": "string"
+                },
+                "soldNotes": {
+                    "type": "string"
+                },
+                "soldPrice": {
+                    "type": "number"
+                },
+                "soldTime": {
+                    "description": "Sold",
+                    "type": "string"
+                },
+                "soldTo": {
                     "type": "string"
                 },
                 "updatedAt": {
@@ -1329,6 +1625,32 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.LocationCount": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "groupId": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "itemCount": {
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"

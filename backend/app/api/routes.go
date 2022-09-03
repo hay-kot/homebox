@@ -61,6 +61,12 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 			r.Get(v1Base("/labels/{id}"), v1Handlers.HandleLabelGet())
 			r.Put(v1Base("/labels/{id}"), v1Handlers.HandleLabelUpdate())
 			r.Delete(v1Base("/labels/{id}"), v1Handlers.HandleLabelDelete())
+
+			r.Get(v1Base("/items"), v1Handlers.HandleItemsGetAll())
+			r.Post(v1Base("/items"), v1Handlers.HandleItemsCreate())
+			r.Get(v1Base("/items/{id}"), v1Handlers.HandleItemGet())
+			r.Put(v1Base("/items/{id}"), v1Handlers.HandleItemUpdate())
+			r.Delete(v1Base("/items/{id}"), v1Handlers.HandleItemDelete())
 		})
 
 		r.Group(func(r chi.Router) {

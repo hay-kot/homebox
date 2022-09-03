@@ -12,7 +12,7 @@ import (
 // @Summary   Get All Locations
 // @Tags      Locations
 // @Produce   json
-// @Success   200  {object}  server.Results{items=[]types.LocationOut}
+// @Success   200  {object}  server.Results{items=[]types.LocationCount}
 // @Router    /v1/locations [GET]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleLocationGetAll() http.HandlerFunc {

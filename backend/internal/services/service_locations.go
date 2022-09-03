@@ -32,23 +32,23 @@ func (svc *LocationService) GetOne(ctx context.Context, groupId uuid.UUID, id uu
 	return mappers.ToLocationOut(location), nil
 }
 
-func (svc *LocationService) GetAll(ctx context.Context, groupId uuid.UUID) ([]*types.LocationSummary, error) {
+func (svc *LocationService) GetAll(ctx context.Context, groupId uuid.UUID) ([]*types.LocationCount, error) {
 	locations, err := svc.repos.Locations.GetAll(ctx, groupId)
 	if err != nil {
 		return nil, err
 	}
 
-	locationsOut := make([]*types.LocationSummary, len(locations))
+	locationsOut := make([]*types.LocationCount, len(locations))
 	for i, location := range locations {
-		locationsOut[i] = mappers.ToLocationSummary(location)
+		locationsOut[i] = mappers.ToLocationCount(&location)
 	}
 
 	return locationsOut, nil
 }
 
-func (svc *LocationService) Create(ctx context.Context, groupId uuid.UUID, data types.LocationCreate) (*types.LocationSummary, error) {
+func (svc *LocationService) Create(ctx context.Context, groupId uuid.UUID, data types.LocationCreate) (*types.LocationOut, error) {
 	location, err := svc.repos.Locations.Create(ctx, groupId, data)
-	return mappers.ToLocationSummaryErr(location, err)
+	return mappers.ToLocationOutErr(location, err)
 }
 
 func (svc *LocationService) Delete(ctx context.Context, groupId uuid.UUID, id uuid.UUID) error {

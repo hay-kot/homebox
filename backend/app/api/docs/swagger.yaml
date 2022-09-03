@@ -338,6 +338,66 @@ definitions:
           type: string
         type: array
     type: object
+  types.ItemCreate:
+    properties:
+      description:
+        type: string
+      labelIds:
+        items:
+          type: string
+        type: array
+      locationId:
+        description: Edges
+        type: string
+      name:
+        type: string
+    type: object
+  types.ItemOut:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      labels:
+        items:
+          $ref: '#/definitions/types.LabelSummary'
+        type: array
+      location:
+        $ref: '#/definitions/types.LocationSummary'
+        description: Edges
+      manufacturer:
+        type: string
+      modelNumber:
+        type: string
+      name:
+        type: string
+      notes:
+        description: Extras
+        type: string
+      purchaseFrom:
+        type: string
+      purchasePrice:
+        type: number
+      purchaseTime:
+        description: Purchase
+        type: string
+      serialNumber:
+        description: Identifications
+        type: string
+      soldNotes:
+        type: string
+      soldPrice:
+        type: number
+      soldTime:
+        description: Sold
+        type: string
+      soldTo:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   types.ItemSummary:
     properties:
       createdAt:
@@ -346,9 +406,40 @@ definitions:
         type: string
       id:
         type: string
-      locationId:
+      labels:
+        items:
+          $ref: '#/definitions/types.LabelSummary'
+        type: array
+      location:
+        $ref: '#/definitions/types.LocationSummary'
+        description: Edges
+      manufacturer:
+        type: string
+      modelNumber:
         type: string
       name:
+        type: string
+      notes:
+        description: Extras
+        type: string
+      purchaseFrom:
+        type: string
+      purchasePrice:
+        type: number
+      purchaseTime:
+        description: Purchase
+        type: string
+      serialNumber:
+        description: Identifications
+        type: string
+      soldNotes:
+        type: string
+      soldPrice:
+        type: number
+      soldTime:
+        description: Sold
+        type: string
+      soldTo:
         type: string
       updatedAt:
         type: string
@@ -391,6 +482,23 @@ definitions:
         type: string
       id:
         type: string
+      name:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  types.LocationCount:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      groupId:
+        type: string
+      id:
+        type: string
+      itemCount:
+        type: integer
       name:
         type: string
       updatedAt:
@@ -626,6 +734,103 @@ paths:
       summary: Update a User
       tags:
       - 'Admin: Users'
+  /v1/items:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/server.Results'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/types.ItemOut'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: Get All Items
+      tags:
+      - Items
+    post:
+      parameters:
+      - description: Item Data
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.ItemCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ItemSummary'
+      security:
+      - Bearer: []
+      summary: Create a new item
+      tags:
+      - Items
+  /v1/items/{id}:
+    delete:
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      security:
+      - Bearer: []
+      summary: deletes a item
+      tags:
+      - Items
+    get:
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ItemOut'
+      security:
+      - Bearer: []
+      summary: Gets a item and fields
+      tags:
+      - Items
+    put:
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ItemOut'
+      security:
+      - Bearer: []
+      summary: updates a item
+      tags:
+      - Items
   /v1/labels:
     get:
       produces:
@@ -736,7 +941,7 @@ paths:
             - properties:
                 items:
                   items:
-                    $ref: '#/definitions/types.LocationOut'
+                    $ref: '#/definitions/types.LocationCount'
                   type: array
               type: object
       security:

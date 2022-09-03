@@ -8,7 +8,6 @@ import (
 func ToLabelSummary(label *ent.Label) *types.LabelSummary {
 	return &types.LabelSummary{
 		ID:          label.ID,
-		GroupID:     label.Edges.Group.ID,
 		Name:        label.Name,
 		Description: label.Description,
 		CreatedAt:   label.CreatedAt,

@@ -7,6 +7,7 @@ type AllServices struct {
 	Admin    *AdminService
 	Location *LocationService
 	Labels   *LabelService
+	Items    *ItemService
 }
 
 func NewServices(repos *repo.AllRepos) *AllServices {
@@ -15,5 +16,6 @@ func NewServices(repos *repo.AllRepos) *AllServices {
 		Admin:    &AdminService{repos},
 		Location: &LocationService{repos},
 		Labels:   &LabelService{repos},
+		Items:    &ItemService{repos},
 	}
 }

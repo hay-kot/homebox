@@ -19,20 +19,15 @@ type LocationUpdate struct {
 
 type LocationSummary struct {
 	ID          uuid.UUID `json:"id"`
-	GroupID     uuid.UUID `json:"groupId"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
-type ItemSummary struct {
-	ID          uuid.UUID `json:"id"`
-	LocationID  uuid.UUID `json:"locationId"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
+type LocationCount struct {
+	LocationSummary
+	ItemCount int `json:"itemCount"`
 }
 
 type LocationOut struct {

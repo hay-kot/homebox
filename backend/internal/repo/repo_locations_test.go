@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/hay-kot/content/backend/ent"
 	"github.com/hay-kot/content/backend/internal/types"
 	"github.com/hay-kot/content/backend/pkgs/faker"
 	"github.com/stretchr/testify/assert"
@@ -31,26 +30,30 @@ func Test_Locations_Get(t *testing.T) {
 	testRepos.Locations.Delete(context.Background(), loc.ID)
 }
 
-func Test_Locations_GetAll(t *testing.T) {
-	created := make([]*ent.Location, 6)
+func Test_LocationsGetAllWithCount(t *testing.T) {
+	ctx := context.Background()
+	result, err := testRepos.Locations.Create(ctx, testGroup.ID, types.LocationCreate{
+		Name:        fk.RandomString(10),
+		Description: fk.RandomString(100),
+	})
 
-	for i := 0; i < 6; i++ {
-		result, err := testRepos.Locations.Create(context.Background(), testGroup.ID, types.LocationCreate{
-			Name:        fk.RandomString(10),
-			Description: fk.RandomString(100),
-		})
+	testRepos.Items.Create(ctx, testGroup.ID, types.ItemCreate{
+		Name:        fk.RandomString(10),
+		Description: fk.RandomString(100),
+		LocationID:  result.ID,
+	})
 
-		assert.NoError(t, err)
-		created[i] = result
-	}
-
-	locations, err := testRepos.Locations.GetAll(context.Background(), testGroup.ID)
 	assert.NoError(t, err)
-	assert.Equal(t, 6, len(locations))
 
-	for _, loc := range created {
-		testRepos.Locations.Delete(context.Background(), loc.ID)
+	results, err := testRepos.Locations.GetAll(context.Background(), testGroup.ID)
+	assert.NoError(t, err)
+
+	for _, loc := range results {
+		if loc.ID == result.ID {
+			assert.Equal(t, 1, loc.ItemCount)
+		}
 	}
+
 }
 
 func Test_Locations_Create(t *testing.T) {
