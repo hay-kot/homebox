@@ -8,10 +8,10 @@ require (
 	github.com/go-chi/chi/v5 v5.0.7
 	github.com/google/uuid v1.3.0
 	github.com/mattn/go-sqlite3 v1.14.15
+	github.com/rs/zerolog v1.28.0
 	github.com/stretchr/testify v1.8.0
 	github.com/swaggo/http-swagger v1.3.3
 	github.com/swaggo/swag v1.8.5
-	github.com/tkrajina/typescriptify-golang-structs v0.1.8
 	golang.org/x/crypto v0.0.0-20220829220503-c86fa9a7ed90
 )
 
@@ -35,9 +35,7 @@ require (
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/rs/zerolog v1.28.0 // indirect
 	github.com/swaggo/files v0.0.0-20220728132757-551d4a08d97a // indirect
-	github.com/tkrajina/go-reflector v0.5.6 // indirect
 	github.com/zclconf/go-cty v1.11.0 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
 	golang.org/x/net v0.0.0-20220826154423-83b083e8dc8b // indirect
