@@ -6,6 +6,7 @@ import (
 	"github.com/hay-kot/content/backend/internal/services"
 	"github.com/hay-kot/content/backend/internal/types"
 	"github.com/hay-kot/content/backend/pkgs/server"
+	"github.com/rs/zerolog/log"
 )
 
 // HandleLabelsGetAll godoc
@@ -20,7 +21,7 @@ func (ctrl *V1Controller) HandleLabelsGetAll() http.HandlerFunc {
 		user := services.UseUserCtx(r.Context())
 		labels, err := ctrl.svc.Labels.GetAll(r.Context(), user.GroupID)
 		if err != nil {
-			ctrl.log.Error(err, nil)
+			log.Err(err).Msg("error getting labels")
 			server.RespondServerError(w)
 			return
 		}
@@ -40,7 +41,7 @@ func (ctrl *V1Controller) HandleLabelsCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		createData := types.LabelCreate{}
 		if err := server.Decode(r, &createData); err != nil {
-			ctrl.log.Error(err, nil)
+			log.Err(err).Msg("error decoding label create data")
 			server.RespondError(w, http.StatusInternalServerError, err)
 			return
 		}
@@ -48,7 +49,7 @@ func (ctrl *V1Controller) HandleLabelsCreate() http.HandlerFunc {
 		user := services.UseUserCtx(r.Context())
 		label, err := ctrl.svc.Labels.Create(r.Context(), user.GroupID, createData)
 		if err != nil {
-			ctrl.log.Error(err, nil)
+			log.Err(err).Msg("error creating label")
 			server.RespondServerError(w)
 			return
 		}
@@ -75,7 +76,7 @@ func (ctrl *V1Controller) HandleLabelDelete() http.HandlerFunc {
 
 		err = ctrl.svc.Labels.Delete(r.Context(), user.GroupID, uid)
 		if err != nil {
-			ctrl.log.Error(err, nil)
+			log.Err(err).Msg("error deleting label")
 			server.RespondServerError(w)
 			return
 		}
@@ -100,7 +101,7 @@ func (ctrl *V1Controller) HandleLabelGet() http.HandlerFunc {
 
 		labels, err := ctrl.svc.Labels.Get(r.Context(), user.GroupID, uid)
 		if err != nil {
-			ctrl.log.Error(err, nil)
+			log.Err(err).Msg("error getting label")
 			server.RespondServerError(w)
 			return
 		}
@@ -120,7 +121,7 @@ func (ctrl *V1Controller) HandleLabelUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body := types.LabelUpdate{}
 		if err := server.Decode(r, &body); err != nil {
-			ctrl.log.Error(err, nil)
+			log.Err(err).Msg("error decoding label update data")
 			server.RespondError(w, http.StatusInternalServerError, err)
 			return
 		}
@@ -132,7 +133,7 @@ func (ctrl *V1Controller) HandleLabelUpdate() http.HandlerFunc {
 		body.ID = uid
 		result, err := ctrl.svc.Labels.Update(r.Context(), user.GroupID, body)
 		if err != nil {
-			ctrl.log.Error(err, nil)
+			log.Err(err).Msg("error updating label")
 			server.RespondServerError(w)
 			return
 		}

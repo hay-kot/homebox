@@ -6,8 +6,8 @@ import (
 
 	"github.com/hay-kot/content/backend/internal/services"
 	"github.com/hay-kot/content/backend/internal/types"
-	"github.com/hay-kot/content/backend/pkgs/logger"
 	"github.com/hay-kot/content/backend/pkgs/server"
+	"github.com/rs/zerolog/log"
 )
 
 // HandleAuthLogin godoc
@@ -28,7 +28,7 @@ func (ctrl *V1Controller) HandleAuthLogin() http.HandlerFunc {
 			err := r.ParseForm()
 			if err != nil {
 				server.Respond(w, http.StatusBadRequest, server.Wrap(err))
-				ctrl.log.Error(errors.New("failed to decode login form (FORM)"), logger.Props{"error": err.Error()})
+				log.Error().Err(err).Msg("failed to parse form")
 				return
 			}
 
@@ -38,9 +38,7 @@ func (ctrl *V1Controller) HandleAuthLogin() http.HandlerFunc {
 			err := server.Decode(r, loginForm)
 
 			if err != nil {
-				ctrl.log.Error(errors.New("failed to decode login form (JSON)"), logger.Props{
-					"error": err.Error(),
-				})
+				log.Err(err).Msg("failed to decode login form")
 				server.Respond(w, http.StatusBadRequest, server.Wrap(err))
 				return
 			}

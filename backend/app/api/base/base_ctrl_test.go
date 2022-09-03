@@ -4,12 +4,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/hay-kot/content/backend/internal/mocks"
 )
 
 func GetTestHandler(t *testing.T) *BaseController {
-	return NewBaseController(mocks.GetStructLogger(), nil)
+	return NewBaseController(nil)
 }
 
 func TestHandlersv1_HandleBase(t *testing.T) {

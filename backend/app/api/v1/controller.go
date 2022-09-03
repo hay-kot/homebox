@@ -2,11 +2,9 @@ package v1
 
 import (
 	"github.com/hay-kot/content/backend/internal/services"
-	"github.com/hay-kot/content/backend/pkgs/logger"
 )
 
 type V1Controller struct {
-	log *logger.Logger
 	svc *services.AllServices
 }
 
@@ -19,9 +17,8 @@ func BaseUrlFunc(prefix string) func(s string) string {
 	return prefixFunc
 }
 
-func NewControllerV1(log *logger.Logger, svc *services.AllServices) *V1Controller {
+func NewControllerV1(svc *services.AllServices) *V1Controller {
 	ctrl := &V1Controller{
-		log: log,
 		svc: svc,
 	}
 

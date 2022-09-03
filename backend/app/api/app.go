@@ -7,14 +7,12 @@ import (
 	"github.com/hay-kot/content/backend/internal/config"
 	"github.com/hay-kot/content/backend/internal/repo"
 	"github.com/hay-kot/content/backend/internal/services"
-	"github.com/hay-kot/content/backend/pkgs/logger"
 	"github.com/hay-kot/content/backend/pkgs/mailer"
 	"github.com/hay-kot/content/backend/pkgs/server"
 )
 
 type app struct {
 	conf     *config.Config
-	logger   *logger.Logger
 	mailer   mailer.Mailer
 	db       *ent.Client
 	server   *server.Server

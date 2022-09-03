@@ -31,7 +31,7 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 		http.ServeFile(w, r, "static/favicon.ico")
 	})
 
-	baseHandler := base.NewBaseController(a.logger, a.server)
+	baseHandler := base.NewBaseController(a.server)
 	r.Get(prefix+"/status", baseHandler.HandleBase(func() bool { return true }, "v1"))
 
 	// =========================================================================
@@ -39,7 +39,7 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 
 	v1Base := v1.BaseUrlFunc(prefix)
 	{
-		v1Handlers := v1.NewControllerV1(a.logger, a.services)
+		v1Handlers := v1.NewControllerV1(a.services)
 		r.Post(v1Base("/users/register"), v1Handlers.HandleUserRegistration())
 		r.Post(v1Base("/users/login"), v1Handlers.HandleAuthLogin())
 		r.Group(func(r chi.Router) {
@@ -67,15 +67,6 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 			r.Get(v1Base("/items/{id}"), v1Handlers.HandleItemGet())
 			r.Put(v1Base("/items/{id}"), v1Handlers.HandleItemUpdate())
 			r.Delete(v1Base("/items/{id}"), v1Handlers.HandleItemDelete())
-		})
-
-		r.Group(func(r chi.Router) {
-			r.Use(a.mwAdminOnly)
-			r.Get(v1Base("/admin/users"), v1Handlers.HandleAdminUserGetAll())
-			r.Post(v1Base("/admin/users"), v1Handlers.HandleAdminUserCreate())
-			r.Get(v1Base("/admin/users/{id}"), v1Handlers.HandleAdminUserGet())
-			r.Put(v1Base("/admin/users/{id}"), v1Handlers.HandleAdminUserUpdate())
-			r.Delete(v1Base("/admin/users/{id}"), v1Handlers.HandleAdminUserDelete())
 		})
 	}
 

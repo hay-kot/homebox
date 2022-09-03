@@ -4,20 +4,17 @@ import (
 	"net/http"
 
 	"github.com/hay-kot/content/backend/internal/types"
-	"github.com/hay-kot/content/backend/pkgs/logger"
 	"github.com/hay-kot/content/backend/pkgs/server"
 )
 
 type ReadyFunc func() bool
 
 type BaseController struct {
-	log *logger.Logger
 	svr *server.Server
 }
 
-func NewBaseController(log *logger.Logger, svr *server.Server) *BaseController {
+func NewBaseController(svr *server.Server) *BaseController {
 	h := &BaseController{
-		log: log,
 		svr: svr,
 	}
 	return h

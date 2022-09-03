@@ -7,8 +7,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/hay-kot/content/backend/internal/services"
 	"github.com/hay-kot/content/backend/internal/types"
-	"github.com/hay-kot/content/backend/pkgs/logger"
 	"github.com/hay-kot/content/backend/pkgs/server"
+	"github.com/rs/zerolog/log"
 )
 
 /*
@@ -24,9 +24,7 @@ and makes it a little more consistent when error handling and logging.
 func (ctrl *V1Controller) partialParseIdAndUser(w http.ResponseWriter, r *http.Request) (uuid.UUID, *types.UserOut, error) {
 	uid, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
-		ctrl.log.Debug(err.Error(), logger.Props{
-			"details": "failed to convert id to valid UUID",
-		})
+		log.Err(err).Msg("failed to parse id")
 		server.RespondError(w, http.StatusBadRequest, err)
 		return uuid.Nil, nil, err
 	}

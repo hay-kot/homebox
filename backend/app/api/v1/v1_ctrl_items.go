@@ -6,6 +6,7 @@ import (
 	"github.com/hay-kot/content/backend/internal/services"
 	"github.com/hay-kot/content/backend/internal/types"
 	"github.com/hay-kot/content/backend/pkgs/server"
+	"github.com/rs/zerolog/log"
 )
 
 // HandleItemsGetAll godoc
@@ -20,7 +21,7 @@ func (ctrl *V1Controller) HandleItemsGetAll() http.HandlerFunc {
 		user := services.UseUserCtx(r.Context())
 		items, err := ctrl.svc.Items.GetAll(r.Context(), user.GroupID)
 		if err != nil {
-			ctrl.log.Error(err, nil)
+			log.Err(err).Msg("failed to get items")
 			server.RespondServerError(w)
 			return
 		}
@@ -40,7 +41,7 @@ func (ctrl *V1Controller) HandleItemsCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		createData := types.ItemCreate{}
 		if err := server.Decode(r, &createData); err != nil {
-			ctrl.log.Error(err, nil)
+			log.Err(err).Msg("failed to decode request body")
 			server.RespondError(w, http.StatusInternalServerError, err)
 			return
 		}
@@ -48,7 +49,7 @@ func (ctrl *V1Controller) HandleItemsCreate() http.HandlerFunc {
 		user := services.UseUserCtx(r.Context())
 		item, err := ctrl.svc.Items.Create(r.Context(), user.GroupID, createData)
 		if err != nil {
-			ctrl.log.Error(err, nil)
+			log.Err(err).Msg("failed to create item")
 			server.RespondServerError(w)
 			return
 		}
@@ -75,7 +76,7 @@ func (ctrl *V1Controller) HandleItemDelete() http.HandlerFunc {
 
 		err = ctrl.svc.Items.Delete(r.Context(), user.GroupID, uid)
 		if err != nil {
-			ctrl.log.Error(err, nil)
+			log.Err(err).Msg("failed to delete item")
 			server.RespondServerError(w)
 			return
 		}
@@ -100,7 +101,7 @@ func (ctrl *V1Controller) HandleItemGet() http.HandlerFunc {
 
 		items, err := ctrl.svc.Items.GetOne(r.Context(), user.GroupID, uid)
 		if err != nil {
-			ctrl.log.Error(err, nil)
+			log.Err(err).Msg("failed to get item")
 			server.RespondServerError(w)
 			return
 		}
@@ -120,7 +121,7 @@ func (ctrl *V1Controller) HandleItemUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body := types.ItemUpdate{}
 		if err := server.Decode(r, &body); err != nil {
-			ctrl.log.Error(err, nil)
+			log.Err(err).Msg("failed to decode request body")
 			server.RespondError(w, http.StatusInternalServerError, err)
 			return
 		}
@@ -132,7 +133,7 @@ func (ctrl *V1Controller) HandleItemUpdate() http.HandlerFunc {
 		body.ID = uid
 		result, err := ctrl.svc.Items.Update(r.Context(), user.GroupID, body)
 		if err != nil {
-			ctrl.log.Error(err, nil)
+			log.Err(err).Msg("failed to update item")
 			server.RespondServerError(w)
 			return
 		}

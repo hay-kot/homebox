@@ -1,14 +1,13 @@
 package v1
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/google/uuid"
 	"github.com/hay-kot/content/backend/internal/services"
 	"github.com/hay-kot/content/backend/internal/types"
-	"github.com/hay-kot/content/backend/pkgs/logger"
 	"github.com/hay-kot/content/backend/pkgs/server"
+	"github.com/rs/zerolog/log"
 )
 
 // HandleUserSelf godoc
@@ -23,14 +22,13 @@ func (ctrl *V1Controller) HandleUserRegistration() http.HandlerFunc {
 		regData := types.UserRegistration{}
 
 		if err := server.Decode(r, &regData); err != nil {
-			ctrl.log.Error(err, nil)
+			log.Err(err).Msg("failed to decode user registration data")
 			server.RespondError(w, http.StatusInternalServerError, err)
 			return
 		}
 
 		_, err := ctrl.svc.User.RegisterUser(r.Context(), regData)
 		if err != nil {
-			ctrl.log.Error(err, nil)
 			server.RespondError(w, http.StatusInternalServerError, err)
 			return
 		}
@@ -51,7 +49,7 @@ func (ctrl *V1Controller) HandleUserSelf() http.HandlerFunc {
 		token := services.UseTokenCtx(r.Context())
 		usr, err := ctrl.svc.User.GetSelf(r.Context(), token)
 		if usr.ID == uuid.Nil || err != nil {
-			ctrl.log.Error(errors.New("no user within request context"), nil)
+			log.Err(err).Msg("failed to get user")
 			server.RespondServerError(w)
 			return
 		}
@@ -72,10 +70,7 @@ func (ctrl *V1Controller) HandleUserUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		updateData := types.UserUpdate{}
 		if err := server.Decode(r, &updateData); err != nil {
-			ctrl.log.Error(err, logger.Props{
-				"scope":   "user",
-				"details": "failed to decode user update data",
-			})
+			log.Err(err).Msg("failed to decode user update data")
 			server.RespondError(w, http.StatusBadRequest, err)
 			return
 		}
@@ -84,10 +79,7 @@ func (ctrl *V1Controller) HandleUserUpdate() http.HandlerFunc {
 		newData, err := ctrl.svc.User.UpdateSelf(r.Context(), actor.ID, updateData)
 
 		if err != nil {
-			ctrl.log.Error(err, logger.Props{
-				"scope":   "user",
-				"details": "failed to update user",
-			})
+
 			server.RespondError(w, http.StatusInternalServerError, err)
 			return
 		}

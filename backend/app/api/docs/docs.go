@@ -52,215 +52,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/admin/users": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Admin: Users"
-                ],
-                "summary": "Gets all users from the database",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/server.Result"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "item": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/ent.User"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Admin: Users"
-                ],
-                "summary": "Create a new user",
-                "parameters": [
-                    {
-                        "description": "User Data",
-                        "name": "payload",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.UserCreate"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/server.Result"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "item": {
-                                            "$ref": "#/definitions/ent.User"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/v1/admin/users/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Admin: Users"
-                ],
-                "summary": "Get a user from the database",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/server.Result"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "item": {
-                                            "$ref": "#/definitions/ent.User"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Admin: Users"
-                ],
-                "summary": "Update a User",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "User Data",
-                        "name": "payload",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.UserUpdate"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/server.Result"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "item": {
-                                            "$ref": "#/definitions/ent.User"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Admin: Users"
-                ],
-                "summary": "Delete a User",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": ""
-                    }
-                }
-            }
-        },
         "/v1/items": {
             "get": {
                 "security": [
@@ -1643,9 +1434,6 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
-                "groupId": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "string"
                 },
@@ -1680,9 +1468,6 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
-                "groupId": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "string"
                 },
@@ -1709,9 +1494,6 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
-                "groupId": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "string"
                 },
@@ -1730,26 +1512,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "token": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.UserCreate": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "groupID": {
-                    "type": "string"
-                },
-                "isSuperuser": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "password": {
                     "type": "string"
                 }
             }

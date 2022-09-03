@@ -6,6 +6,7 @@ import (
 	"github.com/hay-kot/content/backend/internal/services"
 	"github.com/hay-kot/content/backend/internal/types"
 	"github.com/hay-kot/content/backend/pkgs/server"
+	"github.com/rs/zerolog/log"
 )
 
 // HandleLocationGetAll godoc
@@ -20,7 +21,7 @@ func (ctrl *V1Controller) HandleLocationGetAll() http.HandlerFunc {
 		user := services.UseUserCtx(r.Context())
 		locations, err := ctrl.svc.Location.GetAll(r.Context(), user.GroupID)
 		if err != nil {
-			ctrl.log.Error(err, nil)
+			log.Err(err).Msg("failed to get locations")
 			server.RespondServerError(w)
 			return
 		}
@@ -41,7 +42,7 @@ func (ctrl *V1Controller) HandleLocationCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		createData := types.LocationCreate{}
 		if err := server.Decode(r, &createData); err != nil {
-			ctrl.log.Error(err, nil)
+			log.Err(err).Msg("failed to decode location create data")
 			server.RespondError(w, http.StatusInternalServerError, err)
 			return
 		}
@@ -49,7 +50,7 @@ func (ctrl *V1Controller) HandleLocationCreate() http.HandlerFunc {
 		user := services.UseUserCtx(r.Context())
 		location, err := ctrl.svc.Location.Create(r.Context(), user.GroupID, createData)
 		if err != nil {
-			ctrl.log.Error(err, nil)
+			log.Err(err).Msg("failed to create location")
 			server.RespondServerError(w)
 			return
 		}
@@ -75,7 +76,7 @@ func (ctrl *V1Controller) HandleLocationDelete() http.HandlerFunc {
 
 		err = ctrl.svc.Location.Delete(r.Context(), user.GroupID, uid)
 		if err != nil {
-			ctrl.log.Error(err, nil)
+			log.Err(err).Msg("failed to delete location")
 			server.RespondServerError(w)
 			return
 		}
@@ -100,7 +101,7 @@ func (ctrl *V1Controller) HandleLocationGet() http.HandlerFunc {
 
 		location, err := ctrl.svc.Location.GetOne(r.Context(), user.GroupID, uid)
 		if err != nil {
-			ctrl.log.Error(err, nil)
+			log.Err(err).Msg("failed to get location")
 			server.RespondServerError(w)
 			return
 		}
@@ -120,7 +121,7 @@ func (ctrl *V1Controller) HandleLocationUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body := types.LocationUpdate{}
 		if err := server.Decode(r, &body); err != nil {
-			ctrl.log.Error(err, nil)
+			log.Err(err).Msg("failed to decode location update data")
 			server.RespondError(w, http.StatusInternalServerError, err)
 			return
 		}
@@ -134,7 +135,7 @@ func (ctrl *V1Controller) HandleLocationUpdate() http.HandlerFunc {
 
 		result, err := ctrl.svc.Location.Update(r.Context(), user.GroupID, body)
 		if err != nil {
-			ctrl.log.Error(err, nil)
+			log.Err(err).Msg("failed to update location")
 			server.RespondServerError(w)
 			return
 		}

@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"io"
-	"log"
 	"os"
 	"time"
 
@@ -12,9 +10,10 @@ import (
 	"github.com/hay-kot/content/backend/internal/config"
 	"github.com/hay-kot/content/backend/internal/repo"
 	"github.com/hay-kot/content/backend/internal/services"
-	"github.com/hay-kot/content/backend/pkgs/logger"
 	"github.com/hay-kot/content/backend/pkgs/server"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
 // @title                       Go API Templates
@@ -28,6 +27,10 @@ import (
 // @name                        Authorization
 // @description                 "Type 'Bearer TOKEN' to correctly set the API Key"
 func main() {
+	// Logger Init
+	// zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+
 	cfgFile := "config.yml"
 
 	cfg, err := config.NewConfig(cfgFile)
@@ -46,41 +49,23 @@ func run(cfg *config.Config) error {
 	app := NewApp(cfg)
 
 	// =========================================================================
-	// Setup Logger
-
-	var wrt io.Writer
-	wrt = os.Stdout
-	if app.conf.Log.File != "" {
-		f, err := os.OpenFile(app.conf.Log.File, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-		if err != nil {
-			log.Fatalf("error opening file: %v", err)
-		}
-		defer func(f *os.File) {
-			_ = f.Close()
-		}(f)
-		wrt = io.MultiWriter(wrt, f)
-	}
-
-	app.logger = logger.New(wrt, logger.LevelDebug)
-
-	// =========================================================================
 	// Initialize Database & Repos
 
 	c, err := ent.Open(cfg.Database.GetDriver(), cfg.Database.GetUrl())
 	if err != nil {
-		app.logger.Fatal(err, logger.Props{
-			"details":  "failed to connect to database",
-			"database": cfg.Database.GetDriver(),
-			"url":      cfg.Database.GetUrl(),
-		})
+		log.Fatal().
+			Err(err).
+			Str("driver", cfg.Database.GetDriver()).
+			Str("url", cfg.Database.GetUrl()).
+			Msg("failed opening connection to sqlite")
 	}
 	defer func(c *ent.Client) {
 		_ = c.Close()
 	}(c)
 	if err := c.Schema.Create(context.Background()); err != nil {
-		app.logger.Fatal(err, logger.Props{
-			"details": "failed to create schema",
-		})
+		log.Fatal().
+			Err(err).
+			Msg("failed creating schema resources")
 	}
 
 	app.db = c
@@ -99,10 +84,7 @@ func run(cfg *config.Config) error {
 
 	app.SeedDatabase(app.repos)
 
-	app.logger.Info("Starting HTTP Server", logger.Props{
-		"host": app.server.Host,
-		"port": app.server.Port,
-	})
+	log.Info().Msgf("Starting HTTP Server on %s:%s", app.server.Host, app.server.Port)
 
 	// =========================================================================
 	// Start Reoccurring Tasks
@@ -110,9 +92,9 @@ func run(cfg *config.Config) error {
 	go app.StartReoccurringTasks(time.Duration(24)*time.Hour, func() {
 		_, err := app.repos.AuthTokens.PurgeExpiredTokens(context.Background())
 		if err != nil {
-			app.logger.Error(err, logger.Props{
-				"details": "failed to purge expired tokens",
-			})
+			log.Error().
+				Err(err).
+				Msg("failed to purge expired tokens")
 		}
 	})
 

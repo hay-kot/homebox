@@ -10,8 +10,8 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/hay-kot/content/backend/internal/config"
 	"github.com/hay-kot/content/backend/internal/services"
-	"github.com/hay-kot/content/backend/pkgs/logger"
 	"github.com/hay-kot/content/backend/pkgs/server"
+	"github.com/rs/zerolog/log"
 )
 
 func (a *app) setGlobalMiddleware(r *chi.Mux) {
@@ -24,7 +24,7 @@ func (a *app) setGlobalMiddleware(r *chi.Mux) {
 	// Use struct logger in production for requests, but use
 	// pretty console logger in development.
 	if a.conf.Mode == config.ModeDevelopment {
-		r.Use(middleware.Logger)
+		r.Use(a.mwSummaryLogger)
 	} else {
 		r.Use(a.mwStructLogger)
 	}
@@ -98,13 +98,38 @@ func (a *app) mwStructLogger(next http.Handler) http.Handler {
 
 		url := fmt.Sprintf("%s://%s%s %s", scheme, r.Host, r.RequestURI, r.Proto)
 
-		a.logger.Info(fmt.Sprintf("[%s] %s", r.Method, url), logger.Props{
-			"id":     middleware.GetReqID(r.Context()),
-			"method": r.Method,
-			"url":    url,
-			"remote": r.RemoteAddr,
-		})
+		log.Info().
+			Str("id", middleware.GetReqID(r.Context())).
+			Str("url", url).
+			Str("method", r.Method).
+			Str("remote_addr", r.RemoteAddr).
+			Msgf("[%s] %s", r.Method, url)
+		next.ServeHTTP(w, r)
+	})
+}
 
+func (a *app) mwSummaryLogger(next http.Handler) http.Handler {
+	bold := func(s string) string {
+		return "\033[1m" + s + "\033[0m"
+	}
+
+	pink := func(s string) string {
+		return "\033[35m" + s + "\033[0m"
+	}
+
+	aqua := func(s string) string {
+		return "\033[36m" + s + "\033[0m"
+	}
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		scheme := "http"
+		if r.TLS != nil {
+			scheme = "https"
+		}
+
+		url := fmt.Sprintf("%s://%s%s %s", scheme, r.Host, r.RequestURI, r.Proto)
+
+		log.Info().Msgf("%s %s", bold(pink("["+r.Method+"]")), aqua(url))
 		next.ServeHTTP(w, r)
 	})
 }

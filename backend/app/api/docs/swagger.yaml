@@ -493,8 +493,6 @@ definitions:
         type: string
       description:
         type: string
-      groupId:
-        type: string
       id:
         type: string
       itemCount:
@@ -517,8 +515,6 @@ definitions:
         type: string
       description:
         type: string
-      groupId:
-        type: string
       id:
         type: string
       items:
@@ -536,8 +532,6 @@ definitions:
         type: string
       description:
         type: string
-      groupId:
-        type: string
       id:
         type: string
       name:
@@ -550,19 +544,6 @@ definitions:
       expiresAt:
         type: string
       token:
-        type: string
-    type: object
-  types.UserCreate:
-    properties:
-      email:
-        type: string
-      groupID:
-        type: string
-      isSuperuser:
-        type: boolean
-      name:
-        type: string
-      password:
         type: string
     type: object
   types.UserIn:
@@ -616,124 +597,6 @@ paths:
       summary: Retrieves the basic information about the API
       tags:
       - Base
-  /v1/admin/users:
-    get:
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/server.Result'
-            - properties:
-                item:
-                  items:
-                    $ref: '#/definitions/ent.User'
-                  type: array
-              type: object
-      security:
-      - Bearer: []
-      summary: Gets all users from the database
-      tags:
-      - 'Admin: Users'
-    post:
-      parameters:
-      - description: User Data
-        in: body
-        name: payload
-        required: true
-        schema:
-          $ref: '#/definitions/types.UserCreate'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/server.Result'
-            - properties:
-                item:
-                  $ref: '#/definitions/ent.User'
-              type: object
-      security:
-      - Bearer: []
-      summary: Create a new user
-      tags:
-      - 'Admin: Users'
-  /v1/admin/users/{id}:
-    delete:
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: ""
-      security:
-      - Bearer: []
-      summary: Delete a User
-      tags:
-      - 'Admin: Users'
-    get:
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/server.Result'
-            - properties:
-                item:
-                  $ref: '#/definitions/ent.User'
-              type: object
-      security:
-      - Bearer: []
-      summary: Get a user from the database
-      tags:
-      - 'Admin: Users'
-    put:
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: User Data
-        in: body
-        name: payload
-        required: true
-        schema:
-          $ref: '#/definitions/types.UserUpdate'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/server.Result'
-            - properties:
-                item:
-                  $ref: '#/definitions/ent.User'
-              type: object
-      security:
-      - Bearer: []
-      summary: Update a User
-      tags:
-      - 'Admin: Users'
   /v1/items:
     get:
       produces:

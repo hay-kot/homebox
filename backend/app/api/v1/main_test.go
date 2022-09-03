@@ -39,7 +39,6 @@ func userPool() func() {
 
 func TestMain(m *testing.M) {
 	// Set Handler Vars
-	mockHandler.log = mocks.GetStructLogger()
 	repos, closeDb := mocks.GetEntRepos()
 	mockHandler.svc = mocks.GetMockServices(repos)
 

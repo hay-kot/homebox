@@ -31,8 +31,11 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/rs/zerolog v1.28.0 // indirect
 	github.com/swaggo/files v0.0.0-20220728132757-551d4a08d97a // indirect
 	github.com/tkrajina/go-reflector v0.5.6 // indirect
 	github.com/zclconf/go-cty v1.11.0 // indirect
