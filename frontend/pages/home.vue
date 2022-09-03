@@ -94,7 +94,7 @@
 
     <section>
       <BaseSectionHeader class="mb-5"> Labels </BaseSectionHeader>
-      <div class="flex gap-2">
+      <div class="flex gap-2 flex-wrap">
         <LabelChip v-for="label in labels" size="lg" :label="label" />
       </div>
     </section>
