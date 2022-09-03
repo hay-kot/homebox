@@ -28,7 +28,8 @@ func Test_EntUserRepo_GetOneEmail(t *testing.T) {
 	user := UserFactory()
 	ctx := context.Background()
 
-	testRepos.Users.Create(ctx, user)
+	_, err := testRepos.Users.Create(ctx, user)
+	assert.NoError(err)
 
 	foundUser, err := testRepos.Users.GetOneEmail(ctx, user.Email)
 
@@ -38,7 +39,8 @@ func Test_EntUserRepo_GetOneEmail(t *testing.T) {
 	assert.Equal(user.Name, foundUser.Name)
 
 	// Cleanup
-	testRepos.Users.DeleteAll(ctx)
+	err = testRepos.Users.DeleteAll(ctx)
+	assert.NoError(err)
 }
 
 func Test_EntUserRepo_GetOneId(t *testing.T) {
@@ -55,7 +57,8 @@ func Test_EntUserRepo_GetOneId(t *testing.T) {
 	assert.Equal(user.Name, foundUser.Name)
 
 	// Cleanup
-	testRepos.Users.DeleteAll(ctx)
+	err = testRepos.Users.DeleteAll(ctx)
+	assert.NoError(err)
 }
 
 func Test_EntUserRepo_GetAll(t *testing.T) {
@@ -95,11 +98,12 @@ func Test_EntUserRepo_GetAll(t *testing.T) {
 	}
 
 	for _, usr := range created {
-		testRepos.Users.Delete(ctx, usr.ID)
+		_ = testRepos.Users.Delete(ctx, usr.ID)
 	}
 
 	// Cleanup
-	testRepos.Users.DeleteAll(ctx)
+	err = testRepos.Users.DeleteAll(ctx)
+	assert.NoError(t, err)
 }
 
 func Test_EntUserRepo_Update(t *testing.T) {
@@ -119,7 +123,8 @@ func Test_EntUserRepo_Delete(t *testing.T) {
 	allUsers, _ := testRepos.Users.GetAll(ctx)
 
 	assert.Greater(t, len(allUsers), 0)
-	testRepos.Users.DeleteAll(ctx)
+	err := testRepos.Users.DeleteAll(ctx)
+	assert.NoError(t, err)
 
 	allUsers, _ = testRepos.Users.GetAll(ctx)
 	assert.Equal(t, len(allUsers), 0)
@@ -154,5 +159,6 @@ func Test_EntUserRepo_GetSuperusers(t *testing.T) {
 	}
 
 	// Cleanup
-	testRepos.Users.DeleteAll(ctx)
+	err = testRepos.Users.DeleteAll(ctx)
+	assert.NoError(t, err)
 }

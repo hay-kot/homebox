@@ -12,7 +12,8 @@ func testServer(t *testing.T, r http.Handler) *Server {
 	svr := NewServer("127.0.0.1", "19245")
 
 	go func() {
-		svr.Start(r)
+		err := svr.Start(r)
+		assert.NoError(t, err)
 	}()
 
 	ping := func() error {
@@ -85,7 +86,7 @@ func Test_GracefulServerShutdownWithRequests(t *testing.T) {
 
 	// Make request to "/test"
 	go func() {
-		http.Get("http://127.0.0.1:19245/test") // This is probably bad?
+		_, _ = http.Get("http://127.0.0.1:19245/test") // This is probably bad?
 	}()
 
 	time.Sleep(time.Second) // Hack to wait for the request to be made

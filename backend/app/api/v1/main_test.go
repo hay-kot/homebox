@@ -31,7 +31,7 @@ func userPool() func() {
 	users = userOut
 
 	purge := func() {
-		mockHandler.svc.Admin.DeleteAll(context.Background())
+		_ = mockHandler.svc.Admin.DeleteAll(context.Background())
 	}
 
 	return purge
@@ -43,7 +43,9 @@ func TestMain(m *testing.M) {
 	repos, closeDb := mocks.GetEntRepos()
 	mockHandler.svc = mocks.GetMockServices(repos)
 
-	defer closeDb()
+	defer func() {
+		_ = closeDb()
+	}()
 
 	purge := userPool()
 	defer purge()

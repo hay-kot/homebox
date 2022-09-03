@@ -119,7 +119,7 @@ func (l *Logger) print(level Level, message string, properties map[string]string
 
 	n, err := l.out.Write(line)
 	if dumpTrace {
-		l.out.Write(debug.Stack())
+		n, err = l.out.Write(debug.Stack())
 	}
 	return n, err
 }

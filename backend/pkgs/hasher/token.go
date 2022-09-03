@@ -13,7 +13,7 @@ type Token struct {
 
 func GenerateToken() Token {
 	randomBytes := make([]byte, 16)
-	rand.Read(randomBytes)
+	_, _ = rand.Read(randomBytes)
 
 	plainText := base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(randomBytes)
 	hash := HashToken(plainText)

@@ -27,7 +27,8 @@ func Test_Locations_Get(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, loc.ID, foundLoc.ID)
 
-	testRepos.Locations.Delete(context.Background(), loc.ID)
+	err = testRepos.Locations.Delete(context.Background(), loc.ID)
+	assert.NoError(t, err)
 }
 
 func Test_LocationsGetAllWithCount(t *testing.T) {
@@ -36,8 +37,9 @@ func Test_LocationsGetAllWithCount(t *testing.T) {
 		Name:        fk.RandomString(10),
 		Description: fk.RandomString(100),
 	})
+	assert.NoError(t, err)
 
-	testRepos.Items.Create(ctx, testGroup.ID, types.ItemCreate{
+	_, err = testRepos.Items.Create(ctx, testGroup.ID, types.ItemCreate{
 		Name:        fk.RandomString(10),
 		Description: fk.RandomString(100),
 		LocationID:  result.ID,
@@ -65,7 +67,8 @@ func Test_Locations_Create(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, loc.ID, foundLoc.ID)
 
-	testRepos.Locations.Delete(context.Background(), loc.ID)
+	err = testRepos.Locations.Delete(context.Background(), loc.ID)
+	assert.NoError(t, err)
 }
 
 func Test_Locations_Update(t *testing.T) {
@@ -88,7 +91,8 @@ func Test_Locations_Update(t *testing.T) {
 	assert.Equal(t, update.Name, foundLoc.Name)
 	assert.Equal(t, update.Description, foundLoc.Description)
 
-	testRepos.Locations.Delete(context.Background(), loc.ID)
+	err = testRepos.Locations.Delete(context.Background(), loc.ID)
+	assert.NoError(t, err)
 }
 
 func Test_Locations_Delete(t *testing.T) {

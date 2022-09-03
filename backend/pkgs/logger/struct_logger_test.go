@@ -8,6 +8,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func init() {
+	IncludeTrace = true
+}
+
 var lastWrite = []byte{}
 
 type testLogRecorder struct {
@@ -57,6 +61,7 @@ func getTestLogger(t *testing.T, level Level) *Logger {
 }
 
 func checkLastEntry(t *testing.T, level Level, message string, props *Props) {
+	t.Helper()
 	entry := &logEntry{}
 	entry.Unmarshal(t, lastWrite)
 
