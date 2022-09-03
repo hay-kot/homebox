@@ -20,5 +20,5 @@ jobs:
         working-directory: frontend
 
       - name: Vitest
-        run: pnpm vitest --run
+        run: pnpm test:ci
         working-directory: frontend
