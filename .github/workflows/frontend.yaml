@@ -1,14 +1,8 @@
 on:
   push:
     branches: [main]
-    paths:
-      - "**.ts"
-      - "**.vue"
   pull_request:
     branches: [main]
-    paths:
-      - "**.ts"
-      - "**.vue"
 
 jobs:
   Frontend:
@@ -17,6 +11,14 @@ jobs:
       - uses: pnpm/action-setup@v2.2.2
         with:
           version: 6.0.2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.18
+
+      - name: Install Task
+        uses: arduino/setup-task@v1
 
       - name: Checkout
         uses: actions/checkout@v2
@@ -27,6 +29,5 @@ jobs:
         run: pnpm install
         working-directory: frontend
 
-      - name: Vitest
-        run: pnpm test:ci
-        working-directory: frontend
+      - name: Build API
+        run: task test:integration
