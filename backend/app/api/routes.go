@@ -18,10 +18,14 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger" // http-swagger middleware
 )
 
-//go:embed all:public/*
-var public embed.FS
-
 const prefix = "/api"
+
+var (
+	ErrDir = errors.New("path is dir")
+
+	//go:embed all:public/*
+	public embed.FS
+)
 
 // registerRoutes registers all the routes for the API
 func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
@@ -98,8 +102,6 @@ func (a *app) LogRoutes(r *chi.Mux) {
 		fmt.Printf("Logging err: %s\n", err.Error())
 	}
 }
-
-var ErrDir = errors.New("path is dir")
 
 func registerMimes() {
 	err := mime.AddExtensionType(".js", "application/javascript")
