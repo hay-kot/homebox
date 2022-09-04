@@ -107,8 +107,15 @@ func (a *app) LogRoutes(r *chi.Mux) {
 var ErrDir = errors.New("path is dir")
 
 func init() {
-	mime.AddExtensionType(".js", "application/javascript")
-	mime.AddExtensionType(".mjs", "application/javascript")
+	err := mime.AddExtensionType(".js", "application/javascript")
+	if err != nil {
+		panic(err)
+	}
+
+	err = mime.AddExtensionType(".mjs", "application/javascript")
+	if err != nil {
+		panic(err)
+	}
 }
 
 func tryRead(fs embed.FS, prefix, requestedPath string, w http.ResponseWriter) error {
