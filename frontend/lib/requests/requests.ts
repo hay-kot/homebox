@@ -5,6 +5,9 @@ export enum Method {
   DELETE = 'DELETE',
 }
 
+export type RequestInterceptor = (r: Response) => void;
+export type ResponseInterceptor = (r: Response) => void;
+
 export interface TResponse<T> {
   status: number;
   error: boolean;
@@ -16,22 +19,24 @@ export class Requests {
   private baseUrl: string;
   private token: () => string;
   private headers: Record<string, string> = {};
-  private logger?: (response: Response) => void;
+  private responseInterceptors: ResponseInterceptor[] = [];
+
+  addResponseInterceptor(interceptor: ResponseInterceptor) {
+    this.responseInterceptors.push(interceptor);
+  }
+
+  private callResponseInterceptors(response: Response) {
+    this.responseInterceptors.forEach(i => i(response));
+  }
 
   private url(rest: string): string {
     return this.baseUrl + rest;
   }
 
-  constructor(
-    baseUrl: string,
-    token: string | (() => string) = '',
-    headers: Record<string, string> = {},
-    logger?: (response: Response) => void
-  ) {
+  constructor(baseUrl: string, token: string | (() => string) = '', headers: Record<string, string> = {}) {
     this.baseUrl = baseUrl;
     this.token = typeof token === 'string' ? () => token : token;
     this.headers = headers;
-    this.logger = logger;
   }
 
   public get<T>(url: string): Promise<TResponse<T>> {
@@ -73,10 +78,7 @@ export class Requests {
     }
 
     const response = await fetch(this.url(url), args);
-
-    if (this.logger) {
-      this.logger(response);
-    }
+    this.callResponseInterceptors(response);
 
     const data: T = await (async () => {
       if (response.status === 204) {

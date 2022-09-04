@@ -33,5 +33,14 @@ export const useAuthStore = defineStore('auth', {
 
       return result;
     },
+    /**
+     * clearSession is used when the user cannot be logged out via the API and
+     * must clear it's local session, usually when a 401 is received.
+     */
+    clearSession() {
+      this.token = '';
+      this.expires = '';
+      navigateTo('/');
+    },
   },
 });

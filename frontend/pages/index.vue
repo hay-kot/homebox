@@ -47,7 +47,7 @@
     loading.value = true;
     // Print Values of registerFields
 
-    const { data, error } = await api.register({
+    const { error } = await api.register({
       user: {
         name: registerFields[0].value,
         email: registerFields[1].value,
@@ -58,11 +58,14 @@
 
     if (error) {
       toast.error('Problem registering user');
-    } else {
-      toast.success('User registered');
+      return;
     }
 
+    toast.success('User registered');
+
     loading.value = false;
+    loginFields[0].value = registerFields[1].value;
+    registerForm.value = false;
   }
 
   const loginFields = [
@@ -116,55 +119,57 @@
       <p class="ml-1 text-lg text-base-content/50">Track, Organize, and Manage your Shit.</p>
     </header>
     <div class="grid p-6 sm:place-items-center min-h-[50vh]">
-      <Transition name="slide-fade">
-        <form v-if="registerForm" @submit.prevent="registerUser">
-          <div class="card w-max-[500px] md:w-[500px] bg-base-100 shadow-xl">
-            <div class="card-body">
-              <h2 class="card-title">Register</h2>
-              <TextField
-                v-for="field in registerFields"
-                v-model="field.value"
-                :label="field.label"
-                :key="field.label"
-                :type="field.type"
-              />
-              <div class="card-actions justify-end">
-                <button
-                  type="submit"
-                  class="btn btn-primary mt-2"
-                  :class="loading ? 'loading' : ''"
-                  :disabled="loading"
-                >
-                  Register
-                </button>
+      <div>
+        <Transition name="slide-fade">
+          <form v-if="registerForm" @submit.prevent="registerUser">
+            <div class="card w-max-[500px] md:w-[500px] bg-base-100 shadow-xl">
+              <div class="card-body">
+                <h2 class="card-title">Register</h2>
+                <TextField
+                  v-for="field in registerFields"
+                  v-model="field.value"
+                  :label="field.label"
+                  :key="field.label"
+                  :type="field.type"
+                />
+                <div class="card-actions justify-end">
+                  <button
+                    type="submit"
+                    class="btn btn-primary mt-2"
+                    :class="loading ? 'loading' : ''"
+                    :disabled="loading"
+                  >
+                    Register
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </form>
-        <form v-else @submit.prevent="login">
-          <div class="card w-max-[500px] md:w-[500px] bg-base-100 shadow-xl">
-            <div class="card-body">
-              <h2 class="card-title">Login</h2>
-              <TextField
-                v-for="field in loginFields"
-                v-model="field.value"
-                :label="field.label"
-                :key="field.label"
-                :type="field.type"
-              />
-              <div class="card-actions justify-end mt-2">
-                <button type="submit" class="btn btn-primary" :class="loading ? 'loading' : ''" :disabled="loading">
-                  Login
-                </button>
+          </form>
+          <form v-else @submit.prevent="login">
+            <div class="card w-max-[500px] md:w-[500px] bg-base-100 shadow-xl">
+              <div class="card-body">
+                <h2 class="card-title">Login</h2>
+                <TextField
+                  v-for="field in loginFields"
+                  v-model="field.value"
+                  :label="field.label"
+                  :key="field.label"
+                  :type="field.type"
+                />
+                <div class="card-actions justify-end mt-2">
+                  <button type="submit" class="btn btn-primary" :class="loading ? 'loading' : ''" :disabled="loading">
+                    Login
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </form>
-      </Transition>
-      <div class="text-center mt-2">
-        <button @click="toggleLogin">
-          {{ registerForm ? 'Already a User? Login' : 'Not a User? Register' }}
-        </button>
+          </form>
+        </Transition>
+        <div class="text-center mt-4">
+          <button @click="toggleLogin" class="text-primary-content text-lg">
+            {{ registerForm ? 'Already a User? Login' : 'Not a User? Register' }}
+          </button>
+        </div>
       </div>
     </div>
     <div class="min-w-full absolute bottom-0 z-[-1]">

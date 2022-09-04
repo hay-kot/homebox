@@ -87,8 +87,21 @@ func mwStripTrailingSlash(next http.Handler) http.Handler {
 	})
 }
 
+type StatusRecorder struct {
+	http.ResponseWriter
+	Status int
+}
+
+func (r *StatusRecorder) WriteHeader(status int) {
+	r.Status = status
+	r.ResponseWriter.WriteHeader(status)
+}
+
 func (a *app) mwStructLogger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		record := &StatusRecorder{ResponseWriter: w, Status: http.StatusOK}
+		next.ServeHTTP(record, r)
+
 		scheme := "http"
 		if r.TLS != nil {
 			scheme = "https"
@@ -101,25 +114,35 @@ func (a *app) mwStructLogger(next http.Handler) http.Handler {
 			Str("url", url).
 			Str("method", r.Method).
 			Str("remote_addr", r.RemoteAddr).
-			Msgf("[%s] %s", r.Method, url)
-		next.ServeHTTP(w, r)
+			Int("status", record.Status).
+			Msg(url)
 	})
 }
 
 func (a *app) mwSummaryLogger(next http.Handler) http.Handler {
-	bold := func(s string) string {
-		return "\033[1m" + s + "\033[0m"
-	}
+	bold := func(s string) string { return "\033[1m" + s + "\033[0m" }
+	orange := func(s string) string { return "\033[33m" + s + "\033[0m" }
+	aqua := func(s string) string { return "\033[36m" + s + "\033[0m" }
+	red := func(s string) string { return "\033[31m" + s + "\033[0m" }
+	green := func(s string) string { return "\033[32m" + s + "\033[0m" }
 
-	pink := func(s string) string {
-		return "\033[35m" + s + "\033[0m"
-	}
-
-	aqua := func(s string) string {
-		return "\033[36m" + s + "\033[0m"
+	fmtCode := func(code int) string {
+		switch {
+		case code >= 500:
+			return red(fmt.Sprintf("%d", code))
+		case code >= 400:
+			return orange(fmt.Sprintf("%d", code))
+		case code >= 300:
+			return aqua(fmt.Sprintf("%d", code))
+		default:
+			return green(fmt.Sprintf("%d", code))
+		}
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		record := &StatusRecorder{ResponseWriter: w, Status: http.StatusOK}
+		next.ServeHTTP(record, r) // Blocks until the next handler returns.
+
 		scheme := "http"
 		if r.TLS != nil {
 			scheme = "https"
@@ -127,7 +150,11 @@ func (a *app) mwSummaryLogger(next http.Handler) http.Handler {
 
 		url := fmt.Sprintf("%s://%s%s %s", scheme, r.Host, r.RequestURI, r.Proto)
 
-		log.Info().Msgf("%s %s", bold(pink("["+r.Method+"]")), aqua(url))
-		next.ServeHTTP(w, r)
+		log.Info().
+			Msgf("%s  %s  %s",
+				bold(orange(""+r.Method+"")),
+				aqua(url),
+				bold(fmtCode(record.Status)),
+			)
 	})
 }
