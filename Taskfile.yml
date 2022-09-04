@@ -33,7 +33,8 @@ tasks:
 
   test:integration:
     cmds:
-      - cd backend && go run ./app/api/ &
+      - cd backend && go build ./app/api
+      - backend/api &
       - sleep 5
       - cd frontend && pnpm run test:ci
     silent: true
