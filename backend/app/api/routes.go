@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/fs"
 	"mime"
 	"net/http"
 	"path"
@@ -26,13 +25,10 @@ const prefix = "/api"
 
 // registerRoutes registers all the routes for the API
 func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
+	registerMimes()
+
 	r := chi.NewRouter()
 	a.setGlobalMiddleware(r)
-
-	// =========================================================================
-	// Base Routes
-
-	DumpEmbedContents()
 
 	r.Get("/swagger/*", httpSwagger.Handler(
 		httpSwagger.URL(fmt.Sprintf("%s://%s/swagger/doc.json", a.conf.Swagger.Scheme, a.conf.Swagger.Host)),
@@ -78,8 +74,7 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 		})
 	}
 
-	r.NotFound(NotFoundHandler)
-
+	r.NotFound(notFoundHandler())
 	return r
 }
 
@@ -106,7 +101,7 @@ func (a *app) LogRoutes(r *chi.Mux) {
 
 var ErrDir = errors.New("path is dir")
 
-func init() {
+func registerMimes() {
 	err := mime.AddExtensionType(".js", "application/javascript")
 	if err != nil {
 		panic(err)
@@ -118,48 +113,36 @@ func init() {
 	}
 }
 
-func tryRead(fs embed.FS, prefix, requestedPath string, w http.ResponseWriter) error {
-	f, err := fs.Open(path.Join(prefix, requestedPath))
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	stat, _ := f.Stat()
-	if stat.IsDir() {
-		return ErrDir
-	}
-
-	contentType := mime.TypeByExtension(filepath.Ext(requestedPath))
-	w.Header().Set("Content-Type", contentType)
-	_, err = io.Copy(w, f)
-	return err
-}
-
-func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
-	err := tryRead(public, "public", r.URL.Path, w)
-	if err == nil {
-		return
-	}
-	log.Debug().
-		Str("path", r.URL.Path).
-		Msg("served from embed not found - serving index.html")
-	err = tryRead(public, "public", "index.html", w)
-	if err != nil {
-		panic(err)
-	}
-}
-
-func DumpEmbedContents() {
-	// recursively prints all contents in the embed.FS
-	err := fs.WalkDir(public, ".", func(path string, d fs.DirEntry, err error) error {
+func notFoundHandler() http.HandlerFunc {
+	tryRead := func(fs embed.FS, prefix, requestedPath string, w http.ResponseWriter) error {
+		f, err := fs.Open(path.Join(prefix, requestedPath))
 		if err != nil {
 			return err
 		}
-		fmt.Println(path)
-		return nil
-	})
-	if err != nil {
-		panic(err)
+		defer f.Close()
+
+		stat, _ := f.Stat()
+		if stat.IsDir() {
+			return ErrDir
+		}
+
+		contentType := mime.TypeByExtension(filepath.Ext(requestedPath))
+		w.Header().Set("Content-Type", contentType)
+		_, err = io.Copy(w, f)
+		return err
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := tryRead(public, "public", r.URL.Path, w)
+		if err == nil {
+			return
+		}
+		log.Debug().
+			Str("path", r.URL.Path).
+			Msg("served from embed not found - serving index.html")
+		err = tryRead(public, "public", "index.html", w)
+		if err != nil {
+			panic(err)
+		}
 	}
 }
