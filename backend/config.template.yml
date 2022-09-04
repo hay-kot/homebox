@@ -5,13 +5,12 @@ swagger:
   scheme: http
 web:
   port: 7745
-  host:
+  host: ""
 database:
   driver: sqlite3
-  sqlite-url: ./ent.db?_fk=1
+  sqlite-url: ./homebox.db?_fk=1
 logger:
   level: debug
-  file: api.log
 mailer:
   host: smtp.example.com
   port: 465
