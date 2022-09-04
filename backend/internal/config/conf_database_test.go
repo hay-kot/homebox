@@ -16,16 +16,6 @@ func Test_DatabaseConfig_Sqlite(t *testing.T) {
 	assert.Equal(t, "file:ent?mode=memory&cache=shared&_fk=1", dbConf.GetUrl())
 }
 
-func Test_DatabaseConfig_Postgres(t *testing.T) {
-	dbConf := &Database{
-		Driver:      DriverPostgres,
-		PostgresUrl: "postgres://user:pass@host:port/dbname?sslmode=disable",
-	}
-
-	assert.Equal(t, "postgres", dbConf.GetDriver())
-	assert.Equal(t, "postgres://user:pass@host:port/dbname?sslmode=disable", dbConf.GetUrl())
-}
-
 func Test_DatabaseConfig_Unknown(t *testing.T) {
 	dbConf := &Database{
 		Driver: "null",
