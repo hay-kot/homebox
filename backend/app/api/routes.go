@@ -82,9 +82,9 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 	return r
 }
 
-// LogRoutes logs the routes of the server that are registered within Server.registerRoutes(). This is useful for debugging.
+// logRoutes logs the routes of the server that are registered within Server.registerRoutes(). This is useful for debugging.
 // See https://github.com/go-chi/chi/issues/332 for details and inspiration.
-func (a *app) LogRoutes(r *chi.Mux) {
+func (a *app) logRoutes(r *chi.Mux) {
 	desiredSpaces := 10
 
 	walkFunc := func(method string, route string, handler http.Handler, middleware ...func(http.Handler) http.Handler) error {
@@ -115,6 +115,8 @@ func registerMimes() {
 	}
 }
 
+// notFoundHandler perform the main logic around handling the internal SPA embed and ensuring that
+// the client side routing is handled correctly.
 func notFoundHandler() http.HandlerFunc {
 	tryRead := func(fs embed.FS, prefix, requestedPath string, w http.ResponseWriter) error {
 		f, err := fs.Open(path.Join(prefix, requestedPath))
