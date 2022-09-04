@@ -33,5 +33,5 @@ jobs:
         run: pnpm install
         working-directory: frontend
 
-      - name: Build API
+      - name: Run Integration Tests
         run: task test:integration
