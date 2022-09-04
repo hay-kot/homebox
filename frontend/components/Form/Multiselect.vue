@@ -59,10 +59,8 @@
     const item = props.items[index];
 
     if (selectedIndexes.value[index]) {
-      console.log(value);
       value.value = [...value.value, item];
     } else {
-      console.log(value);
       value.value = value.value.filter(itm => itm !== item);
     }
   }

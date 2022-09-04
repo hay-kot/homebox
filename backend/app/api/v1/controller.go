@@ -1,7 +1,11 @@
 package v1
 
 import (
+	"net/http"
+
 	"github.com/hay-kot/content/backend/internal/services"
+	"github.com/hay-kot/content/backend/internal/types"
+	"github.com/hay-kot/content/backend/pkgs/server"
 )
 
 type V1Controller struct {
@@ -23,4 +27,23 @@ func NewControllerV1(svc *services.AllServices) *V1Controller {
 	}
 
 	return ctrl
+}
+
+type ReadyFunc func() bool
+
+// HandleBase godoc
+// @Summary  Retrieves the basic information about the API
+// @Tags     Base
+// @Produce  json
+// @Success  200  {object}  types.ApiSummary
+// @Router   /v1/status [GET]
+func (ctrl *V1Controller) HandleBase(ready ReadyFunc, versions ...string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		server.Respond(w, http.StatusOK, types.ApiSummary{
+			Healthy:  ready(),
+			Versions: versions,
+			Title:    "Go API Template",
+			Message:  "Welcome to the Go API Template Application!",
+		})
+	}
 }

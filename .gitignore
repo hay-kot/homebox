@@ -33,3 +33,7 @@ node_modules
 go.work
 .task/
 backend/.env
+
+# Output Directory for Nuxt/Frontend during build step
+backend/app/api/public/*
+!backend/app/api/public/.gitkeep

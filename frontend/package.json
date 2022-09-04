@@ -1,15 +1,16 @@
 {
   "private": true,
   "scripts": {
-    "build": "nuxt build",
+    "build": "nuxt generate",
     "dev": "nuxt dev",
-    "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "test": "vitest",
-    "test:ci": "vitest --run"
+    "test:ci": "TEST_SHUTDOWN_API_SERVER=true vitest --run --config ./test/vitest.config.ts",
+    "test:local": "TEST_SHUTDOWN_API_SERVER=false && vitest --run --config ./test/vitest.config.ts",
+    "test:watch": " TEST_SHUTDOWN_API_SERVER=false vitest --config ./test/vitest.config.ts"
   },
   "devDependencies": {
+    "isomorphic-fetch": "^3.0.0",
     "nuxt": "3.0.0-rc.8",
     "vitest": "^0.22.1"
   },

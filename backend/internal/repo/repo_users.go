@@ -14,23 +14,17 @@ type EntUserRepository struct {
 }
 
 func (e *EntUserRepository) GetOneId(ctx context.Context, id uuid.UUID) (*ent.User, error) {
-	usr, err := e.db.User.Query().Where(user.ID(id)).Only(ctx)
-
-	if err != nil {
-		return usr, err
-	}
-
-	return usr, nil
+	return e.db.User.Query().
+		Where(user.ID(id)).
+		WithGroup().
+		Only(ctx)
 }
 
 func (e *EntUserRepository) GetOneEmail(ctx context.Context, email string) (*ent.User, error) {
-	usr, err := e.db.User.Query().Where(user.Email(email)).Only(ctx)
-
-	if err != nil {
-		return usr, err
-	}
-
-	return usr, nil
+	return e.db.User.Query().
+		Where(user.Email(email)).
+		WithGroup().
+		Only(ctx)
 }
 
 func (e *EntUserRepository) GetAll(ctx context.Context) ([]*ent.User, error) {
@@ -59,7 +53,11 @@ func (e *EntUserRepository) Create(ctx context.Context, usr types.UserCreate) (*
 		SetGroupID(usr.GroupID).
 		Save(ctx)
 
-	return entUser, err
+	if err != nil {
+		return entUser, err
+	}
+
+	return e.GetOneId(ctx, entUser.ID)
 }
 
 func (e *EntUserRepository) Update(ctx context.Context, ID uuid.UUID, data types.UserUpdate) error {

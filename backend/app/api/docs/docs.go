@@ -21,37 +21,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/status": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Base"
-                ],
-                "summary": "Retrieves the basic information about the API",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/server.Result"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "item": {
-                                            "$ref": "#/definitions/types.ApiSummary"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
         "/v1/items": {
             "get": {
                 "security": [
@@ -544,6 +513,25 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/status": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Base"
+                ],
+                "summary": "Retrieves the basic information about the API",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.ApiSummary"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/users/login": {
             "post": {
                 "consumes": [
@@ -724,6 +712,25 @@ const docTemplate = `{
                                 }
                             ]
                         }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Deletes the user account",
+                "responses": {
+                    "204": {
+                        "description": ""
                     }
                 }
             }

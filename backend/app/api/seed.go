@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/hay-kot/content/backend/ent"
 	"github.com/hay-kot/content/backend/internal/repo"
 	"github.com/hay-kot/content/backend/internal/types"
 	"github.com/hay-kot/content/backend/pkgs/hasher"
@@ -60,25 +61,28 @@ func (a *app) SeedDatabase(repos *repo.AllRepos) {
 		log.Fatal().Err(err).Msg("failed to create default group")
 	}
 
-	for _, user := range a.conf.Seed.Users {
+	for _, seedUser := range a.conf.Seed.Users {
 
 		// Check if User Exists
-		usr, _ := repos.Users.GetOneEmail(context.Background(), user.Email)
+		usr, err := repos.Users.GetOneEmail(context.Background(), seedUser.Email)
+		if err != nil && !ent.IsNotFound(err) {
+			log.Fatal().Err(err).Msg("failed to get user")
+		}
 
-		if usr.ID != uuid.Nil {
-			log.Info().Str("email", user.Email).Msg("user already exists, skipping")
+		if usr != nil && usr.ID != uuid.Nil {
+			log.Info().Str("email", seedUser.Email).Msg("user already exists, skipping")
 			continue
 		}
 
-		hashedPw, err := hasher.HashPassword(user.Password)
+		hashedPw, err := hasher.HashPassword(seedUser.Password)
 		if err != nil {
 			log.Fatal().Err(err).Msg("failed to hash password")
 		}
 
 		_, err = repos.Users.Create(context.Background(), types.UserCreate{
-			Name:        user.Name,
-			Email:       user.Email,
-			IsSuperuser: user.IsSuperuser,
+			Name:        seedUser.Name,
+			Email:       seedUser.Email,
+			IsSuperuser: seedUser.IsSuperuser,
 			Password:    hashedPw,
 			GroupID:     group.ID,
 		})
@@ -87,6 +91,6 @@ func (a *app) SeedDatabase(repos *repo.AllRepos) {
 			log.Fatal().Err(err).Msg("failed to create user")
 		}
 
-		log.Info().Str("email", user.Email).Msg("created user")
+		log.Info().Str("email", seedUser.Email).Msg("created user")
 	}
 }

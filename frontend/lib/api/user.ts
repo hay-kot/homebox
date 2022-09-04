@@ -36,4 +36,8 @@ export class UserApi extends BaseAPI {
   public logout() {
     return this.http.post<object, void>(UrlBuilder('/users/logout'), {});
   }
+
+  public deleteAccount() {
+    return this.http.delete<void>(UrlBuilder('/users/self'));
+  }
 }

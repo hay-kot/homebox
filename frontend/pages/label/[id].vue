@@ -92,7 +92,6 @@
     }
 
     toast.success('Label updated');
-    console.log(data);
     label.value = data;
     updateModal.value = false;
     updating.value = false;

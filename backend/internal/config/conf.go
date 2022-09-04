@@ -33,7 +33,7 @@ type SwaggerConf struct {
 
 type WebConfig struct {
 	Port string `yaml:"port" conf:"default:7745"`
-	Host string `yaml:"host" conf:"default:127.0.0.1"`
+	Host string `yaml:"host"`
 }
 
 // NewConfig parses the CLI/Config file and returns a Config struct. If the file argument is an empty string, the

@@ -30,6 +30,7 @@ func main() {
 	// Logger Init
 	// zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	log.Level(zerolog.DebugLevel)
 
 	cfgFile := "config.yml"
 
@@ -89,7 +90,7 @@ func run(cfg *config.Config) error {
 	// =========================================================================
 	// Start Reoccurring Tasks
 
-	go app.StartReoccurringTasks(time.Duration(24)*time.Hour, func() {
+	go app.StartBgTask(time.Duration(24)*time.Hour, func() {
 		_, err := app.repos.AuthTokens.PurgeExpiredTokens(context.Background())
 		if err != nil {
 			log.Error().

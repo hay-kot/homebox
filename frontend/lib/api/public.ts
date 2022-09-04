@@ -19,7 +19,18 @@ export type RegisterPayload = {
   groupName: string;
 };
 
+export type StatusResult = {
+  health: boolean;
+  versions: string[];
+  title: string;
+  message: string;
+};
+
 export class PublicApi extends BaseAPI {
+  public status() {
+    return this.http.get<StatusResult>(UrlBuilder('/status'));
+  }
+
   public login(username: string, password: string) {
     return this.http.post<LoginPayload, LoginResult>(UrlBuilder('/users/login'), {
       username,

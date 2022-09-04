@@ -1,10 +1,10 @@
 version: "3.4"
 
 services:
-  gowebtemplate:
-    image: gowebtemplate
+  homebox:
+    image: homebox
     build:
       context: .
       dockerfile: ./Dockerfile
     ports:
-      - 3001:7745
+      - 3100:7745

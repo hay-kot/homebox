@@ -580,23 +580,6 @@ info:
   title: Go API Templates
   version: "1.0"
 paths:
-  /status:
-    get:
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/server.Result'
-            - properties:
-                item:
-                  $ref: '#/definitions/types.ApiSummary'
-              type: object
-      summary: Retrieves the basic information about the API
-      tags:
-      - Base
   /v1/items:
     get:
       produces:
@@ -888,6 +871,18 @@ paths:
       summary: updates a location
       tags:
       - Locations
+  /v1/status:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ApiSummary'
+      summary: Retrieves the basic information about the API
+      tags:
+      - Base
   /v1/users/login:
     post:
       consumes:
@@ -955,6 +950,17 @@ paths:
       tags:
       - User
   /v1/users/self:
+    delete:
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      security:
+      - Bearer: []
+      summary: Deletes the user account
+      tags:
+      - User
     get:
       produces:
       - application/json

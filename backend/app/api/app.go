@@ -36,7 +36,7 @@ func NewApp(conf *config.Config) *app {
 	return s
 }
 
-func (a *app) StartReoccurringTasks(t time.Duration, fn func()) {
+func (a *app) StartBgTask(t time.Duration, fn func()) {
 	for {
 		a.server.Background(fn)
 		time.Sleep(t)

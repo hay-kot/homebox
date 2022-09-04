@@ -31,11 +31,11 @@ tasks:
       - cd backend && go test -race -coverprofile=coverage.out -covermode=atomic ./app/... ./internal/... ./pkgs/... -v -cover
     silent: true
 
-  client:test:
+  test:integration:
     cmds:
       - cd backend && go run ./app/api/ &
       - sleep 5
-      - cd client && npm run test:ci
+      - cd frontend && pnpm run test:ci
     silent: true
 
   docker:build:

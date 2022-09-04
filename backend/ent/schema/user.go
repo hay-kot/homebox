@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/hay-kot/content/backend/ent/schema/mixins"
@@ -44,6 +45,8 @@ func (User) Edges() []ent.Edge {
 			Ref("users").
 			Required().
 			Unique(),
-		edge.To("auth_tokens", AuthTokens.Type),
+		edge.To("auth_tokens", AuthTokens.Type).Annotations(entsql.Annotation{
+			OnDelete: entsql.Cascade,
+		}),
 	}
 }

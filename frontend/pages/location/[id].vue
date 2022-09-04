@@ -92,7 +92,6 @@
     }
 
     toast.success('Location updated');
-    console.log(data);
     location.value = data;
     updateModal.value = false;
     updating.value = false;

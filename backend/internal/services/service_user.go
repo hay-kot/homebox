@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/hay-kot/content/backend/ent"
 	"github.com/hay-kot/content/backend/internal/repo"
+	"github.com/hay-kot/content/backend/internal/services/mappers"
 	"github.com/hay-kot/content/backend/internal/types"
 	"github.com/hay-kot/content/backend/pkgs/hasher"
 )
@@ -23,24 +23,6 @@ type UserService struct {
 	repos *repo.AllRepos
 }
 
-func ToOutUser(user *ent.User, err error) (*types.UserOut, error) {
-	if err != nil {
-		return &types.UserOut{}, err
-	}
-	return &types.UserOut{
-		ID:          user.ID,
-		Name:        user.Name,
-		Email:       user.Email,
-		IsSuperuser: user.IsSuperuser,
-		GroupName:   user.Edges.Group.Name,
-		GroupID:     user.Edges.Group.ID,
-	}, nil
-}
-
-func (UserService) toOutUser(user *ent.User, err error) (*types.UserOut, error) {
-	return ToOutUser(user, err)
-}
-
 func (svc *UserService) RegisterUser(ctx context.Context, data types.UserRegistration) (*types.UserOut, error) {
 	group, err := svc.repos.Groups.Create(ctx, data.GroupName)
 	if err != nil {
@@ -48,7 +30,6 @@ func (svc *UserService) RegisterUser(ctx context.Context, data types.UserRegistr
 	}
 
 	hashed, _ := hasher.HashPassword(data.User.Password)
-
 	usrCreate := types.UserCreate{
 		Name:        data.User.Name,
 		Email:       data.User.Email,
@@ -57,23 +38,22 @@ func (svc *UserService) RegisterUser(ctx context.Context, data types.UserRegistr
 		GroupID:     group.ID,
 	}
 
-	return svc.toOutUser(svc.repos.Users.Create(ctx, usrCreate))
+	return mappers.ToOutUser(svc.repos.Users.Create(ctx, usrCreate))
 }
 
 // GetSelf returns the user that is currently logged in based of the token provided within
 func (svc *UserService) GetSelf(ctx context.Context, requestToken string) (*types.UserOut, error) {
 	hash := hasher.HashToken(requestToken)
-	return svc.toOutUser(svc.repos.AuthTokens.GetUserFromToken(ctx, hash))
+	return mappers.ToOutUser(svc.repos.AuthTokens.GetUserFromToken(ctx, hash))
 }
 
 func (svc *UserService) UpdateSelf(ctx context.Context, ID uuid.UUID, data types.UserUpdate) (*types.UserOut, error) {
 	err := svc.repos.Users.Update(ctx, ID, data)
-
 	if err != nil {
 		return &types.UserOut{}, err
 	}
 
-	return svc.toOutUser(svc.repos.Users.GetOneId(ctx, ID))
+	return mappers.ToOutUser(svc.repos.Users.GetOneId(ctx, ID))
 }
 
 // ============================================================================
@@ -119,4 +99,11 @@ func (svc *UserService) RenewToken(ctx context.Context, token string) (types.Use
 	newToken, _ := svc.createToken(ctx, dbToken.ID)
 
 	return newToken, nil
+}
+
+// DeleteSelf deletes the user that is currently logged based of the provided UUID
+// There is _NO_ protection against deleting the wrong user, as such this should only
+// be used when the identify of the user has been confirmed.
+func (svc *UserService) DeleteSelf(ctx context.Context, ID uuid.UUID) error {
+	return svc.repos.Users.Delete(ctx, ID)
 }

@@ -58,7 +58,7 @@ func (ctrl *V1Controller) HandleUserSelf() http.HandlerFunc {
 	}
 }
 
-// HandleUserUpdate godoc
+// HandleUserSelfUpdate godoc
 // @Summary   Update the current user
 // @Tags      User
 // @Produce   json
@@ -66,7 +66,7 @@ func (ctrl *V1Controller) HandleUserSelf() http.HandlerFunc {
 // @Success   200      {object}  server.Result{item=types.UserUpdate}
 // @Router    /v1/users/self [PUT]
 // @Security  Bearer
-func (ctrl *V1Controller) HandleUserUpdate() http.HandlerFunc {
+func (ctrl *V1Controller) HandleUserSelfUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		updateData := types.UserUpdate{}
 		if err := server.Decode(r, &updateData); err != nil {
@@ -97,5 +97,24 @@ func (ctrl *V1Controller) HandleUserUpdate() http.HandlerFunc {
 // @Security  Bearer
 func (ctrl *V1Controller) HandleUserUpdatePassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+	}
+}
+
+// HandleUserSelfDelete godoc
+// @Summary   Deletes the user account
+// @Tags      User
+// @Produce   json
+// @Success   204
+// @Router    /v1/users/self [DELETE]
+// @Security  Bearer
+func (ctrl *V1Controller) HandleUserSelfDelete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		actor := services.UseUserCtx(r.Context())
+		if err := ctrl.svc.User.DeleteSelf(r.Context(), actor.ID); err != nil {
+			server.RespondError(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		server.Respond(w, http.StatusNoContent, nil)
 	}
 }

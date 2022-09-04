@@ -38,8 +38,6 @@
 
   const value = useVModel(props, 'modelValue', emit);
   const valueLen = computed(() => {
-    console.log(value.value.length);
-
     return value.value ? value.value.length : 0;
   });
 </script>

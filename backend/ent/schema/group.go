@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/hay-kot/content/backend/ent/schema/mixins"
@@ -33,9 +34,17 @@ func (Group) Fields() []ent.Field {
 // Edges of the Home.
 func (Group) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("users", User.Type),
-		edge.To("locations", Location.Type),
-		edge.To("items", Item.Type),
-		edge.To("labels", Label.Type),
+		edge.To("users", User.Type).Annotations(entsql.Annotation{
+			OnDelete: entsql.Cascade,
+		}),
+		edge.To("locations", Location.Type).Annotations(entsql.Annotation{
+			OnDelete: entsql.Cascade,
+		}),
+		edge.To("items", Item.Type).Annotations(entsql.Annotation{
+			OnDelete: entsql.Cascade,
+		}),
+		edge.To("labels", Label.Type).Annotations(entsql.Annotation{
+			OnDelete: entsql.Cascade,
+		}),
 	}
 }
