@@ -28,6 +28,7 @@ jobs:
 
           # Optional: working directory, useful for monorepos
           working-directory: backend
+          args: --timeout=6m
 
       - name: Build API
         run: task api:build
