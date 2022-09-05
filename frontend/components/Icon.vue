@@ -25,7 +25,7 @@
 </script>
 
 <template>
-  <Iconify v-if="icon" :icon="icon" class="inline-block w-5 h-5" />
+  <Iconify v-if="icon" :icon="icon" class="inline-block" />
   <Component :is="component" v-else-if="component" />
   <span v-else>{{ name }}</span>
 </template>

@@ -3,6 +3,7 @@ package v1
 import (
 	"net/http"
 
+	"github.com/hay-kot/content/backend/ent"
 	"github.com/hay-kot/content/backend/internal/services"
 	"github.com/hay-kot/content/backend/internal/types"
 	"github.com/hay-kot/content/backend/pkgs/server"
@@ -101,6 +102,14 @@ func (ctrl *V1Controller) HandleLocationGet() http.HandlerFunc {
 
 		location, err := ctrl.svc.Location.GetOne(r.Context(), user.GroupID, uid)
 		if err != nil {
+			if ent.IsNotFound(err) {
+				log.Err(err).
+					Str("id", uid.String()).
+					Msg("location not found")
+				server.RespondError(w, http.StatusNotFound, err)
+				return
+			}
+
 			log.Err(err).Msg("failed to get location")
 			server.RespondServerError(w)
 			return
