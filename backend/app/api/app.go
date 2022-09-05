@@ -20,7 +20,7 @@ type app struct {
 	services *services.AllServices
 }
 
-func NewApp(conf *config.Config) *app {
+func new(conf *config.Config) *app {
 	s := &app{
 		conf: conf,
 	}
@@ -36,7 +36,7 @@ func NewApp(conf *config.Config) *app {
 	return s
 }
 
-func (a *app) StartBgTask(t time.Duration, fn func()) {
+func (a *app) startBgTask(t time.Duration, fn func()) {
 	for {
 		a.server.Background(fn)
 		time.Sleep(t)

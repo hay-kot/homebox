@@ -23,6 +23,8 @@ type UserService struct {
 	repos *repo.AllRepos
 }
 
+// RegisterUser creates a new user and group in the data with the provided data. It also bootstraps the user's group
+// with default Labels and Locations.
 func (svc *UserService) RegisterUser(ctx context.Context, data types.UserRegistration) (*types.UserOut, error) {
 	group, err := svc.repos.Groups.Create(ctx, data.GroupName)
 	if err != nil {
@@ -38,7 +40,26 @@ func (svc *UserService) RegisterUser(ctx context.Context, data types.UserRegistr
 		GroupID:     group.ID,
 	}
 
-	return mappers.ToOutUser(svc.repos.Users.Create(ctx, usrCreate))
+	usr, err := svc.repos.Users.Create(ctx, usrCreate)
+	if err != nil {
+		return &types.UserOut{}, err
+	}
+
+	for _, label := range defaultLabels() {
+		_, err := svc.repos.Labels.Create(ctx, group.ID, label)
+		if err != nil {
+			return &types.UserOut{}, err
+		}
+	}
+
+	for _, location := range defaultLocations() {
+		_, err := svc.repos.Locations.Create(ctx, group.ID, location)
+		if err != nil {
+			return &types.UserOut{}, err
+		}
+	}
+
+	return mappers.ToOutUser(usr, nil)
 }
 
 // GetSelf returns the user that is currently logged in based of the token provided within

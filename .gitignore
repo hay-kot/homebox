@@ -1,7 +1,6 @@
 # Project Specific
-api.log
 config.yml
-ent.db
+homebox.db
 .idea
 .vscode
 

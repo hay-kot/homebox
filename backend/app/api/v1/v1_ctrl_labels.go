@@ -3,6 +3,7 @@ package v1
 import (
 	"net/http"
 
+	"github.com/hay-kot/content/backend/ent"
 	"github.com/hay-kot/content/backend/internal/services"
 	"github.com/hay-kot/content/backend/internal/types"
 	"github.com/hay-kot/content/backend/pkgs/server"
@@ -101,6 +102,13 @@ func (ctrl *V1Controller) HandleLabelGet() http.HandlerFunc {
 
 		labels, err := ctrl.svc.Labels.Get(r.Context(), user.GroupID, uid)
 		if err != nil {
+			if ent.IsNotFound(err) {
+				log.Err(err).
+					Str("id", uid.String()).
+					Msg("label not found")
+				server.RespondError(w, http.StatusNotFound, err)
+				return
+			}
 			log.Err(err).Msg("error getting label")
 			server.RespondServerError(w)
 			return

@@ -1,2 +1,2 @@
 export { BaseAPI } from './base-api';
-export { UrlBuilder } from './urls';
+export { route } from './urls';

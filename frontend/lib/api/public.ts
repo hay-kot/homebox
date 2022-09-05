@@ -1,4 +1,4 @@
-import { BaseAPI, UrlBuilder } from './base';
+import { BaseAPI, route } from './base';
 
 export type LoginResult = {
   token: string;
@@ -28,17 +28,17 @@ export type StatusResult = {
 
 export class PublicApi extends BaseAPI {
   public status() {
-    return this.http.get<StatusResult>(UrlBuilder('/status'));
+    return this.http.get<StatusResult>(route('/status'));
   }
 
   public login(username: string, password: string) {
-    return this.http.post<LoginPayload, LoginResult>(UrlBuilder('/users/login'), {
+    return this.http.post<LoginPayload, LoginResult>(route('/users/login'), {
       username,
       password,
     });
   }
 
   public register(payload: RegisterPayload) {
-    return this.http.post<RegisterPayload, LoginResult>(UrlBuilder('/users/register'), payload);
+    return this.http.post<RegisterPayload, LoginResult>(route('/users/register'), payload);
   }
 }

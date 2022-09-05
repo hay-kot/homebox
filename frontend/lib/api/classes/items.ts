@@ -1,4 +1,4 @@
-import { BaseAPI, UrlBuilder } from '../base';
+import { BaseAPI, route } from '../base';
 import { Label } from './labels';
 import { Location } from './locations';
 import { Results } from './types';
@@ -33,22 +33,22 @@ export interface Item {
 
 export class ItemsApi extends BaseAPI {
   async getAll() {
-    return this.http.get<Results<Item>>(UrlBuilder('/items'));
+    return this.http.get<Results<Item>>(route('/items'));
   }
 
   async create(item: ItemCreate) {
-    return this.http.post<ItemCreate, Item>(UrlBuilder('/items'), item);
+    return this.http.post<ItemCreate, Item>(route('/items'), item);
   }
 
   async get(id: string) {
-    return this.http.get<Item>(UrlBuilder(`/items/${id}`));
+    return this.http.get<Item>(route(`/items/${id}`));
   }
 
   async delete(id: string) {
-    return this.http.delete<void>(UrlBuilder(`/items/${id}`));
+    return this.http.delete<void>(route(`/items/${id}`));
   }
 
   async update(id: string, item: ItemCreate) {
-    return this.http.put<ItemCreate, Item>(UrlBuilder(`/items/${id}`), item);
+    return this.http.put<ItemCreate, Item>(route(`/items/${id}`), item);
   }
 }

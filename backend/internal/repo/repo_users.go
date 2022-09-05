@@ -28,18 +28,11 @@ func (e *EntUserRepository) GetOneEmail(ctx context.Context, email string) (*ent
 }
 
 func (e *EntUserRepository) GetAll(ctx context.Context) ([]*ent.User, error) {
-	users, err := e.db.User.Query().WithGroup().All(ctx)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return users, nil
+	return e.db.User.Query().WithGroup().All(ctx)
 }
 
 func (e *EntUserRepository) Create(ctx context.Context, usr types.UserCreate) (*ent.User, error) {
 	err := usr.Validate()
-
 	if err != nil {
 		return &ent.User{}, err
 	}
@@ -52,7 +45,6 @@ func (e *EntUserRepository) Create(ctx context.Context, usr types.UserCreate) (*
 		SetIsSuperuser(usr.IsSuperuser).
 		SetGroupID(usr.GroupID).
 		Save(ctx)
-
 	if err != nil {
 		return entUser, err
 	}

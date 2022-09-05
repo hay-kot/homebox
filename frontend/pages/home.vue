@@ -44,7 +44,7 @@
 </script>
 
 <template>
-  <BaseContainer class="space-y-16">
+  <BaseContainer class="space-y-16 pb-16">
     <section aria-labelledby="profile-overview-title" class="mt-8">
       <div class="overflow-hidden rounded-lg bg-white shadow">
         <h2 class="sr-only" id="profile-overview-title">Profile Overview</h2>
