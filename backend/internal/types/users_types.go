@@ -41,8 +41,8 @@ func (u UserCreate) Validate() error {
 }
 
 type UserUpdate struct {
-	Name  *string `json:"name"`
-	Email *string `json:"email"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }
 
 type UserRegistration struct {

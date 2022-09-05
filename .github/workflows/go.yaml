@@ -15,7 +15,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: 1.18
+          go-version: 1.19
 
       - name: Install Task
         uses: arduino/setup-task@v1
@@ -28,6 +28,7 @@ jobs:
 
           # Optional: working directory, useful for monorepos
           working-directory: backend
+          args: --timeout=6m
 
       - name: Build API
         run: task api:build

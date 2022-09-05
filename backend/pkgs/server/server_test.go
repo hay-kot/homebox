@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -72,14 +73,14 @@ func Test_GracefulServerShutdownWithWorkers(t *testing.T) {
 }
 
 func Test_GracefulServerShutdownWithRequests(t *testing.T) {
-	isFinished := false
+	var isFinished atomic.Bool
 
 	router := http.NewServeMux()
 
 	// add long running handler func
 	router.HandleFunc("/test", func(rw http.ResponseWriter, r *http.Request) {
 		time.Sleep(time.Second * 3)
-		isFinished = true
+		isFinished.Store(true)
 	})
 
 	svr := testServer(t, router)
@@ -94,5 +95,5 @@ func Test_GracefulServerShutdownWithRequests(t *testing.T) {
 	err := svr.Shutdown("test")
 	assert.NoError(t, err)
 
-	assert.True(t, isFinished)
+	assert.True(t, isFinished.Load())
 }
