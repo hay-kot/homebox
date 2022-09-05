@@ -1,4 +1,4 @@
-import { expect } from 'vitest';
+import { beforeAll, expect } from 'vitest';
 import { Requests } from '../../requests';
 import { OverrideParts } from '../base/urls';
 import { PublicApi } from '../public';
@@ -55,3 +55,7 @@ export async function sharedUserClient(): Promise<UserApi> {
   cache.token = loginData.token;
   return userClient(data.token);
 }
+
+beforeAll(async () => {
+  await sharedUserClient();
+});
