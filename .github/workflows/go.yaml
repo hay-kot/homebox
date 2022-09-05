@@ -27,7 +27,6 @@ jobs:
           version: latest
 
           # Optional: working directory, useful for monorepos
-          timeout: 5m
           working-directory: backend
 
       - name: Build API
