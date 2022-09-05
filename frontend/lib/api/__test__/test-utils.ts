@@ -1,18 +1,18 @@
 import { beforeAll, expect } from 'vitest';
 import { Requests } from '../../requests';
-import { OverrideParts } from '../base/urls';
+import { overrideParts } from '../base/urls';
 import { PublicApi } from '../public';
 import * as config from '../../../test/config';
 import { UserApi } from '../user';
 
 export function client() {
-  OverrideParts(config.BASE_URL, '/api/v1');
+  overrideParts(config.BASE_URL, '/api/v1');
   const requests = new Requests('');
   return new PublicApi(requests);
 }
 
 export function userClient(token: string) {
-  OverrideParts(config.BASE_URL, '/api/v1');
+  overrideParts(config.BASE_URL, '/api/v1');
   const requests = new Requests('', token);
   return new UserApi(requests);
 }

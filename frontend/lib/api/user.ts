@@ -1,5 +1,5 @@
 import { Requests } from '~~/lib/requests';
-import { BaseAPI, UrlBuilder } from './base';
+import { BaseAPI, route } from './base';
 import { ItemsApi } from './classes/items';
 import { LabelsApi } from './classes/labels';
 import { LocationsApi } from './classes/locations';
@@ -30,14 +30,14 @@ export class UserApi extends BaseAPI {
   }
 
   public self() {
-    return this.http.get<Result<User>>(UrlBuilder('/users/self'));
+    return this.http.get<Result<User>>(route('/users/self'));
   }
 
   public logout() {
-    return this.http.post<object, void>(UrlBuilder('/users/logout'), {});
+    return this.http.post<object, void>(route('/users/logout'), {});
   }
 
   public deleteAccount() {
-    return this.http.delete<void>(UrlBuilder('/users/self'));
+    return this.http.delete<void>(route('/users/self'));
   }
 }
