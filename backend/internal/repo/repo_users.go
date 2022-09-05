@@ -9,29 +9,29 @@ import (
 	"github.com/hay-kot/content/backend/internal/types"
 )
 
-type EntUserRepository struct {
+type UserRepository struct {
 	db *ent.Client
 }
 
-func (e *EntUserRepository) GetOneId(ctx context.Context, id uuid.UUID) (*ent.User, error) {
+func (e *UserRepository) GetOneId(ctx context.Context, id uuid.UUID) (*ent.User, error) {
 	return e.db.User.Query().
 		Where(user.ID(id)).
 		WithGroup().
 		Only(ctx)
 }
 
-func (e *EntUserRepository) GetOneEmail(ctx context.Context, email string) (*ent.User, error) {
+func (e *UserRepository) GetOneEmail(ctx context.Context, email string) (*ent.User, error) {
 	return e.db.User.Query().
 		Where(user.Email(email)).
 		WithGroup().
 		Only(ctx)
 }
 
-func (e *EntUserRepository) GetAll(ctx context.Context) ([]*ent.User, error) {
+func (e *UserRepository) GetAll(ctx context.Context) ([]*ent.User, error) {
 	return e.db.User.Query().WithGroup().All(ctx)
 }
 
-func (e *EntUserRepository) Create(ctx context.Context, usr types.UserCreate) (*ent.User, error) {
+func (e *UserRepository) Create(ctx context.Context, usr types.UserCreate) (*ent.User, error) {
 	err := usr.Validate()
 	if err != nil {
 		return &ent.User{}, err
@@ -52,41 +52,27 @@ func (e *EntUserRepository) Create(ctx context.Context, usr types.UserCreate) (*
 	return e.GetOneId(ctx, entUser.ID)
 }
 
-func (e *EntUserRepository) Update(ctx context.Context, ID uuid.UUID, data types.UserUpdate) error {
-	bldr := e.db.User.Update().Where(user.ID(ID))
+func (e *UserRepository) Update(ctx context.Context, ID uuid.UUID, data types.UserUpdate) error {
+	q := e.db.User.Update().
+		Where(user.ID(ID)).
+		SetName(data.Name).
+		SetEmail(data.Email)
 
-	if data.Name != nil {
-		bldr = bldr.SetName(*data.Name)
-	}
-
-	if data.Email != nil {
-		bldr = bldr.SetEmail(*data.Email)
-	}
-
-	// TODO: FUTURE
-	// if data.Password != nil {
-	// 	bldr = bldr.SetPassword(*data.Password)
-	// }
-
-	// if data.IsSuperuser != nil {
-	// 	bldr = bldr.SetIsSuperuser(*data.IsSuperuser)
-	// }
-
-	_, err := bldr.Save(ctx)
+	_, err := q.Save(ctx)
 	return err
 }
 
-func (e *EntUserRepository) Delete(ctx context.Context, id uuid.UUID) error {
+func (e *UserRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	_, err := e.db.User.Delete().Where(user.ID(id)).Exec(ctx)
 	return err
 }
 
-func (e *EntUserRepository) DeleteAll(ctx context.Context) error {
+func (e *UserRepository) DeleteAll(ctx context.Context) error {
 	_, err := e.db.User.Delete().Exec(ctx)
 	return err
 }
 
-func (e *EntUserRepository) GetSuperusers(ctx context.Context) ([]*ent.User, error) {
+func (e *UserRepository) GetSuperusers(ctx context.Context) ([]*ent.User, error) {
 	users, err := e.db.User.Query().Where(user.IsSuperuser(true)).All(ctx)
 
 	if err != nil {

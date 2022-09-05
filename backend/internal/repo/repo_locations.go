@@ -9,7 +9,7 @@ import (
 	"github.com/hay-kot/content/backend/internal/types"
 )
 
-type EntLocationRepository struct {
+type LocationRepository struct {
 	db *ent.Client
 }
 
@@ -19,8 +19,8 @@ type LocationWithCount struct {
 }
 
 // GetALlWithCount returns all locations with item count field populated
-func (r *EntLocationRepository) GetAll(ctx context.Context, groupId uuid.UUID) ([]LocationWithCount, error) {
-	query := `
+func (r *LocationRepository) GetAll(ctx context.Context, groupId uuid.UUID) ([]LocationWithCount, error) {
+	query := `--sql
 		SELECT
 			id,
 			name,
@@ -61,7 +61,7 @@ func (r *EntLocationRepository) GetAll(ctx context.Context, groupId uuid.UUID) (
 	return list, err
 }
 
-func (r *EntLocationRepository) Get(ctx context.Context, ID uuid.UUID) (*ent.Location, error) {
+func (r *LocationRepository) Get(ctx context.Context, ID uuid.UUID) (*ent.Location, error) {
 	return r.db.Location.Query().
 		Where(location.ID(ID)).
 		WithGroup().
@@ -71,7 +71,7 @@ func (r *EntLocationRepository) Get(ctx context.Context, ID uuid.UUID) (*ent.Loc
 		Only(ctx)
 }
 
-func (r *EntLocationRepository) Create(ctx context.Context, groupdId uuid.UUID, data types.LocationCreate) (*ent.Location, error) {
+func (r *LocationRepository) Create(ctx context.Context, groupdId uuid.UUID, data types.LocationCreate) (*ent.Location, error) {
 	location, err := r.db.Location.Create().
 		SetName(data.Name).
 		SetDescription(data.Description).
@@ -82,7 +82,7 @@ func (r *EntLocationRepository) Create(ctx context.Context, groupdId uuid.UUID, 
 	return location, err
 }
 
-func (r *EntLocationRepository) Update(ctx context.Context, data types.LocationUpdate) (*ent.Location, error) {
+func (r *LocationRepository) Update(ctx context.Context, data types.LocationUpdate) (*ent.Location, error) {
 	_, err := r.db.Location.UpdateOneID(data.ID).
 		SetName(data.Name).
 		SetDescription(data.Description).
@@ -95,6 +95,6 @@ func (r *EntLocationRepository) Update(ctx context.Context, data types.LocationU
 	return r.Get(ctx, data.ID)
 }
 
-func (r *EntLocationRepository) Delete(ctx context.Context, id uuid.UUID) error {
+func (r *LocationRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	return r.db.Location.DeleteOneID(id).Exec(ctx)
 }

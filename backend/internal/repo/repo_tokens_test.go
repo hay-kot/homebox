@@ -10,46 +10,69 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_EntAuthTokenRepo_CreateToken(t *testing.T) {
-	assert := assert.New(t)
+func TestAuthTokenRepo_CreateToken(t *testing.T) {
+	asrt := assert.New(t)
 	ctx := context.Background()
+	user := userFactory()
 
-	user := UserFactory()
-
-	userOut, err := testRepos.Users.Create(ctx, user)
-	assert.NoError(err)
+	userOut, err := tRepos.Users.Create(ctx, user)
+	asrt.NoError(err)
 
 	expiresAt := time.Now().Add(time.Hour)
 
 	generatedToken := hasher.GenerateToken()
 
-	token, err := testRepos.AuthTokens.CreateToken(ctx, types.UserAuthTokenCreate{
+	token, err := tRepos.AuthTokens.CreateToken(ctx, types.UserAuthTokenCreate{
 		TokenHash: generatedToken.Hash,
 		ExpiresAt: expiresAt,
 		UserID:    userOut.ID,
 	})
 
-	assert.NoError(err)
-	assert.Equal(userOut.ID, token.UserID)
-	assert.Equal(expiresAt, token.ExpiresAt)
+	asrt.NoError(err)
+	asrt.Equal(userOut.ID, token.UserID)
+	asrt.Equal(expiresAt, token.ExpiresAt)
 
 	// Cleanup
-	assert.NoError(testRepos.Users.Delete(ctx, userOut.ID))
-	_, err = testRepos.AuthTokens.DeleteAll(ctx)
-	assert.NoError(err)
+	asrt.NoError(tRepos.Users.Delete(ctx, userOut.ID))
+	_, err = tRepos.AuthTokens.DeleteAll(ctx)
+	asrt.NoError(err)
 }
 
-func Test_EntAuthTokenRepo_GetUserByToken(t *testing.T) {
+func TestAuthTokenRepo_DeleteToken(t *testing.T) {
+	asrt := assert.New(t)
+	ctx := context.Background()
+	user := userFactory()
+
+	userOut, err := tRepos.Users.Create(ctx, user)
+	asrt.NoError(err)
+
+	expiresAt := time.Now().Add(time.Hour)
+
+	generatedToken := hasher.GenerateToken()
+
+	_, err = tRepos.AuthTokens.CreateToken(ctx, types.UserAuthTokenCreate{
+		TokenHash: generatedToken.Hash,
+		ExpiresAt: expiresAt,
+		UserID:    userOut.ID,
+	})
+	asrt.NoError(err)
+
+	// Delete token
+	err = tRepos.AuthTokens.DeleteToken(ctx, []byte(generatedToken.Raw))
+	asrt.NoError(err)
+}
+
+func TestAuthTokenRepo_GetUserByToken(t *testing.T) {
 	assert := assert.New(t)
 	ctx := context.Background()
 
-	user := UserFactory()
-	userOut, _ := testRepos.Users.Create(ctx, user)
+	user := userFactory()
+	userOut, _ := tRepos.Users.Create(ctx, user)
 
 	expiresAt := time.Now().Add(time.Hour)
 	generatedToken := hasher.GenerateToken()
 
-	token, err := testRepos.AuthTokens.CreateToken(ctx, types.UserAuthTokenCreate{
+	token, err := tRepos.AuthTokens.CreateToken(ctx, types.UserAuthTokenCreate{
 		TokenHash: generatedToken.Hash,
 		ExpiresAt: expiresAt,
 		UserID:    userOut.ID,
@@ -58,7 +81,7 @@ func Test_EntAuthTokenRepo_GetUserByToken(t *testing.T) {
 	assert.NoError(err)
 
 	// Get User from token
-	foundUser, err := testRepos.AuthTokens.GetUserFromToken(ctx, token.TokenHash)
+	foundUser, err := tRepos.AuthTokens.GetUserFromToken(ctx, token.TokenHash)
 
 	assert.NoError(err)
 	assert.Equal(userOut.ID, foundUser.ID)
@@ -66,17 +89,17 @@ func Test_EntAuthTokenRepo_GetUserByToken(t *testing.T) {
 	assert.Equal(userOut.Email, foundUser.Email)
 
 	// Cleanup
-	assert.NoError(testRepos.Users.Delete(ctx, userOut.ID))
-	_, err = testRepos.AuthTokens.DeleteAll(ctx)
+	assert.NoError(tRepos.Users.Delete(ctx, userOut.ID))
+	_, err = tRepos.AuthTokens.DeleteAll(ctx)
 	assert.NoError(err)
 }
 
-func Test_EntAuthTokenRepo_PurgeExpiredTokens(t *testing.T) {
+func TestAuthTokenRepo_PurgeExpiredTokens(t *testing.T) {
 	assert := assert.New(t)
 	ctx := context.Background()
 
-	user := UserFactory()
-	userOut, _ := testRepos.Users.Create(ctx, user)
+	user := userFactory()
+	userOut, _ := tRepos.Users.Create(ctx, user)
 
 	createdTokens := []types.UserAuthToken{}
 
@@ -84,7 +107,7 @@ func Test_EntAuthTokenRepo_PurgeExpiredTokens(t *testing.T) {
 		expiresAt := time.Now()
 		generatedToken := hasher.GenerateToken()
 
-		createdToken, err := testRepos.AuthTokens.CreateToken(ctx, types.UserAuthTokenCreate{
+		createdToken, err := tRepos.AuthTokens.CreateToken(ctx, types.UserAuthTokenCreate{
 			TokenHash: generatedToken.Hash,
 			ExpiresAt: expiresAt,
 			UserID:    userOut.ID,
@@ -98,19 +121,19 @@ func Test_EntAuthTokenRepo_PurgeExpiredTokens(t *testing.T) {
 	}
 
 	// Purge expired tokens
-	tokensDeleted, err := testRepos.AuthTokens.PurgeExpiredTokens(ctx)
+	tokensDeleted, err := tRepos.AuthTokens.PurgeExpiredTokens(ctx)
 
 	assert.NoError(err)
 	assert.Equal(5, tokensDeleted)
 
 	// Check if tokens are deleted
 	for _, token := range createdTokens {
-		_, err := testRepos.AuthTokens.GetUserFromToken(ctx, token.TokenHash)
+		_, err := tRepos.AuthTokens.GetUserFromToken(ctx, token.TokenHash)
 		assert.Error(err)
 	}
 
 	// Cleanup
-	assert.NoError(testRepos.Users.Delete(ctx, userOut.ID))
-	_, err = testRepos.AuthTokens.DeleteAll(ctx)
+	assert.NoError(tRepos.Users.Delete(ctx, userOut.ID))
+	_, err = tRepos.AuthTokens.DeleteAll(ctx)
 	assert.NoError(err)
 }

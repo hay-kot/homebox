@@ -33,19 +33,54 @@ func (e *ItemsRepository) GetAll(ctx context.Context, gid uuid.UUID) ([]*ent.Ite
 }
 
 func (e *ItemsRepository) Create(ctx context.Context, gid uuid.UUID, data types.ItemCreate) (*ent.Item, error) {
-	return e.db.Item.Create().
+	q := e.db.Item.Create().
 		SetName(data.Name).
 		SetDescription(data.Description).
 		SetGroupID(gid).
-		AddLabelIDs(data.LabelIDs...).
+		SetLocationID(data.LocationID)
+
+	if data.LabelIDs != nil && len(data.LabelIDs) > 0 {
+		q.AddLabelIDs(data.LabelIDs...)
+	}
+
+	result, err := q.Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return e.GetOne(ctx, result.ID)
+}
+
+func (e *ItemsRepository) Delete(ctx context.Context, id uuid.UUID) error {
+	return e.db.Item.DeleteOneID(id).Exec(ctx)
+}
+
+func (e *ItemsRepository) Update(ctx context.Context, data types.ItemUpdate) (*ent.Item, error) {
+	q := e.db.Item.UpdateOneID(data.ID).
+		SetName(data.Name).
+		SetDescription(data.Description).
 		SetLocationID(data.LocationID).
-		Save(ctx)
-}
+		SetSerialNumber(data.SerialNumber).
+		SetModelNumber(data.ModelNumber).
+		SetManufacturer(data.Manufacturer).
+		SetPurchaseTime(data.PurchaseTime).
+		SetPurchaseFrom(data.PurchaseFrom).
+		SetPurchasePrice(data.PurchasePrice).
+		SetSoldTime(data.SoldTime).
+		SetSoldTo(data.SoldTo).
+		SetSoldPrice(data.SoldPrice).
+		SetSoldNotes(data.SoldNotes).
+		SetNotes(data.Notes)
 
-func (e *ItemsRepository) Delete(ctx context.Context, gid uuid.UUID, id uuid.UUID) error {
-	panic("implement me")
-}
+	if data.LabelIDs != nil && len(data.LabelIDs) > 0 {
+		q.AddLabelIDs(data.LabelIDs...)
+	}
 
-func (e *ItemsRepository) Update(ctx context.Context, gid uuid.UUID, data types.ItemUpdate) (*ent.Item, error) {
-	panic("implement me")
+	err := q.Exec(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return e.GetOne(ctx, data.ID)
 }

@@ -7,31 +7,29 @@ import (
 
 	"github.com/hay-kot/content/backend/ent"
 	"github.com/hay-kot/content/backend/internal/types"
-	"github.com/hay-kot/content/backend/pkgs/faker"
 	"github.com/stretchr/testify/assert"
 )
 
-func UserFactory() types.UserCreate {
-	f := faker.NewFaker()
+func userFactory() types.UserCreate {
 
 	return types.UserCreate{
-		Name:        f.RandomString(10),
-		Email:       f.RandomEmail(),
-		Password:    f.RandomString(10),
-		IsSuperuser: f.RandomBool(),
-		GroupID:     testGroup.ID,
+		Name:        fk.RandomString(10),
+		Email:       fk.RandomEmail(),
+		Password:    fk.RandomString(10),
+		IsSuperuser: fk.RandomBool(),
+		GroupID:     tGroup.ID,
 	}
 }
 
-func Test_EntUserRepo_GetOneEmail(t *testing.T) {
+func TestUserRepo_GetOneEmail(t *testing.T) {
 	assert := assert.New(t)
-	user := UserFactory()
+	user := userFactory()
 	ctx := context.Background()
 
-	_, err := testRepos.Users.Create(ctx, user)
+	_, err := tRepos.Users.Create(ctx, user)
 	assert.NoError(err)
 
-	foundUser, err := testRepos.Users.GetOneEmail(ctx, user.Email)
+	foundUser, err := tRepos.Users.GetOneEmail(ctx, user.Email)
 
 	assert.NotNil(foundUser)
 	assert.Nil(err)
@@ -39,17 +37,17 @@ func Test_EntUserRepo_GetOneEmail(t *testing.T) {
 	assert.Equal(user.Name, foundUser.Name)
 
 	// Cleanup
-	err = testRepos.Users.DeleteAll(ctx)
+	err = tRepos.Users.DeleteAll(ctx)
 	assert.NoError(err)
 }
 
-func Test_EntUserRepo_GetOneId(t *testing.T) {
+func TestUserRepo_GetOneId(t *testing.T) {
 	assert := assert.New(t)
-	user := UserFactory()
+	user := userFactory()
 	ctx := context.Background()
 
-	userOut, _ := testRepos.Users.Create(ctx, user)
-	foundUser, err := testRepos.Users.GetOneId(ctx, userOut.ID)
+	userOut, _ := tRepos.Users.Create(ctx, user)
+	foundUser, err := tRepos.Users.GetOneId(ctx, userOut.ID)
 
 	assert.NotNil(foundUser)
 	assert.Nil(err)
@@ -57,17 +55,17 @@ func Test_EntUserRepo_GetOneId(t *testing.T) {
 	assert.Equal(user.Name, foundUser.Name)
 
 	// Cleanup
-	err = testRepos.Users.DeleteAll(ctx)
+	err = tRepos.Users.DeleteAll(ctx)
 	assert.NoError(err)
 }
 
-func Test_EntUserRepo_GetAll(t *testing.T) {
+func TestUserRepo_GetAll(t *testing.T) {
 	// Setup
 	toCreate := []types.UserCreate{
-		UserFactory(),
-		UserFactory(),
-		UserFactory(),
-		UserFactory(),
+		userFactory(),
+		userFactory(),
+		userFactory(),
+		userFactory(),
 	}
 
 	ctx := context.Background()
@@ -75,12 +73,12 @@ func Test_EntUserRepo_GetAll(t *testing.T) {
 	created := []*ent.User{}
 
 	for _, usr := range toCreate {
-		usrOut, _ := testRepos.Users.Create(ctx, usr)
+		usrOut, _ := tRepos.Users.Create(ctx, usr)
 		created = append(created, usrOut)
 	}
 
 	// Validate
-	allUsers, err := testRepos.Users.GetAll(ctx)
+	allUsers, err := tRepos.Users.GetAll(ctx)
 
 	assert.NoError(t, err)
 	assert.Equal(t, len(created), len(allUsers))
@@ -98,48 +96,64 @@ func Test_EntUserRepo_GetAll(t *testing.T) {
 	}
 
 	for _, usr := range created {
-		_ = testRepos.Users.Delete(ctx, usr.ID)
+		_ = tRepos.Users.Delete(ctx, usr.ID)
 	}
 
 	// Cleanup
-	err = testRepos.Users.DeleteAll(ctx)
+	err = tRepos.Users.DeleteAll(ctx)
 	assert.NoError(t, err)
 }
 
-func Test_EntUserRepo_Update(t *testing.T) {
-	t.Skip()
+func TestUserRepo_Update(t *testing.T) {
+	user, err := tRepos.Users.Create(context.Background(), userFactory())
+	assert.NoError(t, err)
+
+	updateData := types.UserUpdate{
+		Name:  fk.RandomString(10),
+		Email: fk.RandomEmail(),
+	}
+
+	// Update
+	err = tRepos.Users.Update(context.Background(), user.ID, updateData)
+	assert.NoError(t, err)
+
+	// Validate
+	updated, err := tRepos.Users.GetOneId(context.Background(), user.ID)
+	assert.NoError(t, err)
+	assert.NotEqual(t, user.Name, updated.Name)
+	assert.NotEqual(t, user.Email, updated.Email)
 }
 
-func Test_EntUserRepo_Delete(t *testing.T) {
+func TestUserRepo_Delete(t *testing.T) {
 	// Create 10 Users
 	for i := 0; i < 10; i++ {
-		user := UserFactory()
+		user := userFactory()
 		ctx := context.Background()
-		_, _ = testRepos.Users.Create(ctx, user)
+		_, _ = tRepos.Users.Create(ctx, user)
 	}
 
 	// Delete all
 	ctx := context.Background()
-	allUsers, _ := testRepos.Users.GetAll(ctx)
+	allUsers, _ := tRepos.Users.GetAll(ctx)
 
 	assert.Greater(t, len(allUsers), 0)
-	err := testRepos.Users.DeleteAll(ctx)
+	err := tRepos.Users.DeleteAll(ctx)
 	assert.NoError(t, err)
 
-	allUsers, _ = testRepos.Users.GetAll(ctx)
+	allUsers, _ = tRepos.Users.GetAll(ctx)
 	assert.Equal(t, len(allUsers), 0)
 
 }
 
-func Test_EntUserRepo_GetSuperusers(t *testing.T) {
+func TestUserRepo_GetSuperusers(t *testing.T) {
 	// Create 10 Users
 	superuser := 0
 	users := 0
 
 	for i := 0; i < 10; i++ {
-		user := UserFactory()
+		user := userFactory()
 		ctx := context.Background()
-		_, _ = testRepos.Users.Create(ctx, user)
+		_, _ = tRepos.Users.Create(ctx, user)
 
 		if user.IsSuperuser {
 			superuser++
@@ -151,7 +165,7 @@ func Test_EntUserRepo_GetSuperusers(t *testing.T) {
 	// Delete all
 	ctx := context.Background()
 
-	superUsers, err := testRepos.Users.GetSuperusers(ctx)
+	superUsers, err := tRepos.Users.GetSuperusers(ctx)
 	assert.NoError(t, err)
 
 	for _, usr := range superUsers {
@@ -159,6 +173,6 @@ func Test_EntUserRepo_GetSuperusers(t *testing.T) {
 	}
 
 	// Cleanup
-	err = testRepos.Users.DeleteAll(ctx)
+	err = tRepos.Users.DeleteAll(ctx)
 	assert.NoError(t, err)
 }

@@ -7,14 +7,16 @@ import (
 	"github.com/hay-kot/content/backend/ent"
 )
 
-type EntGroupRepository struct {
+type GroupRepository struct {
 	db *ent.Client
 }
 
-func (r *EntGroupRepository) Create(ctx context.Context, name string) (*ent.Group, error) {
-	return r.db.Group.Create().SetName(name).Save(ctx)
+func (r *GroupRepository) Create(ctx context.Context, name string) (*ent.Group, error) {
+	return r.db.Group.Create().
+		SetName(name).
+		Save(ctx)
 }
 
-func (r *EntGroupRepository) GetOneId(ctx context.Context, id uuid.UUID) (*ent.Group, error) {
+func (r *GroupRepository) GetOneId(ctx context.Context, id uuid.UUID) (*ent.Group, error) {
 	return r.db.Group.Get(ctx, id)
 }

@@ -10,11 +10,11 @@ import (
 	"github.com/hay-kot/content/backend/internal/types"
 )
 
-type EntLabelRepository struct {
+type LabelRepository struct {
 	db *ent.Client
 }
 
-func (r *EntLabelRepository) Get(ctx context.Context, ID uuid.UUID) (*ent.Label, error) {
+func (r *LabelRepository) Get(ctx context.Context, ID uuid.UUID) (*ent.Label, error) {
 	return r.db.Label.Query().
 		Where(label.ID(ID)).
 		WithGroup().
@@ -22,14 +22,14 @@ func (r *EntLabelRepository) Get(ctx context.Context, ID uuid.UUID) (*ent.Label,
 		Only(ctx)
 }
 
-func (r *EntLabelRepository) GetAll(ctx context.Context, groupId uuid.UUID) ([]*ent.Label, error) {
+func (r *LabelRepository) GetAll(ctx context.Context, groupId uuid.UUID) ([]*ent.Label, error) {
 	return r.db.Label.Query().
 		Where(label.HasGroupWith(group.ID(groupId))).
 		WithGroup().
 		All(ctx)
 }
 
-func (r *EntLabelRepository) Create(ctx context.Context, groupdId uuid.UUID, data types.LabelCreate) (*ent.Label, error) {
+func (r *LabelRepository) Create(ctx context.Context, groupdId uuid.UUID, data types.LabelCreate) (*ent.Label, error) {
 	label, err := r.db.Label.Create().
 		SetName(data.Name).
 		SetDescription(data.Description).
@@ -41,7 +41,7 @@ func (r *EntLabelRepository) Create(ctx context.Context, groupdId uuid.UUID, dat
 	return label, err
 }
 
-func (r *EntLabelRepository) Update(ctx context.Context, data types.LabelUpdate) (*ent.Label, error) {
+func (r *LabelRepository) Update(ctx context.Context, data types.LabelUpdate) (*ent.Label, error) {
 	_, err := r.db.Label.UpdateOneID(data.ID).
 		SetName(data.Name).
 		SetDescription(data.Description).
@@ -55,6 +55,6 @@ func (r *EntLabelRepository) Update(ctx context.Context, data types.LabelUpdate)
 	return r.Get(ctx, data.ID)
 }
 
-func (r *EntLabelRepository) Delete(ctx context.Context, id uuid.UUID) error {
+func (r *LabelRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	return r.db.Label.DeleteOneID(id).Exec(ctx)
 }

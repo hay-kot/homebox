@@ -4,21 +4,21 @@ import "github.com/hay-kot/content/backend/ent"
 
 // AllRepos is a container for all the repository interfaces
 type AllRepos struct {
-	Users      *EntUserRepository
-	AuthTokens *EntTokenRepository
-	Groups     *EntGroupRepository
-	Locations  *EntLocationRepository
-	Labels     *EntLabelRepository
+	Users      *UserRepository
+	AuthTokens *TokenRepository
+	Groups     *GroupRepository
+	Locations  *LocationRepository
+	Labels     *LabelRepository
 	Items      *ItemsRepository
 }
 
 func EntAllRepos(db *ent.Client) *AllRepos {
 	return &AllRepos{
-		Users:      &EntUserRepository{db},
-		AuthTokens: &EntTokenRepository{db},
-		Groups:     &EntGroupRepository{db},
-		Locations:  &EntLocationRepository{db},
-		Labels:     &EntLabelRepository{db},
+		Users:      &UserRepository{db},
+		AuthTokens: &TokenRepository{db},
+		Groups:     &GroupRepository{db},
+		Locations:  &LocationRepository{db},
+		Labels:     &LabelRepository{db},
 		Items:      &ItemsRepository{db},
 	}
 }

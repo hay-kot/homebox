@@ -9,12 +9,12 @@ import (
 	"github.com/hay-kot/content/backend/internal/types"
 )
 
-type EntTokenRepository struct {
+type TokenRepository struct {
 	db *ent.Client
 }
 
 // GetUserFromToken get's a user from a token
-func (r *EntTokenRepository) GetUserFromToken(ctx context.Context, token []byte) (*ent.User, error) {
+func (r *TokenRepository) GetUserFromToken(ctx context.Context, token []byte) (*ent.User, error) {
 	user, err := r.db.AuthTokens.Query().
 		Where(authtokens.Token(token)).
 		Where(authtokens.ExpiresAtGTE(time.Now())).
@@ -31,7 +31,7 @@ func (r *EntTokenRepository) GetUserFromToken(ctx context.Context, token []byte)
 }
 
 // Creates a token for a user
-func (r *EntTokenRepository) CreateToken(ctx context.Context, createToken types.UserAuthTokenCreate) (types.UserAuthToken, error) {
+func (r *TokenRepository) CreateToken(ctx context.Context, createToken types.UserAuthTokenCreate) (types.UserAuthToken, error) {
 	tokenOut := types.UserAuthToken{}
 
 	dbToken, err := r.db.AuthTokens.Create().
@@ -53,13 +53,13 @@ func (r *EntTokenRepository) CreateToken(ctx context.Context, createToken types.
 }
 
 // DeleteToken remove a single token from the database - equivalent to revoke or logout
-func (r *EntTokenRepository) DeleteToken(ctx context.Context, token []byte) error {
+func (r *TokenRepository) DeleteToken(ctx context.Context, token []byte) error {
 	_, err := r.db.AuthTokens.Delete().Where(authtokens.Token(token)).Exec(ctx)
 	return err
 }
 
 // PurgeExpiredTokens removes all expired tokens from the database
-func (r *EntTokenRepository) PurgeExpiredTokens(ctx context.Context) (int, error) {
+func (r *TokenRepository) PurgeExpiredTokens(ctx context.Context) (int, error) {
 	tokensDeleted, err := r.db.AuthTokens.Delete().Where(authtokens.ExpiresAtLTE(time.Now())).Exec(ctx)
 
 	if err != nil {
@@ -69,7 +69,7 @@ func (r *EntTokenRepository) PurgeExpiredTokens(ctx context.Context) (int, error
 	return tokensDeleted, nil
 }
 
-func (r *EntTokenRepository) DeleteAll(ctx context.Context) (int, error) {
+func (r *TokenRepository) DeleteAll(ctx context.Context) (int, error) {
 	amount, err := r.db.AuthTokens.Delete().Exec(ctx)
 	return amount, err
 }

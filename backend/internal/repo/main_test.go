@@ -9,25 +9,34 @@ import (
 	"time"
 
 	"github.com/hay-kot/content/backend/ent"
+	"github.com/hay-kot/content/backend/pkgs/faker"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 var (
-	testEntClient *ent.Client
-	testRepos     *AllRepos
-	testUser      *ent.User
-	testGroup     *ent.Group
+	fk = faker.NewFaker()
+
+	tClient *ent.Client
+	tRepos  *AllRepos
+	tUser   *ent.User
+	tGroup  *ent.Group
 )
 
 func bootstrap() {
-	ctx := context.Background()
-	testGroup, _ = testRepos.Groups.Create(ctx, "test-group")
-	testUser, _ = testRepos.Users.Create(ctx, UserFactory())
+	var (
+		err error
+		ctx = context.Background()
+	)
 
-	if testGroup == nil || testUser == nil {
-		log.Fatal("Failed to bootstrap test data")
+	tGroup, err = tRepos.Groups.Create(ctx, "test-group")
+	if err != nil {
+		log.Fatal(err)
 	}
 
+	tUser, err = tRepos.Users.Create(ctx, userFactory())
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func TestMain(m *testing.M) {
@@ -38,12 +47,13 @@ func TestMain(m *testing.M) {
 		log.Fatalf("failed opening connection to sqlite: %v", err)
 	}
 
-	if err := client.Schema.Create(context.Background()); err != nil {
+	err = client.Schema.Create(context.Background())
+	if err != nil {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
 
-	testEntClient = client
-	testRepos = EntAllRepos(testEntClient)
+	tClient = client
+	tRepos = EntAllRepos(tClient)
 	defer client.Close()
 
 	bootstrap()
