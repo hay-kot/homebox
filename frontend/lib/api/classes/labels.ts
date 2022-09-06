@@ -1,4 +1,5 @@
 import { BaseAPI, route } from '../base';
+import { Item } from './items';
 import { Details, OutType, Results } from './types';
 
 export type LabelCreate = Details & {
@@ -10,6 +11,7 @@ export type LabelUpdate = LabelCreate;
 export type Label = LabelCreate &
   OutType & {
     groupId: string;
+    items: Item[];
   };
 
 export class LabelsApi extends BaseAPI {
