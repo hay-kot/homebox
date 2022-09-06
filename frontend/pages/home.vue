@@ -41,10 +41,57 @@
       value: totalLabels,
     },
   ];
+
+  const importDialog = ref(false);
+  const importCsv = ref(null);
+  const importRef = ref<HTMLInputElement>(null);
+  whenever(
+    () => !importDialog.value,
+    () => {
+      importCsv.value = null;
+    }
+  );
+
+  function setFile(e: Event & { target: HTMLInputElement }) {
+    console.log(e);
+    importCsv.value = e.target.files[0];
+  }
+
+  function openDialog() {
+    importDialog.value = true;
+  }
+
+  function uploadCsv() {
+    importRef.value.click();
+  }
 </script>
 
 <template>
   <BaseContainer class="space-y-16 pb-16">
+    <BaseModal v-model="importDialog">
+      <template #title> Import CSV File </template>
+
+      <p>
+        Import a CSV file containing your items, labels, and locations. See documentation for more information on the
+        required format.
+      </p>
+
+      <div class="flex flex-col gap-2 py-6">
+        <input ref="importRef" type="file" class="hidden" accept=".csv" @change="setFile" />
+        <BaseButton @click="uploadCsv">
+          <Icon class="h-5 w-5 mr-2" name="mdi-upload" />
+          Upload
+        </BaseButton>
+        <p class="text-center py-4">
+          {{ importCsv?.name }}
+        </p>
+      </div>
+
+      <div class="modal-action">
+        <BaseButton :disabled="!importCsv"> Submit </BaseButton>
+      </div>
+    </BaseModal>
+
     <section aria-labelledby="profile-overview-title" class="mt-8">
       <div class="overflow-hidden rounded-lg bg-white shadow">
         <h2 class="sr-only" id="profile-overview-title">Profile Overview</h2>
@@ -86,7 +133,17 @@
     </section>
 
     <section>
-      <BaseSectionHeader class="mb-5"> Items </BaseSectionHeader>
+      <BaseSectionHeader class="mb-5">
+        Items
+        <template #description>
+          <div class="tooltip" data-tip="Import CSV File">
+            <button @click="openDialog" class="btn btn-primary btn-sm">
+              <Icon name="mdi-database" class="mr-2"></Icon>
+              Import
+            </button>
+          </div>
+        </template>
+      </BaseSectionHeader>
       <div class="grid sm:grid-cols-2 gap-4">
         <ItemCard v-for="item in items" :item="item" />
       </div>

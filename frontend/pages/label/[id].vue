@@ -126,8 +126,11 @@
       <ActionsDivider @delete="confirmDelete" @edit="openUpdate" />
     </section>
 
-    <!-- <section>
-        <BaseSectionHeader> Items </BaseSectionHeader>
-      </section> -->
+    <section v-if="label">
+      <BaseSectionHeader class="mb-5"> Items </BaseSectionHeader>
+      <div class="grid gap-2 grid-cols-2">
+        <ItemCard v-for="item in label.items" :item="item" :key="item.id" />
+      </div>
+    </section>
   </BaseContainer>
 </template>

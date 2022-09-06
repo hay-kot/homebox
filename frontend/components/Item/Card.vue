@@ -8,7 +8,7 @@
         <Icon name="mdi-package-variant" />
         {{ item.name }}
       </h2>
-      <p>{{ item.description }}</p>
+      <p>{{ description }}</p>
       <div class="flex gap-2 flex-wrap justify-end">
         <LabelChip v-for="label in item.labels" :label="label" class="badge-primary group-hover:badge-secondary" />
       </div>
@@ -19,12 +19,13 @@
 <script setup lang="ts">
   import { Item } from '~~/lib/api/classes/items';
 
-  defineProps({
+  const props = defineProps({
     item: {
       type: Object as () => Item,
       required: true,
     },
   });
+  const description = computed(() => {
+    return truncate(props.item.description, 80);
+  });
 </script>
-
-<style scoped></style>

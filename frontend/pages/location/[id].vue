@@ -1,5 +1,4 @@
 <script setup lang="ts">
-  import { Location } from '~~/lib/api/classes/locations';
   import ActionsDivider from '../../components/Base/ActionsDivider.vue';
 
   definePageMeta({

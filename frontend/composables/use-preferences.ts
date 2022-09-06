@@ -2,6 +2,7 @@ import { Ref } from 'vue';
 
 export type LocationViewPreferences = {
   showDetails: boolean;
+  showEmpty: boolean;
 };
 
 /**
@@ -13,6 +14,7 @@ export function useViewPreferences(): Ref<LocationViewPreferences> {
     'homebox/preferences/location',
     {
       showDetails: true,
+      showEmpty: true,
     },
     { mergeDefaults: true }
   );
