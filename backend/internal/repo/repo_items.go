@@ -72,10 +72,6 @@ func (e *ItemsRepository) Update(ctx context.Context, data types.ItemUpdate) (*e
 		SetSoldNotes(data.SoldNotes).
 		SetNotes(data.Notes)
 
-	if data.LabelIDs != nil && len(data.LabelIDs) > 0 {
-		q.AddLabelIDs(data.LabelIDs...)
-	}
-
 	err := q.Exec(ctx)
 
 	if err != nil {

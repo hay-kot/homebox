@@ -71,6 +71,7 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 			r.Delete(v1Base("/labels/{id}"), v1Ctrl.HandleLabelDelete())
 
 			r.Get(v1Base("/items"), v1Ctrl.HandleItemsGetAll())
+			r.Post(v1Base("/items/import"), v1Ctrl.HandleItemsImport())
 			r.Post(v1Base("/items"), v1Ctrl.HandleItemsCreate())
 			r.Get(v1Base("/items/{id}"), v1Ctrl.HandleItemGet())
 			r.Put(v1Base("/items/{id}"), v1Ctrl.HandleItemUpdate())

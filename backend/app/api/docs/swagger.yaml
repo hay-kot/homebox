@@ -677,6 +677,24 @@ paths:
       summary: updates a item
       tags:
       - Items
+  /v1/items/import:
+    post:
+      parameters:
+      - description: Image to upload
+        in: formData
+        name: csv
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      security:
+      - Bearer: []
+      summary: imports items into the database
+      tags:
+      - Items
   /v1/labels:
     get:
       produces:

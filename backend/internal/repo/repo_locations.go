@@ -78,6 +78,10 @@ func (r *LocationRepository) Create(ctx context.Context, groupdId uuid.UUID, dat
 		SetGroupID(groupdId).
 		Save(ctx)
 
+	if err != nil {
+		return nil, err
+	}
+
 	location.Edges.Group = &ent.Group{ID: groupdId} // bootstrap group ID
 	return location, err
 }
