@@ -1,5 +1,5 @@
 <template>
-  <div class="form-control">
+  <div class="form-control" v-if="!inline">
     <label class="label">
       <span class="label-text">{{ label }}</span>
     </label>
@@ -9,13 +9,19 @@
       <span class="label-text-alt"> {{ valueLen }}/{{ limit }}</span>
     </label>
   </div>
+  <div v-else class="sm:grid sm:grid-cols-4 sm:items-start sm:gap-4">
+    <label class="label">
+      <span class="label-text">{{ label }}</span>
+    </label>
+    <textarea class="textarea textarea-bordered col-span-3 mt-3 h-24" auto-grow v-model="value" :placeholder="placeholder" />
+  </div>
 </template>
 
 <script lang="ts" setup>
   const emit = defineEmits(['update:modelValue']);
   const props = defineProps({
     modelValue: {
-      type: String,
+      type: [String],
       required: true,
     },
     label: {
@@ -33,6 +39,10 @@
     placeholder: {
       type: String,
       default: '',
+    },
+    inline: {
+      type: Boolean,
+      default: false,
     },
   });
 

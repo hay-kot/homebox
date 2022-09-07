@@ -22,11 +22,11 @@ export interface Item {
   notes: string;
   purchaseFrom: string;
   purchasePrice: number;
-  purchaseTime: string;
+  purchaseTime: Date;
   serialNumber: string;
   soldNotes: string;
   soldPrice: number;
-  soldTime: string;
+  soldTime: Date;
   soldTo: string;
   updatedAt: string;
 }
@@ -41,7 +41,17 @@ export class ItemsApi extends BaseAPI {
   }
 
   async get(id: string) {
-    return this.http.get<Item>(route(`/items/${id}`));
+    const payload = await this.http.get<Item>(route(`/items/${id}`));
+
+    if (!payload.data) {
+      return payload;
+    }
+
+    // Parse Date Types
+    payload.data.purchaseTime = new Date(payload.data.purchaseTime);
+    payload.data.soldTime = new Date(payload.data.soldTime);
+
+    return payload;
   }
 
   async delete(id: string) {

@@ -1,9 +1,15 @@
 <template>
-  <div class="form-control w-full">
+  <div v-if="!inline" class="form-control w-full">
     <label class="label">
       <span class="label-text">{{ label }}</span>
     </label>
     <input ref="input" :type="type" v-model="value" class="input input-bordered w-full" />
+  </div>
+  <div v-else class="sm:grid sm:grid-cols-4 sm:items-start sm:gap-4">
+    <label class="label">
+      <span class="label-text">{{ label }}</span>
+    </label>
+    <input class="input input-bordered col-span-3 w-full mt-2" v-model="value" />
   </div>
 </template>
 
@@ -14,7 +20,7 @@
       default: '',
     },
     modelValue: {
-      type: String,
+      type: [String, Number],
       default: null,
     },
     type: {
@@ -24,6 +30,10 @@
     triggerFocus: {
       type: Boolean,
       default: null,
+    },
+    inline: {
+      type: Boolean,
+      default: false,
     },
   });
 
