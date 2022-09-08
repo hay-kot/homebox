@@ -34,7 +34,7 @@ jobs:
 
       - name: build the image
         run: |
-          docker build --push --no-cache \
+          docker build --push \
             --tag ghcr.io/hay-kot/homebox:nightly \
             --build-arg COMMIT=$(git rev-parse HEAD) \
-            --platform linux/amd64 .
+            --platform linux/amd64,linux/arm64,linux/arm/v7 .
