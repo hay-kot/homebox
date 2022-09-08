@@ -36,6 +36,9 @@
   - [ ] Contributors Guide
   - [ ] Security Policy
   - [ ] Feature Request Template
+- [ ] Fields To Add
+  - [ ] Quantity
+  - [ ] Version (To Base Schema)
 
 ## All Todos
 
