@@ -7,8 +7,6 @@
   <a href="https://discord.gg/tuncmNrE4z">Discord</a>
 </p>
 
-
-
 ## MVP Todo
 
 - [x] Locations
@@ -50,7 +48,8 @@
   - [ ] Version Number
   - [ ] Git Has
 - [ ] Setup Docker Volumes in Dockerfile
-## All Todos
+
+## All Todo's
 
 - [ ] User Invitation Links to Join Group
 - [ ] Maintenance Logs
