@@ -31,7 +31,7 @@ tasks:
       - cd backend && go test -race -coverprofile=coverage.out -covermode=atomic ./app/... ./internal/... ./pkgs/... -v -cover
     silent: true
 
-  test:integration:
+  test:ci:
     cmds:
       - cd backend && go build ./app/api
       - backend/api &

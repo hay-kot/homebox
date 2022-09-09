@@ -1,4 +1,4 @@
-name: Frontend / Integration
+name: Frontend / E2E
 
 on:
   workflow_call:
@@ -7,6 +7,11 @@ jobs:
   Frontend:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
       - name: Install Task
         uses: arduino/setup-task@v1
 
@@ -23,27 +28,9 @@ jobs:
         with:
           version: 6.0.2
 
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.19
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 6.0.2
-
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
       - name: Install dependencies
         run: pnpm install
         working-directory: frontend
 
       - name: Run Integration Tests
-        run: task test:integration
+        run: task test:ci
