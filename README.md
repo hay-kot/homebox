@@ -21,6 +21,8 @@
   - [ ] Update
   - [x] Delete
 - [ ] Asset Attachments for Items
+- [ ] Fields To Add
+  - [ ] Quantity
 - [ ] Bulk Import via CSV
   - [x] Initial
   - [ ] Add Warranty Columns
@@ -31,7 +33,7 @@
 - [x] Release Flow
   - [x] CI/CD Docker Builds w/ Multi-arch
   - [x] Auto Fly.io Deploy for Nightly
-  - [ ] Deploy Docs
+  - [x] Deploy Docs
 - [ ] Db Migrations
   - [ ] How To
 - [ ] Repo House Keeping
@@ -40,9 +42,9 @@
   - [ ] Contributors Guide
   - [ ] Security Policy
   - [ ] Feature Request Template
-- [ ] Fields To Add
-  - [ ] Quantity
-  - [ ] Version (To Base Schema)
+- [ ] Embedded Version Info
+  - [ ] Version Number
+  - [ ] Git Has
 
 ## All Todos
 
