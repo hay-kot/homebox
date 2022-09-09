@@ -25,19 +25,19 @@
     },
   });
 
-  const modal = useVModel(props, 'modelValue');
+  const modal = useVModel(props, "modelValue");
   const loading = ref(false);
   const focused = ref(false);
   const form = reactive({
-    name: '',
-    description: '',
-    color: '', // Future!
+    name: "",
+    description: "",
+    color: "", // Future!
   });
 
   function reset() {
-    form.name = '';
-    form.description = '';
-    form.color = '';
+    form.name = "";
+    form.description = "";
+    form.color = "";
     focused.value = false;
     modal.value = false;
     loading.value = false;
@@ -60,7 +60,7 @@
       return;
     }
 
-    toast.success('Label created');
+    toast.success("Label created");
     reset();
   }
 </script>

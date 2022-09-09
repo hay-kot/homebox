@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-  import { type Location } from '~~/lib/api/classes/locations';
+  import { type Location } from "~~/lib/api/classes/locations";
   const props = defineProps({
     modelValue: {
       type: Boolean,
@@ -36,21 +36,21 @@
 
   const submitBtn = ref(null);
 
-  const modal = useVModel(props, 'modelValue');
+  const modal = useVModel(props, "modelValue");
   const loading = ref(false);
   const focused = ref(false);
   const form = reactive({
     location: {} as Location,
-    name: '',
-    description: '',
-    color: '', // Future!
+    name: "",
+    description: "",
+    color: "", // Future!
     labels: [],
   });
 
   function reset() {
-    form.name = '';
-    form.description = '';
-    form.color = '';
+    form.name = "";
+    form.description = "";
+    form.color = "";
     focused.value = false;
     modal.value = false;
     loading.value = false;
@@ -93,7 +93,7 @@
       return;
     }
 
-    toast.success('Item created');
+    toast.success("Item created");
     reset();
   }
 </script>

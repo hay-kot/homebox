@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-  import { Item } from '~~/lib/api/classes/items';
+  import { Item } from "~~/lib/api/classes/items";
 
   const props = defineProps({
     item: {

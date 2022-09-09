@@ -1,6 +1,6 @@
-import { BaseAPI, route } from '../base';
-import { Item } from './items';
-import { Details, OutType, Results } from './types';
+import { BaseAPI, route } from "../base";
+import { Item } from "./items";
+import { Details, OutType, Results } from "./types";
 
 export type LabelCreate = Details & {
   color: string;
@@ -16,11 +16,11 @@ export type Label = LabelCreate &
 
 export class LabelsApi extends BaseAPI {
   getAll() {
-    return this.http.get<Results<Label>>({ url: route('/labels') });
+    return this.http.get<Results<Label>>({ url: route("/labels") });
   }
 
   create(body: LabelCreate) {
-    return this.http.post<LabelCreate, Label>({ url: route('/labels'), body });
+    return this.http.post<LabelCreate, Label>({ url: route("/labels"), body });
   }
 
   get(id: string) {

@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-  const emit = defineEmits(['cancel', 'update:modelValue']);
+  const emit = defineEmits(["cancel", "update:modelValue"]);
   const props = defineProps({
     modelValue: {
       type: Boolean,
@@ -34,12 +34,12 @@
 
   function close() {
     if (props.readonly) {
-      emit('cancel');
+      emit("cancel");
       return;
     }
     modal.value = false;
   }
 
   const modalId = useId();
-  const modal = useVModel(props, 'modelValue', emit);
+  const modal = useVModel(props, "modelValue", emit);
 </script>

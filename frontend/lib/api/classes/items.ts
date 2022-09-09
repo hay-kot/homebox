@@ -1,7 +1,7 @@
-import { BaseAPI, route } from '../base';
-import { Label } from './labels';
-import { Location } from './locations';
-import { Results } from './types';
+import { BaseAPI, route } from "../base";
+import { Label } from "./labels";
+import { Location } from "./locations";
+import { Results } from "./types";
 
 export interface ItemCreate {
   name: string;
@@ -36,11 +36,11 @@ export interface Item {
 
 export class ItemsApi extends BaseAPI {
   getAll() {
-    return this.http.get<Results<Item>>({ url: route('/items') });
+    return this.http.get<Results<Item>>({ url: route("/items") });
   }
 
   create(item: ItemCreate) {
-    return this.http.post<ItemCreate, Item>({ url: route('/items'), body: item });
+    return this.http.post<ItemCreate, Item>({ url: route("/items"), body: item });
   }
 
   async get(id: string) {
@@ -68,8 +68,8 @@ export class ItemsApi extends BaseAPI {
 
   import(file: File) {
     const formData = new FormData();
-    formData.append('csv', file);
+    formData.append("csv", file);
 
-    return this.http.post<FormData, void>({ url: route('/items/import'), data: formData });
+    return this.http.post<FormData, void>({ url: route("/items/import"), data: formData });
   }
 }

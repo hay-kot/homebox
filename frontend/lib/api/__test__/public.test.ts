@@ -1,8 +1,8 @@
-import { describe, test, expect } from 'vitest';
-import { client, userClient } from './test-utils';
+import { describe, test, expect } from "vitest";
+import { client, userClient } from "./test-utils";
 
-describe('[GET] /api/v1/status', () => {
-  test('server should respond', async () => {
+describe("[GET] /api/v1/status", () => {
+  test("server should respond", async () => {
     const api = client();
     const { response, data } = await api.status();
     expect(response.status).toBe(200);
@@ -10,23 +10,23 @@ describe('[GET] /api/v1/status', () => {
   });
 });
 
-describe('first time user workflow (register, login)', () => {
+describe("first time user workflow (register, login)", () => {
   const api = client();
   const userData = {
-    groupName: 'test-group',
+    groupName: "test-group",
     user: {
-      email: 'test-user@email.com',
-      name: 'test-user',
-      password: 'test-password',
+      email: "test-user@email.com",
+      name: "test-user",
+      password: "test-password",
     },
   };
 
-  test('user should be able to register', async () => {
+  test("user should be able to register", async () => {
     const { response } = await api.register(userData);
     expect(response.status).toBe(204);
   });
 
-  test('user should be able to login', async () => {
+  test("user should be able to login", async () => {
     const { response, data } = await api.login(userData.user.email, userData.user.password);
     expect(response.status).toBe(200);
     expect(data.token).toBeTruthy();

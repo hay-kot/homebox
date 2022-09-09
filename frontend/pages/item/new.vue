@@ -1,6 +1,6 @@
 <script setup>
   definePageMeta({
-    layout: 'home',
+    layout: "home",
   });
 
   const show = reactive({
@@ -11,29 +11,29 @@
   });
 
   const form = reactive({
-    name: '',
-    description: '',
-    notes: '',
+    name: "",
+    description: "",
+    notes: "",
 
     // Item Identification
-    serialNumber: '',
-    modelNumber: '',
-    manufacturer: '',
+    serialNumber: "",
+    modelNumber: "",
+    manufacturer: "",
 
     // Purchase Information
-    purchaseTime: '',
-    purchasePrice: '',
-    purchaseFrom: '',
+    purchaseTime: "",
+    purchasePrice: "",
+    purchaseFrom: "",
 
     // Sold Information
-    soldTime: '',
-    soldPrice: '',
-    soldTo: '',
-    soldNotes: '',
+    soldTime: "",
+    soldPrice: "",
+    soldTo: "",
+    soldNotes: "",
   });
 
   function submit() {
-    console.log('Submitted!');
+    console.log("Submitted!");
   }
 </script>
 

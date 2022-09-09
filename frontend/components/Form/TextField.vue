@@ -17,7 +17,7 @@
   const props = defineProps({
     label: {
       type: String,
-      default: '',
+      default: "",
     },
     modelValue: {
       type: [String, Number],
@@ -25,7 +25,7 @@
     },
     type: {
       type: String,
-      default: 'text',
+      default: "text",
     },
     triggerFocus: {
       type: Boolean,
@@ -48,5 +48,5 @@
     }
   );
 
-  const value = useVModel(props, 'modelValue');
+  const value = useVModel(props, "modelValue");
 </script>

@@ -1,9 +1,9 @@
-import { describe, expect, test } from 'vitest';
-import { Label } from '../../classes/labels';
-import { UserApi } from '../../user';
-import { sharedUserClient } from '../test-utils';
+import { describe, expect, test } from "vitest";
+import { Label } from "../../classes/labels";
+import { UserApi } from "../../user";
+import { sharedUserClient } from "../test-utils";
 
-describe('locations lifecycle (create, update, delete)', () => {
+describe("locations lifecycle (create, update, delete)", () => {
   let increment = 0;
 
   /**
@@ -14,7 +14,7 @@ describe('locations lifecycle (create, update, delete)', () => {
     const { response, data } = await api.labels.create({
       name: `__test__.label.name_${increment}`,
       description: `__test__.label.description_${increment}`,
-      color: '',
+      color: "",
     });
     expect(response.status).toBe(201);
     increment++;
@@ -26,13 +26,13 @@ describe('locations lifecycle (create, update, delete)', () => {
     return [data, cleanup];
   }
 
-  test('user should be able to create a label', async () => {
+  test("user should be able to create a label", async () => {
     const api = await sharedUserClient();
 
     const labelData = {
-      name: 'test-label',
-      description: 'test-description',
-      color: '',
+      name: "test-label",
+      description: "test-description",
+      color: "",
     };
 
     const { response, data } = await api.labels.create(labelData);
@@ -53,14 +53,14 @@ describe('locations lifecycle (create, update, delete)', () => {
     expect(deleteResponse.status).toBe(204);
   });
 
-  test('user should be able to update a label', async () => {
+  test("user should be able to update a label", async () => {
     const api = await sharedUserClient();
     const [label, cleanup] = await useLabel(api);
 
     const labelData = {
-      name: 'test-label',
-      description: 'test-description',
-      color: '',
+      name: "test-label",
+      description: "test-description",
+      color: "",
     };
 
     const { response, data } = await api.labels.update(label.id, labelData);
@@ -78,7 +78,7 @@ describe('locations lifecycle (create, update, delete)', () => {
     await cleanup();
   });
 
-  test('user should be able to delete a label', async () => {
+  test("user should be able to delete a label", async () => {
     const api = await sharedUserClient();
     const [label, _] = await useLabel(api);
 

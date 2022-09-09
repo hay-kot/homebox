@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { Location } from '~~/lib/api/classes/locations';
+  import { Location } from "~~/lib/api/classes/locations";
 
   defineProps({
     location: {

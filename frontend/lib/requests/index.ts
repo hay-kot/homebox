@@ -1,1 +1,1 @@
-export { Requests, type TResponse } from './requests';
+export { Requests, type TResponse } from "./requests";

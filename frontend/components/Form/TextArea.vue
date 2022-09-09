@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts" setup>
-  const emit = defineEmits(['update:modelValue']);
+  const emit = defineEmits(["update:modelValue"]);
   const props = defineProps({
     modelValue: {
       type: [String],
@@ -35,7 +35,7 @@
     },
     type: {
       type: String,
-      default: 'text',
+      default: "text",
     },
     limit: {
       type: [Number, String],
@@ -43,7 +43,7 @@
     },
     placeholder: {
       type: String,
-      default: '',
+      default: "",
     },
     inline: {
       type: Boolean,
@@ -51,7 +51,7 @@
     },
   });
 
-  const value = useVModel(props, 'modelValue', emit);
+  const value = useVModel(props, "modelValue", emit);
   const valueLen = computed(() => {
     return value.value ? value.value.length : 0;
   });

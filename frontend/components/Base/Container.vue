@@ -2,7 +2,7 @@
   defineProps({
     cmp: {
       type: String,
-      default: 'div',
+      default: "div",
     },
   });
 </script>

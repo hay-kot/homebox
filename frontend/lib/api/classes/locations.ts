@@ -1,6 +1,6 @@
-import { BaseAPI, route } from '../base';
-import { Item } from './items';
-import { Details, OutType, Results } from './types';
+import { BaseAPI, route } from "../base";
+import { Item } from "./items";
+import { Details, OutType, Results } from "./types";
 
 export type LocationCreate = Details;
 
@@ -15,11 +15,11 @@ export type LocationUpdate = LocationCreate;
 
 export class LocationsApi extends BaseAPI {
   getAll() {
-    return this.http.get<Results<Location>>({ url: route('/locations') });
+    return this.http.get<Results<Location>>({ url: route("/locations") });
   }
 
   create(body: LocationCreate) {
-    return this.http.post<LocationCreate, Location>({ url: route('/locations'), body });
+    return this.http.post<LocationCreate, Location>({ url: route("/locations"), body });
   }
 
   get(id: string) {

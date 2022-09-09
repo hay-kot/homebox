@@ -1,9 +1,9 @@
-import { describe, expect, test } from 'vitest';
-import { Location } from '../../classes/locations';
-import { UserApi } from '../../user';
-import { sharedUserClient } from '../test-utils';
+import { describe, expect, test } from "vitest";
+import { Location } from "../../classes/locations";
+import { UserApi } from "../../user";
+import { sharedUserClient } from "../test-utils";
 
-describe('locations lifecycle (create, update, delete)', () => {
+describe("locations lifecycle (create, update, delete)", () => {
   let increment = 0;
 
   /**
@@ -26,12 +26,12 @@ describe('locations lifecycle (create, update, delete)', () => {
     return [data, cleanup];
   }
 
-  test('user should be able to create a location', async () => {
+  test("user should be able to create a location", async () => {
     const api = await sharedUserClient();
 
     const locationData = {
-      name: 'test-location',
-      description: 'test-description',
+      name: "test-location",
+      description: "test-description",
     };
 
     const { response, data } = await api.locations.create(locationData);
@@ -52,13 +52,13 @@ describe('locations lifecycle (create, update, delete)', () => {
     expect(deleteResponse.status).toBe(204);
   });
 
-  test('user should be able to update a location', async () => {
+  test("user should be able to update a location", async () => {
     const api = await sharedUserClient();
     const [location, cleanup] = await useLocation(api);
 
     const updateData = {
-      name: 'test-location-updated',
-      description: 'test-description-updated',
+      name: "test-location-updated",
+      description: "test-description-updated",
     };
 
     const { response } = await api.locations.update(location.id, updateData);
@@ -75,7 +75,7 @@ describe('locations lifecycle (create, update, delete)', () => {
     await cleanup();
   });
 
-  test('user should be able to delete a location', async () => {
+  test("user should be able to delete a location", async () => {
     const api = await sharedUserClient();
     const [location, _] = await useLocation(api);
 

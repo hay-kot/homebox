@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-  import { useNotifications } from '@/composables/use-notifier';
+  import { useNotifications } from "@/composables/use-notifier";
 
   const { notifications, dropNotification } = useNotifications();
 </script>

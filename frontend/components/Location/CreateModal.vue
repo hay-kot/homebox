@@ -25,12 +25,12 @@
     },
   });
 
-  const modal = useVModel(props, 'modelValue');
+  const modal = useVModel(props, "modelValue");
   const loading = ref(false);
   const focused = ref(false);
   const form = reactive({
-    name: '',
-    description: '',
+    name: "",
+    description: "",
   });
 
   whenever(
@@ -41,8 +41,8 @@
   );
 
   function reset() {
-    form.name = '';
-    form.description = '';
+    form.name = "";
+    form.description = "";
     focused.value = false;
     modal.value = false;
     loading.value = false;
@@ -61,7 +61,7 @@
     }
 
     if (data) {
-      toast.success('Location created');
+      toast.success("Location created");
       navigateTo(`/location/${data.id}`);
     }
 

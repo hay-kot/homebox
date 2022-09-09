@@ -1,24 +1,24 @@
 <script setup lang="ts">
   definePageMeta({
-    layout: 'home',
+    layout: "home",
   });
   useHead({
-    title: 'Homebox | Home',
+    title: "Homebox | Home",
   });
 
   const api = useUserApi();
 
-  const { data: locations } = useAsyncData('locations', async () => {
+  const { data: locations } = useAsyncData("locations", async () => {
     const { data } = await api.locations.getAll();
     return data.items;
   });
 
-  const { data: labels } = useAsyncData('labels', async () => {
+  const { data: labels } = useAsyncData("labels", async () => {
     const { data } = await api.labels.getAll();
     return data.items;
   });
 
-  const { data: items } = useAsyncData('items', async () => {
+  const { data: items } = useAsyncData("items", async () => {
     const { data } = await api.items.getAll();
     return data.items;
   });
@@ -29,15 +29,15 @@
 
   const stats = [
     {
-      label: 'Locations',
+      label: "Locations",
       value: totalLocations,
     },
     {
-      label: 'Items',
+      label: "Items",
       value: totalItems,
     },
     {
-      label: 'Labels',
+      label: "Labels",
       value: totalLabels,
     },
   ];
@@ -55,7 +55,7 @@
 
   function setFile(e: Event & { target: HTMLInputElement }) {
     importCsv.value = e.target.files[0];
-    console.log('importCsv.value', importCsv.value);
+    console.log("importCsv.value", importCsv.value);
   }
 
   const toast = useNotifier();
@@ -74,7 +74,7 @@
     const { error } = await api.items.import(importCsv.value);
 
     if (error) {
-      toast.error('Import failed. Please try again later.');
+      toast.error("Import failed. Please try again later.");
     }
 
     // Reset
@@ -138,7 +138,7 @@
         >
           <div v-for="stat in stats" :key="stat.label" class="px-6 py-5 text-center text-sm font-medium">
             <span class="text-gray-900">{{ stat.value.value }}</span>
-            {{ ' ' }}
+            {{ " " }}
             <span class="text-gray-600">{{ stat.label }}</span>
           </div>
         </div>

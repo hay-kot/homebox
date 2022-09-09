@@ -1,7 +1,7 @@
 <script setup lang="ts">
-  import { Label } from '~~/lib/api/classes/labels';
+  import { Label } from "~~/lib/api/classes/labels";
 
-  export type sizes = 'sm' | 'md' | 'lg';
+  export type sizes = "sm" | "md" | "lg";
   defineProps({
     label: {
       type: Object as () => Label,
@@ -9,7 +9,7 @@
     },
     size: {
       type: String as () => sizes,
-      default: 'md',
+      default: "md",
     },
   });
 

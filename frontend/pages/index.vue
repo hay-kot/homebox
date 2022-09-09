@@ -1,43 +1,43 @@
 <script setup lang="ts">
-  import TextField from '@/components/Form/TextField.vue';
-  import { useNotifier } from '@/composables/use-notifier';
-  import { usePublicApi } from '@/composables/use-api';
-  import { useAuthStore } from '~~/stores/auth';
+  import TextField from "@/components/Form/TextField.vue";
+  import { useNotifier } from "@/composables/use-notifier";
+  import { usePublicApi } from "@/composables/use-api";
+  import { useAuthStore } from "~~/stores/auth";
   useHead({
-    title: 'Homebox | Organize and Tag Your Stuff',
+    title: "Homebox | Organize and Tag Your Stuff",
   });
 
   definePageMeta({
-    layout: 'empty',
+    layout: "empty",
   });
 
   const authStore = useAuthStore();
   if (!authStore.isTokenExpired) {
-    navigateTo('/home');
+    navigateTo("/home");
   }
 
   const registerFields = [
     {
       label: "What's your name?",
-      value: '',
+      value: "",
     },
     {
       label: "What's your email?",
-      value: '',
+      value: "",
     },
     {
-      label: 'Name your group',
-      value: '',
+      label: "Name your group",
+      value: "",
     },
     {
-      label: 'Set your password',
-      value: '',
-      type: 'password',
+      label: "Set your password",
+      value: "",
+      type: "password",
     },
     {
-      label: 'Confirm your password',
-      value: '',
-      type: 'password',
+      label: "Confirm your password",
+      value: "",
+      type: "password",
     },
   ];
 
@@ -57,11 +57,11 @@
     });
 
     if (error) {
-      toast.error('Problem registering user');
+      toast.error("Problem registering user");
       return;
     }
 
-    toast.success('User registered');
+    toast.success("User registered");
 
     loading.value = false;
     loginFields[0].value = registerFields[1].value;
@@ -70,13 +70,13 @@
 
   const loginFields = [
     {
-      label: 'Email',
-      value: '',
+      label: "Email",
+      value: "",
     },
     {
-      label: 'Password',
-      value: '',
-      type: 'password',
+      label: "Password",
+      value: "",
+      type: "password",
     },
   ];
 
@@ -88,16 +88,16 @@
     const { data, error } = await api.login(loginFields[0].value, loginFields[1].value);
 
     if (error) {
-      toast.error('Invalid email or password');
+      toast.error("Invalid email or password");
     } else {
-      toast.success('Logged in successfully');
+      toast.success("Logged in successfully");
 
       authStore.$patch({
         token: data.token,
         expires: data.expiresAt,
       });
 
-      navigateTo('/home');
+      navigateTo("/home");
     }
     loading.value = false;
   }
@@ -207,7 +207,7 @@
               class="text-base-content text-lg hover:bg-primary hover:text-primary-content px-3 py-1 rounded-xl transition-colors duration-200"
               @click="toggleLogin"
             >
-              {{ registerForm ? 'Already a User? Login' : 'Not a User? Register' }}
+              {{ registerForm ? "Already a User? Login" : "Not a User? Register" }}
             </button>
           </div>
         </div>

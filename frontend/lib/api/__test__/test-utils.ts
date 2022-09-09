@@ -1,24 +1,24 @@
-import { beforeAll, expect } from 'vitest';
-import { Requests } from '../../requests';
-import { overrideParts } from '../base/urls';
-import { PublicApi } from '../public';
-import * as config from '../../../test/config';
-import { UserApi } from '../user';
+import { beforeAll, expect } from "vitest";
+import { Requests } from "../../requests";
+import { overrideParts } from "../base/urls";
+import { PublicApi } from "../public";
+import * as config from "../../../test/config";
+import { UserApi } from "../user";
 
 export function client() {
-  overrideParts(config.BASE_URL, '/api/v1');
-  const requests = new Requests('');
+  overrideParts(config.BASE_URL, "/api/v1");
+  const requests = new Requests("");
   return new PublicApi(requests);
 }
 
 export function userClient(token: string) {
-  overrideParts(config.BASE_URL, '/api/v1');
-  const requests = new Requests('', token);
+  overrideParts(config.BASE_URL, "/api/v1");
+  const requests = new Requests("", token);
   return new UserApi(requests);
 }
 
 const cache = {
-  token: '',
+  token: "",
 };
 
 /*
@@ -30,11 +30,11 @@ export async function sharedUserClient(): Promise<UserApi> {
     return userClient(cache.token);
   }
   const testUser = {
-    groupName: 'test-group',
+    groupName: "test-group",
     user: {
-      email: '__test__@__test__.com',
-      name: '__test__',
-      password: '__test__',
+      email: "__test__@__test__.com",
+      name: "__test__",
+      password: "__test__",
     },
   };
 

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { useAuthStore } from '~~/stores/auth';
+  import { useAuthStore } from "~~/stores/auth";
 
   const authStore = useAuthStore();
   const api = useUserApi();
@@ -10,16 +10,16 @@
       return;
     }
 
-    navigateTo('/');
+    navigateTo("/");
   }
 
   const links = [
     {
-      name: 'Home',
-      href: '/home',
+      name: "Home",
+      href: "/home",
     },
     {
-      name: 'Logout',
+      name: "Logout",
       action: logout,
       last: true,
     },
@@ -33,19 +33,19 @@
 
   const dropdown = [
     {
-      name: 'Item / Asset',
+      name: "Item / Asset",
       action: () => {
         modals.item = true;
       },
     },
     {
-      name: 'Location',
+      name: "Location",
       action: () => {
         modals.location = true;
       },
     },
     {
-      name: 'Label',
+      name: "Label",
       action: () => {
         modals.label = true;
       },

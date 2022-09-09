@@ -1,4 +1,4 @@
-import { Ref } from 'vue';
+import { Ref } from "vue";
 
 export type LocationViewPreferences = {
   showDetails: boolean;
@@ -11,7 +11,7 @@ export type LocationViewPreferences = {
  */
 export function useViewPreferences(): Ref<LocationViewPreferences> {
   const results = useLocalStorage(
-    'homebox/preferences/location',
+    "homebox/preferences/location",
     {
       showDetails: true,
       showEmpty: true,

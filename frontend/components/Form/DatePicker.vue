@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-  const emit = defineEmits(['update:modelValue', 'update:text']);
+  const emit = defineEmits(["update:modelValue", "update:text"]);
 
   const props = defineProps({
     modelValue: {
@@ -50,12 +50,12 @@
     },
   });
 
-  const selected = useVModel(props, 'modelValue', emit);
+  const selected = useVModel(props, "modelValue", emit);
   const dateText = computed(() => {
     if (selected.value) {
       return selected.value.toLocaleDateString();
     }
-    return '';
+    return "";
   });
 
   const time = ref(new Date());
@@ -69,7 +69,7 @@
   });
 
   const month = computed(() => {
-    return time.value.toLocaleString('default', { month: 'long' });
+    return time.value.toLocaleString("default", { month: "long" });
   });
 
   const year = computed(() => {
@@ -87,7 +87,7 @@
   }
 
   const daysIdx = computed(() => {
-    return ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+    return ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
   });
 
   function select(e: MouseEvent, day: Date) {
@@ -117,7 +117,7 @@
 
     for (let i = 0; i < firstDay; i++) {
       days.push({
-        number: '',
+        number: "",
         date: new Date(),
       });
     }

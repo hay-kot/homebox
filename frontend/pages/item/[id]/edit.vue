@@ -1,6 +1,6 @@
 <script setup lang="ts">
   definePageMeta({
-    layout: 'home',
+    layout: "home",
   });
 
   const route = useRoute();
@@ -12,85 +12,85 @@
   const { data: item } = useAsyncData(async () => {
     const { data, error } = await api.items.get(itemId.value);
     if (error) {
-      toast.error('Failed to load item');
-      navigateTo('/home');
+      toast.error("Failed to load item");
+      navigateTo("/home");
       return;
     }
     return data;
   });
 
   type FormField = {
-    type: 'text' | 'textarea' | 'select' | 'date';
+    type: "text" | "textarea" | "select" | "date";
     label: string;
     ref: string;
   };
 
   const mainFields: FormField[] = [
     {
-      type: 'text',
-      label: 'Name',
-      ref: 'name',
+      type: "text",
+      label: "Name",
+      ref: "name",
     },
     {
-      type: 'textarea',
-      label: 'Description',
-      ref: 'description',
+      type: "textarea",
+      label: "Description",
+      ref: "description",
     },
     {
-      type: 'text',
-      label: 'Serial Number',
-      ref: 'serialNumber',
+      type: "text",
+      label: "Serial Number",
+      ref: "serialNumber",
     },
     {
-      type: 'text',
-      label: 'Model Number',
-      ref: 'modelNumber',
+      type: "text",
+      label: "Model Number",
+      ref: "modelNumber",
     },
     {
-      type: 'text',
-      label: 'Manufacturer',
-      ref: 'manufacturer',
+      type: "text",
+      label: "Manufacturer",
+      ref: "manufacturer",
     },
     {
-      type: 'textarea',
-      label: 'Notes',
-      ref: 'notes',
+      type: "textarea",
+      label: "Notes",
+      ref: "notes",
     },
   ];
 
   const purchaseFields: FormField[] = [
     {
-      type: 'text',
-      label: 'Purchased From',
-      ref: 'purchaseFrom',
+      type: "text",
+      label: "Purchased From",
+      ref: "purchaseFrom",
     },
     {
-      type: 'text',
-      label: 'Purchased Price',
-      ref: 'purchasePrice',
+      type: "text",
+      label: "Purchased Price",
+      ref: "purchasePrice",
     },
     {
-      type: 'date',
-      label: 'Purchased At',
-      ref: 'purchaseTime',
+      type: "date",
+      label: "Purchased At",
+      ref: "purchaseTime",
     },
   ];
 
   const soldFields = [
     {
-      type: 'text',
-      label: 'Sold To',
-      ref: 'soldTo',
+      type: "text",
+      label: "Sold To",
+      ref: "soldTo",
     },
     {
-      type: 'text',
-      label: 'Sold Price',
-      ref: 'soldPrice',
+      type: "text",
+      label: "Sold Price",
+      ref: "soldPrice",
     },
     {
-      type: 'date',
-      label: 'Sold At',
-      ref: 'soldTime',
+      type: "date",
+      label: "Sold At",
+      ref: "soldTime",
     },
   ];
 </script>

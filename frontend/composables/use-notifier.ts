@@ -1,9 +1,9 @@
-import { useId } from './use-ids';
+import { useId } from "./use-ids";
 
 interface Notification {
   id: string;
   message: string;
-  type: 'success' | 'error' | 'info';
+  type: "success" | "error" | "info";
 }
 
 const notifications = ref<Notification[]>([]);
@@ -34,21 +34,21 @@ export function useNotifier() {
       addNotification({
         id: useId(),
         message,
-        type: 'success',
+        type: "success",
       });
     },
     error: (message: string) => {
       addNotification({
         id: useId(),
         message,
-        type: 'error',
+        type: "error",
       });
     },
     info: (message: string) => {
       addNotification({
         id: useId(),
         message,
-        type: 'info',
+        type: "info",
       });
     },
   };

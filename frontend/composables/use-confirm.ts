@@ -1,5 +1,5 @@
-import { UseConfirmDialogReturn } from '@vueuse/core';
-import { Ref } from 'vue';
+import { UseConfirmDialogReturn } from "@vueuse/core";
+import { Ref } from "vue";
 
 type Store = UseConfirmDialogReturn<any, boolean, boolean> & {
   text: Ref<string>;
@@ -7,7 +7,7 @@ type Store = UseConfirmDialogReturn<any, boolean, boolean> & {
 };
 
 const store: Partial<Store> = {
-  text: ref('Are you sure you want to delete this item? '),
+  text: ref("Are you sure you want to delete this item? "),
   setup: false,
 };
 

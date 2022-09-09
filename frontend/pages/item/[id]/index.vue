@@ -1,6 +1,6 @@
 <script setup lang="ts">
   definePageMeta({
-    layout: 'home',
+    layout: "home",
   });
 
   const route = useRoute();
@@ -13,8 +13,8 @@
   const { data: item } = useAsyncData(async () => {
     const { data, error } = await api.items.get(itemId.value);
     if (error) {
-      toast.error('Failed to load item');
-      navigateTo('/home');
+      toast.error("Failed to load item");
+      navigateTo("/home");
       return;
     }
     return data;
@@ -22,12 +22,12 @@
 
   const itemSummary = computed(() => {
     return {
-      Description: item.value?.description || '',
-      'Serial Number': item.value?.serialNumber || '',
-      'Model Number': item.value?.modelNumber || '',
-      Manufacturer: item.value?.manufacturer || '',
-      Notes: item.value?.notes || '',
-      Attachments: '', // TODO: Attachments
+      Description: item.value?.description || "",
+      "Serial Number": item.value?.serialNumber || "",
+      "Model Number": item.value?.modelNumber || "",
+      Manufacturer: item.value?.manufacturer || "",
+      Notes: item.value?.notes || "",
+      Attachments: "", // TODO: Attachments
     };
   });
 
@@ -42,12 +42,12 @@
     const payload = {};
 
     if (item.value.lifetimeWarranty) {
-      payload['Lifetime Warranty'] = 'Yes';
+      payload["Lifetime Warranty"] = "Yes";
     } else {
-      payload['Warranty Expires'] = item.value?.warrantyExpires || '';
+      payload["Warranty Expires"] = item.value?.warrantyExpires || "";
     }
 
-    payload['Warranty Details'] = item.value?.warrantyDetails || '';
+    payload["Warranty Details"] = item.value?.warrantyDetails || "";
 
     return payload;
   });
@@ -61,9 +61,9 @@
 
   const purchaseDetails = computed(() => {
     return {
-      'Purchased From': item.value?.purchaseFrom || '',
-      'Purchased Price': item.value?.purchasePrice || '',
-      'Purchased At': item.value?.purchaseTime || '',
+      "Purchased From": item.value?.purchaseFrom || "",
+      "Purchased Price": item.value?.purchasePrice || "",
+      "Purchased At": item.value?.purchaseTime || "",
     };
   });
 
@@ -77,16 +77,16 @@
 
   const soldDetails = computed(() => {
     return {
-      'Sold To': item.value?.soldTo || '',
-      'Sold Price': item.value?.soldPrice || '',
-      'Sold At': item.value?.soldTime || '',
+      "Sold To": item.value?.soldTo || "",
+      "Sold Price": item.value?.soldPrice || "",
+      "Sold At": item.value?.soldTime || "",
     };
   });
 
   const confirm = useConfirm();
 
   async function deleteItem() {
-    const confirmed = await confirm.reveal('Are you sure you want to delete this item?');
+    const confirmed = await confirm.reveal("Are you sure you want to delete this item?");
 
     if (!confirmed.data) {
       return;
@@ -94,11 +94,11 @@
 
     const { error } = await api.items.delete(itemId.value);
     if (error) {
-      toast.error('Failed to delete item');
+      toast.error("Failed to delete item");
       return;
     }
-    toast.success('Item deleted');
-    navigateTo('/home');
+    toast.success("Item deleted");
+    navigateTo("/home");
   }
 </script>
 

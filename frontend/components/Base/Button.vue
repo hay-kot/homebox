@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-  type Sizes = 'sm' | 'md' | 'lg';
+  type Sizes = "sm" | "md" | "lg";
 
   const props = defineProps({
     loading: {
@@ -48,7 +48,7 @@
     },
     size: {
       type: String as () => Sizes,
-      default: 'md',
+      default: "md",
     },
     to: {
       type: String as () => string | null,
