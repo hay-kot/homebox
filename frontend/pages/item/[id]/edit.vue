@@ -103,7 +103,7 @@
           <h3 class="text-lg font-medium leading-6">Item Details</h3>
         </div>
         <div class="border-t border-gray-300 sm:p-0">
-          <div class="sm:divide-y sm:divide-gray-300 grid grid-cols-1" v-for="field in mainFields">
+          <div v-for="field in mainFields" :key="field.ref" class="sm:divide-y sm:divide-gray-300 grid grid-cols-1">
             <div class="pt-2 pb-4 sm:px-6 border-b border-gray-300">
               <FormTextArea v-if="field.type === 'textarea'" v-model="item[field.ref]" :label="field.label" inline />
               <FormTextField v-else-if="field.type === 'text'" v-model="item[field.ref]" :label="field.label" inline />
@@ -118,7 +118,7 @@
           <h3 class="text-lg font-medium leading-6">Purchase Details</h3>
         </div>
         <div class="border-t border-gray-300 sm:p-0">
-          <div class="sm:divide-y sm:divide-gray-300 grid grid-cols-1" v-for="field in purchaseFields">
+          <div v-for="field in purchaseFields" :key="field.ref" class="sm:divide-y sm:divide-gray-300 grid grid-cols-1">
             <div class="pt-2 pb-4 sm:px-6 border-b border-gray-300">
               <FormTextArea v-if="field.type === 'textarea'" v-model="item[field.ref]" :label="field.label" inline />
               <FormTextField v-else-if="field.type === 'text'" v-model="item[field.ref]" :label="field.label" inline />
@@ -133,7 +133,7 @@
           <h3 class="text-lg font-medium leading-6">Sold Details</h3>
         </div>
         <div class="border-t border-gray-300 sm:p-0">
-          <div class="sm:divide-y sm:divide-gray-300 grid grid-cols-1" v-for="field in soldFields">
+          <div v-for="field in soldFields" :key="field.ref" class="sm:divide-y sm:divide-gray-300 grid grid-cols-1">
             <div class="pt-2 pb-4 sm:px-6 border-b border-gray-300">
               <FormTextArea v-if="field.type === 'textarea'" v-model="item[field.ref]" :label="field.label" inline />
               <FormTextField v-else-if="field.type === 'text'" v-model="item[field.ref]" :label="field.label" inline />

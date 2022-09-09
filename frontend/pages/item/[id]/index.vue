@@ -118,11 +118,11 @@
               </span>
               <template #after>
                 <div class="flex flex-wrap gap-3 mt-3">
-                  <LabelChip class="badge-primary" v-for="label in item.labels" :label="label"></LabelChip>
+                  <LabelChip v-for="label in item.labels" :key="label.id" class="badge-primary" :label="label" />
                 </div>
                 <div class="modal-action">
                   <label class="label cursor-pointer mr-auto">
-                    <input type="checkbox" v-model="preferences.showEmpty" class="toggle toggle-primary" />
+                    <input v-model="preferences.showEmpty" type="checkbox" class="toggle toggle-primary" />
                     <span class="label-text ml-4"> Show Empty </span>
                   </label>
                   <BaseButton size="sm" :to="`/item/${itemId}/edit`">
@@ -164,13 +164,13 @@
             </ul>
           </template>
         </BaseDetails>
-        <BaseDetails :details="purchaseDetails" v-if="showPurchase">
+        <BaseDetails v-if="showPurchase" :details="purchaseDetails">
           <template #title> Purchase Details </template>
         </BaseDetails>
-        <BaseDetails :details="warrantyDetails" v-if="showWarranty">
+        <BaseDetails v-if="showWarranty" :details="warrantyDetails">
           <template #title> Warranty </template>
         </BaseDetails>
-        <BaseDetails :details="soldDetails" v-if="showSold">
+        <BaseDetails v-if="showSold" :details="soldDetails">
           <template #title> Sold </template>
         </BaseDetails>
       </div>

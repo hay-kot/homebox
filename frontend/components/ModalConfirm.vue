@@ -1,5 +1,5 @@
 <template>
-  <BaseModal @cancel="cancel(false)" v-model="isRevealed" readonly>
+  <BaseModal v-model="isRevealed" readonly @cancel="cancel(false)">
     <template #title> Confirm </template>
     <div>
       <p>{{ text }}</p>

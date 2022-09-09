@@ -1,9 +1,9 @@
 <template>
   <div class="z-[999]">
-    <input type="checkbox" :id="modalId" class="modal-toggle" v-model="modal" />
+    <input :id="modalId" v-model="modal" type="checkbox" class="modal-toggle" />
     <div class="modal modal-bottom sm:modal-middle overflow-visible">
       <div class="modal-box overflow-visible relative">
-        <button @click="close" :for="modalId" class="btn btn-sm btn-circle absolute right-2 top-2">✕</button>
+        <button :for="modalId" class="btn btn-sm btn-circle absolute right-2 top-2" @click="close">✕</button>
 
         <h3 class="font-bold text-lg">
           <slot name="title"></slot>

@@ -3,9 +3,9 @@
     <label class="label">
       <span class="label-text">{{ label }}</span>
     </label>
-    <select class="select select-bordered" v-model="value">
+    <select v-model="value" class="select select-bordered">
       <option disabled selected>Pick one</option>
-      <option v-for="obj in items" :value="obj">
+      <option v-for="obj in items" :key="name != '' ? obj[name] : obj" :value="obj">
         {{ name != '' ? obj[name] : obj }}
       </option>
     </select>

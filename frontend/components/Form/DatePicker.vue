@@ -1,7 +1,7 @@
 <template>
-  <div class="dropdown dropdown-end w-full" ref="label">
-    <FormTextField tabindex="0" label="Date" v-model="dateText" :inline="inline" readonly />
-    <div @blur="resetTime" tabindex="0" class="mt-1 card compact dropdown-content shadow bg-base-100 rounded-box w-64">
+  <div ref="label" class="dropdown dropdown-end w-full">
+    <FormTextField v-model="dateText" tabindex="0" label="Date" :inline="inline" readonly />
+    <div tabindex="0" class="mt-1 card compact dropdown-content shadow bg-base-100 rounded-box w-64" @blur="resetTime">
       <div class="card-body">
         <div class="flex justify-between items-center">
           <button class="btn btn-xs" @click="prevMonth">
@@ -13,7 +13,7 @@
           </button>
         </div>
         <div class="grid grid-cols-7 gap-2">
-          <div v-for="d in daysIdx">
+          <div v-for="d in daysIdx" :key="d">
             <p class="text-center">
               {{ d }}
             </p>
@@ -21,12 +21,13 @@
           <template v-for="day in days">
             <button
               v-if="day.number != ''"
+              :key="day.number"
               class="text-center btn-xs btn btn-outline"
               @click="select($event, day.date)"
             >
               {{ day.number }}
             </button>
-            <div v-else></div>
+            <div v-else :key="`${day.number}-empty`"></div>
           </template>
         </div>
       </div>
@@ -93,7 +94,7 @@
     console.log(day);
     selected.value = day;
     console.log(selected.value);
-    // @ts-ignore
+    // @ts-ignore - this is a vue3 bug
     e.target.blur();
     resetTime();
   }

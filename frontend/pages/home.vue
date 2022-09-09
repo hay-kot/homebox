@@ -114,7 +114,7 @@
 
     <section aria-labelledby="profile-overview-title" class="mt-8">
       <div class="overflow-hidden rounded-lg bg-white shadow">
-        <h2 class="sr-only" id="profile-overview-title">Profile Overview</h2>
+        <h2 id="profile-overview-title" class="sr-only">Profile Overview</h2>
         <div class="bg-white p-6">
           <div class="sm:flex sm:items-center sm:justify-between">
             <div class="sm:flex sm:space-x-5">
@@ -148,7 +148,7 @@
     <section>
       <BaseSectionHeader class="mb-5"> Storage Locations </BaseSectionHeader>
       <div class="grid grid-cols-1 sm:grid-cols-2 card md:grid-cols-3 gap-4">
-        <LocationCard v-for="location in locations" :location="location" />
+        <LocationCard v-for="location in locations" :key="location.id" :location="location" />
       </div>
     </section>
 
@@ -157,7 +157,7 @@
         Items
         <template #description>
           <div class="tooltip" data-tip="Import CSV File">
-            <button @click="openDialog" class="btn btn-primary btn-sm">
+            <button class="btn btn-primary btn-sm" @click="openDialog">
               <Icon name="mdi-database" class="mr-2"></Icon>
               Import
             </button>
@@ -165,14 +165,14 @@
         </template>
       </BaseSectionHeader>
       <div class="grid sm:grid-cols-2 gap-4">
-        <ItemCard v-for="item in items" :item="item" />
+        <ItemCard v-for="item in items" :key="item.id" :item="item" />
       </div>
     </section>
 
     <section>
       <BaseSectionHeader class="mb-5"> Labels </BaseSectionHeader>
       <div class="flex gap-2 flex-wrap">
-        <LabelChip v-for="label in labels" size="lg" :label="label" />
+        <LabelChip v-for="label in labels" :key="label.id" size="lg" :label="label" />
       </div>
     </section>
   </BaseContainer>

@@ -103,8 +103,8 @@
     <BaseModal v-model="updateModal">
       <template #title> Update Label </template>
       <form v-if="label" @submit.prevent="update">
-        <FormTextField :autofocus="true" label="Label Name" v-model="updateData.name" />
-        <FormTextField label="Label Description" v-model="updateData.description" />
+        <FormTextField v-model="updateData.name" :autofocus="true" label="Label Name" />
+        <FormTextField v-model="updateData.description" label="Label Description" />
         <div class="modal-action">
           <BaseButton type="submit" :loading="updating"> Update </BaseButton>
         </div>
@@ -119,7 +119,7 @@
       </BaseDetails>
       <div class="form-control ml-auto mr-2 max-w-[130px]">
         <label class="label cursor-pointer">
-          <input type="checkbox" v-model.checked="preferences.showDetails" class="checkbox" />
+          <input v-model="preferences.showDetails" type="checkbox" class="toggle" />
           <span class="label-text"> Detailed View </span>
         </label>
       </div>
@@ -129,7 +129,7 @@
     <section v-if="label">
       <BaseSectionHeader class="mb-5"> Items </BaseSectionHeader>
       <div class="grid gap-2 grid-cols-2">
-        <ItemCard v-for="item in label.items" :item="item" :key="item.id" />
+        <ItemCard v-for="item in label.items" :key="item.id" :item="item" />
       </div>
     </section>
   </BaseContainer>

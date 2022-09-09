@@ -2,16 +2,16 @@
   <BaseModal v-model="modal">
     <template #title> Create Item </template>
     <form @submit.prevent="create">
-      <FormSelect label="Location" v-model="form.location" :items="locations ?? []" select-first />
+      <FormSelect v-model="form.location" label="Location" :items="locations ?? []" select-first />
       <FormTextField
-        :trigger-focus="focused"
         ref="locationNameRef"
+        v-model="form.name"
+        :trigger-focus="focused"
         :autofocus="true"
         label="Item Name"
-        v-model="form.name"
       />
-      <FormTextField label="Item Description" v-model="form.description" />
-      <FormMultiselect label="Labels" v-model="form.labels" :items="labels ?? []" />
+      <FormTextField v-model="form.description" label="Item Description" />
+      <FormMultiselect v-model="form.labels" label="Labels" :items="labels ?? []" />
       <div class="modal-action">
         <BaseButton ref="submitBtn" type="submit" :loading="loading">
           <template #icon>
@@ -87,7 +87,7 @@
       labelIds: form.labels.map(l => l.id) as string[],
     };
 
-    const { data, error } = await api.items.create(out);
+    const { error } = await api.items.create(out);
     if (error) {
       toast.error("Couldn't create label");
       return;

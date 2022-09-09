@@ -1,6 +1,6 @@
-import { UserApi } from '~~/lib/api/user';
 import { defineStore } from 'pinia';
 import { useLocalStorage } from '@vueuse/core';
+import { UserApi } from '~~/lib/api/user';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({

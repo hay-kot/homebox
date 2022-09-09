@@ -1,7 +1,7 @@
 <script setup lang="ts">
-  export type sizes = 'sm' | 'md' | 'lg';
-
   import { Label } from '~~/lib/api/classes/labels';
+
+  export type sizes = 'sm' | 'md' | 'lg';
   defineProps({
     label: {
       type: Object as () => Label,
@@ -22,12 +22,12 @@
 
 <template>
   <NuxtLink
+    ref="badge"
     class="badge"
     :class="{
       'p-3': size !== 'sm',
       'p-2 badge-sm': size === 'sm',
     }"
-    ref="badge"
     :to="`/label/${label.id}`"
   >
     <label class="swap swap-rotate" :class="isActive ? 'swap-active' : ''">

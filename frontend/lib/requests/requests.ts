@@ -77,7 +77,7 @@ export class Requests {
 
     const token = this.token();
     if (token !== '' && payload.headers !== undefined) {
-      payload.headers['Authorization'] = token;
+      payload.headers.Authorization = token;
     }
 
     if (this.methodSupportsBody(method)) {

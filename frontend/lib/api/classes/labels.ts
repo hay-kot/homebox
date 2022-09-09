@@ -15,23 +15,23 @@ export type Label = LabelCreate &
   };
 
 export class LabelsApi extends BaseAPI {
-  async getAll() {
+  getAll() {
     return this.http.get<Results<Label>>({ url: route('/labels') });
   }
 
-  async create(body: LabelCreate) {
+  create(body: LabelCreate) {
     return this.http.post<LabelCreate, Label>({ url: route('/labels'), body });
   }
 
-  async get(id: string) {
+  get(id: string) {
     return this.http.get<Label>({ url: route(`/labels/${id}`) });
   }
 
-  async delete(id: string) {
+  delete(id: string) {
     return this.http.delete<void>({ url: route(`/labels/${id}`) });
   }
 
-  async update(id: string, body: LabelUpdate) {
+  update(id: string, body: LabelUpdate) {
     return this.http.put<LabelUpdate, Label>({ url: route(`/labels/${id}`), body });
   }
 }

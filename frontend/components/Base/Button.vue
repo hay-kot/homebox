@@ -1,10 +1,10 @@
 <template>
   <NuxtLink
     v-if="to"
-    :to="to"
     v-bind="attributes"
-    class="btn"
     ref="submitBtn"
+    :to="to"
+    class="btn"
     :class="{
       loading: loading,
       'btn-sm': size === 'sm',
@@ -19,8 +19,8 @@
   <button
     v-else
     v-bind="attributes"
-    class="btn"
     ref="submitBtn"
+    class="btn"
     :class="{
       loading: loading,
       'btn-sm': size === 'sm',
@@ -65,13 +65,6 @@
     return {
       disabled: props.disabled || props.loading,
     };
-  });
-
-  const is = computed(() => {
-    if (props.to) {
-      return 'a';
-    }
-    return 'button';
   });
 
   const submitBtn = ref(null);

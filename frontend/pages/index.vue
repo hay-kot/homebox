@@ -161,9 +161,9 @@
                   </h2>
                   <TextField
                     v-for="field in registerFields"
+                    :key="field.label"
                     v-model="field.value"
                     :label="field.label"
-                    :key="field.label"
                     :type="field.type"
                   />
                   <div class="card-actions justify-end">
@@ -188,9 +188,9 @@
                   </h2>
                   <TextField
                     v-for="field in loginFields"
+                    :key="field.label"
                     v-model="field.value"
                     :label="field.label"
-                    :key="field.label"
                     :type="field.type"
                   />
                   <div class="card-actions justify-end mt-2">
@@ -204,8 +204,8 @@
           </Transition>
           <div class="text-center mt-6">
             <button
-              @click="toggleLogin"
               class="text-base-content text-lg hover:bg-primary hover:text-primary-content px-3 py-1 rounded-xl transition-colors duration-200"
+              @click="toggleLogin"
             >
               {{ registerForm ? 'Already a User? Login' : 'Not a User? Register' }}
             </button>

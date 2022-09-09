@@ -1,8 +1,8 @@
-import { Requests } from '~~/lib/requests';
 import { BaseAPI, route } from './base';
 import { ItemsApi } from './classes/items';
 import { LabelsApi } from './classes/labels';
 import { LocationsApi } from './classes/locations';
+import { Requests } from '~~/lib/requests';
 
 export type Result<T> = {
   item: T;

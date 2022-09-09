@@ -9,12 +9,12 @@ export default defineNuxtConfig({
     title: 'Homebox',
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.svg' }],
   },
-  outDir: '../backend/app/api/public',
   vite: {
     server: {
       proxy: {
         '/api': 'http://localhost:7745',
       },
     },
+    plugins: [],
   },
 });

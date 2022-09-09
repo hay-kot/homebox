@@ -1,11 +1,13 @@
 <template>
-  <div class="form-control w-full" ref="menu">
+  <div ref="menu" class="form-control w-full">
     <label class="label">
       <span class="label-text">{{ label }}</span>
     </label>
     <div class="dropdown dropdown-top sm:dropdown-end">
       <div tabindex="0" class="w-full min-h-[48px] flex gap-2 p-4 flex-wrap border border-gray-400 rounded-lg">
-        <span class="badge" v-for="itm in value"> {{ name != '' ? itm[name] : itm }} </span>
+        <span v-for="itm in value" :key="name != '' ? itm[name] : itm" class="badge">
+          {{ name != '' ? itm[name] : itm }}
+        </span>
       </div>
       <ul
         tabindex="0"
@@ -13,6 +15,7 @@
       >
         <li
           v-for="(obj, idx) in items"
+          :key="idx"
           :class="{
             bordered: selectedIndexes[idx],
           }"
