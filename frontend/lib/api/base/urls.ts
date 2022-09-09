@@ -1,6 +1,6 @@
 const parts = {
-  host: 'http://localhost.com',
-  prefix: '/api/v1',
+  host: "http://localhost.com",
+  prefix: "/api/v1",
 };
 
 export function overrideParts(host: string, prefix: string) {
@@ -32,5 +32,5 @@ export function route(rest: string, params: Record<string, QueryValue> = {}): st
     }
   }
 
-  return url.toString().replace('http://localhost.com', '');
+  return url.toString().replace("http://localhost.com", "");
 }

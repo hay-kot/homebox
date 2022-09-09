@@ -1,9 +1,9 @@
 <template>
-  <div class="form-control" v-if="!inline">
+  <div v-if="!inline" class="form-control">
     <label class="label">
       <span class="label-text">{{ label }}</span>
     </label>
-    <textarea class="textarea textarea-bordered h-24" v-model="value" :placeholder="placeholder" />
+    <textarea v-model="value" class="textarea textarea-bordered h-24" :placeholder="placeholder" />
     <label v-if="limit" class="label">
       <span class="label-text-alt"></span>
       <span class="label-text-alt"> {{ valueLen }}/{{ limit }}</span>
@@ -13,12 +13,17 @@
     <label class="label">
       <span class="label-text">{{ label }}</span>
     </label>
-    <textarea class="textarea textarea-bordered col-span-3 mt-3 h-24" auto-grow v-model="value" :placeholder="placeholder" />
+    <textarea
+      v-model="value"
+      class="textarea textarea-bordered col-span-3 mt-3 h-24"
+      auto-grow
+      :placeholder="placeholder"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
-  const emit = defineEmits(['update:modelValue']);
+  const emit = defineEmits(["update:modelValue"]);
   const props = defineProps({
     modelValue: {
       type: [String],
@@ -30,7 +35,7 @@
     },
     type: {
       type: String,
-      default: 'text',
+      default: "text",
     },
     limit: {
       type: [Number, String],
@@ -38,7 +43,7 @@
     },
     placeholder: {
       type: String,
-      default: '',
+      default: "",
     },
     inline: {
       type: Boolean,
@@ -46,7 +51,7 @@
     },
   });
 
-  const value = useVModel(props, 'modelValue', emit);
+  const value = useVModel(props, "modelValue", emit);
   const valueLen = computed(() => {
     return value.value ? value.value.length : 0;
   });

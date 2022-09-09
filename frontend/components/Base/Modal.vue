@@ -1,9 +1,9 @@
 <template>
   <div class="z-[999]">
-    <input type="checkbox" :id="modalId" class="modal-toggle" v-model="modal" />
+    <input :id="modalId" v-model="modal" type="checkbox" class="modal-toggle" />
     <div class="modal modal-bottom sm:modal-middle overflow-visible">
       <div class="modal-box overflow-visible relative">
-        <button @click="close" :for="modalId" class="btn btn-sm btn-circle absolute right-2 top-2">✕</button>
+        <button :for="modalId" class="btn btn-sm btn-circle absolute right-2 top-2" @click="close">✕</button>
 
         <h3 class="font-bold text-lg">
           <slot name="title"></slot>
@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-  const emit = defineEmits(['cancel', 'update:modelValue']);
+  const emit = defineEmits(["cancel", "update:modelValue"]);
   const props = defineProps({
     modelValue: {
       type: Boolean,
@@ -34,12 +34,12 @@
 
   function close() {
     if (props.readonly) {
-      emit('cancel');
+      emit("cancel");
       return;
     }
     modal.value = false;
   }
 
   const modalId = useId();
-  const modal = useVModel(props, 'modelValue', emit);
+  const modal = useVModel(props, "modelValue", emit);
 </script>

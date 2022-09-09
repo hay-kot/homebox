@@ -1,8 +1,8 @@
 <script setup lang="ts">
-  import ActionsDivider from '../../components/Base/ActionsDivider.vue';
+  import ActionsDivider from "../../components/Base/ActionsDivider.vue";
 
   definePageMeta({
-    layout: 'home',
+    layout: "home",
   });
 
   const route = useRoute();
@@ -16,8 +16,8 @@
   const { data: label } = useAsyncData(labelId.value, async () => {
     const { data, error } = await api.labels.get(labelId.value);
     if (error) {
-      toast.error('Failed to load label');
-      navigateTo('/home');
+      toast.error("Failed to load label");
+      navigateTo("/home");
       return;
     }
     return data;
@@ -25,25 +25,25 @@
 
   function maybeTimeAgo(date?: string): string {
     if (!date) {
-      return '??';
+      return "??";
     }
 
     const time = new Date(date);
 
-    return `${useTimeAgo(time).value} (${useDateFormat(time, 'MM-DD-YYYY').value})`;
+    return `${useTimeAgo(time).value} (${useDateFormat(time, "MM-DD-YYYY").value})`;
   }
 
   const details = computed(() => {
     const dt = {
-      Name: label.value?.name || '',
-      Description: label.value?.description || '',
+      Name: label.value?.name || "",
+      Description: label.value?.description || "",
     };
 
     if (preferences.value.showDetails) {
-      dt['Created At'] = maybeTimeAgo(label.value?.createdAt);
-      dt['Updated At'] = maybeTimeAgo(label.value?.updatedAt);
-      dt['Database ID'] = label.value?.id || '';
-      dt['Group Id'] = label.value?.groupId || '';
+      dt["Created At"] = maybeTimeAgo(label.value?.createdAt);
+      dt["Updated At"] = maybeTimeAgo(label.value?.updatedAt);
+      dt["Database ID"] = label.value?.id || "";
+      dt["Group Id"] = label.value?.groupId || "";
     }
 
     return dt;
@@ -52,7 +52,7 @@
   const { reveal } = useConfirm();
 
   async function confirmDelete() {
-    const { isCanceled } = await reveal('Are you sure you want to delete this label? This action cannot be undone.');
+    const { isCanceled } = await reveal("Are you sure you want to delete this label? This action cannot be undone.");
 
     if (isCanceled) {
       return;
@@ -61,24 +61,24 @@
     const { error } = await api.labels.delete(labelId.value);
 
     if (error) {
-      toast.error('Failed to delete label');
+      toast.error("Failed to delete label");
       return;
     }
-    toast.success('Label deleted');
-    navigateTo('/home');
+    toast.success("Label deleted");
+    navigateTo("/home");
   }
 
   const updateModal = ref(false);
   const updating = ref(false);
   const updateData = reactive({
-    name: '',
-    description: '',
-    color: '',
+    name: "",
+    description: "",
+    color: "",
   });
 
   function openUpdate() {
-    updateData.name = label.value?.name || '';
-    updateData.description = label.value?.description || '';
+    updateData.name = label.value?.name || "";
+    updateData.description = label.value?.description || "";
     updateModal.value = true;
   }
 
@@ -87,11 +87,11 @@
     const { error, data } = await api.labels.update(labelId.value, updateData);
 
     if (error) {
-      toast.error('Failed to update label');
+      toast.error("Failed to update label");
       return;
     }
 
-    toast.success('Label updated');
+    toast.success("Label updated");
     label.value = data;
     updateModal.value = false;
     updating.value = false;
@@ -103,8 +103,8 @@
     <BaseModal v-model="updateModal">
       <template #title> Update Label </template>
       <form v-if="label" @submit.prevent="update">
-        <FormTextField :autofocus="true" label="Label Name" v-model="updateData.name" />
-        <FormTextField label="Label Description" v-model="updateData.description" />
+        <FormTextField v-model="updateData.name" :autofocus="true" label="Label Name" />
+        <FormTextField v-model="updateData.description" label="Label Description" />
         <div class="modal-action">
           <BaseButton type="submit" :loading="updating"> Update </BaseButton>
         </div>
@@ -112,14 +112,14 @@
     </BaseModal>
     <section>
       <BaseSectionHeader class="mb-5" dark>
-        {{ label ? label.name : '' }}
+        {{ label ? label.name : "" }}
       </BaseSectionHeader>
       <BaseDetails class="mb-2" :details="details">
         <template #title> Label Details </template>
       </BaseDetails>
       <div class="form-control ml-auto mr-2 max-w-[130px]">
         <label class="label cursor-pointer">
-          <input type="checkbox" v-model.checked="preferences.showDetails" class="checkbox" />
+          <input v-model="preferences.showDetails" type="checkbox" class="toggle" />
           <span class="label-text"> Detailed View </span>
         </label>
       </div>
@@ -129,7 +129,7 @@
     <section v-if="label">
       <BaseSectionHeader class="mb-5"> Items </BaseSectionHeader>
       <div class="grid gap-2 grid-cols-2">
-        <ItemCard v-for="item in label.items" :item="item" :key="item.id" />
+        <ItemCard v-for="item in label.items" :key="item.id" :item="item" />
       </div>
     </section>
   </BaseContainer>

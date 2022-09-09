@@ -10,14 +10,19 @@
       </h2>
       <p>{{ description }}</p>
       <div class="flex gap-2 flex-wrap justify-end">
-        <LabelChip v-for="label in item.labels" :label="label" class="badge-primary group-hover:badge-secondary" />
+        <LabelChip
+          v-for="label in item.labels"
+          :key="label.id"
+          :label="label"
+          class="badge-primary group-hover:badge-secondary"
+        />
       </div>
     </div>
   </NuxtLink>
 </template>
 
 <script setup lang="ts">
-  import { Item } from '~~/lib/api/classes/items';
+  import { Item } from "~~/lib/api/classes/items";
 
   const props = defineProps({
     item: {

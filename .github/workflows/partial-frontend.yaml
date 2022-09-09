@@ -32,5 +32,9 @@ jobs:
         run: pnpm install
         working-directory: frontend
 
+      - name: Run linter 👀
+        run: pnpm lint
+        working-directory: "frontend"
+
       - name: Run Integration Tests
         run: task test:ci

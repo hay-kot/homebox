@@ -3,13 +3,13 @@
     <template #title> Create Location </template>
     <form @submit.prevent="create">
       <FormTextField
-        :trigger-focus="focused"
         ref="locationNameRef"
+        v-model="form.name"
+        :trigger-focus="focused"
         :autofocus="true"
         label="Location Name"
-        v-model="form.name"
       />
-      <FormTextField label="Location Description" v-model="form.description" />
+      <FormTextField v-model="form.description" label="Location Description" />
       <div class="modal-action">
         <BaseButton type="submit" :loading="loading"> Create </BaseButton>
       </div>
@@ -25,12 +25,12 @@
     },
   });
 
-  const modal = useVModel(props, 'modelValue');
+  const modal = useVModel(props, "modelValue");
   const loading = ref(false);
   const focused = ref(false);
   const form = reactive({
-    name: '',
-    description: '',
+    name: "",
+    description: "",
   });
 
   whenever(
@@ -41,8 +41,8 @@
   );
 
   function reset() {
-    form.name = '';
-    form.description = '';
+    form.name = "";
+    form.description = "";
     focused.value = false;
     modal.value = false;
     loading.value = false;
@@ -61,7 +61,7 @@
     }
 
     if (data) {
-      toast.success('Location created');
+      toast.success("Location created");
       navigateTo(`/location/${data.id}`);
     }
 

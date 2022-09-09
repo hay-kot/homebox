@@ -5,13 +5,25 @@
     "dev": "nuxt dev",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
+    "lint": "eslint --ext \".ts,.js,.vue\" --ignore-path ../.gitignore .",
+    "lint:fix": "eslint --ext \".ts,.js,.vue\" --ignore-path ../.gitignore . --fix",
     "test:ci": "TEST_SHUTDOWN_API_SERVER=true vitest --run --config ./test/vitest.config.ts",
     "test:local": "TEST_SHUTDOWN_API_SERVER=false && vitest --run --config ./test/vitest.config.ts",
     "test:watch": " TEST_SHUTDOWN_API_SERVER=false vitest --config ./test/vitest.config.ts"
   },
   "devDependencies": {
+    "@nuxtjs/eslint-config-typescript": "^11.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.36.2",
+    "@typescript-eslint/parser": "^5.36.2",
+    "eslint": "^8.23.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-vue": "^9.4.0",
     "isomorphic-fetch": "^3.0.0",
     "nuxt": "3.0.0-rc.8",
+    "prettier": "^2.7.1",
+    "typescript": "^4.8.3",
+    "vite-plugin-eslint": "^1.8.1",
     "vitest": "^0.22.1"
   },
   "dependencies": {

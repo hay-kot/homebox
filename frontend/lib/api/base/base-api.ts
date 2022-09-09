@@ -1,4 +1,4 @@
-import { Requests } from '../../requests';
+import { Requests } from "../../requests";
 //  <
 // 	TGetResult,
 // 	TPostData,

@@ -1,8 +1,8 @@
-import { exec } from 'child_process';
-import * as config from './config';
+import { exec } from "child_process";
+import * as config from "./config";
 
 export const setup = () => {
-  console.log('Starting Client Tests');
+  console.log("Starting Client Tests");
   console.log({
     PORT: config.PORT,
     HOST: config.HOST,
@@ -12,8 +12,8 @@ export const setup = () => {
 
 export const teardown = () => {
   if (process.env.TEST_SHUTDOWN_API_SERVER) {
-    const pc = exec('pkill -SIGTERM api'); // Kill background API process
-    pc.stdout.on('data', data => {
+    const pc = exec("pkill -SIGTERM api"); // Kill background API process
+    pc.stdout.on("data", data => {
       console.log(`stdout: ${data}`);
     });
   }

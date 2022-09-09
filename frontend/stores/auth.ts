@@ -1,11 +1,11 @@
-import { UserApi } from '~~/lib/api/user';
-import { defineStore } from 'pinia';
-import { useLocalStorage } from '@vueuse/core';
+import { defineStore } from "pinia";
+import { useLocalStorage } from "@vueuse/core";
+import { UserApi } from "~~/lib/api/user";
 
-export const useAuthStore = defineStore('auth', {
+export const useAuthStore = defineStore("auth", {
   state: () => ({
-    token: useLocalStorage('pinia/auth/token', ''),
-    expires: useLocalStorage('pinia/auth/expires', ''),
+    token: useLocalStorage("pinia/auth/token", ""),
+    expires: useLocalStorage("pinia/auth/expires", ""),
   }),
   getters: {
     isTokenExpired: state => {
@@ -13,7 +13,7 @@ export const useAuthStore = defineStore('auth', {
         return true;
       }
 
-      if (typeof state.expires === 'string') {
+      if (typeof state.expires === "string") {
         return new Date(state.expires) < new Date();
       }
 
@@ -28,8 +28,8 @@ export const useAuthStore = defineStore('auth', {
         return result;
       }
 
-      this.token = '';
-      this.expires = '';
+      this.token = "";
+      this.expires = "";
 
       return result;
     },
@@ -38,9 +38,9 @@ export const useAuthStore = defineStore('auth', {
      * must clear it's local session, usually when a 401 is received.
      */
     clearSession() {
-      this.token = '';
-      this.expires = '';
-      navigateTo('/');
+      this.token = "";
+      this.expires = "";
+      navigateTo("/");
     },
   },
 });

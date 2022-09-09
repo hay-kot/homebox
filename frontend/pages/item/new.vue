@@ -1,6 +1,6 @@
 <script setup>
   definePageMeta({
-    layout: 'home',
+    layout: "home",
   });
 
   const show = reactive({
@@ -11,83 +11,85 @@
   });
 
   const form = reactive({
-    name: '',
-    description: '',
-    notes: '',
+    name: "",
+    description: "",
+    notes: "",
 
     // Item Identification
-    serialNumber: '',
-    modelNumber: '',
-    manufacturer: '',
+    serialNumber: "",
+    modelNumber: "",
+    manufacturer: "",
 
     // Purchase Information
-    purchaseTime: '',
-    purchasePrice: '',
-    purchaseFrom: '',
+    purchaseTime: "",
+    purchasePrice: "",
+    purchaseFrom: "",
 
     // Sold Information
-    soldTime: '',
-    soldPrice: '',
-    soldTo: '',
-    soldNotes: '',
+    soldTime: "",
+    soldPrice: "",
+    soldTo: "",
+    soldNotes: "",
   });
 
-  function submit() {}
+  function submit() {
+    console.log("Submitted!");
+  }
 </script>
 
 <template>
-  <BaseContainer is="section">
+  <BaseContainer cmp="section">
     <BaseSectionHeader> Add an Item To Your Inventory </BaseSectionHeader>
-    <form @submit.prevent="submit" class="max-w-3xl mx-auto my-5 space-y-6">
+    <form class="max-w-3xl mx-auto my-5 space-y-6" @submit.prevent="submit">
       <div class="divider collapse-title px-0 cursor-pointer">Required Information</div>
       <div class="bg-base-200 card">
         <div class="card-body">
-          <FormTextField label="Name" v-model="form.name" />
-          <FormTextArea label="Description" v-model="form.description" limit="1000" />
+          <FormTextField v-model="form.name" label="Name" />
+          <FormTextArea v-model="form.description" label="Description" limit="1000" />
         </div>
       </div>
 
       <div class="divider">
         <button class="btn btn-sm" @click="show.identification = !show.identification">Product Information</button>
       </div>
-      <div class="card bg-base-200" v-if="show.identification">
+      <div v-if="show.identification" class="card bg-base-200">
         <div class="card-body grid md:grid-cols-2">
-          <FormTextField label="Serial Number" v-model="form.serialNumber" />
-          <FormTextField label="Model Number" v-model="form.modelNumber" />
-          <FormTextField label="Manufacturer" v-model="form.manufacturer" />
+          <FormTextField v-model="form.serialNumber" label="Serial Number" />
+          <FormTextField v-model="form.modelNumber" label="Model Number" />
+          <FormTextField v-model="form.manufacturer" label="Manufacturer" />
         </div>
       </div>
       <div class="">
         <button class="btn btn-sm" @click="show.purchase = !show.purchase">Purchase Information</button>
         <div class="divider"></div>
       </div>
-      <div class="card bg-base-200" v-if="show.purchase">
+      <div v-if="show.purchase" class="card bg-base-200">
         <div class="card-body grid md:grid-cols-2">
-          <FormTextField label="Purchase Time" v-model="form.purchaseTime" />
-          <FormTextField label="Purchase Price" v-model="form.purchasePrice" />
-          <FormTextField label="Purchase From" v-model="form.purchaseFrom" />
+          <FormTextField v-model="form.purchaseTime" label="Purchase Time" />
+          <FormTextField v-model="form.purchasePrice" label="Purchase Price" />
+          <FormTextField v-model="form.purchaseFrom" label="Purchase From" />
         </div>
       </div>
 
       <div class="divider">
         <button class="btn btn-sm" @click="show.sold = !show.sold">Sold Information</button>
       </div>
-      <div class="card bg-base-200" v-if="show.sold">
+      <div v-if="show.sold" class="card bg-base-200">
         <div class="card-body">
           <div class="grid md:grid-cols-2 gap-2">
-            <FormTextField label="Sold Time" v-model="form.soldTime" />
-            <FormTextField label="Sold Price" v-model="form.soldPrice" />
-            <FormTextField label="Sold To" v-model="form.soldTo" />
+            <FormTextField v-model="form.soldTime" label="Sold Time" />
+            <FormTextField v-model="form.soldPrice" label="Sold Price" />
+            <FormTextField v-model="form.soldTo" label="Sold To" />
           </div>
-          <FormTextArea label="Sold Notes" v-model="form.soldNotes" limit="1000" />
+          <FormTextArea v-model="form.soldNotes" label="Sold Notes" limit="1000" />
         </div>
       </div>
       <div class="divider">
         <button class="btn btn-sm" @click="show.extras = !show.extras">Extras</button>
       </div>
-      <div class="card bg-base-200" v-if="show.extras">
+      <div v-if="show.extras" class="card bg-base-200">
         <div class="card-body">
-          <FormTextArea label="Notes" v-model="form.notes" limit="1000" />
+          <FormTextArea v-model="form.notes" label="Notes" limit="1000" />
         </div>
       </div>
     </form>

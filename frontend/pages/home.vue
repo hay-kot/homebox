@@ -1,24 +1,24 @@
 <script setup lang="ts">
   definePageMeta({
-    layout: 'home',
+    layout: "home",
   });
   useHead({
-    title: 'Homebox | Home',
+    title: "Homebox | Home",
   });
 
   const api = useUserApi();
 
-  const { data: locations } = useAsyncData('locations', async () => {
+  const { data: locations } = useAsyncData("locations", async () => {
     const { data } = await api.locations.getAll();
     return data.items;
   });
 
-  const { data: labels } = useAsyncData('labels', async () => {
+  const { data: labels } = useAsyncData("labels", async () => {
     const { data } = await api.labels.getAll();
     return data.items;
   });
 
-  const { data: items } = useAsyncData('items', async () => {
+  const { data: items } = useAsyncData("items", async () => {
     const { data } = await api.items.getAll();
     return data.items;
   });
@@ -29,15 +29,15 @@
 
   const stats = [
     {
-      label: 'Locations',
+      label: "Locations",
       value: totalLocations,
     },
     {
-      label: 'Items',
+      label: "Items",
       value: totalItems,
     },
     {
-      label: 'Labels',
+      label: "Labels",
       value: totalLabels,
     },
   ];
@@ -55,7 +55,7 @@
 
   function setFile(e: Event & { target: HTMLInputElement }) {
     importCsv.value = e.target.files[0];
-    console.log('importCsv.value', importCsv.value);
+    console.log("importCsv.value", importCsv.value);
   }
 
   const toast = useNotifier();
@@ -74,7 +74,7 @@
     const { error } = await api.items.import(importCsv.value);
 
     if (error) {
-      toast.error('Import failed. Please try again later.');
+      toast.error("Import failed. Please try again later.");
     }
 
     // Reset
@@ -114,7 +114,7 @@
 
     <section aria-labelledby="profile-overview-title" class="mt-8">
       <div class="overflow-hidden rounded-lg bg-white shadow">
-        <h2 class="sr-only" id="profile-overview-title">Profile Overview</h2>
+        <h2 id="profile-overview-title" class="sr-only">Profile Overview</h2>
         <div class="bg-white p-6">
           <div class="sm:flex sm:items-center sm:justify-between">
             <div class="sm:flex sm:space-x-5">
@@ -138,7 +138,7 @@
         >
           <div v-for="stat in stats" :key="stat.label" class="px-6 py-5 text-center text-sm font-medium">
             <span class="text-gray-900">{{ stat.value.value }}</span>
-            {{ ' ' }}
+            {{ " " }}
             <span class="text-gray-600">{{ stat.label }}</span>
           </div>
         </div>
@@ -148,7 +148,7 @@
     <section>
       <BaseSectionHeader class="mb-5"> Storage Locations </BaseSectionHeader>
       <div class="grid grid-cols-1 sm:grid-cols-2 card md:grid-cols-3 gap-4">
-        <LocationCard v-for="location in locations" :location="location" />
+        <LocationCard v-for="location in locations" :key="location.id" :location="location" />
       </div>
     </section>
 
@@ -157,7 +157,7 @@
         Items
         <template #description>
           <div class="tooltip" data-tip="Import CSV File">
-            <button @click="openDialog" class="btn btn-primary btn-sm">
+            <button class="btn btn-primary btn-sm" @click="openDialog">
               <Icon name="mdi-database" class="mr-2"></Icon>
               Import
             </button>
@@ -165,14 +165,14 @@
         </template>
       </BaseSectionHeader>
       <div class="grid sm:grid-cols-2 gap-4">
-        <ItemCard v-for="item in items" :item="item" />
+        <ItemCard v-for="item in items" :key="item.id" :item="item" />
       </div>
     </section>
 
     <section>
       <BaseSectionHeader class="mb-5"> Labels </BaseSectionHeader>
       <div class="flex gap-2 flex-wrap">
-        <LabelChip v-for="label in labels" size="lg" :label="label" />
+        <LabelChip v-for="label in labels" :key="label.id" size="lg" :label="label" />
       </div>
     </section>
   </BaseContainer>

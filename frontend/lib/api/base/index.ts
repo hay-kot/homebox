@@ -1,2 +1,2 @@
-export { BaseAPI } from './base-api';
-export { route } from './urls';
+export { BaseAPI } from "./base-api";
+export { route } from "./urls";

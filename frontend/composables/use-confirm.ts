@@ -1,13 +1,13 @@
-import { UseConfirmDialogReturn } from '@vueuse/core';
-import { Ref } from 'vue';
+import { UseConfirmDialogReturn } from "@vueuse/core";
+import { Ref } from "vue";
 
-type Store = UseConfirmDialogReturn<any, Boolean, Boolean> & {
+type Store = UseConfirmDialogReturn<any, boolean, boolean> & {
   text: Ref<string>;
   setup: boolean;
 };
 
 const store: Partial<Store> = {
-  text: ref('Are you sure you want to delete this item? '),
+  text: ref("Are you sure you want to delete this item? "),
   setup: false,
 };
 
@@ -21,7 +21,7 @@ const store: Partial<Store> = {
 export function useConfirm(): Store {
   if (!store.setup) {
     store.setup = true;
-    const { isRevealed, reveal, confirm, cancel } = useConfirmDialog<any, Boolean, Boolean>();
+    const { isRevealed, reveal, confirm, cancel } = useConfirmDialog<any, boolean, boolean>();
     store.isRevealed = isRevealed;
     store.reveal = reveal;
     store.confirm = confirm;

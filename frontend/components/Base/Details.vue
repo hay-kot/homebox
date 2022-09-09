@@ -10,7 +10,7 @@
     </div>
     <div class="border-t border-gray-300 px-4 py-5 sm:p-0">
       <dl class="sm:divide-y sm:divide-gray-300">
-        <div v-for="(dValue, dKey) in details" class="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <div v-for="(dValue, dKey) in details" :key="dKey" class="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
           <dt class="text-sm font-medium text-gray-500">
             {{ dKey }}
           </dt>

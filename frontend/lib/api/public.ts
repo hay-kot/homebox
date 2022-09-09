@@ -1,4 +1,4 @@
-import { BaseAPI, route } from './base';
+import { BaseAPI, route } from "./base";
 
 export type LoginResult = {
   token: string;
@@ -28,12 +28,12 @@ export type StatusResult = {
 
 export class PublicApi extends BaseAPI {
   public status() {
-    return this.http.get<StatusResult>({ url: route('/status') });
+    return this.http.get<StatusResult>({ url: route("/status") });
   }
 
   public login(username: string, password: string) {
     return this.http.post<LoginPayload, LoginResult>({
-      url: route('/users/login'),
+      url: route("/users/login"),
       body: {
         username,
         password,
@@ -42,6 +42,6 @@ export class PublicApi extends BaseAPI {
   }
 
   public register(body: RegisterPayload) {
-    return this.http.post<RegisterPayload, LoginResult>({ url: route('/users/register'), body });
+    return this.http.post<RegisterPayload, LoginResult>({ url: route("/users/register"), body });
   }
 }

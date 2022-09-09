@@ -1,8 +1,8 @@
 export enum Method {
-  GET = 'GET',
-  POST = 'POST',
-  PUT = 'PUT',
-  DELETE = 'DELETE',
+  GET = "GET",
+  POST = "POST",
+  PUT = "PUT",
+  DELETE = "DELETE",
 }
 
 export type RequestInterceptor = (r: Response) => void;
@@ -40,9 +40,9 @@ export class Requests {
     return this.baseUrl + rest;
   }
 
-  constructor(baseUrl: string, token: string | (() => string) = '', headers: Record<string, string> = {}) {
+  constructor(baseUrl: string, token: string | (() => string) = "", headers: Record<string, string> = {}) {
     this.baseUrl = baseUrl;
-    this.token = typeof token === 'string' ? () => token : token;
+    this.token = typeof token === "string" ? () => token : token;
     this.headers = headers;
   }
 
@@ -72,19 +72,19 @@ export class Requests {
       headers: {
         ...rargs.headers,
         ...this.headers,
-      },
+      } as Record<string, string>,
     };
 
     const token = this.token();
-    if (token !== '' && payload.headers !== undefined) {
-      payload.headers['Authorization'] = token;
+    if (token !== "" && payload.headers !== undefined) {
+      payload.headers["Authorization"] = token; // eslint-disable-line dot-notation
     }
 
     if (this.methodSupportsBody(method)) {
       if (rargs.data) {
         payload.body = rargs.data;
       } else {
-        payload.headers['Content-Type'] = 'application/json';
+        payload.headers["Content-Type"] = "application/json";
         payload.body = JSON.stringify(rargs.body);
       }
     }

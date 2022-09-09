@@ -3,10 +3,10 @@
     <label class="label">
       <span class="label-text">{{ label }}</span>
     </label>
-    <select class="select select-bordered" v-model="value">
+    <select v-model="value" class="select select-bordered">
       <option disabled selected>Pick one</option>
-      <option v-for="obj in items" :value="obj">
-        {{ name != '' ? obj[name] : obj }}
+      <option v-for="obj in items" :key="name != '' ? obj[name] : obj" :value="obj">
+        {{ name != "" ? obj[name] : obj }}
       </option>
     </select>
     <!-- <label class="label">
@@ -17,11 +17,11 @@
 </template>
 
 <script lang="ts" setup>
-  const emit = defineEmits(['update:modelValue']);
+  const emit = defineEmits(["update:modelValue"]);
   const props = defineProps({
     label: {
       type: String,
-      default: '',
+      default: "",
     },
     modelValue: {
       type: Object as any,
@@ -33,7 +33,7 @@
     },
     name: {
       type: String,
-      default: 'name',
+      default: "name",
     },
     selectFirst: {
       type: Boolean,
@@ -50,5 +50,5 @@
     }
   );
 
-  const value = useVModel(props, 'modelValue', emit);
+  const value = useVModel(props, "modelValue", emit);
 </script>

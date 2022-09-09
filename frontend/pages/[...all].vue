@@ -1,10 +1,10 @@
 <script setup lang="ts">
-useHead({
-  title: "404. Not Found",
-});
-definePageMeta({
-  layout: "404",
-});
+  useHead({
+    title: "404. Not Found",
+  });
+  definePageMeta({
+    layout: "404",
+  });
 </script>
 
 <template>
