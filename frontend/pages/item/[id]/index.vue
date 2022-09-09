@@ -31,6 +31,27 @@
     };
   });
 
+  const showWarranty = computed(() => {
+    if (preferences.value.showEmpty) {
+      return true;
+    }
+    return item.value?.warrantyExpires !== undefined;
+  });
+
+  const warrantyDetails = computed(() => {
+    const payload = {};
+
+    if (item.value.lifetimeWarranty) {
+      payload['Lifetime Warranty'] = 'Yes';
+    } else {
+      payload['Warranty Expires'] = item.value?.warrantyExpires || '';
+    }
+
+    payload['Warranty Details'] = item.value?.warrantyDetails || '';
+
+    return payload;
+  });
+
   const showPurchase = computed(() => {
     if (preferences.value.showEmpty) {
       return true;
@@ -146,8 +167,11 @@
         <BaseDetails :details="purchaseDetails" v-if="showPurchase">
           <template #title> Purchase Details </template>
         </BaseDetails>
+        <BaseDetails :details="warrantyDetails" v-if="showWarranty">
+          <template #title> Warranty </template>
+        </BaseDetails>
         <BaseDetails :details="soldDetails" v-if="showSold">
-          <template #title> Sold Details </template>
+          <template #title> Sold </template>
         </BaseDetails>
       </div>
     </section>

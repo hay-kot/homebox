@@ -29,6 +29,9 @@ export interface Item {
   soldTime: Date;
   soldTo: string;
   updatedAt: string;
+  lifetimeWarranty: boolean;
+  warrantyExpires: Date;
+  warrantyDetails: string;
 }
 
 export class ItemsApi extends BaseAPI {
@@ -50,6 +53,7 @@ export class ItemsApi extends BaseAPI {
     // Parse Date Types
     payload.data.purchaseTime = new Date(payload.data.purchaseTime);
     payload.data.soldTime = new Date(payload.data.soldTime);
+    payload.data.warrantyExpires = new Date(payload.data.warrantyExpires);
 
     return payload;
   }

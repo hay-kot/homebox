@@ -1412,42 +1412,43 @@ func (m *GroupMutation) ResetEdge(name string) error {
 // ItemMutation represents an operation that mutates the Item nodes in the graph.
 type ItemMutation struct {
 	config
-	op                  Op
-	typ                 string
-	id                  *uuid.UUID
-	created_at          *time.Time
-	updated_at          *time.Time
-	name                *string
-	description         *string
-	notes               *string
-	serial_number       *string
-	model_number        *string
-	manufacturer        *string
-	purchase_time       *time.Time
-	purchase_from       *string
-	purchase_price      *float64
-	addpurchase_price   *float64
-	purchase_receipt_id *uuid.UUID
-	sold_time           *time.Time
-	sold_to             *string
-	sold_price          *float64
-	addsold_price       *float64
-	sold_receipt_id     *uuid.UUID
-	sold_notes          *string
-	clearedFields       map[string]struct{}
-	group               *uuid.UUID
-	clearedgroup        bool
-	location            *uuid.UUID
-	clearedlocation     bool
-	fields              map[uuid.UUID]struct{}
-	removedfields       map[uuid.UUID]struct{}
-	clearedfields       bool
-	label               map[uuid.UUID]struct{}
-	removedlabel        map[uuid.UUID]struct{}
-	clearedlabel        bool
-	done                bool
-	oldValue            func(context.Context) (*Item, error)
-	predicates          []predicate.Item
+	op                Op
+	typ               string
+	id                *uuid.UUID
+	created_at        *time.Time
+	updated_at        *time.Time
+	name              *string
+	description       *string
+	notes             *string
+	serial_number     *string
+	model_number      *string
+	manufacturer      *string
+	lifetime_warranty *bool
+	warranty_expires  *time.Time
+	warranty_details  *string
+	purchase_time     *time.Time
+	purchase_from     *string
+	purchase_price    *float64
+	addpurchase_price *float64
+	sold_time         *time.Time
+	sold_to           *string
+	sold_price        *float64
+	addsold_price     *float64
+	sold_notes        *string
+	clearedFields     map[string]struct{}
+	group             *uuid.UUID
+	clearedgroup      bool
+	location          *uuid.UUID
+	clearedlocation   bool
+	fields            map[uuid.UUID]struct{}
+	removedfields     map[uuid.UUID]struct{}
+	clearedfields     bool
+	label             map[uuid.UUID]struct{}
+	removedlabel      map[uuid.UUID]struct{}
+	clearedlabel      bool
+	done              bool
+	oldValue          func(context.Context) (*Item, error)
+	predicates        []predicate.Item
 }
 
 var _ ent.Mutation = (*ItemMutation)(nil)
@@ -1907,6 +1908,140 @@ func (m *ItemMutation) ResetManufacturer() {
 	delete(m.clearedFields, item.FieldManufacturer)
 }
 
+// SetLifetimeWarranty sets the "lifetime_warranty" field.
+func (m *ItemMutation) SetLifetimeWarranty(b bool) {
+	m.lifetime_warranty = &b
+}
+
+// LifetimeWarranty returns the value of the "lifetime_warranty" field in the mutation.
+func (m *ItemMutation) LifetimeWarranty() (r bool, exists bool) {
+	v := m.lifetime_warranty
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLifetimeWarranty returns the old "lifetime_warranty" field's value of the Item entity.
+// If the Item object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ItemMutation) OldLifetimeWarranty(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLifetimeWarranty is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLifetimeWarranty requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLifetimeWarranty: %w", err)
+	}
+	return oldValue.LifetimeWarranty, nil
+}
+
+// ResetLifetimeWarranty resets all changes to the "lifetime_warranty" field.
+func (m *ItemMutation) ResetLifetimeWarranty() {
+	m.lifetime_warranty = nil
+}
+
+// SetWarrantyExpires sets the "warranty_expires" field.
+func (m *ItemMutation) SetWarrantyExpires(t time.Time) {
+	m.warranty_expires = &t
+}
+
+// WarrantyExpires returns the value of the "warranty_expires" field in the mutation.
+func (m *ItemMutation) WarrantyExpires() (r time.Time, exists bool) {
+	v := m.warranty_expires
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWarrantyExpires returns the old "warranty_expires" field's value of the Item entity.
+// If the Item object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ItemMutation) OldWarrantyExpires(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWarrantyExpires is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWarrantyExpires requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWarrantyExpires: %w", err)
+	}
+	return oldValue.WarrantyExpires, nil
+}
+
+// ClearWarrantyExpires clears the value of the "warranty_expires" field.
+func (m *ItemMutation) ClearWarrantyExpires() {
+	m.warranty_expires = nil
+	m.clearedFields[item.FieldWarrantyExpires] = struct{}{}
+}
+
+// WarrantyExpiresCleared returns if the "warranty_expires" field was cleared in this mutation.
+func (m *ItemMutation) WarrantyExpiresCleared() bool {
+	_, ok := m.clearedFields[item.FieldWarrantyExpires]
+	return ok
+}
+
+// ResetWarrantyExpires resets all changes to the "warranty_expires" field.
+func (m *ItemMutation) ResetWarrantyExpires() {
+	m.warranty_expires = nil
+	delete(m.clearedFields, item.FieldWarrantyExpires)
+}
+
+// SetWarrantyDetails sets the "warranty_details" field.
+func (m *ItemMutation) SetWarrantyDetails(s string) {
+	m.warranty_details = &s
+}
+
+// WarrantyDetails returns the value of the "warranty_details" field in the mutation.
+func (m *ItemMutation) WarrantyDetails() (r string, exists bool) {
+	v := m.warranty_details
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWarrantyDetails returns the old "warranty_details" field's value of the Item entity.
+// If the Item object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ItemMutation) OldWarrantyDetails(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWarrantyDetails is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWarrantyDetails requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWarrantyDetails: %w", err)
+	}
+	return oldValue.WarrantyDetails, nil
+}
+
+// ClearWarrantyDetails clears the value of the "warranty_details" field.
+func (m *ItemMutation) ClearWarrantyDetails() {
+	m.warranty_details = nil
+	m.clearedFields[item.FieldWarrantyDetails] = struct{}{}
+}
+
+// WarrantyDetailsCleared returns if the "warranty_details" field was cleared in this mutation.
+func (m *ItemMutation) WarrantyDetailsCleared() bool {
+	_, ok := m.clearedFields[item.FieldWarrantyDetails]
+	return ok
+}
+
+// ResetWarrantyDetails resets all changes to the "warranty_details" field.
+func (m *ItemMutation) ResetWarrantyDetails() {
+	m.warranty_details = nil
+	delete(m.clearedFields, item.FieldWarrantyDetails)
+}
+
 // SetPurchaseTime sets the "purchase_time" field.
 func (m *ItemMutation) SetPurchaseTime(t time.Time) {
 	m.purchase_time = &t
@@ -2061,55 +2196,6 @@ func (m *ItemMutation) ResetPurchasePrice() {
 	m.addpurchase_price = nil
 }
 
-// SetPurchaseReceiptID sets the "purchase_receipt_id" field.
-func (m *ItemMutation) SetPurchaseReceiptID(u uuid.UUID) {
-	m.purchase_receipt_id = &u
-}
-
-// PurchaseReceiptID returns the value of the "purchase_receipt_id" field in the mutation.
-func (m *ItemMutation) PurchaseReceiptID() (r uuid.UUID, exists bool) {
-	v := m.purchase_receipt_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldPurchaseReceiptID returns the old "purchase_receipt_id" field's value of the Item entity.
-// If the Item object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ItemMutation) OldPurchaseReceiptID(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPurchaseReceiptID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPurchaseReceiptID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPurchaseReceiptID: %w", err)
-	}
-	return oldValue.PurchaseReceiptID, nil
-}
-
-// ClearPurchaseReceiptID clears the value of the "purchase_receipt_id" field.
-func (m *ItemMutation) ClearPurchaseReceiptID() {
-	m.purchase_receipt_id = nil
-	m.clearedFields[item.FieldPurchaseReceiptID] = struct{}{}
-}
-
-// PurchaseReceiptIDCleared returns if the "purchase_receipt_id" field was cleared in this mutation.
-func (m *ItemMutation) PurchaseReceiptIDCleared() bool {
-	_, ok := m.clearedFields[item.FieldPurchaseReceiptID]
-	return ok
-}
-
-// ResetPurchaseReceiptID resets all changes to the "purchase_receipt_id" field.
-func (m *ItemMutation) ResetPurchaseReceiptID() {
-	m.purchase_receipt_id = nil
-	delete(m.clearedFields, item.FieldPurchaseReceiptID)
-}
-
 // SetSoldTime sets the "sold_time" field.
 func (m *ItemMutation) SetSoldTime(t time.Time) {
 	m.sold_time = &t
@@ -2262,55 +2348,6 @@ func (m *ItemMutation) AddedSoldPrice() (r float64, exists bool) {
 func (m *ItemMutation) ResetSoldPrice() {
 	m.sold_price = nil
 	m.addsold_price = nil
-}
-
-// SetSoldReceiptID sets the "sold_receipt_id" field.
-func (m *ItemMutation) SetSoldReceiptID(u uuid.UUID) {
-	m.sold_receipt_id = &u
-}
-
-// SoldReceiptID returns the value of the "sold_receipt_id" field in the mutation.
-func (m *ItemMutation) SoldReceiptID() (r uuid.UUID, exists bool) {
-	v := m.sold_receipt_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSoldReceiptID returns the old "sold_receipt_id" field's value of the Item entity.
-// If the Item object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ItemMutation) OldSoldReceiptID(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSoldReceiptID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSoldReceiptID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSoldReceiptID: %w", err)
-	}
-	return oldValue.SoldReceiptID, nil
-}
-
-// ClearSoldReceiptID clears the value of the "sold_receipt_id" field.
-func (m *ItemMutation) ClearSoldReceiptID() {
-	m.sold_receipt_id = nil
-	m.clearedFields[item.FieldSoldReceiptID] = struct{}{}
-}
-
-// SoldReceiptIDCleared returns if the "sold_receipt_id" field was cleared in this mutation.
-func (m *ItemMutation) SoldReceiptIDCleared() bool {
-	_, ok := m.clearedFields[item.FieldSoldReceiptID]
-	return ok
-}
-
-// ResetSoldReceiptID resets all changes to the "sold_receipt_id" field.
-func (m *ItemMutation) ResetSoldReceiptID() {
-	m.sold_receipt_id = nil
-	delete(m.clearedFields, item.FieldSoldReceiptID)
 }
 
 // SetSoldNotes sets the "sold_notes" field.
@@ -2567,7 +2604,7 @@ func (m *ItemMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ItemMutation) Fields() []string {
-	fields := make([]string, 0, 17)
+	fields := make([]string, 0, 18)
 	if m.created_at != nil {
 		fields = append(fields, item.FieldCreatedAt)
 	}
@@ -2592,6 +2629,15 @@ func (m *ItemMutation) Fields() []string {
 	if m.manufacturer != nil {
 		fields = append(fields, item.FieldManufacturer)
 	}
+	if m.lifetime_warranty != nil {
+		fields = append(fields, item.FieldLifetimeWarranty)
+	}
+	if m.warranty_expires != nil {
+		fields = append(fields, item.FieldWarrantyExpires)
+	}
+	if m.warranty_details != nil {
+		fields = append(fields, item.FieldWarrantyDetails)
+	}
 	if m.purchase_time != nil {
 		fields = append(fields, item.FieldPurchaseTime)
 	}
@@ -2601,9 +2647,6 @@ func (m *ItemMutation) Fields() []string {
 	if m.purchase_price != nil {
 		fields = append(fields, item.FieldPurchasePrice)
 	}
-	if m.purchase_receipt_id != nil {
-		fields = append(fields, item.FieldPurchaseReceiptID)
-	}
 	if m.sold_time != nil {
 		fields = append(fields, item.FieldSoldTime)
 	}
@@ -2612,9 +2655,6 @@ func (m *ItemMutation) Fields() []string {
 	}
 	if m.sold_price != nil {
 		fields = append(fields, item.FieldSoldPrice)
-	}
-	if m.sold_receipt_id != nil {
-		fields = append(fields, item.FieldSoldReceiptID)
 	}
 	if m.sold_notes != nil {
 		fields = append(fields, item.FieldSoldNotes)
@@ -2643,22 +2683,24 @@ func (m *ItemMutation) Field(name string) (ent.Value, bool) {
 		return m.ModelNumber()
 	case item.FieldManufacturer:
 		return m.Manufacturer()
+	case item.FieldLifetimeWarranty:
+		return m.LifetimeWarranty()
+	case item.FieldWarrantyExpires:
+		return m.WarrantyExpires()
+	case item.FieldWarrantyDetails:
+		return m.WarrantyDetails()
 	case item.FieldPurchaseTime:
 		return m.PurchaseTime()
 	case item.FieldPurchaseFrom:
 		return m.PurchaseFrom()
 	case item.FieldPurchasePrice:
 		return m.PurchasePrice()
-	case item.FieldPurchaseReceiptID:
-		return m.PurchaseReceiptID()
 	case item.FieldSoldTime:
 		return m.SoldTime()
 	case item.FieldSoldTo:
 		return m.SoldTo()
 	case item.FieldSoldPrice:
 		return m.SoldPrice()
-	case item.FieldSoldReceiptID:
-		return m.SoldReceiptID()
 	case item.FieldSoldNotes:
 		return m.SoldNotes()
 	}
@@ -2686,22 +2728,24 @@ func (m *ItemMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldModelNumber(ctx)
 	case item.FieldManufacturer:
 		return m.OldManufacturer(ctx)
+	case item.FieldLifetimeWarranty:
+		return m.OldLifetimeWarranty(ctx)
+	case item.FieldWarrantyExpires:
+		return m.OldWarrantyExpires(ctx)
+	case item.FieldWarrantyDetails:
+		return m.OldWarrantyDetails(ctx)
 	case item.FieldPurchaseTime:
 		return m.OldPurchaseTime(ctx)
 	case item.FieldPurchaseFrom:
 		return m.OldPurchaseFrom(ctx)
 	case item.FieldPurchasePrice:
 		return m.OldPurchasePrice(ctx)
-	case item.FieldPurchaseReceiptID:
-		return m.OldPurchaseReceiptID(ctx)
 	case item.FieldSoldTime:
 		return m.OldSoldTime(ctx)
 	case item.FieldSoldTo:
 		return m.OldSoldTo(ctx)
 	case item.FieldSoldPrice:
 		return m.OldSoldPrice(ctx)
-	case item.FieldSoldReceiptID:
-		return m.OldSoldReceiptID(ctx)
 	case item.FieldSoldNotes:
 		return m.OldSoldNotes(ctx)
 	}
@@ -2769,6 +2813,27 @@ func (m *ItemMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetManufacturer(v)
 		return nil
+	case item.FieldLifetimeWarranty:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLifetimeWarranty(v)
+		return nil
+	case item.FieldWarrantyExpires:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWarrantyExpires(v)
+		return nil
+	case item.FieldWarrantyDetails:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWarrantyDetails(v)
+		return nil
 	case item.FieldPurchaseTime:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -2790,13 +2855,6 @@ func (m *ItemMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPurchasePrice(v)
 		return nil
-	case item.FieldPurchaseReceiptID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetPurchaseReceiptID(v)
-		return nil
 	case item.FieldSoldTime:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -2817,13 +2875,6 @@ func (m *ItemMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSoldPrice(v)
-		return nil
-	case item.FieldSoldReceiptID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSoldReceiptID(v)
 		return nil
 	case item.FieldSoldNotes:
 		v, ok := value.(string)
@@ -2904,23 +2955,23 @@ func (m *ItemMutation) ClearedFields() []string {
 	if m.FieldCleared(item.FieldManufacturer) {
 		fields = append(fields, item.FieldManufacturer)
 	}
+	if m.FieldCleared(item.FieldWarrantyExpires) {
+		fields = append(fields, item.FieldWarrantyExpires)
+	}
+	if m.FieldCleared(item.FieldWarrantyDetails) {
+		fields = append(fields, item.FieldWarrantyDetails)
+	}
 	if m.FieldCleared(item.FieldPurchaseTime) {
 		fields = append(fields, item.FieldPurchaseTime)
 	}
 	if m.FieldCleared(item.FieldPurchaseFrom) {
 		fields = append(fields, item.FieldPurchaseFrom)
 	}
-	if m.FieldCleared(item.FieldPurchaseReceiptID) {
-		fields = append(fields, item.FieldPurchaseReceiptID)
-	}
 	if m.FieldCleared(item.FieldSoldTime) {
 		fields = append(fields, item.FieldSoldTime)
 	}
 	if m.FieldCleared(item.FieldSoldTo) {
 		fields = append(fields, item.FieldSoldTo)
-	}
-	if m.FieldCleared(item.FieldSoldReceiptID) {
-		fields = append(fields, item.FieldSoldReceiptID)
 	}
 	if m.FieldCleared(item.FieldSoldNotes) {
 		fields = append(fields, item.FieldSoldNotes)
@@ -2954,23 +3005,23 @@ func (m *ItemMutation) ClearField(name string) error {
 	case item.FieldManufacturer:
 		m.ClearManufacturer()
 		return nil
+	case item.FieldWarrantyExpires:
+		m.ClearWarrantyExpires()
+		return nil
+	case item.FieldWarrantyDetails:
+		m.ClearWarrantyDetails()
+		return nil
 	case item.FieldPurchaseTime:
 		m.ClearPurchaseTime()
 		return nil
 	case item.FieldPurchaseFrom:
 		m.ClearPurchaseFrom()
 		return nil
-	case item.FieldPurchaseReceiptID:
-		m.ClearPurchaseReceiptID()
-		return nil
 	case item.FieldSoldTime:
 		m.ClearSoldTime()
 		return nil
 	case item.FieldSoldTo:
 		m.ClearSoldTo()
-		return nil
-	case item.FieldSoldReceiptID:
-		m.ClearSoldReceiptID()
 		return nil
 	case item.FieldSoldNotes:
 		m.ClearSoldNotes()
@@ -3007,6 +3058,15 @@ func (m *ItemMutation) ResetField(name string) error {
 	case item.FieldManufacturer:
 		m.ResetManufacturer()
 		return nil
+	case item.FieldLifetimeWarranty:
+		m.ResetLifetimeWarranty()
+		return nil
+	case item.FieldWarrantyExpires:
+		m.ResetWarrantyExpires()
+		return nil
+	case item.FieldWarrantyDetails:
+		m.ResetWarrantyDetails()
+		return nil
 	case item.FieldPurchaseTime:
 		m.ResetPurchaseTime()
 		return nil
@@ -3016,9 +3076,6 @@ func (m *ItemMutation) ResetField(name string) error {
 	case item.FieldPurchasePrice:
 		m.ResetPurchasePrice()
 		return nil
-	case item.FieldPurchaseReceiptID:
-		m.ResetPurchaseReceiptID()
-		return nil
 	case item.FieldSoldTime:
 		m.ResetSoldTime()
 		return nil
@@ -3027,9 +3084,6 @@ func (m *ItemMutation) ResetField(name string) error {
 		return nil
 	case item.FieldSoldPrice:
 		m.ResetSoldPrice()
-		return nil
-	case item.FieldSoldReceiptID:
-		m.ResetSoldReceiptID()
 		return nil
 	case item.FieldSoldNotes:
 		m.ResetSoldNotes()

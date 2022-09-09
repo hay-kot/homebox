@@ -138,6 +138,27 @@ func Manufacturer(v string) predicate.Item {
 	})
 }
 
+// LifetimeWarranty applies equality check predicate on the "lifetime_warranty" field. It's identical to LifetimeWarrantyEQ.
+func LifetimeWarranty(v bool) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLifetimeWarranty), v))
+	})
+}
+
+// WarrantyExpires applies equality check predicate on the "warranty_expires" field. It's identical to WarrantyExpiresEQ.
+func WarrantyExpires(v time.Time) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldWarrantyExpires), v))
+	})
+}
+
+// WarrantyDetails applies equality check predicate on the "warranty_details" field. It's identical to WarrantyDetailsEQ.
+func WarrantyDetails(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldWarrantyDetails), v))
+	})
+}
+
 // PurchaseTime applies equality check predicate on the "purchase_time" field. It's identical to PurchaseTimeEQ.
 func PurchaseTime(v time.Time) predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
@@ -159,13 +180,6 @@ func PurchasePrice(v float64) predicate.Item {
 	})
 }
 
-// PurchaseReceiptID applies equality check predicate on the "purchase_receipt_id" field. It's identical to PurchaseReceiptIDEQ.
-func PurchaseReceiptID(v uuid.UUID) predicate.Item {
-	return predicate.Item(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPurchaseReceiptID), v))
-	})
-}
-
 // SoldTime applies equality check predicate on the "sold_time" field. It's identical to SoldTimeEQ.
 func SoldTime(v time.Time) predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
@@ -184,13 +198,6 @@ func SoldTo(v string) predicate.Item {
 func SoldPrice(v float64) predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldSoldPrice), v))
-	})
-}
-
-// SoldReceiptID applies equality check predicate on the "sold_receipt_id" field. It's identical to SoldReceiptIDEQ.
-func SoldReceiptID(v uuid.UUID) predicate.Item {
-	return predicate.Item(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSoldReceiptID), v))
 	})
 }
 
@@ -993,6 +1000,211 @@ func ManufacturerContainsFold(v string) predicate.Item {
 	})
 }
 
+// LifetimeWarrantyEQ applies the EQ predicate on the "lifetime_warranty" field.
+func LifetimeWarrantyEQ(v bool) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLifetimeWarranty), v))
+	})
+}
+
+// LifetimeWarrantyNEQ applies the NEQ predicate on the "lifetime_warranty" field.
+func LifetimeWarrantyNEQ(v bool) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldLifetimeWarranty), v))
+	})
+}
+
+// WarrantyExpiresEQ applies the EQ predicate on the "warranty_expires" field.
+func WarrantyExpiresEQ(v time.Time) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldWarrantyExpires), v))
+	})
+}
+
+// WarrantyExpiresNEQ applies the NEQ predicate on the "warranty_expires" field.
+func WarrantyExpiresNEQ(v time.Time) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldWarrantyExpires), v))
+	})
+}
+
+// WarrantyExpiresIn applies the In predicate on the "warranty_expires" field.
+func WarrantyExpiresIn(vs ...time.Time) predicate.Item {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldWarrantyExpires), v...))
+	})
+}
+
+// WarrantyExpiresNotIn applies the NotIn predicate on the "warranty_expires" field.
+func WarrantyExpiresNotIn(vs ...time.Time) predicate.Item {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldWarrantyExpires), v...))
+	})
+}
+
+// WarrantyExpiresGT applies the GT predicate on the "warranty_expires" field.
+func WarrantyExpiresGT(v time.Time) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldWarrantyExpires), v))
+	})
+}
+
+// WarrantyExpiresGTE applies the GTE predicate on the "warranty_expires" field.
+func WarrantyExpiresGTE(v time.Time) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldWarrantyExpires), v))
+	})
+}
+
+// WarrantyExpiresLT applies the LT predicate on the "warranty_expires" field.
+func WarrantyExpiresLT(v time.Time) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldWarrantyExpires), v))
+	})
+}
+
+// WarrantyExpiresLTE applies the LTE predicate on the "warranty_expires" field.
+func WarrantyExpiresLTE(v time.Time) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldWarrantyExpires), v))
+	})
+}
+
+// WarrantyExpiresIsNil applies the IsNil predicate on the "warranty_expires" field.
+func WarrantyExpiresIsNil() predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldWarrantyExpires)))
+	})
+}
+
+// WarrantyExpiresNotNil applies the NotNil predicate on the "warranty_expires" field.
+func WarrantyExpiresNotNil() predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldWarrantyExpires)))
+	})
+}
+
+// WarrantyDetailsEQ applies the EQ predicate on the "warranty_details" field.
+func WarrantyDetailsEQ(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldWarrantyDetails), v))
+	})
+}
+
+// WarrantyDetailsNEQ applies the NEQ predicate on the "warranty_details" field.
+func WarrantyDetailsNEQ(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldWarrantyDetails), v))
+	})
+}
+
+// WarrantyDetailsIn applies the In predicate on the "warranty_details" field.
+func WarrantyDetailsIn(vs ...string) predicate.Item {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldWarrantyDetails), v...))
+	})
+}
+
+// WarrantyDetailsNotIn applies the NotIn predicate on the "warranty_details" field.
+func WarrantyDetailsNotIn(vs ...string) predicate.Item {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldWarrantyDetails), v...))
+	})
+}
+
+// WarrantyDetailsGT applies the GT predicate on the "warranty_details" field.
+func WarrantyDetailsGT(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldWarrantyDetails), v))
+	})
+}
+
+// WarrantyDetailsGTE applies the GTE predicate on the "warranty_details" field.
+func WarrantyDetailsGTE(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldWarrantyDetails), v))
+	})
+}
+
+// WarrantyDetailsLT applies the LT predicate on the "warranty_details" field.
+func WarrantyDetailsLT(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldWarrantyDetails), v))
+	})
+}
+
+// WarrantyDetailsLTE applies the LTE predicate on the "warranty_details" field.
+func WarrantyDetailsLTE(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldWarrantyDetails), v))
+	})
+}
+
+// WarrantyDetailsContains applies the Contains predicate on the "warranty_details" field.
+func WarrantyDetailsContains(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldWarrantyDetails), v))
+	})
+}
+
+// WarrantyDetailsHasPrefix applies the HasPrefix predicate on the "warranty_details" field.
+func WarrantyDetailsHasPrefix(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldWarrantyDetails), v))
+	})
+}
+
+// WarrantyDetailsHasSuffix applies the HasSuffix predicate on the "warranty_details" field.
+func WarrantyDetailsHasSuffix(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldWarrantyDetails), v))
+	})
+}
+
+// WarrantyDetailsIsNil applies the IsNil predicate on the "warranty_details" field.
+func WarrantyDetailsIsNil() predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldWarrantyDetails)))
+	})
+}
+
+// WarrantyDetailsNotNil applies the NotNil predicate on the "warranty_details" field.
+func WarrantyDetailsNotNil() predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldWarrantyDetails)))
+	})
+}
+
+// WarrantyDetailsEqualFold applies the EqualFold predicate on the "warranty_details" field.
+func WarrantyDetailsEqualFold(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldWarrantyDetails), v))
+	})
+}
+
+// WarrantyDetailsContainsFold applies the ContainsFold predicate on the "warranty_details" field.
+func WarrantyDetailsContainsFold(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldWarrantyDetails), v))
+	})
+}
+
 // PurchaseTimeEQ applies the EQ predicate on the "purchase_time" field.
 func PurchaseTimeEQ(v time.Time) predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
@@ -1248,84 +1460,6 @@ func PurchasePriceLTE(v float64) predicate.Item {
 	})
 }
 
-// PurchaseReceiptIDEQ applies the EQ predicate on the "purchase_receipt_id" field.
-func PurchaseReceiptIDEQ(v uuid.UUID) predicate.Item {
-	return predicate.Item(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPurchaseReceiptID), v))
-	})
-}
-
-// PurchaseReceiptIDNEQ applies the NEQ predicate on the "purchase_receipt_id" field.
-func PurchaseReceiptIDNEQ(v uuid.UUID) predicate.Item {
-	return predicate.Item(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldPurchaseReceiptID), v))
-	})
-}
-
-// PurchaseReceiptIDIn applies the In predicate on the "purchase_receipt_id" field.
-func PurchaseReceiptIDIn(vs ...uuid.UUID) predicate.Item {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Item(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldPurchaseReceiptID), v...))
-	})
-}
-
-// PurchaseReceiptIDNotIn applies the NotIn predicate on the "purchase_receipt_id" field.
-func PurchaseReceiptIDNotIn(vs ...uuid.UUID) predicate.Item {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Item(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldPurchaseReceiptID), v...))
-	})
-}
-
-// PurchaseReceiptIDGT applies the GT predicate on the "purchase_receipt_id" field.
-func PurchaseReceiptIDGT(v uuid.UUID) predicate.Item {
-	return predicate.Item(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldPurchaseReceiptID), v))
-	})
-}
-
-// PurchaseReceiptIDGTE applies the GTE predicate on the "purchase_receipt_id" field.
-func PurchaseReceiptIDGTE(v uuid.UUID) predicate.Item {
-	return predicate.Item(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldPurchaseReceiptID), v))
-	})
-}
-
-// PurchaseReceiptIDLT applies the LT predicate on the "purchase_receipt_id" field.
-func PurchaseReceiptIDLT(v uuid.UUID) predicate.Item {
-	return predicate.Item(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldPurchaseReceiptID), v))
-	})
-}
-
-// PurchaseReceiptIDLTE applies the LTE predicate on the "purchase_receipt_id" field.
-func PurchaseReceiptIDLTE(v uuid.UUID) predicate.Item {
-	return predicate.Item(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldPurchaseReceiptID), v))
-	})
-}
-
-// PurchaseReceiptIDIsNil applies the IsNil predicate on the "purchase_receipt_id" field.
-func PurchaseReceiptIDIsNil() predicate.Item {
-	return predicate.Item(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldPurchaseReceiptID)))
-	})
-}
-
-// PurchaseReceiptIDNotNil applies the NotNil predicate on the "purchase_receipt_id" field.
-func PurchaseReceiptIDNotNil() predicate.Item {
-	return predicate.Item(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldPurchaseReceiptID)))
-	})
-}
-
 // SoldTimeEQ applies the EQ predicate on the "sold_time" field.
 func SoldTimeEQ(v time.Time) predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
@@ -1578,84 +1712,6 @@ func SoldPriceLT(v float64) predicate.Item {
 func SoldPriceLTE(v float64) predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldSoldPrice), v))
-	})
-}
-
-// SoldReceiptIDEQ applies the EQ predicate on the "sold_receipt_id" field.
-func SoldReceiptIDEQ(v uuid.UUID) predicate.Item {
-	return predicate.Item(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSoldReceiptID), v))
-	})
-}
-
-// SoldReceiptIDNEQ applies the NEQ predicate on the "sold_receipt_id" field.
-func SoldReceiptIDNEQ(v uuid.UUID) predicate.Item {
-	return predicate.Item(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSoldReceiptID), v))
-	})
-}
-
-// SoldReceiptIDIn applies the In predicate on the "sold_receipt_id" field.
-func SoldReceiptIDIn(vs ...uuid.UUID) predicate.Item {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Item(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldSoldReceiptID), v...))
-	})
-}
-
-// SoldReceiptIDNotIn applies the NotIn predicate on the "sold_receipt_id" field.
-func SoldReceiptIDNotIn(vs ...uuid.UUID) predicate.Item {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Item(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldSoldReceiptID), v...))
-	})
-}
-
-// SoldReceiptIDGT applies the GT predicate on the "sold_receipt_id" field.
-func SoldReceiptIDGT(v uuid.UUID) predicate.Item {
-	return predicate.Item(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldSoldReceiptID), v))
-	})
-}
-
-// SoldReceiptIDGTE applies the GTE predicate on the "sold_receipt_id" field.
-func SoldReceiptIDGTE(v uuid.UUID) predicate.Item {
-	return predicate.Item(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldSoldReceiptID), v))
-	})
-}
-
-// SoldReceiptIDLT applies the LT predicate on the "sold_receipt_id" field.
-func SoldReceiptIDLT(v uuid.UUID) predicate.Item {
-	return predicate.Item(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldSoldReceiptID), v))
-	})
-}
-
-// SoldReceiptIDLTE applies the LTE predicate on the "sold_receipt_id" field.
-func SoldReceiptIDLTE(v uuid.UUID) predicate.Item {
-	return predicate.Item(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldSoldReceiptID), v))
-	})
-}
-
-// SoldReceiptIDIsNil applies the IsNil predicate on the "sold_receipt_id" field.
-func SoldReceiptIDIsNil() predicate.Item {
-	return predicate.Item(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldSoldReceiptID)))
-	})
-}
-
-// SoldReceiptIDNotNil applies the NotNil predicate on the "sold_receipt_id" field.
-func SoldReceiptIDNotNil() predicate.Item {
-	return predicate.Item(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldSoldReceiptID)))
 	})
 }
 

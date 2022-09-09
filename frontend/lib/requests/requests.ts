@@ -84,6 +84,7 @@ export class Requests {
       if (rargs.data) {
         payload.body = rargs.data;
       } else {
+        payload.headers['Content-Type'] = 'application/json';
         payload.body = JSON.stringify(rargs.body);
       }
     }

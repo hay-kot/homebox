@@ -138,21 +138,24 @@ func TestItemsRepository_Update(t *testing.T) {
 	entity := entities[0]
 
 	updateData := types.ItemUpdate{
-		ID:            entity.ID,
-		Name:          entity.Name,
-		LocationID:    entity.Edges.Location.ID,
-		SerialNumber:  fk.RandomString(10),
-		LabelIDs:      nil,
-		ModelNumber:   fk.RandomString(10),
-		Manufacturer:  fk.RandomString(10),
-		PurchaseTime:  time.Now(),
-		PurchaseFrom:  fk.RandomString(10),
-		PurchasePrice: 300.99,
-		SoldTime:      time.Now(),
-		SoldTo:        fk.RandomString(10),
-		SoldPrice:     300.99,
-		SoldNotes:     fk.RandomString(10),
-		Notes:         fk.RandomString(10),
+		ID:               entity.ID,
+		Name:             entity.Name,
+		LocationID:       entity.Edges.Location.ID,
+		SerialNumber:     fk.RandomString(10),
+		LabelIDs:         nil,
+		ModelNumber:      fk.RandomString(10),
+		Manufacturer:     fk.RandomString(10),
+		PurchaseTime:     time.Now(),
+		PurchaseFrom:     fk.RandomString(10),
+		PurchasePrice:    300.99,
+		SoldTime:         time.Now(),
+		SoldTo:           fk.RandomString(10),
+		SoldPrice:        300.99,
+		SoldNotes:        fk.RandomString(10),
+		Notes:            fk.RandomString(10),
+		WarrantyExpires:  time.Now(),
+		WarrantyDetails:  fk.RandomString(10),
+		LifetimeWarranty: true,
 	}
 
 	updatedEntity, err := tRepos.Items.Update(context.Background(), updateData)
@@ -175,4 +178,7 @@ func TestItemsRepository_Update(t *testing.T) {
 	assert.Equal(t, updateData.SoldPrice, got.SoldPrice)
 	assert.Equal(t, updateData.SoldNotes, got.SoldNotes)
 	assert.Equal(t, updateData.Notes, got.Notes)
+	// assert.Equal(t, updateData.WarrantyExpires, got.WarrantyExpires)
+	assert.Equal(t, updateData.WarrantyDetails, got.WarrantyDetails)
+	assert.Equal(t, updateData.LifetimeWarranty, got.LifetimeWarranty)
 }

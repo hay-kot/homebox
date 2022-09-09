@@ -70,7 +70,10 @@ func (e *ItemsRepository) Update(ctx context.Context, data types.ItemUpdate) (*e
 		SetSoldTo(data.SoldTo).
 		SetSoldPrice(data.SoldPrice).
 		SetSoldNotes(data.SoldNotes).
-		SetNotes(data.Notes)
+		SetNotes(data.Notes).
+		SetLifetimeWarranty(data.LifetimeWarranty).
+		SetWarrantyExpires(data.WarrantyExpires).
+		SetWarrantyDetails(data.WarrantyDetails)
 
 	err := q.Exec(ctx)
 

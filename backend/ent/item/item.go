@@ -29,22 +29,24 @@ const (
 	FieldModelNumber = "model_number"
 	// FieldManufacturer holds the string denoting the manufacturer field in the database.
 	FieldManufacturer = "manufacturer"
+	// FieldLifetimeWarranty holds the string denoting the lifetime_warranty field in the database.
+	FieldLifetimeWarranty = "lifetime_warranty"
+	// FieldWarrantyExpires holds the string denoting the warranty_expires field in the database.
+	FieldWarrantyExpires = "warranty_expires"
+	// FieldWarrantyDetails holds the string denoting the warranty_details field in the database.
+	FieldWarrantyDetails = "warranty_details"
 	// FieldPurchaseTime holds the string denoting the purchase_time field in the database.
 	FieldPurchaseTime = "purchase_time"
 	// FieldPurchaseFrom holds the string denoting the purchase_from field in the database.
 	FieldPurchaseFrom = "purchase_from"
 	// FieldPurchasePrice holds the string denoting the purchase_price field in the database.
 	FieldPurchasePrice = "purchase_price"
-	// FieldPurchaseReceiptID holds the string denoting the purchase_receipt_id field in the database.
-	FieldPurchaseReceiptID = "purchase_receipt_id"
 	// FieldSoldTime holds the string denoting the sold_time field in the database.
 	FieldSoldTime = "sold_time"
 	// FieldSoldTo holds the string denoting the sold_to field in the database.
 	FieldSoldTo = "sold_to"
 	// FieldSoldPrice holds the string denoting the sold_price field in the database.
 	FieldSoldPrice = "sold_price"
-	// FieldSoldReceiptID holds the string denoting the sold_receipt_id field in the database.
-	FieldSoldReceiptID = "sold_receipt_id"
 	// FieldSoldNotes holds the string denoting the sold_notes field in the database.
 	FieldSoldNotes = "sold_notes"
 	// EdgeGroup holds the string denoting the group edge name in mutations.
@@ -96,14 +98,15 @@ var Columns = []string{
 	FieldSerialNumber,
 	FieldModelNumber,
 	FieldManufacturer,
+	FieldLifetimeWarranty,
+	FieldWarrantyExpires,
+	FieldWarrantyDetails,
 	FieldPurchaseTime,
 	FieldPurchaseFrom,
 	FieldPurchasePrice,
-	FieldPurchaseReceiptID,
 	FieldSoldTime,
 	FieldSoldTo,
 	FieldSoldPrice,
-	FieldSoldReceiptID,
 	FieldSoldNotes,
 }
 
@@ -154,6 +157,10 @@ var (
 	ModelNumberValidator func(string) error
 	// ManufacturerValidator is a validator for the "manufacturer" field. It is called by the builders before save.
 	ManufacturerValidator func(string) error
+	// DefaultLifetimeWarranty holds the default value on creation for the "lifetime_warranty" field.
+	DefaultLifetimeWarranty bool
+	// WarrantyDetailsValidator is a validator for the "warranty_details" field. It is called by the builders before save.
+	WarrantyDetailsValidator func(string) error
 	// DefaultPurchasePrice holds the default value on creation for the "purchase_price" field.
 	DefaultPurchasePrice float64
 	// DefaultSoldPrice holds the default value on creation for the "sold_price" field.

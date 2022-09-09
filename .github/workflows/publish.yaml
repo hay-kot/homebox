@@ -1,12 +1,19 @@
 name: Build Nightly
 
 on:
+  workflow_run:
+    workflows:
+      - "Go Build/Test"
+      - "Frontend / Integration"
+    types:
+      - completed
   push:
     branches: [main]
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v2
       - name: Set up Go

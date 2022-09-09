@@ -21,7 +21,9 @@
   - [ ] Update
   - [x] Delete
 - [ ] Asset Attachments for Items
-- [x] Bulk Import via CSV
+- [ ] Bulk Import via CSV
+  - [x] Initial
+  - [ ] Add Warranty Columns
 - [ ] Documentation
   - [ ] Docker Compose
   - [ ] Import CSV Format
@@ -57,5 +59,5 @@
   - [ ] User Management
     - [ ] Delete User
     - [ ] Reset Password
-- [ ] Warranty Information
-  - [ ] Option for Lifetime Warranty or Warranty Period
+- [x] Warranty Information
+  - [x] Option for Lifetime Warranty or Warranty Period

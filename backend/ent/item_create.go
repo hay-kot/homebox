@@ -129,6 +129,48 @@ func (ic *ItemCreate) SetNillableManufacturer(s *string) *ItemCreate {
 	return ic
 }
 
+// SetLifetimeWarranty sets the "lifetime_warranty" field.
+func (ic *ItemCreate) SetLifetimeWarranty(b bool) *ItemCreate {
+	ic.mutation.SetLifetimeWarranty(b)
+	return ic
+}
+
+// SetNillableLifetimeWarranty sets the "lifetime_warranty" field if the given value is not nil.
+func (ic *ItemCreate) SetNillableLifetimeWarranty(b *bool) *ItemCreate {
+	if b != nil {
+		ic.SetLifetimeWarranty(*b)
+	}
+	return ic
+}
+
+// SetWarrantyExpires sets the "warranty_expires" field.
+func (ic *ItemCreate) SetWarrantyExpires(t time.Time) *ItemCreate {
+	ic.mutation.SetWarrantyExpires(t)
+	return ic
+}
+
+// SetNillableWarrantyExpires sets the "warranty_expires" field if the given value is not nil.
+func (ic *ItemCreate) SetNillableWarrantyExpires(t *time.Time) *ItemCreate {
+	if t != nil {
+		ic.SetWarrantyExpires(*t)
+	}
+	return ic
+}
+
+// SetWarrantyDetails sets the "warranty_details" field.
+func (ic *ItemCreate) SetWarrantyDetails(s string) *ItemCreate {
+	ic.mutation.SetWarrantyDetails(s)
+	return ic
+}
+
+// SetNillableWarrantyDetails sets the "warranty_details" field if the given value is not nil.
+func (ic *ItemCreate) SetNillableWarrantyDetails(s *string) *ItemCreate {
+	if s != nil {
+		ic.SetWarrantyDetails(*s)
+	}
+	return ic
+}
+
 // SetPurchaseTime sets the "purchase_time" field.
 func (ic *ItemCreate) SetPurchaseTime(t time.Time) *ItemCreate {
 	ic.mutation.SetPurchaseTime(t)
@@ -171,20 +213,6 @@ func (ic *ItemCreate) SetNillablePurchasePrice(f *float64) *ItemCreate {
 	return ic
 }
 
-// SetPurchaseReceiptID sets the "purchase_receipt_id" field.
-func (ic *ItemCreate) SetPurchaseReceiptID(u uuid.UUID) *ItemCreate {
-	ic.mutation.SetPurchaseReceiptID(u)
-	return ic
-}
-
-// SetNillablePurchaseReceiptID sets the "purchase_receipt_id" field if the given value is not nil.
-func (ic *ItemCreate) SetNillablePurchaseReceiptID(u *uuid.UUID) *ItemCreate {
-	if u != nil {
-		ic.SetPurchaseReceiptID(*u)
-	}
-	return ic
-}
-
 // SetSoldTime sets the "sold_time" field.
 func (ic *ItemCreate) SetSoldTime(t time.Time) *ItemCreate {
 	ic.mutation.SetSoldTime(t)
@@ -223,20 +251,6 @@ func (ic *ItemCreate) SetSoldPrice(f float64) *ItemCreate {
 func (ic *ItemCreate) SetNillableSoldPrice(f *float64) *ItemCreate {
 	if f != nil {
 		ic.SetSoldPrice(*f)
-	}
-	return ic
-}
-
-// SetSoldReceiptID sets the "sold_receipt_id" field.
-func (ic *ItemCreate) SetSoldReceiptID(u uuid.UUID) *ItemCreate {
-	ic.mutation.SetSoldReceiptID(u)
-	return ic
-}
-
-// SetNillableSoldReceiptID sets the "sold_receipt_id" field if the given value is not nil.
-func (ic *ItemCreate) SetNillableSoldReceiptID(u *uuid.UUID) *ItemCreate {
-	if u != nil {
-		ic.SetSoldReceiptID(*u)
 	}
 	return ic
 }
@@ -414,6 +428,10 @@ func (ic *ItemCreate) defaults() {
 		v := item.DefaultUpdatedAt()
 		ic.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := ic.mutation.LifetimeWarranty(); !ok {
+		v := item.DefaultLifetimeWarranty
+		ic.mutation.SetLifetimeWarranty(v)
+	}
 	if _, ok := ic.mutation.PurchasePrice(); !ok {
 		v := item.DefaultPurchasePrice
 		ic.mutation.SetPurchasePrice(v)
@@ -467,6 +485,14 @@ func (ic *ItemCreate) check() error {
 	if v, ok := ic.mutation.Manufacturer(); ok {
 		if err := item.ManufacturerValidator(v); err != nil {
 			return &ValidationError{Name: "manufacturer", err: fmt.Errorf(`ent: validator failed for field "Item.manufacturer": %w`, err)}
+		}
+	}
+	if _, ok := ic.mutation.LifetimeWarranty(); !ok {
+		return &ValidationError{Name: "lifetime_warranty", err: errors.New(`ent: missing required field "Item.lifetime_warranty"`)}
+	}
+	if v, ok := ic.mutation.WarrantyDetails(); ok {
+		if err := item.WarrantyDetailsValidator(v); err != nil {
+			return &ValidationError{Name: "warranty_details", err: fmt.Errorf(`ent: validator failed for field "Item.warranty_details": %w`, err)}
 		}
 	}
 	if _, ok := ic.mutation.PurchasePrice(); !ok {
@@ -583,6 +609,30 @@ func (ic *ItemCreate) createSpec() (*Item, *sqlgraph.CreateSpec) {
 		})
 		_node.Manufacturer = value
 	}
+	if value, ok := ic.mutation.LifetimeWarranty(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: item.FieldLifetimeWarranty,
+		})
+		_node.LifetimeWarranty = value
+	}
+	if value, ok := ic.mutation.WarrantyExpires(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: item.FieldWarrantyExpires,
+		})
+		_node.WarrantyExpires = value
+	}
+	if value, ok := ic.mutation.WarrantyDetails(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: item.FieldWarrantyDetails,
+		})
+		_node.WarrantyDetails = value
+	}
 	if value, ok := ic.mutation.PurchaseTime(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -607,14 +657,6 @@ func (ic *ItemCreate) createSpec() (*Item, *sqlgraph.CreateSpec) {
 		})
 		_node.PurchasePrice = value
 	}
-	if value, ok := ic.mutation.PurchaseReceiptID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: item.FieldPurchaseReceiptID,
-		})
-		_node.PurchaseReceiptID = value
-	}
 	if value, ok := ic.mutation.SoldTime(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -638,14 +680,6 @@ func (ic *ItemCreate) createSpec() (*Item, *sqlgraph.CreateSpec) {
 			Column: item.FieldSoldPrice,
 		})
 		_node.SoldPrice = value
-	}
-	if value, ok := ic.mutation.SoldReceiptID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: item.FieldSoldReceiptID,
-		})
-		_node.SoldReceiptID = value
 	}
 	if value, ok := ic.mutation.SoldNotes(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

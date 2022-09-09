@@ -5,7 +5,7 @@ import (
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
+	"entgo.io/ent/schema/index"
 	"github.com/hay-kot/content/backend/ent/schema/mixins"
 )
 
@@ -21,12 +21,23 @@ func (Item) Mixin() []ent.Mixin {
 	}
 }
 
+func (Item) Indexes() []ent.Index {
+	return []ent.Index{
+		// Unique index on the "title" field.
+		index.Fields("name"),
+		index.Fields("manufacturer"),
+		index.Fields("model_number"),
+		index.Fields("serial_number"),
+	}
+}
+
 // Fields of the Item.
 func (Item) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("notes").
 			MaxLen(1000).
 			Optional(),
+
 		// ------------------------------------
 		// item identification
 		field.String("serial_number").
@@ -38,6 +49,17 @@ func (Item) Fields() []ent.Field {
 		field.String("manufacturer").
 			MaxLen(255).
 			Optional(),
+
+		// ------------------------------------
+		// Item Warranty
+		field.Bool("lifetime_warranty").
+			Default(false),
+		field.Time("warranty_expires").
+			Optional(),
+		field.Text("warranty_details").
+			MaxLen(1000).
+			Optional(),
+
 		// ------------------------------------
 		// item purchase
 		field.Time("purchase_time").
@@ -46,8 +68,7 @@ func (Item) Fields() []ent.Field {
 			Optional(),
 		field.Float("purchase_price").
 			Default(0),
-		field.UUID("purchase_receipt_id", uuid.UUID{}).
-			Optional(),
+
 		// ------------------------------------
 		// Sold Details
 		field.Time("sold_time").
@@ -56,8 +77,6 @@ func (Item) Fields() []ent.Field {
 			Optional(),
 		field.Float("sold_price").
 			Default(0),
-		field.UUID("sold_receipt_id", uuid.UUID{}).
-			Optional(),
 		field.String("sold_notes").
 			MaxLen(1000).
 			Optional(),

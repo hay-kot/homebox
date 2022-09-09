@@ -145,6 +145,60 @@ func (iu *ItemUpdate) ClearManufacturer() *ItemUpdate {
 	return iu
 }
 
+// SetLifetimeWarranty sets the "lifetime_warranty" field.
+func (iu *ItemUpdate) SetLifetimeWarranty(b bool) *ItemUpdate {
+	iu.mutation.SetLifetimeWarranty(b)
+	return iu
+}
+
+// SetNillableLifetimeWarranty sets the "lifetime_warranty" field if the given value is not nil.
+func (iu *ItemUpdate) SetNillableLifetimeWarranty(b *bool) *ItemUpdate {
+	if b != nil {
+		iu.SetLifetimeWarranty(*b)
+	}
+	return iu
+}
+
+// SetWarrantyExpires sets the "warranty_expires" field.
+func (iu *ItemUpdate) SetWarrantyExpires(t time.Time) *ItemUpdate {
+	iu.mutation.SetWarrantyExpires(t)
+	return iu
+}
+
+// SetNillableWarrantyExpires sets the "warranty_expires" field if the given value is not nil.
+func (iu *ItemUpdate) SetNillableWarrantyExpires(t *time.Time) *ItemUpdate {
+	if t != nil {
+		iu.SetWarrantyExpires(*t)
+	}
+	return iu
+}
+
+// ClearWarrantyExpires clears the value of the "warranty_expires" field.
+func (iu *ItemUpdate) ClearWarrantyExpires() *ItemUpdate {
+	iu.mutation.ClearWarrantyExpires()
+	return iu
+}
+
+// SetWarrantyDetails sets the "warranty_details" field.
+func (iu *ItemUpdate) SetWarrantyDetails(s string) *ItemUpdate {
+	iu.mutation.SetWarrantyDetails(s)
+	return iu
+}
+
+// SetNillableWarrantyDetails sets the "warranty_details" field if the given value is not nil.
+func (iu *ItemUpdate) SetNillableWarrantyDetails(s *string) *ItemUpdate {
+	if s != nil {
+		iu.SetWarrantyDetails(*s)
+	}
+	return iu
+}
+
+// ClearWarrantyDetails clears the value of the "warranty_details" field.
+func (iu *ItemUpdate) ClearWarrantyDetails() *ItemUpdate {
+	iu.mutation.ClearWarrantyDetails()
+	return iu
+}
+
 // SetPurchaseTime sets the "purchase_time" field.
 func (iu *ItemUpdate) SetPurchaseTime(t time.Time) *ItemUpdate {
 	iu.mutation.SetPurchaseTime(t)
@@ -206,26 +260,6 @@ func (iu *ItemUpdate) AddPurchasePrice(f float64) *ItemUpdate {
 	return iu
 }
 
-// SetPurchaseReceiptID sets the "purchase_receipt_id" field.
-func (iu *ItemUpdate) SetPurchaseReceiptID(u uuid.UUID) *ItemUpdate {
-	iu.mutation.SetPurchaseReceiptID(u)
-	return iu
-}
-
-// SetNillablePurchaseReceiptID sets the "purchase_receipt_id" field if the given value is not nil.
-func (iu *ItemUpdate) SetNillablePurchaseReceiptID(u *uuid.UUID) *ItemUpdate {
-	if u != nil {
-		iu.SetPurchaseReceiptID(*u)
-	}
-	return iu
-}
-
-// ClearPurchaseReceiptID clears the value of the "purchase_receipt_id" field.
-func (iu *ItemUpdate) ClearPurchaseReceiptID() *ItemUpdate {
-	iu.mutation.ClearPurchaseReceiptID()
-	return iu
-}
-
 // SetSoldTime sets the "sold_time" field.
 func (iu *ItemUpdate) SetSoldTime(t time.Time) *ItemUpdate {
 	iu.mutation.SetSoldTime(t)
@@ -284,26 +318,6 @@ func (iu *ItemUpdate) SetNillableSoldPrice(f *float64) *ItemUpdate {
 // AddSoldPrice adds f to the "sold_price" field.
 func (iu *ItemUpdate) AddSoldPrice(f float64) *ItemUpdate {
 	iu.mutation.AddSoldPrice(f)
-	return iu
-}
-
-// SetSoldReceiptID sets the "sold_receipt_id" field.
-func (iu *ItemUpdate) SetSoldReceiptID(u uuid.UUID) *ItemUpdate {
-	iu.mutation.SetSoldReceiptID(u)
-	return iu
-}
-
-// SetNillableSoldReceiptID sets the "sold_receipt_id" field if the given value is not nil.
-func (iu *ItemUpdate) SetNillableSoldReceiptID(u *uuid.UUID) *ItemUpdate {
-	if u != nil {
-		iu.SetSoldReceiptID(*u)
-	}
-	return iu
-}
-
-// ClearSoldReceiptID clears the value of the "sold_receipt_id" field.
-func (iu *ItemUpdate) ClearSoldReceiptID() *ItemUpdate {
-	iu.mutation.ClearSoldReceiptID()
 	return iu
 }
 
@@ -547,6 +561,11 @@ func (iu *ItemUpdate) check() error {
 			return &ValidationError{Name: "manufacturer", err: fmt.Errorf(`ent: validator failed for field "Item.manufacturer": %w`, err)}
 		}
 	}
+	if v, ok := iu.mutation.WarrantyDetails(); ok {
+		if err := item.WarrantyDetailsValidator(v); err != nil {
+			return &ValidationError{Name: "warranty_details", err: fmt.Errorf(`ent: validator failed for field "Item.warranty_details": %w`, err)}
+		}
+	}
 	if v, ok := iu.mutation.SoldNotes(); ok {
 		if err := item.SoldNotesValidator(v); err != nil {
 			return &ValidationError{Name: "sold_notes", err: fmt.Errorf(`ent: validator failed for field "Item.sold_notes": %w`, err)}
@@ -655,6 +674,39 @@ func (iu *ItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: item.FieldManufacturer,
 		})
 	}
+	if value, ok := iu.mutation.LifetimeWarranty(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: item.FieldLifetimeWarranty,
+		})
+	}
+	if value, ok := iu.mutation.WarrantyExpires(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: item.FieldWarrantyExpires,
+		})
+	}
+	if iu.mutation.WarrantyExpiresCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: item.FieldWarrantyExpires,
+		})
+	}
+	if value, ok := iu.mutation.WarrantyDetails(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: item.FieldWarrantyDetails,
+		})
+	}
+	if iu.mutation.WarrantyDetailsCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: item.FieldWarrantyDetails,
+		})
+	}
 	if value, ok := iu.mutation.PurchaseTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -695,19 +747,6 @@ func (iu *ItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: item.FieldPurchasePrice,
 		})
 	}
-	if value, ok := iu.mutation.PurchaseReceiptID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: item.FieldPurchaseReceiptID,
-		})
-	}
-	if iu.mutation.PurchaseReceiptIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Column: item.FieldPurchaseReceiptID,
-		})
-	}
 	if value, ok := iu.mutation.SoldTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -746,19 +785,6 @@ func (iu *ItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: item.FieldSoldPrice,
-		})
-	}
-	if value, ok := iu.mutation.SoldReceiptID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: item.FieldSoldReceiptID,
-		})
-	}
-	if iu.mutation.SoldReceiptIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Column: item.FieldSoldReceiptID,
 		})
 	}
 	if value, ok := iu.mutation.SoldNotes(); ok {
@@ -1083,6 +1109,60 @@ func (iuo *ItemUpdateOne) ClearManufacturer() *ItemUpdateOne {
 	return iuo
 }
 
+// SetLifetimeWarranty sets the "lifetime_warranty" field.
+func (iuo *ItemUpdateOne) SetLifetimeWarranty(b bool) *ItemUpdateOne {
+	iuo.mutation.SetLifetimeWarranty(b)
+	return iuo
+}
+
+// SetNillableLifetimeWarranty sets the "lifetime_warranty" field if the given value is not nil.
+func (iuo *ItemUpdateOne) SetNillableLifetimeWarranty(b *bool) *ItemUpdateOne {
+	if b != nil {
+		iuo.SetLifetimeWarranty(*b)
+	}
+	return iuo
+}
+
+// SetWarrantyExpires sets the "warranty_expires" field.
+func (iuo *ItemUpdateOne) SetWarrantyExpires(t time.Time) *ItemUpdateOne {
+	iuo.mutation.SetWarrantyExpires(t)
+	return iuo
+}
+
+// SetNillableWarrantyExpires sets the "warranty_expires" field if the given value is not nil.
+func (iuo *ItemUpdateOne) SetNillableWarrantyExpires(t *time.Time) *ItemUpdateOne {
+	if t != nil {
+		iuo.SetWarrantyExpires(*t)
+	}
+	return iuo
+}
+
+// ClearWarrantyExpires clears the value of the "warranty_expires" field.
+func (iuo *ItemUpdateOne) ClearWarrantyExpires() *ItemUpdateOne {
+	iuo.mutation.ClearWarrantyExpires()
+	return iuo
+}
+
+// SetWarrantyDetails sets the "warranty_details" field.
+func (iuo *ItemUpdateOne) SetWarrantyDetails(s string) *ItemUpdateOne {
+	iuo.mutation.SetWarrantyDetails(s)
+	return iuo
+}
+
+// SetNillableWarrantyDetails sets the "warranty_details" field if the given value is not nil.
+func (iuo *ItemUpdateOne) SetNillableWarrantyDetails(s *string) *ItemUpdateOne {
+	if s != nil {
+		iuo.SetWarrantyDetails(*s)
+	}
+	return iuo
+}
+
+// ClearWarrantyDetails clears the value of the "warranty_details" field.
+func (iuo *ItemUpdateOne) ClearWarrantyDetails() *ItemUpdateOne {
+	iuo.mutation.ClearWarrantyDetails()
+	return iuo
+}
+
 // SetPurchaseTime sets the "purchase_time" field.
 func (iuo *ItemUpdateOne) SetPurchaseTime(t time.Time) *ItemUpdateOne {
 	iuo.mutation.SetPurchaseTime(t)
@@ -1144,26 +1224,6 @@ func (iuo *ItemUpdateOne) AddPurchasePrice(f float64) *ItemUpdateOne {
 	return iuo
 }
 
-// SetPurchaseReceiptID sets the "purchase_receipt_id" field.
-func (iuo *ItemUpdateOne) SetPurchaseReceiptID(u uuid.UUID) *ItemUpdateOne {
-	iuo.mutation.SetPurchaseReceiptID(u)
-	return iuo
-}
-
-// SetNillablePurchaseReceiptID sets the "purchase_receipt_id" field if the given value is not nil.
-func (iuo *ItemUpdateOne) SetNillablePurchaseReceiptID(u *uuid.UUID) *ItemUpdateOne {
-	if u != nil {
-		iuo.SetPurchaseReceiptID(*u)
-	}
-	return iuo
-}
-
-// ClearPurchaseReceiptID clears the value of the "purchase_receipt_id" field.
-func (iuo *ItemUpdateOne) ClearPurchaseReceiptID() *ItemUpdateOne {
-	iuo.mutation.ClearPurchaseReceiptID()
-	return iuo
-}
-
 // SetSoldTime sets the "sold_time" field.
 func (iuo *ItemUpdateOne) SetSoldTime(t time.Time) *ItemUpdateOne {
 	iuo.mutation.SetSoldTime(t)
@@ -1222,26 +1282,6 @@ func (iuo *ItemUpdateOne) SetNillableSoldPrice(f *float64) *ItemUpdateOne {
 // AddSoldPrice adds f to the "sold_price" field.
 func (iuo *ItemUpdateOne) AddSoldPrice(f float64) *ItemUpdateOne {
 	iuo.mutation.AddSoldPrice(f)
-	return iuo
-}
-
-// SetSoldReceiptID sets the "sold_receipt_id" field.
-func (iuo *ItemUpdateOne) SetSoldReceiptID(u uuid.UUID) *ItemUpdateOne {
-	iuo.mutation.SetSoldReceiptID(u)
-	return iuo
-}
-
-// SetNillableSoldReceiptID sets the "sold_receipt_id" field if the given value is not nil.
-func (iuo *ItemUpdateOne) SetNillableSoldReceiptID(u *uuid.UUID) *ItemUpdateOne {
-	if u != nil {
-		iuo.SetSoldReceiptID(*u)
-	}
-	return iuo
-}
-
-// ClearSoldReceiptID clears the value of the "sold_receipt_id" field.
-func (iuo *ItemUpdateOne) ClearSoldReceiptID() *ItemUpdateOne {
-	iuo.mutation.ClearSoldReceiptID()
 	return iuo
 }
 
@@ -1498,6 +1538,11 @@ func (iuo *ItemUpdateOne) check() error {
 			return &ValidationError{Name: "manufacturer", err: fmt.Errorf(`ent: validator failed for field "Item.manufacturer": %w`, err)}
 		}
 	}
+	if v, ok := iuo.mutation.WarrantyDetails(); ok {
+		if err := item.WarrantyDetailsValidator(v); err != nil {
+			return &ValidationError{Name: "warranty_details", err: fmt.Errorf(`ent: validator failed for field "Item.warranty_details": %w`, err)}
+		}
+	}
 	if v, ok := iuo.mutation.SoldNotes(); ok {
 		if err := item.SoldNotesValidator(v); err != nil {
 			return &ValidationError{Name: "sold_notes", err: fmt.Errorf(`ent: validator failed for field "Item.sold_notes": %w`, err)}
@@ -1623,6 +1668,39 @@ func (iuo *ItemUpdateOne) sqlSave(ctx context.Context) (_node *Item, err error) 
 			Column: item.FieldManufacturer,
 		})
 	}
+	if value, ok := iuo.mutation.LifetimeWarranty(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: item.FieldLifetimeWarranty,
+		})
+	}
+	if value, ok := iuo.mutation.WarrantyExpires(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: item.FieldWarrantyExpires,
+		})
+	}
+	if iuo.mutation.WarrantyExpiresCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: item.FieldWarrantyExpires,
+		})
+	}
+	if value, ok := iuo.mutation.WarrantyDetails(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: item.FieldWarrantyDetails,
+		})
+	}
+	if iuo.mutation.WarrantyDetailsCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: item.FieldWarrantyDetails,
+		})
+	}
 	if value, ok := iuo.mutation.PurchaseTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -1663,19 +1741,6 @@ func (iuo *ItemUpdateOne) sqlSave(ctx context.Context) (_node *Item, err error) 
 			Column: item.FieldPurchasePrice,
 		})
 	}
-	if value, ok := iuo.mutation.PurchaseReceiptID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: item.FieldPurchaseReceiptID,
-		})
-	}
-	if iuo.mutation.PurchaseReceiptIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Column: item.FieldPurchaseReceiptID,
-		})
-	}
 	if value, ok := iuo.mutation.SoldTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -1714,19 +1779,6 @@ func (iuo *ItemUpdateOne) sqlSave(ctx context.Context) (_node *Item, err error) 
 			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: item.FieldSoldPrice,
-		})
-	}
-	if value, ok := iuo.mutation.SoldReceiptID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: item.FieldSoldReceiptID,
-		})
-	}
-	if iuo.mutation.SoldReceiptIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Column: item.FieldSoldReceiptID,
 		})
 	}
 	if value, ok := iuo.mutation.SoldNotes(); ok {

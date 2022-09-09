@@ -27,7 +27,7 @@ var (
 				Symbol:     "auth_tokens_users_auth_tokens",
 				Columns:    []*schema.Column{AuthTokensColumns[5]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Cascade,
 			},
 		},
 		Indexes: []*schema.Index{
@@ -63,14 +63,15 @@ var (
 		{Name: "serial_number", Type: field.TypeString, Nullable: true, Size: 255},
 		{Name: "model_number", Type: field.TypeString, Nullable: true, Size: 255},
 		{Name: "manufacturer", Type: field.TypeString, Nullable: true, Size: 255},
+		{Name: "lifetime_warranty", Type: field.TypeBool, Default: false},
+		{Name: "warranty_expires", Type: field.TypeTime, Nullable: true},
+		{Name: "warranty_details", Type: field.TypeString, Nullable: true, Size: 1000},
 		{Name: "purchase_time", Type: field.TypeTime, Nullable: true},
 		{Name: "purchase_from", Type: field.TypeString, Nullable: true},
 		{Name: "purchase_price", Type: field.TypeFloat64, Default: 0},
-		{Name: "purchase_receipt_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "sold_time", Type: field.TypeTime, Nullable: true},
 		{Name: "sold_to", Type: field.TypeString, Nullable: true},
 		{Name: "sold_price", Type: field.TypeFloat64, Default: 0},
-		{Name: "sold_receipt_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "sold_notes", Type: field.TypeString, Nullable: true, Size: 1000},
 		{Name: "group_items", Type: field.TypeUUID},
 		{Name: "location_items", Type: field.TypeUUID, Nullable: true},
@@ -83,15 +84,37 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "items_groups_items",
-				Columns:    []*schema.Column{ItemsColumns[18]},
+				Columns:    []*schema.Column{ItemsColumns[19]},
 				RefColumns: []*schema.Column{GroupsColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "items_locations_items",
-				Columns:    []*schema.Column{ItemsColumns[19]},
+				Columns:    []*schema.Column{ItemsColumns[20]},
 				RefColumns: []*schema.Column{LocationsColumns[0]},
 				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "item_name",
+				Unique:  false,
+				Columns: []*schema.Column{ItemsColumns[3]},
+			},
+			{
+				Name:    "item_manufacturer",
+				Unique:  false,
+				Columns: []*schema.Column{ItemsColumns[8]},
+			},
+			{
+				Name:    "item_model_number",
+				Unique:  false,
+				Columns: []*schema.Column{ItemsColumns[7]},
+			},
+			{
+				Name:    "item_serial_number",
+				Unique:  false,
+				Columns: []*schema.Column{ItemsColumns[6]},
 			},
 		},
 	}
@@ -119,7 +142,7 @@ var (
 				Symbol:     "item_fields_items_fields",
 				Columns:    []*schema.Column{ItemFieldsColumns[10]},
 				RefColumns: []*schema.Column{ItemsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Cascade,
 			},
 		},
 	}
@@ -143,7 +166,7 @@ var (
 				Symbol:     "labels_groups_labels",
 				Columns:    []*schema.Column{LabelsColumns[6]},
 				RefColumns: []*schema.Column{GroupsColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.Cascade,
 			},
 		},
 	}
@@ -166,7 +189,7 @@ var (
 				Symbol:     "locations_groups_locations",
 				Columns:    []*schema.Column{LocationsColumns[5]},
 				RefColumns: []*schema.Column{GroupsColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.Cascade,
 			},
 		},
 	}
@@ -191,7 +214,7 @@ var (
 				Symbol:     "users_groups_users",
 				Columns:    []*schema.Column{UsersColumns[7]},
 				RefColumns: []*schema.Column{GroupsColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.Cascade,
 			},
 		},
 	}

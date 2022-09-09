@@ -910,6 +910,10 @@ const docTemplate = `{
                     "description": "ID of the ent.",
                     "type": "string"
                 },
+                "lifetime_warranty": {
+                    "description": "LifetimeWarranty holds the value of the \"lifetime_warranty\" field.",
+                    "type": "boolean"
+                },
                 "manufacturer": {
                     "description": "Manufacturer holds the value of the \"manufacturer\" field.",
                     "type": "string"
@@ -934,10 +938,6 @@ const docTemplate = `{
                     "description": "PurchasePrice holds the value of the \"purchase_price\" field.",
                     "type": "number"
                 },
-                "purchase_receipt_id": {
-                    "description": "PurchaseReceiptID holds the value of the \"purchase_receipt_id\" field.",
-                    "type": "string"
-                },
                 "purchase_time": {
                     "description": "PurchaseTime holds the value of the \"purchase_time\" field.",
                     "type": "string"
@@ -954,10 +954,6 @@ const docTemplate = `{
                     "description": "SoldPrice holds the value of the \"sold_price\" field.",
                     "type": "number"
                 },
-                "sold_receipt_id": {
-                    "description": "SoldReceiptID holds the value of the \"sold_receipt_id\" field.",
-                    "type": "string"
-                },
                 "sold_time": {
                     "description": "SoldTime holds the value of the \"sold_time\" field.",
                     "type": "string"
@@ -968,6 +964,14 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "description": "UpdatedAt holds the value of the \"updated_at\" field.",
+                    "type": "string"
+                },
+                "warranty_details": {
+                    "description": "WarrantyDetails holds the value of the \"warranty_details\" field.",
+                    "type": "string"
+                },
+                "warranty_expires": {
+                    "description": "WarrantyExpires holds the value of the \"warranty_expires\" field.",
                     "type": "string"
                 }
             }
@@ -1280,6 +1284,10 @@ const docTemplate = `{
                         "$ref": "#/definitions/types.LabelSummary"
                     }
                 },
+                "lifetimeWarranty": {
+                    "description": "Warranty",
+                    "type": "boolean"
+                },
                 "location": {
                     "description": "Edges",
                     "$ref": "#/definitions/types.LocationSummary"
@@ -1325,6 +1333,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updatedAt": {
+                    "type": "string"
+                },
+                "warrantyDetails": {
+                    "type": "string"
+                },
+                "warrantyExpires": {
                     "type": "string"
                 }
             }
@@ -1347,6 +1361,10 @@ const docTemplate = `{
                         "$ref": "#/definitions/types.LabelSummary"
                     }
                 },
+                "lifetimeWarranty": {
+                    "description": "Warranty",
+                    "type": "boolean"
+                },
                 "location": {
                     "description": "Edges",
                     "$ref": "#/definitions/types.LocationSummary"
@@ -1392,6 +1410,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updatedAt": {
+                    "type": "string"
+                },
+                "warrantyDetails": {
+                    "type": "string"
+                },
+                "warrantyExpires": {
                     "type": "string"
                 }
             }

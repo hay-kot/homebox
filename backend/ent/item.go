@@ -35,22 +35,24 @@ type Item struct {
 	ModelNumber string `json:"model_number,omitempty"`
 	// Manufacturer holds the value of the "manufacturer" field.
 	Manufacturer string `json:"manufacturer,omitempty"`
+	// LifetimeWarranty holds the value of the "lifetime_warranty" field.
+	LifetimeWarranty bool `json:"lifetime_warranty,omitempty"`
+	// WarrantyExpires holds the value of the "warranty_expires" field.
+	WarrantyExpires time.Time `json:"warranty_expires,omitempty"`
+	// WarrantyDetails holds the value of the "warranty_details" field.
+	WarrantyDetails string `json:"warranty_details,omitempty"`
 	// PurchaseTime holds the value of the "purchase_time" field.
 	PurchaseTime time.Time `json:"purchase_time,omitempty"`
 	// PurchaseFrom holds the value of the "purchase_from" field.
 	PurchaseFrom string `json:"purchase_from,omitempty"`
 	// PurchasePrice holds the value of the "purchase_price" field.
 	PurchasePrice float64 `json:"purchase_price,omitempty"`
-	// PurchaseReceiptID holds the value of the "purchase_receipt_id" field.
-	PurchaseReceiptID uuid.UUID `json:"purchase_receipt_id,omitempty"`
 	// SoldTime holds the value of the "sold_time" field.
 	SoldTime time.Time `json:"sold_time,omitempty"`
 	// SoldTo holds the value of the "sold_to" field.
 	SoldTo string `json:"sold_to,omitempty"`
 	// SoldPrice holds the value of the "sold_price" field.
 	SoldPrice float64 `json:"sold_price,omitempty"`
-	// SoldReceiptID holds the value of the "sold_receipt_id" field.
-	SoldReceiptID uuid.UUID `json:"sold_receipt_id,omitempty"`
 	// SoldNotes holds the value of the "sold_notes" field.
 	SoldNotes string `json:"sold_notes,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -124,13 +126,15 @@ func (*Item) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case item.FieldLifetimeWarranty:
+			values[i] = new(sql.NullBool)
 		case item.FieldPurchasePrice, item.FieldSoldPrice:
 			values[i] = new(sql.NullFloat64)
-		case item.FieldName, item.FieldDescription, item.FieldNotes, item.FieldSerialNumber, item.FieldModelNumber, item.FieldManufacturer, item.FieldPurchaseFrom, item.FieldSoldTo, item.FieldSoldNotes:
+		case item.FieldName, item.FieldDescription, item.FieldNotes, item.FieldSerialNumber, item.FieldModelNumber, item.FieldManufacturer, item.FieldWarrantyDetails, item.FieldPurchaseFrom, item.FieldSoldTo, item.FieldSoldNotes:
 			values[i] = new(sql.NullString)
-		case item.FieldCreatedAt, item.FieldUpdatedAt, item.FieldPurchaseTime, item.FieldSoldTime:
+		case item.FieldCreatedAt, item.FieldUpdatedAt, item.FieldWarrantyExpires, item.FieldPurchaseTime, item.FieldSoldTime:
 			values[i] = new(sql.NullTime)
-		case item.FieldID, item.FieldPurchaseReceiptID, item.FieldSoldReceiptID:
+		case item.FieldID:
 			values[i] = new(uuid.UUID)
 		case item.ForeignKeys[0]: // group_items
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
@@ -205,6 +209,24 @@ func (i *Item) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				i.Manufacturer = value.String
 			}
+		case item.FieldLifetimeWarranty:
+			if value, ok := values[j].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field lifetime_warranty", values[j])
+			} else if value.Valid {
+				i.LifetimeWarranty = value.Bool
+			}
+		case item.FieldWarrantyExpires:
+			if value, ok := values[j].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field warranty_expires", values[j])
+			} else if value.Valid {
+				i.WarrantyExpires = value.Time
+			}
+		case item.FieldWarrantyDetails:
+			if value, ok := values[j].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field warranty_details", values[j])
+			} else if value.Valid {
+				i.WarrantyDetails = value.String
+			}
 		case item.FieldPurchaseTime:
 			if value, ok := values[j].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field purchase_time", values[j])
@@ -223,12 +245,6 @@ func (i *Item) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				i.PurchasePrice = value.Float64
 			}
-		case item.FieldPurchaseReceiptID:
-			if value, ok := values[j].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field purchase_receipt_id", values[j])
-			} else if value != nil {
-				i.PurchaseReceiptID = *value
-			}
 		case item.FieldSoldTime:
 			if value, ok := values[j].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field sold_time", values[j])
@@ -246,12 +262,6 @@ func (i *Item) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field sold_price", values[j])
 			} else if value.Valid {
 				i.SoldPrice = value.Float64
-			}
-		case item.FieldSoldReceiptID:
-			if value, ok := values[j].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field sold_receipt_id", values[j])
-			} else if value != nil {
-				i.SoldReceiptID = *value
 			}
 		case item.FieldSoldNotes:
 			if value, ok := values[j].(*sql.NullString); !ok {
@@ -345,6 +355,15 @@ func (i *Item) String() string {
 	builder.WriteString("manufacturer=")
 	builder.WriteString(i.Manufacturer)
 	builder.WriteString(", ")
+	builder.WriteString("lifetime_warranty=")
+	builder.WriteString(fmt.Sprintf("%v", i.LifetimeWarranty))
+	builder.WriteString(", ")
+	builder.WriteString("warranty_expires=")
+	builder.WriteString(i.WarrantyExpires.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("warranty_details=")
+	builder.WriteString(i.WarrantyDetails)
+	builder.WriteString(", ")
 	builder.WriteString("purchase_time=")
 	builder.WriteString(i.PurchaseTime.Format(time.ANSIC))
 	builder.WriteString(", ")
@@ -354,9 +373,6 @@ func (i *Item) String() string {
 	builder.WriteString("purchase_price=")
 	builder.WriteString(fmt.Sprintf("%v", i.PurchasePrice))
 	builder.WriteString(", ")
-	builder.WriteString("purchase_receipt_id=")
-	builder.WriteString(fmt.Sprintf("%v", i.PurchaseReceiptID))
-	builder.WriteString(", ")
 	builder.WriteString("sold_time=")
 	builder.WriteString(i.SoldTime.Format(time.ANSIC))
 	builder.WriteString(", ")
@@ -365,9 +381,6 @@ func (i *Item) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("sold_price=")
 	builder.WriteString(fmt.Sprintf("%v", i.SoldPrice))
-	builder.WriteString(", ")
-	builder.WriteString("sold_receipt_id=")
-	builder.WriteString(fmt.Sprintf("%v", i.SoldReceiptID))
 	builder.WriteString(", ")
 	builder.WriteString("sold_notes=")
 	builder.WriteString(i.SoldNotes)

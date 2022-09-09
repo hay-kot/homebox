@@ -29,6 +29,11 @@ type ItemUpdate struct {
 	ModelNumber  string `json:"modelNumber"`
 	Manufacturer string `json:"manufacturer"`
 
+	// Warranty
+	LifetimeWarranty bool      `json:"lifetimeWarranty"`
+	WarrantyExpires  time.Time `json:"warrantyExpires"`
+	WarrantyDetails  string    `json:"warrantyDetails"`
+
 	// Purchase
 	PurchaseTime  time.Time `json:"purchaseTime"`
 	PurchaseFrom  string    `json:"purchaseFrom"`
@@ -60,6 +65,11 @@ type ItemSummary struct {
 	SerialNumber string `json:"serialNumber"`
 	ModelNumber  string `json:"modelNumber"`
 	Manufacturer string `json:"manufacturer"`
+
+	// Warranty
+	LifetimeWarranty bool      `json:"lifetimeWarranty"`
+	WarrantyExpires  time.Time `json:"warrantyExpires"`
+	WarrantyDetails  string    `json:"warrantyDetails"`
 
 	// Purchase
 	PurchaseTime  time.Time `json:"purchaseTime"`
