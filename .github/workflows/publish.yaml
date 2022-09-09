@@ -16,8 +16,10 @@ jobs:
 
   publish:
     name: "Publish Nightly"
+    needs:
+      - backend-tests
+      - frontend-tests
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v2
       - name: Set up Go
