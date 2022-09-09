@@ -1,0 +1,15 @@
+name: Pull Request CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  backend-tests:
+    name: "Backend Server Tests"
+    uses: hay-kot/homebox/.github/workflows/go.yaml@main
+
+  frontend-tests:
+    name: "Frontend and End-to-End Tests"
+    uses: hay-kot/homebox/.github/workflows/frontend.yaml@main
