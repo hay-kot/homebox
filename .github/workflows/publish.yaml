@@ -1,17 +1,25 @@
 name: Build Nightly
 
 on:
-  workflow_run:
-    workflows:
-      - "Go Build/Test"
-      - "Frontend / Integration"
-    types:
-      - completed
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
+  backend-tests:
+    name: "Backend Server Tests"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: hay-kot/homebox/.github/workflows/go.yaml@main
+
+  frontend-tests:
+    name: "Frontend and End-to-End Tests"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: hay-kot/homebox/.github/workflows/frontend.yaml@main
+
   publish:
+    name: "Publish Nightly"
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
