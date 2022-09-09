@@ -50,7 +50,21 @@ func (svc *ItemService) Create(ctx context.Context, gid uuid.UUID, data types.It
 	return mappers.ToItemOut(item), nil
 }
 func (svc *ItemService) Delete(ctx context.Context, gid uuid.UUID, id uuid.UUID) error {
-	panic("implement me")
+	item, err := svc.repo.Items.GetOne(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	if item.Edges.Group.ID != gid {
+		return ErrNotOwner
+	}
+
+	err = svc.repo.Items.Delete(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 func (svc *ItemService) Update(ctx context.Context, gid uuid.UUID, data types.ItemUpdate) (*types.ItemOut, error) {
 	panic("implement me")

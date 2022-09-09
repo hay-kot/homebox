@@ -30,14 +30,14 @@ export class UserApi extends BaseAPI {
   }
 
   public self() {
-    return this.http.get<Result<User>>(route('/users/self'));
+    return this.http.get<Result<User>>({ url: route('/users/self') });
   }
 
   public logout() {
-    return this.http.post<object, void>(route('/users/logout'), {});
+    return this.http.post<object, void>({ url: route('/users/logout') });
   }
 
   public deleteAccount() {
-    return this.http.delete<void>(route('/users/self'));
+    return this.http.delete<void>({ url: route('/users/self') });
   }
 }

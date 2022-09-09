@@ -44,6 +44,7 @@
 
   const importDialog = ref(false);
   const importCsv = ref(null);
+  const importLoading = ref(false);
   const importRef = ref<HTMLInputElement>(null);
   whenever(
     () => !importDialog.value,
@@ -53,9 +54,11 @@
   );
 
   function setFile(e: Event & { target: HTMLInputElement }) {
-    console.log(e);
     importCsv.value = e.target.files[0];
+    console.log('importCsv.value', importCsv.value);
   }
+
+  const toast = useNotifier();
 
   function openDialog() {
     importDialog.value = true;
@@ -64,32 +67,49 @@
   function uploadCsv() {
     importRef.value.click();
   }
+
+  async function submitCsvFile() {
+    importLoading.value = true;
+
+    const { error } = await api.items.import(importCsv.value);
+
+    if (error) {
+      toast.error('Import failed. Please try again later.');
+    }
+
+    // Reset
+    importDialog.value = false;
+    importLoading.value = false;
+    importCsv.value = null;
+    importRef.value.value = null;
+  }
 </script>
 
 <template>
   <BaseContainer class="space-y-16 pb-16">
     <BaseModal v-model="importDialog">
       <template #title> Import CSV File </template>
-
       <p>
         Import a CSV file containing your items, labels, and locations. See documentation for more information on the
         required format.
       </p>
 
-      <div class="flex flex-col gap-2 py-6">
-        <input ref="importRef" type="file" class="hidden" accept=".csv" @change="setFile" />
-        <BaseButton @click="uploadCsv">
-          <Icon class="h-5 w-5 mr-2" name="mdi-upload" />
-          Upload
-        </BaseButton>
-        <p class="text-center py-4">
-          {{ importCsv?.name }}
-        </p>
-      </div>
+      <form @submit.prevent="submitCsvFile">
+        <div class="flex flex-col gap-2 py-6">
+          <input ref="importRef" type="file" class="hidden" accept=".csv" @change="setFile" />
+          <BaseButton type="button" @click="uploadCsv">
+            <Icon class="h-5 w-5 mr-2" name="mdi-upload" />
+            Upload
+          </BaseButton>
+          <p class="text-center pt-4 -mb-5">
+            {{ importCsv?.name }}
+          </p>
+        </div>
 
-      <div class="modal-action">
-        <BaseButton :disabled="!importCsv"> Submit </BaseButton>
-      </div>
+        <div class="modal-action">
+          <BaseButton type="submit" :disabled="!importCsv"> Submit </BaseButton>
+        </div>
+      </form>
     </BaseModal>
 
     <section aria-labelledby="profile-overview-title" class="mt-8">

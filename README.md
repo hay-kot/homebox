@@ -19,15 +19,15 @@
 - [ ] Items CRUD
   - [x] Create
   - [ ] Update
-  - [ ] Delete
+  - [x] Delete
 - [ ] Asset Attachments for Items
 - [x] Bulk Import via CSV
 - [ ] Documentation
   - [ ] Docker Compose
   - [ ] Import CSV Format
   - [ ] TLDR; Getting Started
-- [ ] Release Flow
-  - [ ] CI/CD Docker Builds w/ Multi-arch
+- [x] Release Flow
+  - [x] CI/CD Docker Builds w/ Multi-arch
 - [ ] Db Migrations
   - [ ] How To
 - [ ] Repo House Keeping

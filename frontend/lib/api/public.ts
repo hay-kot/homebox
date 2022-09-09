@@ -28,17 +28,20 @@ export type StatusResult = {
 
 export class PublicApi extends BaseAPI {
   public status() {
-    return this.http.get<StatusResult>(route('/status'));
+    return this.http.get<StatusResult>({ url: route('/status') });
   }
 
   public login(username: string, password: string) {
-    return this.http.post<LoginPayload, LoginResult>(route('/users/login'), {
-      username,
-      password,
+    return this.http.post<LoginPayload, LoginResult>({
+      url: route('/users/login'),
+      body: {
+        username,
+        password,
+      },
     });
   }
 
-  public register(payload: RegisterPayload) {
-    return this.http.post<RegisterPayload, LoginResult>(route('/users/register'), payload);
+  public register(body: RegisterPayload) {
+    return this.http.post<RegisterPayload, LoginResult>({ url: route('/users/register'), body });
   }
 }

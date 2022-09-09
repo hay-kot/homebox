@@ -33,15 +33,15 @@ export interface Item {
 
 export class ItemsApi extends BaseAPI {
   async getAll() {
-    return this.http.get<Results<Item>>(route('/items'));
+    return this.http.get<Results<Item>>({ url: route('/items') });
   }
 
   async create(item: ItemCreate) {
-    return this.http.post<ItemCreate, Item>(route('/items'), item);
+    return this.http.post<ItemCreate, Item>({ url: route('/items'), body: item });
   }
 
   async get(id: string) {
-    const payload = await this.http.get<Item>(route(`/items/${id}`));
+    const payload = await this.http.get<Item>({ url: route(`/items/${id}`) });
 
     if (!payload.data) {
       return payload;
@@ -55,10 +55,17 @@ export class ItemsApi extends BaseAPI {
   }
 
   async delete(id: string) {
-    return this.http.delete<void>(route(`/items/${id}`));
+    return this.http.delete<void>({ url: route(`/items/${id}`) });
   }
 
   async update(id: string, item: ItemCreate) {
-    return this.http.put<ItemCreate, Item>(route(`/items/${id}`), item);
+    return this.http.put<ItemCreate, Item>({ url: route(`/items/${id}`), body: item });
+  }
+
+  async import(file: File) {
+    const formData = new FormData();
+    formData.append('csv', file);
+
+    return this.http.post<FormData, void>({ url: route('/items/import'), data: formData });
   }
 }

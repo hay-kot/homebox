@@ -15,21 +15,21 @@ export type LocationUpdate = LocationCreate;
 
 export class LocationsApi extends BaseAPI {
   async getAll() {
-    return this.http.get<Results<Location>>(route('/locations'));
+    return this.http.get<Results<Location>>({ url: route('/locations') });
   }
 
-  async create(location: LocationCreate) {
-    return this.http.post<LocationCreate, Location>(route('/locations'), location);
+  async create(body: LocationCreate) {
+    return this.http.post<LocationCreate, Location>({ url: route('/locations'), body });
   }
 
   async get(id: string) {
-    return this.http.get<Location>(route(`/locations/${id}`));
+    return this.http.get<Location>({ url: route(`/locations/${id}`) });
   }
   async delete(id: string) {
-    return this.http.delete<void>(route(`/locations/${id}`));
+    return this.http.delete<void>({ url: route(`/locations/${id}`) });
   }
 
-  async update(id: string, location: LocationUpdate) {
-    return this.http.put<LocationUpdate, Location>(route(`/locations/${id}`), location);
+  async update(id: string, body: LocationUpdate) {
+    return this.http.put<LocationUpdate, Location>({ url: route(`/locations/${id}`), body });
   }
 }

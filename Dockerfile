@@ -6,7 +6,7 @@ COPY frontend/package.json frontend/pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile --shamefully-hoist
 COPY frontend .
 RUN pnpm build
-
+RUN ls -la /app/.output/
 # Build API
 FROM golang:alpine AS builder
 RUN apk update
@@ -14,8 +14,9 @@ RUN apk upgrade
 RUN apk add --update git build-base gcc g++
 WORKDIR /go/src/app
 COPY ./backend .
-COPY --from=frontend-builder app/.output go/src/app/app/api/public
 RUN go get -d -v ./...
+RUN rm -rf ./app/api/public
+COPY --from=frontend-builder /app/.output/public ./app/api/public
 RUN CGO_ENABLED=1 GOOS=linux go build -o /go/bin/api -v ./app/api/*.go
 
 # Production Stage

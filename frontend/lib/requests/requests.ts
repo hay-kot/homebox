@@ -15,6 +15,13 @@ export interface TResponse<T> {
   response: Response;
 }
 
+export type RequestArgs<T> = {
+  url: string;
+  body?: T;
+  data?: FormData;
+  headers?: Record<string, string>;
+};
+
 export class Requests {
   private baseUrl: string;
   private token: () => string;
@@ -39,45 +46,49 @@ export class Requests {
     this.headers = headers;
   }
 
-  public get<T>(url: string): Promise<TResponse<T>> {
-    return this.do<T>(Method.GET, url);
+  public get<T>(args: RequestArgs<T>): Promise<TResponse<T>> {
+    return this.do<T>(Method.GET, args);
   }
 
-  public post<T, U>(url: string, payload: T): Promise<TResponse<U>> {
-    return this.do<U>(Method.POST, url, payload);
+  public post<T, U>(args: RequestArgs<T>): Promise<TResponse<U>> {
+    return this.do<U>(Method.POST, args);
   }
 
-  public put<T, U>(url: string, payload: T): Promise<TResponse<U>> {
-    return this.do<U>(Method.PUT, url, payload);
+  public put<T, U>(args: RequestArgs<T>): Promise<TResponse<U>> {
+    return this.do<U>(Method.PUT, args);
   }
 
-  public delete<T>(url: string): Promise<TResponse<T>> {
-    return this.do<T>(Method.DELETE, url);
+  public delete<T>(args: RequestArgs<T>): Promise<TResponse<T>> {
+    return this.do<T>(Method.DELETE, args);
   }
 
   private methodSupportsBody(method: Method): boolean {
     return method === Method.POST || method === Method.PUT;
   }
 
-  private async do<T>(method: Method, url: string, payload: Object = {}): Promise<TResponse<T>> {
-    const args: RequestInit = {
+  private async do<T>(method: Method, rargs: RequestArgs<unknown>): Promise<TResponse<T>> {
+    const payload: RequestInit = {
       method,
       headers: {
-        'Content-Type': 'application/json',
+        ...rargs.headers,
         ...this.headers,
       },
     };
 
     const token = this.token();
-    if (token !== '' && args.headers !== undefined) {
-      args.headers['Authorization'] = token;
+    if (token !== '' && payload.headers !== undefined) {
+      payload.headers['Authorization'] = token;
     }
 
     if (this.methodSupportsBody(method)) {
-      args.body = JSON.stringify(payload);
+      if (rargs.data) {
+        payload.body = rargs.data;
+      } else {
+        payload.body = JSON.stringify(rargs.body);
+      }
     }
 
-    const response = await fetch(this.url(url), args);
+    const response = await fetch(this.url(rargs.url), payload);
     this.callResponseInterceptors(response);
 
     const data: T = await (async () => {

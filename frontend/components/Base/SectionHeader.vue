@@ -12,6 +12,9 @@
     <p v-if="$slots.description" class="mt-2 max-w-4xl text-sm text-gray-500">
       <slot name="description" />
     </p>
+    <div v-if="$slots.after">
+      <slot name="after" />
+    </div>
   </div>
 </template>
 
