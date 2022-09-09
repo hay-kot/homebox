@@ -30,6 +30,7 @@
   - [ ] Add Warranty Columns
 - [ ] Documentation
   - [ ] Docker Compose
+  - [ ] Config File
   - [ ] Import CSV Format
   - [ ] TLDR; Getting Started
 - [x] Release Flow
@@ -47,7 +48,7 @@
 - [ ] Embedded Version Info
   - [ ] Version Number
   - [ ] Git Has
-
+- [ ] Setup Docker Volumes in Dockerfile
 ## All Todos
 
 - [ ] User Invitation Links to Join Group
@@ -58,6 +59,7 @@
 - [ ] User Profile
   - [ ] Adjust Theme (Daisy UI)
   - [ ] Delete Profile
+  - [ ] Send User Invites
   - [ ] Set Currency
   - [ ] Change Password
 - [ ] Admin Page
@@ -67,3 +69,5 @@
     - [ ] Reset Password
 - [x] Warranty Information
   - [x] Option for Lifetime Warranty or Warranty Period
+- [ ] Expose Swagger API Documentation
+  - [ ] Dynamic Port / Host Settings
