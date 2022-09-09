@@ -1,0 +1,30 @@
+site_name: Homebox
+site_url: https://hay-kot.github.io/homebox/
+use_directory_urls: true
+theme:
+  name: material
+  palette:
+    # Palette toggle for light mode
+    - scheme: homebox
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+  features:
+    - content.code.annotate
+    - navigation.instant
+    - navigation.expand
+    - navigation.sections
+    - navigation.tabs.sticky
+  favicon: assets/img/favicon.png
+  icon:
+    logo: material/package-variant
+
+extra_css:
+  - assets/stylesheets/extras.css

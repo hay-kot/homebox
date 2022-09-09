@@ -30,6 +30,8 @@
   - [ ] TLDR; Getting Started
 - [x] Release Flow
   - [x] CI/CD Docker Builds w/ Multi-arch
+  - [x] Auto Fly.io Deploy for Nightly
+  - [ ] Deploy Docs
 - [ ] Db Migrations
   - [ ] How To
 - [ ] Repo House Keeping
