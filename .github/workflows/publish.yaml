@@ -11,11 +11,11 @@ env:
 jobs:
   backend-tests:
     name: "Backend Server Tests"
-    uses: hay-kot/homebox/.github/workflows/go.yaml@main
+    uses: hay-kot/homebox/.github/workflows/partial-backend.yaml@main
 
   frontend-tests:
     name: "Frontend and End-to-End Tests"
-    uses: hay-kot/homebox/.github/workflows/frontend.yaml@main
+    uses: hay-kot/homebox/.github/workflows/partial-frontend.yaml@main
 
   deploy:
     name: "Deploy Nightly to Fly.io"

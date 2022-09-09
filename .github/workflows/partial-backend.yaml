@@ -32,6 +32,3 @@ jobs:
 
       - name: Test
         run: task api:coverage
-
-      - name: Upload coverage to Codecov
-        run: cd backend && bash <(curl -s https://codecov.io/bash)
