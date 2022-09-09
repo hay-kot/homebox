@@ -19,13 +19,13 @@ module.exports = {
   },
   plugins: ["vue", "@typescript-eslint"],
   rules: {
+    "no-console": 0,
+    "no-unused-vars": "off",
     "vue/multi-word-component-names": "off",
     "vue/no-setup-props-destructure": 0,
     "vue/no-multiple-template-root": 0,
-    "no-console": 0,
     "vue/no-v-model-argument": 0,
     "@typescript-eslint/ban-ts-comment": 0,
-    "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": [
       "error",
       {
