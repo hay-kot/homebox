@@ -1,5 +1,5 @@
 site_name: Homebox
-site_url: https://hay-kot.github.io/homebox/
+# site_url: https://hay-kot.github.io/homebox/
 use_directory_urls: true
 theme:
   name: material
@@ -22,9 +22,8 @@ theme:
     - navigation.expand
     - navigation.sections
     - navigation.tabs.sticky
-  favicon: assets/img/favicon.png
-  icon:
-    logo: material/package-variant
+  favicon: assets/img/favicon.svg
+  logo: assets/img/favicon.svg
 
 extra_css:
   - assets/stylesheets/extras.css
