@@ -129,7 +129,7 @@
         <div>
           <h2 class="mt-1 text-4xl font-bold tracking-tight text-neutral-content sm:text-5xl lg:text-6xl flex">
             HomeB
-            <AppLogo class="w-12 -mb-4" style="padding-left: 3px; padding-right: 2px" />
+            <AppLogo class="w-12 -mb-4" />
             x
           </h2>
           <p class="ml-1 text-lg text-base-content/50">Track, Organize, and Manage your Shit.</p>
