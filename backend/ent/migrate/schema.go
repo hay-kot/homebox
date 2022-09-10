@@ -38,6 +38,60 @@ var (
 			},
 		},
 	}
+	// DocumentsColumns holds the columns for the "documents" table.
+	DocumentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "title", Type: field.TypeString, Size: 255},
+		{Name: "path", Type: field.TypeString, Size: 500},
+		{Name: "group_documents", Type: field.TypeUUID},
+	}
+	// DocumentsTable holds the schema information for the "documents" table.
+	DocumentsTable = &schema.Table{
+		Name:       "documents",
+		Columns:    DocumentsColumns,
+		PrimaryKey: []*schema.Column{DocumentsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "documents_groups_documents",
+				Columns:    []*schema.Column{DocumentsColumns[5]},
+				RefColumns: []*schema.Column{GroupsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// DocumentTokensColumns holds the columns for the "document_tokens" table.
+	DocumentTokensColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "token", Type: field.TypeBytes, Unique: true},
+		{Name: "uses", Type: field.TypeInt, Default: 1},
+		{Name: "expires_at", Type: field.TypeTime},
+		{Name: "document_document_tokens", Type: field.TypeUUID, Nullable: true},
+	}
+	// DocumentTokensTable holds the schema information for the "document_tokens" table.
+	DocumentTokensTable = &schema.Table{
+		Name:       "document_tokens",
+		Columns:    DocumentTokensColumns,
+		PrimaryKey: []*schema.Column{DocumentTokensColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "document_tokens_documents_document_tokens",
+				Columns:    []*schema.Column{DocumentTokensColumns[6]},
+				RefColumns: []*schema.Column{DocumentsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "documenttoken_token",
+				Unique:  false,
+				Columns: []*schema.Column{DocumentTokensColumns[3]},
+			},
+		},
+	}
 	// GroupsColumns holds the columns for the "groups" table.
 	GroupsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -246,6 +300,8 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AuthTokensTable,
+		DocumentsTable,
+		DocumentTokensTable,
 		GroupsTable,
 		ItemsTable,
 		ItemFieldsTable,
@@ -258,6 +314,8 @@ var (
 
 func init() {
 	AuthTokensTable.ForeignKeys[0].RefTable = UsersTable
+	DocumentsTable.ForeignKeys[0].RefTable = GroupsTable
+	DocumentTokensTable.ForeignKeys[0].RefTable = DocumentsTable
 	ItemsTable.ForeignKeys[0].RefTable = GroupsTable
 	ItemsTable.ForeignKeys[1].RefTable = LocationsTable
 	ItemFieldsTable.ForeignKeys[0].RefTable = ItemsTable

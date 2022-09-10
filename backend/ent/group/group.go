@@ -30,6 +30,8 @@ const (
 	EdgeItems = "items"
 	// EdgeLabels holds the string denoting the labels edge name in mutations.
 	EdgeLabels = "labels"
+	// EdgeDocuments holds the string denoting the documents edge name in mutations.
+	EdgeDocuments = "documents"
 	// Table holds the table name of the group in the database.
 	Table = "groups"
 	// UsersTable is the table that holds the users relation/edge.
@@ -60,6 +62,13 @@ const (
 	LabelsInverseTable = "labels"
 	// LabelsColumn is the table column denoting the labels relation/edge.
 	LabelsColumn = "group_labels"
+	// DocumentsTable is the table that holds the documents relation/edge.
+	DocumentsTable = "documents"
+	// DocumentsInverseTable is the table name for the Document entity.
+	// It exists in this package in order to avoid circular dependency with the "document" package.
+	DocumentsInverseTable = "documents"
+	// DocumentsColumn is the table column denoting the documents relation/edge.
+	DocumentsColumn = "group_documents"
 )
 
 // Columns holds all SQL columns for group fields.

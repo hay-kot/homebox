@@ -11,8 +11,8 @@ import (
 
 func labelFactory() types.LabelCreate {
 	return types.LabelCreate{
-		Name:        fk.RandomString(10),
-		Description: fk.RandomString(100),
+		Name:        fk.Str(10),
+		Description: fk.Str(100),
 	}
 }
 
@@ -75,8 +75,8 @@ func TestLabelRepository_Update(t *testing.T) {
 
 	updateData := types.LabelUpdate{
 		ID:          loc.ID,
-		Name:        fk.RandomString(10),
-		Description: fk.RandomString(100),
+		Name:        fk.Str(10),
+		Description: fk.Str(100),
 	}
 
 	update, err := tRepos.Labels.Update(context.Background(), updateData)

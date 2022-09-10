@@ -12,8 +12,8 @@ import (
 
 func itemFactory() types.ItemCreate {
 	return types.ItemCreate{
-		Name:        fk.RandomString(10),
-		Description: fk.RandomString(100),
+		Name:        fk.Str(10),
+		Description: fk.Str(100),
 	}
 }
 
@@ -141,20 +141,20 @@ func TestItemsRepository_Update(t *testing.T) {
 		ID:               entity.ID,
 		Name:             entity.Name,
 		LocationID:       entity.Edges.Location.ID,
-		SerialNumber:     fk.RandomString(10),
+		SerialNumber:     fk.Str(10),
 		LabelIDs:         nil,
-		ModelNumber:      fk.RandomString(10),
-		Manufacturer:     fk.RandomString(10),
+		ModelNumber:      fk.Str(10),
+		Manufacturer:     fk.Str(10),
 		PurchaseTime:     time.Now(),
-		PurchaseFrom:     fk.RandomString(10),
+		PurchaseFrom:     fk.Str(10),
 		PurchasePrice:    300.99,
 		SoldTime:         time.Now(),
-		SoldTo:           fk.RandomString(10),
+		SoldTo:           fk.Str(10),
 		SoldPrice:        300.99,
-		SoldNotes:        fk.RandomString(10),
-		Notes:            fk.RandomString(10),
+		SoldNotes:        fk.Str(10),
+		Notes:            fk.Str(10),
 		WarrantyExpires:  time.Now(),
-		WarrantyDetails:  fk.RandomString(10),
+		WarrantyDetails:  fk.Str(10),
 		LifetimeWarranty: true,
 	}
 

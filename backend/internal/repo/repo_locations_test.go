@@ -10,8 +10,8 @@ import (
 
 func locationFactory() types.LocationCreate {
 	return types.LocationCreate{
-		Name:        fk.RandomString(10),
-		Description: fk.RandomString(100),
+		Name:        fk.Str(10),
+		Description: fk.Str(100),
 	}
 }
 
@@ -31,14 +31,14 @@ func TestLocationRepository_Get(t *testing.T) {
 func TestLocationRepositoryGetAllWithCount(t *testing.T) {
 	ctx := context.Background()
 	result, err := tRepos.Locations.Create(ctx, tGroup.ID, types.LocationCreate{
-		Name:        fk.RandomString(10),
-		Description: fk.RandomString(100),
+		Name:        fk.Str(10),
+		Description: fk.Str(100),
 	})
 	assert.NoError(t, err)
 
 	_, err = tRepos.Items.Create(ctx, tGroup.ID, types.ItemCreate{
-		Name:        fk.RandomString(10),
-		Description: fk.RandomString(100),
+		Name:        fk.Str(10),
+		Description: fk.Str(100),
 		LocationID:  result.ID,
 	})
 
@@ -74,8 +74,8 @@ func TestLocationRepository_Update(t *testing.T) {
 
 	updateData := types.LocationUpdate{
 		ID:          loc.ID,
-		Name:        fk.RandomString(10),
-		Description: fk.RandomString(100),
+		Name:        fk.Str(10),
+		Description: fk.Str(100),
 	}
 
 	update, err := tRepos.Locations.Update(context.Background(), updateData)

@@ -25,7 +25,7 @@ func Test_GetRandomString(t *testing.T) {
 	faker := NewFaker()
 
 	for i := 0; i < Loops; i++ {
-		generated[i] = faker.RandomString(10)
+		generated[i] = faker.Str(10)
 	}
 
 	if !ValidateUnique(generated) {
@@ -41,7 +41,7 @@ func Test_GetRandomEmail(t *testing.T) {
 	faker := NewFaker()
 
 	for i := 0; i < Loops; i++ {
-		generated[i] = faker.RandomEmail()
+		generated[i] = faker.Email()
 	}
 
 	if !ValidateUnique(generated) {
@@ -58,7 +58,7 @@ func Test_GetRandomBool(t *testing.T) {
 	faker := NewFaker()
 
 	for i := 0; i < Loops; i++ {
-		if faker.RandomBool() {
+		if faker.Bool() {
 			trues++
 		} else {
 			falses++
@@ -81,7 +81,7 @@ func Test_RandomNumber(t *testing.T) {
 	last := MIN - 1
 
 	for i := 0; i < Loops; i++ {
-		n := f.RandomNumber(MIN, MAX)
+		n := f.Num(MIN, MAX)
 
 		if n == last {
 			t.Errorf("RandomNumber() failed to generate unique number")

@@ -40,9 +40,11 @@ type GroupEdges struct {
 	Items []*Item `json:"items,omitempty"`
 	// Labels holds the value of the labels edge.
 	Labels []*Label `json:"labels,omitempty"`
+	// Documents holds the value of the documents edge.
+	Documents []*Document `json:"documents,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [5]bool
 }
 
 // UsersOrErr returns the Users value or an error if the edge
@@ -79,6 +81,15 @@ func (e GroupEdges) LabelsOrErr() ([]*Label, error) {
 		return e.Labels, nil
 	}
 	return nil, &NotLoadedError{edge: "labels"}
+}
+
+// DocumentsOrErr returns the Documents value or an error if the edge
+// was not loaded in eager-loading.
+func (e GroupEdges) DocumentsOrErr() ([]*Document, error) {
+	if e.loadedTypes[4] {
+		return e.Documents, nil
+	}
+	return nil, &NotLoadedError{edge: "documents"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -160,6 +171,11 @@ func (gr *Group) QueryItems() *ItemQuery {
 // QueryLabels queries the "labels" edge of the Group entity.
 func (gr *Group) QueryLabels() *LabelQuery {
 	return (&GroupClient{config: gr.config}).QueryLabels(gr)
+}
+
+// QueryDocuments queries the "documents" edge of the Group entity.
+func (gr *Group) QueryDocuments() *DocumentQuery {
+	return (&GroupClient{config: gr.config}).QueryDocuments(gr)
 }
 
 // Update returns a builder for updating this Group.

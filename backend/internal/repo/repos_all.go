@@ -10,6 +10,8 @@ type AllRepos struct {
 	Locations  *LocationRepository
 	Labels     *LabelRepository
 	Items      *ItemsRepository
+	Docs       *DocumentRepository
+	DocTokens  *DocumentTokensRepository
 }
 
 func EntAllRepos(db *ent.Client) *AllRepos {
@@ -20,5 +22,7 @@ func EntAllRepos(db *ent.Client) *AllRepos {
 		Locations:  &LocationRepository{db},
 		Labels:     &LabelRepository{db},
 		Items:      &ItemsRepository{db},
+		Docs:       &DocumentRepository{db},
+		DocTokens:  &DocumentTokensRepository{db},
 	}
 }
