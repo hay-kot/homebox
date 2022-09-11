@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
+	"github.com/hay-kot/content/backend/ent/attachment"
 	"github.com/hay-kot/content/backend/ent/group"
 	"github.com/hay-kot/content/backend/ent/item"
 	"github.com/hay-kot/content/backend/ent/itemfield"
@@ -23,17 +24,18 @@ import (
 // ItemQuery is the builder for querying Item entities.
 type ItemQuery struct {
 	config
-	limit        *int
-	offset       *int
-	unique       *bool
-	order        []OrderFunc
-	fields       []string
-	predicates   []predicate.Item
-	withGroup    *GroupQuery
-	withLocation *LocationQuery
-	withFields   *ItemFieldQuery
-	withLabel    *LabelQuery
-	withFKs      bool
+	limit           *int
+	offset          *int
+	unique          *bool
+	order           []OrderFunc
+	fields          []string
+	predicates      []predicate.Item
+	withGroup       *GroupQuery
+	withLocation    *LocationQuery
+	withFields      *ItemFieldQuery
+	withLabel       *LabelQuery
+	withAttachments *AttachmentQuery
+	withFKs         bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -151,6 +153,28 @@ func (iq *ItemQuery) QueryLabel() *LabelQuery {
 			sqlgraph.From(item.Table, item.FieldID, selector),
 			sqlgraph.To(label.Table, label.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, item.LabelTable, item.LabelPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(iq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAttachments chains the current query on the "attachments" edge.
+func (iq *ItemQuery) QueryAttachments() *AttachmentQuery {
+	query := &AttachmentQuery{config: iq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := iq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := iq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(item.Table, item.FieldID, selector),
+			sqlgraph.To(attachment.Table, attachment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, item.AttachmentsTable, item.AttachmentsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(iq.driver.Dialect(), step)
 		return fromU, nil
@@ -334,15 +358,16 @@ func (iq *ItemQuery) Clone() *ItemQuery {
 		return nil
 	}
 	return &ItemQuery{
-		config:       iq.config,
-		limit:        iq.limit,
-		offset:       iq.offset,
-		order:        append([]OrderFunc{}, iq.order...),
-		predicates:   append([]predicate.Item{}, iq.predicates...),
-		withGroup:    iq.withGroup.Clone(),
-		withLocation: iq.withLocation.Clone(),
-		withFields:   iq.withFields.Clone(),
-		withLabel:    iq.withLabel.Clone(),
+		config:          iq.config,
+		limit:           iq.limit,
+		offset:          iq.offset,
+		order:           append([]OrderFunc{}, iq.order...),
+		predicates:      append([]predicate.Item{}, iq.predicates...),
+		withGroup:       iq.withGroup.Clone(),
+		withLocation:    iq.withLocation.Clone(),
+		withFields:      iq.withFields.Clone(),
+		withLabel:       iq.withLabel.Clone(),
+		withAttachments: iq.withAttachments.Clone(),
 		// clone intermediate query.
 		sql:    iq.sql.Clone(),
 		path:   iq.path,
@@ -391,6 +416,17 @@ func (iq *ItemQuery) WithLabel(opts ...func(*LabelQuery)) *ItemQuery {
 		opt(query)
 	}
 	iq.withLabel = query
+	return iq
+}
+
+// WithAttachments tells the query-builder to eager-load the nodes that are connected to
+// the "attachments" edge. The optional arguments are used to configure the query builder of the edge.
+func (iq *ItemQuery) WithAttachments(opts ...func(*AttachmentQuery)) *ItemQuery {
+	query := &AttachmentQuery{config: iq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	iq.withAttachments = query
 	return iq
 }
 
@@ -463,11 +499,12 @@ func (iq *ItemQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Item, e
 		nodes       = []*Item{}
 		withFKs     = iq.withFKs
 		_spec       = iq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [5]bool{
 			iq.withGroup != nil,
 			iq.withLocation != nil,
 			iq.withFields != nil,
 			iq.withLabel != nil,
+			iq.withAttachments != nil,
 		}
 	)
 	if iq.withGroup != nil || iq.withLocation != nil {
@@ -517,6 +554,13 @@ func (iq *ItemQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Item, e
 		if err := iq.loadLabel(ctx, query, nodes,
 			func(n *Item) { n.Edges.Label = []*Label{} },
 			func(n *Item, e *Label) { n.Edges.Label = append(n.Edges.Label, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := iq.withAttachments; query != nil {
+		if err := iq.loadAttachments(ctx, query, nodes,
+			func(n *Item) { n.Edges.Attachments = []*Attachment{} },
+			func(n *Item, e *Attachment) { n.Edges.Attachments = append(n.Edges.Attachments, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -667,6 +711,37 @@ func (iq *ItemQuery) loadLabel(ctx context.Context, query *LabelQuery, nodes []*
 		for kn := range nodes {
 			assign(kn, n)
 		}
+	}
+	return nil
+}
+func (iq *ItemQuery) loadAttachments(ctx context.Context, query *AttachmentQuery, nodes []*Item, init func(*Item), assign func(*Item, *Attachment)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*Item)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Attachment(func(s *sql.Selector) {
+		s.Where(sql.InValues(item.AttachmentsColumn, fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.item_attachments
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "item_attachments" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "item_attachments" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
 	}
 	return nil
 }

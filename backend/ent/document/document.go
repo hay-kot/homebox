@@ -25,6 +25,8 @@ const (
 	EdgeGroup = "group"
 	// EdgeDocumentTokens holds the string denoting the document_tokens edge name in mutations.
 	EdgeDocumentTokens = "document_tokens"
+	// EdgeAttachments holds the string denoting the attachments edge name in mutations.
+	EdgeAttachments = "attachments"
 	// Table holds the table name of the document in the database.
 	Table = "documents"
 	// GroupTable is the table that holds the group relation/edge.
@@ -41,6 +43,13 @@ const (
 	DocumentTokensInverseTable = "document_tokens"
 	// DocumentTokensColumn is the table column denoting the document_tokens relation/edge.
 	DocumentTokensColumn = "document_document_tokens"
+	// AttachmentsTable is the table that holds the attachments relation/edge.
+	AttachmentsTable = "attachments"
+	// AttachmentsInverseTable is the table name for the Attachment entity.
+	// It exists in this package in order to avoid circular dependency with the "attachment" package.
+	AttachmentsInverseTable = "attachments"
+	// AttachmentsColumn is the table column denoting the attachments relation/edge.
+	AttachmentsColumn = "document_attachments"
 )
 
 // Columns holds all SQL columns for document fields.

@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
+	"github.com/hay-kot/content/backend/ent/attachment"
 	"github.com/hay-kot/content/backend/ent/document"
 	"github.com/hay-kot/content/backend/ent/documenttoken"
 	"github.com/hay-kot/content/backend/ent/group"
@@ -101,6 +102,21 @@ func (dc *DocumentCreate) AddDocumentTokens(d ...*DocumentToken) *DocumentCreate
 		ids[i] = d[i].ID
 	}
 	return dc.AddDocumentTokenIDs(ids...)
+}
+
+// AddAttachmentIDs adds the "attachments" edge to the Attachment entity by IDs.
+func (dc *DocumentCreate) AddAttachmentIDs(ids ...uuid.UUID) *DocumentCreate {
+	dc.mutation.AddAttachmentIDs(ids...)
+	return dc
+}
+
+// AddAttachments adds the "attachments" edges to the Attachment entity.
+func (dc *DocumentCreate) AddAttachments(a ...*Attachment) *DocumentCreate {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return dc.AddAttachmentIDs(ids...)
 }
 
 // Mutation returns the DocumentMutation object of the builder.
@@ -320,6 +336,25 @@ func (dc *DocumentCreate) createSpec() (*Document, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: documenttoken.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := dc.mutation.AttachmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   document.AttachmentsTable,
+			Columns: []string{document.AttachmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: attachment.FieldID,
 				},
 			},
 		}

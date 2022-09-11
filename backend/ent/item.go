@@ -72,9 +72,11 @@ type ItemEdges struct {
 	Fields []*ItemField `json:"fields,omitempty"`
 	// Label holds the value of the label edge.
 	Label []*Label `json:"label,omitempty"`
+	// Attachments holds the value of the attachments edge.
+	Attachments []*Attachment `json:"attachments,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [5]bool
 }
 
 // GroupOrErr returns the Group value or an error if the edge
@@ -119,6 +121,15 @@ func (e ItemEdges) LabelOrErr() ([]*Label, error) {
 		return e.Label, nil
 	}
 	return nil, &NotLoadedError{edge: "label"}
+}
+
+// AttachmentsOrErr returns the Attachments value or an error if the edge
+// was not loaded in eager-loading.
+func (e ItemEdges) AttachmentsOrErr() ([]*Attachment, error) {
+	if e.loadedTypes[4] {
+		return e.Attachments, nil
+	}
+	return nil, &NotLoadedError{edge: "attachments"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -306,6 +317,11 @@ func (i *Item) QueryFields() *ItemFieldQuery {
 // QueryLabel queries the "label" edge of the Item entity.
 func (i *Item) QueryLabel() *LabelQuery {
 	return (&ItemClient{config: i.config}).QueryLabel(i)
+}
+
+// QueryAttachments queries the "attachments" edge of the Item entity.
+func (i *Item) QueryAttachments() *AttachmentQuery {
+	return (&ItemClient{config: i.config}).QueryAttachments(i)
 }
 
 // Update returns a builder for updating this Item.

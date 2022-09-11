@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
+	"github.com/hay-kot/content/backend/ent/attachment"
 	"github.com/hay-kot/content/backend/ent/document"
 	"github.com/hay-kot/content/backend/ent/documenttoken"
 	"github.com/hay-kot/content/backend/ent/group"
@@ -29,6 +30,7 @@ type DocumentQuery struct {
 	predicates         []predicate.Document
 	withGroup          *GroupQuery
 	withDocumentTokens *DocumentTokenQuery
+	withAttachments    *AttachmentQuery
 	withFKs            bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -103,6 +105,28 @@ func (dq *DocumentQuery) QueryDocumentTokens() *DocumentTokenQuery {
 			sqlgraph.From(document.Table, document.FieldID, selector),
 			sqlgraph.To(documenttoken.Table, documenttoken.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, document.DocumentTokensTable, document.DocumentTokensColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(dq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAttachments chains the current query on the "attachments" edge.
+func (dq *DocumentQuery) QueryAttachments() *AttachmentQuery {
+	query := &AttachmentQuery{config: dq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := dq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := dq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(document.Table, document.FieldID, selector),
+			sqlgraph.To(attachment.Table, attachment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, document.AttachmentsTable, document.AttachmentsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(dq.driver.Dialect(), step)
 		return fromU, nil
@@ -293,6 +317,7 @@ func (dq *DocumentQuery) Clone() *DocumentQuery {
 		predicates:         append([]predicate.Document{}, dq.predicates...),
 		withGroup:          dq.withGroup.Clone(),
 		withDocumentTokens: dq.withDocumentTokens.Clone(),
+		withAttachments:    dq.withAttachments.Clone(),
 		// clone intermediate query.
 		sql:    dq.sql.Clone(),
 		path:   dq.path,
@@ -319,6 +344,17 @@ func (dq *DocumentQuery) WithDocumentTokens(opts ...func(*DocumentTokenQuery)) *
 		opt(query)
 	}
 	dq.withDocumentTokens = query
+	return dq
+}
+
+// WithAttachments tells the query-builder to eager-load the nodes that are connected to
+// the "attachments" edge. The optional arguments are used to configure the query builder of the edge.
+func (dq *DocumentQuery) WithAttachments(opts ...func(*AttachmentQuery)) *DocumentQuery {
+	query := &AttachmentQuery{config: dq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	dq.withAttachments = query
 	return dq
 }
 
@@ -391,9 +427,10 @@ func (dq *DocumentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Doc
 		nodes       = []*Document{}
 		withFKs     = dq.withFKs
 		_spec       = dq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			dq.withGroup != nil,
 			dq.withDocumentTokens != nil,
+			dq.withAttachments != nil,
 		}
 	)
 	if dq.withGroup != nil {
@@ -430,6 +467,13 @@ func (dq *DocumentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Doc
 		if err := dq.loadDocumentTokens(ctx, query, nodes,
 			func(n *Document) { n.Edges.DocumentTokens = []*DocumentToken{} },
 			func(n *Document, e *DocumentToken) { n.Edges.DocumentTokens = append(n.Edges.DocumentTokens, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := dq.withAttachments; query != nil {
+		if err := dq.loadAttachments(ctx, query, nodes,
+			func(n *Document) { n.Edges.Attachments = []*Attachment{} },
+			func(n *Document, e *Attachment) { n.Edges.Attachments = append(n.Edges.Attachments, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -491,6 +535,37 @@ func (dq *DocumentQuery) loadDocumentTokens(ctx context.Context, query *Document
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "document_document_tokens" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (dq *DocumentQuery) loadAttachments(ctx context.Context, query *AttachmentQuery, nodes []*Document, init func(*Document), assign func(*Document, *Attachment)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*Document)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Attachment(func(s *sql.Selector) {
+		s.Where(sql.InValues(document.AttachmentsColumn, fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.document_attachments
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "document_attachments" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "document_attachments" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

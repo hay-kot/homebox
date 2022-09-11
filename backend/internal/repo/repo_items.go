@@ -21,6 +21,9 @@ func (e *ItemsRepository) GetOne(ctx context.Context, id uuid.UUID) (*ent.Item, 
 		WithLabel().
 		WithLocation().
 		WithGroup().
+		WithAttachments(func(aq *ent.AttachmentQuery) {
+			aq.WithDocument()
+		}).
 		Only(ctx)
 }
 

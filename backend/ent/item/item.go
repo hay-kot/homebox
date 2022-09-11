@@ -57,6 +57,8 @@ const (
 	EdgeFields = "fields"
 	// EdgeLabel holds the string denoting the label edge name in mutations.
 	EdgeLabel = "label"
+	// EdgeAttachments holds the string denoting the attachments edge name in mutations.
+	EdgeAttachments = "attachments"
 	// Table holds the table name of the item in the database.
 	Table = "items"
 	// GroupTable is the table that holds the group relation/edge.
@@ -85,6 +87,13 @@ const (
 	// LabelInverseTable is the table name for the Label entity.
 	// It exists in this package in order to avoid circular dependency with the "label" package.
 	LabelInverseTable = "labels"
+	// AttachmentsTable is the table that holds the attachments relation/edge.
+	AttachmentsTable = "attachments"
+	// AttachmentsInverseTable is the table name for the Attachment entity.
+	// It exists in this package in order to avoid circular dependency with the "attachment" package.
+	AttachmentsInverseTable = "attachments"
+	// AttachmentsColumn is the table column denoting the attachments relation/edge.
+	AttachmentsColumn = "item_attachments"
 )
 
 // Columns holds all SQL columns for item fields.

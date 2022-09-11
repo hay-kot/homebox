@@ -93,10 +93,15 @@ func (Item) Edges() []ent.Edge {
 		edge.From("location", Location.Type).
 			Ref("items").
 			Unique(),
-		edge.To("fields", ItemField.Type).Annotations(entsql.Annotation{
-			OnDelete: entsql.Cascade,
-		}),
+		edge.To("fields", ItemField.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
 		edge.From("label", Label.Type).
 			Ref("items"),
+		edge.To("attachments", Attachment.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
 	}
 }

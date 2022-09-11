@@ -1,5 +1,34 @@
 basePath: /api
 definitions:
+  ent.Attachment:
+    properties:
+      created_at:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      edges:
+        $ref: '#/definitions/ent.AttachmentEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the AttachmentQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      type:
+        description: Type holds the value of the "type" field.
+        type: string
+      updated_at:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+    type: object
+  ent.AttachmentEdges:
+    properties:
+      document:
+        $ref: '#/definitions/ent.Document'
+        description: Document holds the value of the document edge.
+      item:
+        $ref: '#/definitions/ent.Item'
+        description: Item holds the value of the item edge.
+    type: object
   ent.AuthTokens:
     properties:
       created_at:
@@ -31,6 +60,79 @@ definitions:
         $ref: '#/definitions/ent.User'
         description: User holds the value of the user edge.
     type: object
+  ent.Document:
+    properties:
+      created_at:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      edges:
+        $ref: '#/definitions/ent.DocumentEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the DocumentQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      path:
+        description: Path holds the value of the "path" field.
+        type: string
+      title:
+        description: Title holds the value of the "title" field.
+        type: string
+      updated_at:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+    type: object
+  ent.DocumentEdges:
+    properties:
+      attachments:
+        description: Attachments holds the value of the attachments edge.
+        items:
+          $ref: '#/definitions/ent.Attachment'
+        type: array
+      document_tokens:
+        description: DocumentTokens holds the value of the document_tokens edge.
+        items:
+          $ref: '#/definitions/ent.DocumentToken'
+        type: array
+      group:
+        $ref: '#/definitions/ent.Group'
+        description: Group holds the value of the group edge.
+    type: object
+  ent.DocumentToken:
+    properties:
+      created_at:
+        description: CreatedAt holds the value of the "created_at" field.
+        type: string
+      edges:
+        $ref: '#/definitions/ent.DocumentTokenEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the DocumentTokenQuery when eager-loading is set.
+      expires_at:
+        description: ExpiresAt holds the value of the "expires_at" field.
+        type: string
+      id:
+        description: ID of the ent.
+        type: string
+      token:
+        description: Token holds the value of the "token" field.
+        items:
+          type: integer
+        type: array
+      updated_at:
+        description: UpdatedAt holds the value of the "updated_at" field.
+        type: string
+      uses:
+        description: Uses holds the value of the "uses" field.
+        type: integer
+    type: object
+  ent.DocumentTokenEdges:
+    properties:
+      document:
+        $ref: '#/definitions/ent.Document'
+        description: Document holds the value of the document edge.
+    type: object
   ent.Group:
     properties:
       created_at:
@@ -56,6 +158,11 @@ definitions:
     type: object
   ent.GroupEdges:
     properties:
+      documents:
+        description: Documents holds the value of the documents edge.
+        items:
+          $ref: '#/definitions/ent.Document'
+        type: array
       items:
         description: Items holds the value of the items edge.
         items:
@@ -144,6 +251,11 @@ definitions:
     type: object
   ent.ItemEdges:
     properties:
+      attachments:
+        description: Attachments holds the value of the attachments edge.
+        items:
+          $ref: '#/definitions/ent.Attachment'
+        type: array
       fields:
         description: Fields holds the value of the fields edge.
         items:

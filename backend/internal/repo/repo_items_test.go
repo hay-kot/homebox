@@ -17,7 +17,7 @@ func itemFactory() types.ItemCreate {
 	}
 }
 
-func useItems(t *testing.T, len int) ([]*ent.Item, func()) {
+func useItems(t *testing.T, len int) []*ent.Item {
 	t.Helper()
 
 	location, err := tRepos.Locations.Create(context.Background(), tGroup.ID, locationFactory())
@@ -33,17 +33,17 @@ func useItems(t *testing.T, len int) ([]*ent.Item, func()) {
 		items[i] = item
 	}
 
-	return items, func() {
+	t.Cleanup(func() {
 		for _, item := range items {
-			err := tRepos.Items.Delete(context.Background(), item.ID)
-			assert.NoError(t, err)
+			_ = tRepos.Items.Delete(context.Background(), item.ID)
 		}
-	}
+	})
+
+	return items
 }
 
 func TestItemsRepository_GetOne(t *testing.T) {
-	entity, cleanup := useItems(t, 3)
-	defer cleanup()
+	entity := useItems(t, 3)
 
 	for _, item := range entity {
 		result, err := tRepos.Items.GetOne(context.Background(), item.ID)
@@ -54,8 +54,7 @@ func TestItemsRepository_GetOne(t *testing.T) {
 
 func TestItemsRepository_GetAll(t *testing.T) {
 	length := 10
-	expected, cleanup := useItems(t, length)
-	defer cleanup()
+	expected := useItems(t, length)
 
 	results, err := tRepos.Items.GetAll(context.Background(), tGroup.ID)
 	assert.NoError(t, err)
@@ -119,7 +118,7 @@ func TestItemsRepository_Create_Location(t *testing.T) {
 }
 
 func TestItemsRepository_Delete(t *testing.T) {
-	entities, _ := useItems(t, 3)
+	entities := useItems(t, 3)
 
 	for _, item := range entities {
 		err := tRepos.Items.Delete(context.Background(), item.ID)
@@ -132,8 +131,7 @@ func TestItemsRepository_Delete(t *testing.T) {
 }
 
 func TestItemsRepository_Update(t *testing.T) {
-	entities, cleanup := useItems(t, 3)
-	defer cleanup()
+	entities := useItems(t, 3)
 
 	entity := entities[0]
 

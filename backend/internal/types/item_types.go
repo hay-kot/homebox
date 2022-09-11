@@ -88,6 +88,14 @@ type ItemSummary struct {
 
 type ItemOut struct {
 	ItemSummary
+	Attachments []*ItemAttachment `json:"attachments"`
 	// Future
 	// Fields []*FieldSummary `json:"fields"`
+}
+
+type ItemAttachment struct {
+	ID        uuid.UUID   `json:"id"`
+	CreatedAt time.Time   `json:"createdAt"`
+	UpdatedAt time.Time   `json:"updatedAt"`
+	Document  DocumentOut `json:"document"`
 }

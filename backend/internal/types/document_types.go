@@ -6,16 +6,17 @@ import (
 	"github.com/google/uuid"
 )
 
+type DocumentOut struct {
+	ID    uuid.UUID `json:"id"`
+	Title string    `json:"title"`
+}
+
 type DocumentCreate struct {
 	Title string `json:"name"`
 	Path  string `json:"path"`
 }
 
-type DocumentUpdate struct {
-	ID    uuid.UUID `json:"id"`
-	Title string    `json:"name"`
-	Path  string    `json:"path"`
-}
+type DocumentUpdate = DocumentCreate
 
 type DocumentToken struct {
 	Raw       string    `json:"raw"`

@@ -38,9 +38,11 @@ type DocumentEdges struct {
 	Group *Group `json:"group,omitempty"`
 	// DocumentTokens holds the value of the document_tokens edge.
 	DocumentTokens []*DocumentToken `json:"document_tokens,omitempty"`
+	// Attachments holds the value of the attachments edge.
+	Attachments []*Attachment `json:"attachments,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // GroupOrErr returns the Group value or an error if the edge
@@ -63,6 +65,15 @@ func (e DocumentEdges) DocumentTokensOrErr() ([]*DocumentToken, error) {
 		return e.DocumentTokens, nil
 	}
 	return nil, &NotLoadedError{edge: "document_tokens"}
+}
+
+// AttachmentsOrErr returns the Attachments value or an error if the edge
+// was not loaded in eager-loading.
+func (e DocumentEdges) AttachmentsOrErr() ([]*Attachment, error) {
+	if e.loadedTypes[2] {
+		return e.Attachments, nil
+	}
+	return nil, &NotLoadedError{edge: "attachments"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -143,6 +154,11 @@ func (d *Document) QueryGroup() *GroupQuery {
 // QueryDocumentTokens queries the "document_tokens" edge of the Document entity.
 func (d *Document) QueryDocumentTokens() *DocumentTokenQuery {
 	return (&DocumentClient{config: d.config}).QueryDocumentTokens(d)
+}
+
+// QueryAttachments queries the "attachments" edge of the Document entity.
+func (d *Document) QueryAttachments() *AttachmentQuery {
+	return (&DocumentClient{config: d.config}).QueryAttachments(d)
 }
 
 // Update returns a builder for updating this Document.

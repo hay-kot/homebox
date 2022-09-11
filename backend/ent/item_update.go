@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
+	"github.com/hay-kot/content/backend/ent/attachment"
 	"github.com/hay-kot/content/backend/ent/group"
 	"github.com/hay-kot/content/backend/ent/item"
 	"github.com/hay-kot/content/backend/ent/itemfield"
@@ -401,6 +402,21 @@ func (iu *ItemUpdate) AddLabel(l ...*Label) *ItemUpdate {
 	return iu.AddLabelIDs(ids...)
 }
 
+// AddAttachmentIDs adds the "attachments" edge to the Attachment entity by IDs.
+func (iu *ItemUpdate) AddAttachmentIDs(ids ...uuid.UUID) *ItemUpdate {
+	iu.mutation.AddAttachmentIDs(ids...)
+	return iu
+}
+
+// AddAttachments adds the "attachments" edges to the Attachment entity.
+func (iu *ItemUpdate) AddAttachments(a ...*Attachment) *ItemUpdate {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return iu.AddAttachmentIDs(ids...)
+}
+
 // Mutation returns the ItemMutation object of the builder.
 func (iu *ItemUpdate) Mutation() *ItemMutation {
 	return iu.mutation
@@ -458,6 +474,27 @@ func (iu *ItemUpdate) RemoveLabel(l ...*Label) *ItemUpdate {
 		ids[i] = l[i].ID
 	}
 	return iu.RemoveLabelIDs(ids...)
+}
+
+// ClearAttachments clears all "attachments" edges to the Attachment entity.
+func (iu *ItemUpdate) ClearAttachments() *ItemUpdate {
+	iu.mutation.ClearAttachments()
+	return iu
+}
+
+// RemoveAttachmentIDs removes the "attachments" edge to Attachment entities by IDs.
+func (iu *ItemUpdate) RemoveAttachmentIDs(ids ...uuid.UUID) *ItemUpdate {
+	iu.mutation.RemoveAttachmentIDs(ids...)
+	return iu
+}
+
+// RemoveAttachments removes "attachments" edges to Attachment entities.
+func (iu *ItemUpdate) RemoveAttachments(a ...*Attachment) *ItemUpdate {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return iu.RemoveAttachmentIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -978,6 +1015,60 @@ func (iu *ItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if iu.mutation.AttachmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   item.AttachmentsTable,
+			Columns: []string{item.AttachmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: attachment.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := iu.mutation.RemovedAttachmentsIDs(); len(nodes) > 0 && !iu.mutation.AttachmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   item.AttachmentsTable,
+			Columns: []string{item.AttachmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: attachment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := iu.mutation.AttachmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   item.AttachmentsTable,
+			Columns: []string{item.AttachmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: attachment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, iu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{item.Label}
@@ -1365,6 +1456,21 @@ func (iuo *ItemUpdateOne) AddLabel(l ...*Label) *ItemUpdateOne {
 	return iuo.AddLabelIDs(ids...)
 }
 
+// AddAttachmentIDs adds the "attachments" edge to the Attachment entity by IDs.
+func (iuo *ItemUpdateOne) AddAttachmentIDs(ids ...uuid.UUID) *ItemUpdateOne {
+	iuo.mutation.AddAttachmentIDs(ids...)
+	return iuo
+}
+
+// AddAttachments adds the "attachments" edges to the Attachment entity.
+func (iuo *ItemUpdateOne) AddAttachments(a ...*Attachment) *ItemUpdateOne {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return iuo.AddAttachmentIDs(ids...)
+}
+
 // Mutation returns the ItemMutation object of the builder.
 func (iuo *ItemUpdateOne) Mutation() *ItemMutation {
 	return iuo.mutation
@@ -1422,6 +1528,27 @@ func (iuo *ItemUpdateOne) RemoveLabel(l ...*Label) *ItemUpdateOne {
 		ids[i] = l[i].ID
 	}
 	return iuo.RemoveLabelIDs(ids...)
+}
+
+// ClearAttachments clears all "attachments" edges to the Attachment entity.
+func (iuo *ItemUpdateOne) ClearAttachments() *ItemUpdateOne {
+	iuo.mutation.ClearAttachments()
+	return iuo
+}
+
+// RemoveAttachmentIDs removes the "attachments" edge to Attachment entities by IDs.
+func (iuo *ItemUpdateOne) RemoveAttachmentIDs(ids ...uuid.UUID) *ItemUpdateOne {
+	iuo.mutation.RemoveAttachmentIDs(ids...)
+	return iuo
+}
+
+// RemoveAttachments removes "attachments" edges to Attachment entities.
+func (iuo *ItemUpdateOne) RemoveAttachments(a ...*Attachment) *ItemUpdateOne {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return iuo.RemoveAttachmentIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1964,6 +2091,60 @@ func (iuo *ItemUpdateOne) sqlSave(ctx context.Context) (_node *Item, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: label.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if iuo.mutation.AttachmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   item.AttachmentsTable,
+			Columns: []string{item.AttachmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: attachment.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := iuo.mutation.RemovedAttachmentsIDs(); len(nodes) > 0 && !iuo.mutation.AttachmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   item.AttachmentsTable,
+			Columns: []string{item.AttachmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: attachment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := iuo.mutation.AttachmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   item.AttachmentsTable,
+			Columns: []string{item.AttachmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: attachment.FieldID,
 				},
 			},
 		}

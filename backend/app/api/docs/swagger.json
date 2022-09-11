@@ -780,6 +780,44 @@
         }
     },
     "definitions": {
+        "ent.Attachment": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "description": "CreatedAt holds the value of the \"created_at\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the AttachmentQuery when eager-loading is set.",
+                    "$ref": "#/definitions/ent.AttachmentEdges"
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "Type holds the value of the \"type\" field.",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "ent.AttachmentEdges": {
+            "type": "object",
+            "properties": {
+                "document": {
+                    "description": "Document holds the value of the document edge.",
+                    "$ref": "#/definitions/ent.Document"
+                },
+                "item": {
+                    "description": "Item holds the value of the item edge.",
+                    "$ref": "#/definitions/ent.Item"
+                }
+            }
+        },
         "ent.AuthTokens": {
             "type": "object",
             "properties": {
@@ -821,6 +859,103 @@
                 }
             }
         },
+        "ent.Document": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "description": "CreatedAt holds the value of the \"created_at\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the DocumentQuery when eager-loading is set.",
+                    "$ref": "#/definitions/ent.DocumentEdges"
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "Path holds the value of the \"path\" field.",
+                    "type": "string"
+                },
+                "title": {
+                    "description": "Title holds the value of the \"title\" field.",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "ent.DocumentEdges": {
+            "type": "object",
+            "properties": {
+                "attachments": {
+                    "description": "Attachments holds the value of the attachments edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ent.Attachment"
+                    }
+                },
+                "document_tokens": {
+                    "description": "DocumentTokens holds the value of the document_tokens edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ent.DocumentToken"
+                    }
+                },
+                "group": {
+                    "description": "Group holds the value of the group edge.",
+                    "$ref": "#/definitions/ent.Group"
+                }
+            }
+        },
+        "ent.DocumentToken": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "description": "CreatedAt holds the value of the \"created_at\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the DocumentTokenQuery when eager-loading is set.",
+                    "$ref": "#/definitions/ent.DocumentTokenEdges"
+                },
+                "expires_at": {
+                    "description": "ExpiresAt holds the value of the \"expires_at\" field.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "token": {
+                    "description": "Token holds the value of the \"token\" field.",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "updated_at": {
+                    "description": "UpdatedAt holds the value of the \"updated_at\" field.",
+                    "type": "string"
+                },
+                "uses": {
+                    "description": "Uses holds the value of the \"uses\" field.",
+                    "type": "integer"
+                }
+            }
+        },
+        "ent.DocumentTokenEdges": {
+            "type": "object",
+            "properties": {
+                "document": {
+                    "description": "Document holds the value of the document edge.",
+                    "$ref": "#/definitions/ent.Document"
+                }
+            }
+        },
         "ent.Group": {
             "type": "object",
             "properties": {
@@ -853,6 +988,13 @@
         "ent.GroupEdges": {
             "type": "object",
             "properties": {
+                "documents": {
+                    "description": "Documents holds the value of the documents edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ent.Document"
+                    }
+                },
                 "items": {
                     "description": "Items holds the value of the items edge.",
                     "type": "array",
@@ -971,6 +1113,13 @@
         "ent.ItemEdges": {
             "type": "object",
             "properties": {
+                "attachments": {
+                    "description": "Attachments holds the value of the attachments edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ent.Attachment"
+                    }
+                },
                 "fields": {
                     "description": "Fields holds the value of the fields edge.",
                     "type": "array",

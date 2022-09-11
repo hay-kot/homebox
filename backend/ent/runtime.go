@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/hay-kot/content/backend/ent/attachment"
 	"github.com/hay-kot/content/backend/ent/authtokens"
 	"github.com/hay-kot/content/backend/ent/document"
 	"github.com/hay-kot/content/backend/ent/documenttoken"
@@ -22,6 +23,25 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	attachmentMixin := schema.Attachment{}.Mixin()
+	attachmentMixinFields0 := attachmentMixin[0].Fields()
+	_ = attachmentMixinFields0
+	attachmentFields := schema.Attachment{}.Fields()
+	_ = attachmentFields
+	// attachmentDescCreatedAt is the schema descriptor for created_at field.
+	attachmentDescCreatedAt := attachmentMixinFields0[1].Descriptor()
+	// attachment.DefaultCreatedAt holds the default value on creation for the created_at field.
+	attachment.DefaultCreatedAt = attachmentDescCreatedAt.Default.(func() time.Time)
+	// attachmentDescUpdatedAt is the schema descriptor for updated_at field.
+	attachmentDescUpdatedAt := attachmentMixinFields0[2].Descriptor()
+	// attachment.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	attachment.DefaultUpdatedAt = attachmentDescUpdatedAt.Default.(func() time.Time)
+	// attachment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	attachment.UpdateDefaultUpdatedAt = attachmentDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// attachmentDescID is the schema descriptor for id field.
+	attachmentDescID := attachmentMixinFields0[0].Descriptor()
+	// attachment.DefaultID holds the default value on creation for the id field.
+	attachment.DefaultID = attachmentDescID.Default.(func() uuid.UUID)
 	authtokensMixin := schema.AuthTokens{}.Mixin()
 	authtokensMixinFields0 := authtokensMixin[0].Fields()
 	_ = authtokensMixinFields0

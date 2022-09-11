@@ -8,6 +8,35 @@ import (
 )
 
 var (
+	// AttachmentsColumns holds the columns for the "attachments" table.
+	AttachmentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"photo", "manual", "warranty", "attachment"}, Default: "attachment"},
+		{Name: "document_attachments", Type: field.TypeUUID},
+		{Name: "item_attachments", Type: field.TypeUUID},
+	}
+	// AttachmentsTable holds the schema information for the "attachments" table.
+	AttachmentsTable = &schema.Table{
+		Name:       "attachments",
+		Columns:    AttachmentsColumns,
+		PrimaryKey: []*schema.Column{AttachmentsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "attachments_documents_attachments",
+				Columns:    []*schema.Column{AttachmentsColumns[4]},
+				RefColumns: []*schema.Column{DocumentsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "attachments_items_attachments",
+				Columns:    []*schema.Column{AttachmentsColumns[5]},
+				RefColumns: []*schema.Column{ItemsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// AuthTokensColumns holds the columns for the "auth_tokens" table.
 	AuthTokensColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -299,6 +328,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		AttachmentsTable,
 		AuthTokensTable,
 		DocumentsTable,
 		DocumentTokensTable,
@@ -313,6 +343,8 @@ var (
 )
 
 func init() {
+	AttachmentsTable.ForeignKeys[0].RefTable = DocumentsTable
+	AttachmentsTable.ForeignKeys[1].RefTable = ItemsTable
 	AuthTokensTable.ForeignKeys[0].RefTable = UsersTable
 	DocumentsTable.ForeignKeys[0].RefTable = GroupsTable
 	DocumentTokensTable.ForeignKeys[0].RefTable = DocumentsTable

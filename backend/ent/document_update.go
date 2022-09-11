@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
+	"github.com/hay-kot/content/backend/ent/attachment"
 	"github.com/hay-kot/content/backend/ent/document"
 	"github.com/hay-kot/content/backend/ent/documenttoken"
 	"github.com/hay-kot/content/backend/ent/group"
@@ -75,6 +76,21 @@ func (du *DocumentUpdate) AddDocumentTokens(d ...*DocumentToken) *DocumentUpdate
 	return du.AddDocumentTokenIDs(ids...)
 }
 
+// AddAttachmentIDs adds the "attachments" edge to the Attachment entity by IDs.
+func (du *DocumentUpdate) AddAttachmentIDs(ids ...uuid.UUID) *DocumentUpdate {
+	du.mutation.AddAttachmentIDs(ids...)
+	return du
+}
+
+// AddAttachments adds the "attachments" edges to the Attachment entity.
+func (du *DocumentUpdate) AddAttachments(a ...*Attachment) *DocumentUpdate {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return du.AddAttachmentIDs(ids...)
+}
+
 // Mutation returns the DocumentMutation object of the builder.
 func (du *DocumentUpdate) Mutation() *DocumentMutation {
 	return du.mutation
@@ -105,6 +121,27 @@ func (du *DocumentUpdate) RemoveDocumentTokens(d ...*DocumentToken) *DocumentUpd
 		ids[i] = d[i].ID
 	}
 	return du.RemoveDocumentTokenIDs(ids...)
+}
+
+// ClearAttachments clears all "attachments" edges to the Attachment entity.
+func (du *DocumentUpdate) ClearAttachments() *DocumentUpdate {
+	du.mutation.ClearAttachments()
+	return du
+}
+
+// RemoveAttachmentIDs removes the "attachments" edge to Attachment entities by IDs.
+func (du *DocumentUpdate) RemoveAttachmentIDs(ids ...uuid.UUID) *DocumentUpdate {
+	du.mutation.RemoveAttachmentIDs(ids...)
+	return du
+}
+
+// RemoveAttachments removes "attachments" edges to Attachment entities.
+func (du *DocumentUpdate) RemoveAttachments(a ...*Attachment) *DocumentUpdate {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return du.RemoveAttachmentIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -322,6 +359,60 @@ func (du *DocumentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if du.mutation.AttachmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   document.AttachmentsTable,
+			Columns: []string{document.AttachmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: attachment.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := du.mutation.RemovedAttachmentsIDs(); len(nodes) > 0 && !du.mutation.AttachmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   document.AttachmentsTable,
+			Columns: []string{document.AttachmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: attachment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := du.mutation.AttachmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   document.AttachmentsTable,
+			Columns: []string{document.AttachmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: attachment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, du.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{document.Label}
@@ -385,6 +476,21 @@ func (duo *DocumentUpdateOne) AddDocumentTokens(d ...*DocumentToken) *DocumentUp
 	return duo.AddDocumentTokenIDs(ids...)
 }
 
+// AddAttachmentIDs adds the "attachments" edge to the Attachment entity by IDs.
+func (duo *DocumentUpdateOne) AddAttachmentIDs(ids ...uuid.UUID) *DocumentUpdateOne {
+	duo.mutation.AddAttachmentIDs(ids...)
+	return duo
+}
+
+// AddAttachments adds the "attachments" edges to the Attachment entity.
+func (duo *DocumentUpdateOne) AddAttachments(a ...*Attachment) *DocumentUpdateOne {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return duo.AddAttachmentIDs(ids...)
+}
+
 // Mutation returns the DocumentMutation object of the builder.
 func (duo *DocumentUpdateOne) Mutation() *DocumentMutation {
 	return duo.mutation
@@ -415,6 +521,27 @@ func (duo *DocumentUpdateOne) RemoveDocumentTokens(d ...*DocumentToken) *Documen
 		ids[i] = d[i].ID
 	}
 	return duo.RemoveDocumentTokenIDs(ids...)
+}
+
+// ClearAttachments clears all "attachments" edges to the Attachment entity.
+func (duo *DocumentUpdateOne) ClearAttachments() *DocumentUpdateOne {
+	duo.mutation.ClearAttachments()
+	return duo
+}
+
+// RemoveAttachmentIDs removes the "attachments" edge to Attachment entities by IDs.
+func (duo *DocumentUpdateOne) RemoveAttachmentIDs(ids ...uuid.UUID) *DocumentUpdateOne {
+	duo.mutation.RemoveAttachmentIDs(ids...)
+	return duo
+}
+
+// RemoveAttachments removes "attachments" edges to Attachment entities.
+func (duo *DocumentUpdateOne) RemoveAttachments(a ...*Attachment) *DocumentUpdateOne {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return duo.RemoveAttachmentIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -654,6 +781,60 @@ func (duo *DocumentUpdateOne) sqlSave(ctx context.Context) (_node *Document, err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: documenttoken.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if duo.mutation.AttachmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   document.AttachmentsTable,
+			Columns: []string{document.AttachmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: attachment.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := duo.mutation.RemovedAttachmentsIDs(); len(nodes) > 0 && !duo.mutation.AttachmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   document.AttachmentsTable,
+			Columns: []string{document.AttachmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: attachment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := duo.mutation.AttachmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   document.AttachmentsTable,
+			Columns: []string{document.AttachmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: attachment.FieldID,
 				},
 			},
 		}
