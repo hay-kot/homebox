@@ -52,9 +52,14 @@
 
   const selected = useVModel(props, "modelValue", emit);
   const dateText = computed(() => {
+    if (!validDate(selected.value)) {
+      return "";
+    }
+
     if (selected.value) {
       return selected.value.toLocaleDateString();
     }
+
     return "";
   });
 

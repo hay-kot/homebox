@@ -22,11 +22,11 @@
 </template>
 
 <script setup lang="ts">
-  import { ItemOut } from "~~/lib/api/types/data-contracts";
+  import { ItemOut, ItemSummary } from "~~/lib/api/types/data-contracts";
 
   const props = defineProps({
     item: {
-      type: Object as () => ItemOut,
+      type: Object as () => ItemOut | ItemSummary,
       required: true,
     },
   });

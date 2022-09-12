@@ -36,4 +36,26 @@ export class BaseAPI {
   constructor(requests: Requests) {
     this.http = requests;
   }
+
+  /**
+   * dropFields will remove any fields that are specified in the fields array
+   * additionally, it will remove the `createdAt` and `updatedAt` fields if they
+   * are present. This is useful for when you want to send a subset of fields to
+   * the server like when performing an update.
+   */
+  dropFields<T>(obj: T, keys: Array<keyof T> = []): T {
+    const result = { ...obj };
+    console.log("dropFields", result);
+    [...keys, "createdAt", "updatedAt"].forEach(key => {
+      console.log(key);
+      // @ts-ignore - we are checking for the key above
+      if (hasKey(result, key)) {
+        // @ts-ignore - we are guarding against this above
+        delete result[key];
+        console.log("dropping", key);
+      }
+    });
+    console.log("dropFields", result);
+    return result;
+  }
 }

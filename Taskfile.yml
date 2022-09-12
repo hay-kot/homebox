@@ -5,7 +5,6 @@ tasks:
     cmds:
       - |
         cd backend && ent generate ./ent/schema \
-          --template=ent/schema/templates/stringer.tmpl \
           --template=ent/schema/templates/has_id.tmpl
       - cd backend/app/api/ && swag fmt
       - cd backend/app/api/ && swag init --dir=./,../../internal,../../pkgs
@@ -17,18 +16,12 @@ tasks:
           --path ./backend/app/api/docs/swagger.json \
           --output ./frontend/lib/api/types
 
-        # Output cleanup for the generated types
-        #   1. Remove the prefix `Types` from each type generated
-        #   2. Remove the ?: from the type definition since types are not properly annotated in the swagger.json
-
         python3 ./scripts/process-types.py ./frontend/lib/api/types/data-contracts.ts
   api:
     cmds:
       - task: generate
       - cd backend && go run ./app/api/ {{.CLI_ARGS}}
     silent: false
-    sources:
-      - ./backend/**/*.go
 
   api:build:
     cmds:
@@ -39,6 +32,10 @@ tasks:
     cmds:
       - cd backend && go test ./app/api/
     silent: true
+
+  api:watch:
+    cmds:
+      - cd backend && gotestsum --watch ./...
 
   api:coverage:
     cmds:
@@ -53,12 +50,12 @@ tasks:
       - cd frontend && pnpm run test:ci
     silent: true
 
-  docker:build:
+  frontend:watch:
+    desc: Starts the vitest test runner in watch mode
     cmds:
-      - cd backend && docker-compose up --build
-    silent: true
+      - cd frontend && pnpm vitest --watch
 
-  generate:types:
+  frontend:
+    desc: Run frontend development server
     cmds:
-      - cd backend && go run ./app/generator
-    silent: true
+      - cd frontend && pnpm dev

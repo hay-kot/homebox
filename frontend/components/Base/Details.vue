@@ -15,7 +15,7 @@
             {{ dKey }}
           </dt>
           <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-            <slot :name="dKey" v-bind="{ key: dKey, value: dValue }">
+            <slot :name="rmSpace(dKey)" v-bind="{ key: dKey, value: dValue }">
               {{ dValue }}
             </slot>
           </dd>
@@ -27,6 +27,10 @@
 
 <script setup lang="ts">
   type StringLike = string | number | boolean;
+
+  function rmSpace(str: string) {
+    return str.replace(" ", "");
+  }
 
   defineProps({
     details: {

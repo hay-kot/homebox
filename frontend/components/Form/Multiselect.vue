@@ -17,7 +17,7 @@
           v-for="(obj, idx) in items"
           :key="idx"
           :class="{
-            bordered: selectedIndexes[idx],
+            bordered: selected[idx],
           }"
         >
           <button type="button" @click="toggle(idx)">
@@ -56,28 +56,23 @@
     },
   });
 
-  const selectedIndexes = ref<Record<number, boolean>>({});
+  const value = useVModel(props, "modelValue", emit);
+
+  const selected = computed<Record<number, boolean>>(() => {
+    const obj: Record<number, boolean> = {};
+    value.value.forEach(itm => {
+      const idx = props.items.findIndex(item => item[props.name] === itm.name);
+      obj[idx] = true;
+    });
+    return obj;
+  });
 
   function toggle(index: number) {
-    selectedIndexes.value[index] = !selectedIndexes.value[index];
-
     const item = props.items[index];
-
-    if (selectedIndexes.value[index]) {
-      value.value = [...value.value, item];
+    if (selected.value[index]) {
+      value.value = value.value.filter(itm => itm.name !== item.name);
     } else {
-      value.value = value.value.filter(itm => itm !== item);
+      value.value = [...value.value, item];
     }
   }
-
-  watchOnce(
-    () => props.items,
-    () => {
-      if (props.selectFirst && props.items.length > 0) {
-        value.value = props.items[0];
-      }
-    }
-  );
-
-  const value = useVModel(props, "modelValue", emit);
 </script>

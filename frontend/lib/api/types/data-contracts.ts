@@ -127,6 +127,42 @@ export interface ItemSummary {
   warrantyExpires: Date;
 }
 
+export interface ItemUpdate {
+  description: string;
+  id: string;
+  insured: boolean;
+  labelIds: string[];
+
+  /** Warranty */
+  lifetimeWarranty: boolean;
+
+  /** Edges */
+  locationId: string;
+  manufacturer: string;
+  modelNumber: string;
+  name: string;
+
+  /** Extras */
+  notes: string;
+  purchaseFrom: string;
+  purchasePrice: number;
+
+  /** Purchase */
+  purchaseTime: Date;
+  quantity: number;
+
+  /** Identifications */
+  serialNumber: string;
+  soldNotes: string;
+  soldPrice: number;
+
+  /** Sold */
+  soldTime: Date;
+  soldTo: string;
+  warrantyDetails: string;
+  warrantyExpires: Date;
+}
+
 export interface LabelCreate {
   color: string;
   description: string;

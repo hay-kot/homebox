@@ -1,6 +1,6 @@
 import { BaseAPI, route } from "../base";
 import { parseDate } from "../base/base-api";
-import { ItemCreate, ItemOut } from "../types/data-contracts";
+import { ItemCreate, ItemOut, ItemSummary, ItemUpdate } from "../types/data-contracts";
 import { Results } from "./types";
 
 export class ItemsApi extends BaseAPI {
@@ -9,7 +9,7 @@ export class ItemsApi extends BaseAPI {
   }
 
   create(item: ItemCreate) {
-    return this.http.post<ItemCreate, ItemOut>({ url: route("/items"), body: item });
+    return this.http.post<ItemCreate, ItemSummary>({ url: route("/items"), body: item });
   }
 
   async get(id: string) {
@@ -28,8 +28,17 @@ export class ItemsApi extends BaseAPI {
     return this.http.delete<void>({ url: route(`/items/${id}`) });
   }
 
-  update(id: string, item: ItemCreate) {
-    return this.http.put<ItemCreate, ItemOut>({ url: route(`/items/${id}`), body: item });
+  async update(id: string, item: ItemUpdate) {
+    const payload = await this.http.put<ItemCreate, ItemOut>({
+      url: route(`/items/${id}`),
+      body: this.dropFields(item),
+    });
+    if (!payload.data) {
+      return payload;
+    }
+
+    payload.data = parseDate(payload.data, ["purchaseTime", "soldTime", "warrantyExpires"]);
+    return payload;
   }
 
   import(file: File) {

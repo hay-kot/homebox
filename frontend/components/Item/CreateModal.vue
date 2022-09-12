@@ -26,7 +26,8 @@
 </template>
 
 <script setup lang="ts">
-  import { type Location } from "~~/lib/api/classes/locations";
+  import { ItemCreate, LocationOut } from "~~/lib/api/types/data-contracts";
+
   const props = defineProps({
     modelValue: {
       type: Boolean,
@@ -40,7 +41,7 @@
   const loading = ref(false);
   const focused = ref(false);
   const form = reactive({
-    location: {} as Location,
+    location: {} as LocationOut,
     name: "",
     description: "",
     color: "", // Future!
@@ -80,7 +81,7 @@
       return;
     }
 
-    const out = {
+    const out: ItemCreate = {
       name: form.name,
       description: form.description,
       locationId: form.location.id as string,

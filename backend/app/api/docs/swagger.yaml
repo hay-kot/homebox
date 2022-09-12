@@ -179,6 +179,59 @@ definitions:
       warrantyExpires:
         type: string
     type: object
+  types.ItemUpdate:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      insured:
+        type: boolean
+      labelIds:
+        items:
+          type: string
+        type: array
+      lifetimeWarranty:
+        description: Warranty
+        type: boolean
+      locationId:
+        description: Edges
+        type: string
+      manufacturer:
+        type: string
+      modelNumber:
+        type: string
+      name:
+        type: string
+      notes:
+        description: Extras
+        type: string
+      purchaseFrom:
+        type: string
+      purchasePrice:
+        type: number
+      purchaseTime:
+        description: Purchase
+        type: string
+      quantity:
+        type: integer
+      serialNumber:
+        description: Identifications
+        type: string
+      soldNotes:
+        type: string
+      soldPrice:
+        type: number
+      soldTime:
+        description: Sold
+        type: string
+      soldTo:
+        type: string
+      warrantyDetails:
+        type: string
+      warrantyExpires:
+        type: string
+    type: object
   types.LabelCreate:
     properties:
       color:
@@ -415,6 +468,12 @@ paths:
         name: id
         required: true
         type: string
+      - description: Item Data
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.ItemUpdate'
       produces:
       - application/json
       responses:
