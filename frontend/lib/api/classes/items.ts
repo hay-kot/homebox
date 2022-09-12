@@ -1,60 +1,26 @@
 import { BaseAPI, route } from "../base";
-import { Label } from "./labels";
-import { Location } from "./locations";
+import { parseDate } from "../base/base-api";
+import { ItemCreate, ItemOut, ItemSummary, ItemUpdate } from "../types/data-contracts";
 import { Results } from "./types";
-
-export interface ItemCreate {
-  name: string;
-  description: string;
-  locationId: string;
-  labelIds: string[];
-}
-
-export interface Item {
-  createdAt: string;
-  description: string;
-  id: string;
-  labels: Label[];
-  location: Location;
-  manufacturer: string;
-  modelNumber: string;
-  name: string;
-  notes: string;
-  purchaseFrom: string;
-  purchasePrice: number;
-  purchaseTime: Date;
-  serialNumber: string;
-  soldNotes: string;
-  soldPrice: number;
-  soldTime: Date;
-  soldTo: string;
-  updatedAt: string;
-  lifetimeWarranty: boolean;
-  warrantyExpires: Date;
-  warrantyDetails: string;
-}
 
 export class ItemsApi extends BaseAPI {
   getAll() {
-    return this.http.get<Results<Item>>({ url: route("/items") });
+    return this.http.get<Results<ItemOut>>({ url: route("/items") });
   }
 
   create(item: ItemCreate) {
-    return this.http.post<ItemCreate, Item>({ url: route("/items"), body: item });
+    return this.http.post<ItemCreate, ItemSummary>({ url: route("/items"), body: item });
   }
 
   async get(id: string) {
-    const payload = await this.http.get<Item>({ url: route(`/items/${id}`) });
+    const payload = await this.http.get<ItemOut>({ url: route(`/items/${id}`) });
 
     if (!payload.data) {
       return payload;
     }
 
     // Parse Date Types
-    payload.data.purchaseTime = new Date(payload.data.purchaseTime);
-    payload.data.soldTime = new Date(payload.data.soldTime);
-    payload.data.warrantyExpires = new Date(payload.data.warrantyExpires);
-
+    payload.data = parseDate(payload.data, ["purchaseTime", "soldTime", "warrantyExpires"]);
     return payload;
   }
 
@@ -62,8 +28,17 @@ export class ItemsApi extends BaseAPI {
     return this.http.delete<void>({ url: route(`/items/${id}`) });
   }
 
-  update(id: string, item: ItemCreate) {
-    return this.http.put<ItemCreate, Item>({ url: route(`/items/${id}`), body: item });
+  async update(id: string, item: ItemUpdate) {
+    const payload = await this.http.put<ItemCreate, ItemOut>({
+      url: route(`/items/${id}`),
+      body: this.dropFields(item),
+    });
+    if (!payload.data) {
+      return payload;
+    }
+
+    payload.data = parseDate(payload.data, ["purchaseTime", "soldTime", "warrantyExpires"]);
+    return payload;
   }
 
   import(file: File) {

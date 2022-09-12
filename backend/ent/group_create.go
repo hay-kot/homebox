@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
+	"github.com/hay-kot/content/backend/ent/document"
 	"github.com/hay-kot/content/backend/ent/group"
 	"github.com/hay-kot/content/backend/ent/item"
 	"github.com/hay-kot/content/backend/ent/label"
@@ -145,6 +146,21 @@ func (gc *GroupCreate) AddLabels(l ...*Label) *GroupCreate {
 		ids[i] = l[i].ID
 	}
 	return gc.AddLabelIDs(ids...)
+}
+
+// AddDocumentIDs adds the "documents" edge to the Document entity by IDs.
+func (gc *GroupCreate) AddDocumentIDs(ids ...uuid.UUID) *GroupCreate {
+	gc.mutation.AddDocumentIDs(ids...)
+	return gc
+}
+
+// AddDocuments adds the "documents" edges to the Document entity.
+func (gc *GroupCreate) AddDocuments(d ...*Document) *GroupCreate {
+	ids := make([]uuid.UUID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return gc.AddDocumentIDs(ids...)
 }
 
 // Mutation returns the GroupMutation object of the builder.
@@ -402,6 +418,25 @@ func (gc *GroupCreate) createSpec() (*Group, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: label.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := gc.mutation.DocumentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.DocumentsTable,
+			Columns: []string{group.DocumentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: document.FieldID,
 				},
 			},
 		}

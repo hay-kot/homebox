@@ -1,0 +1,18 @@
+{{/* The line below tells Intellij/GoLand to enable the autocompletion based on the *gen.Graph type. */}}
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+
+{{ define "has_id" }}
+
+{{/* Add the base header for the generated file */}}
+{{ $pkg := base $.Config.Package }}
+{{ template "header" $ }}
+import 	"github.com/google/uuid"
+{{/* Loop over all nodes and implement the "HasID" interface */}}
+{{ range $n := $.Nodes }}
+    {{ $receiver := $n.Receiver }}
+    func ({{ $receiver }} *{{ $n.Name }}) GetID() uuid.UUID {
+        return {{ $receiver }}.ID
+    }
+{{ end }}
+
+{{ end }}

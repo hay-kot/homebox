@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
+	"github.com/hay-kot/content/backend/ent/attachment"
 	"github.com/hay-kot/content/backend/ent/group"
 	"github.com/hay-kot/content/backend/ent/item"
 	"github.com/hay-kot/content/backend/ent/itemfield"
@@ -83,6 +84,34 @@ func (ic *ItemCreate) SetNotes(s string) *ItemCreate {
 func (ic *ItemCreate) SetNillableNotes(s *string) *ItemCreate {
 	if s != nil {
 		ic.SetNotes(*s)
+	}
+	return ic
+}
+
+// SetQuantity sets the "quantity" field.
+func (ic *ItemCreate) SetQuantity(i int) *ItemCreate {
+	ic.mutation.SetQuantity(i)
+	return ic
+}
+
+// SetNillableQuantity sets the "quantity" field if the given value is not nil.
+func (ic *ItemCreate) SetNillableQuantity(i *int) *ItemCreate {
+	if i != nil {
+		ic.SetQuantity(*i)
+	}
+	return ic
+}
+
+// SetInsured sets the "insured" field.
+func (ic *ItemCreate) SetInsured(b bool) *ItemCreate {
+	ic.mutation.SetInsured(b)
+	return ic
+}
+
+// SetNillableInsured sets the "insured" field if the given value is not nil.
+func (ic *ItemCreate) SetNillableInsured(b *bool) *ItemCreate {
+	if b != nil {
+		ic.SetInsured(*b)
 	}
 	return ic
 }
@@ -343,6 +372,21 @@ func (ic *ItemCreate) AddLabel(l ...*Label) *ItemCreate {
 	return ic.AddLabelIDs(ids...)
 }
 
+// AddAttachmentIDs adds the "attachments" edge to the Attachment entity by IDs.
+func (ic *ItemCreate) AddAttachmentIDs(ids ...uuid.UUID) *ItemCreate {
+	ic.mutation.AddAttachmentIDs(ids...)
+	return ic
+}
+
+// AddAttachments adds the "attachments" edges to the Attachment entity.
+func (ic *ItemCreate) AddAttachments(a ...*Attachment) *ItemCreate {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ic.AddAttachmentIDs(ids...)
+}
+
 // Mutation returns the ItemMutation object of the builder.
 func (ic *ItemCreate) Mutation() *ItemMutation {
 	return ic.mutation
@@ -428,6 +472,14 @@ func (ic *ItemCreate) defaults() {
 		v := item.DefaultUpdatedAt()
 		ic.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := ic.mutation.Quantity(); !ok {
+		v := item.DefaultQuantity
+		ic.mutation.SetQuantity(v)
+	}
+	if _, ok := ic.mutation.Insured(); !ok {
+		v := item.DefaultInsured
+		ic.mutation.SetInsured(v)
+	}
 	if _, ok := ic.mutation.LifetimeWarranty(); !ok {
 		v := item.DefaultLifetimeWarranty
 		ic.mutation.SetLifetimeWarranty(v)
@@ -471,6 +523,12 @@ func (ic *ItemCreate) check() error {
 		if err := item.NotesValidator(v); err != nil {
 			return &ValidationError{Name: "notes", err: fmt.Errorf(`ent: validator failed for field "Item.notes": %w`, err)}
 		}
+	}
+	if _, ok := ic.mutation.Quantity(); !ok {
+		return &ValidationError{Name: "quantity", err: errors.New(`ent: missing required field "Item.quantity"`)}
+	}
+	if _, ok := ic.mutation.Insured(); !ok {
+		return &ValidationError{Name: "insured", err: errors.New(`ent: missing required field "Item.insured"`)}
 	}
 	if v, ok := ic.mutation.SerialNumber(); ok {
 		if err := item.SerialNumberValidator(v); err != nil {
@@ -584,6 +642,22 @@ func (ic *ItemCreate) createSpec() (*Item, *sqlgraph.CreateSpec) {
 			Column: item.FieldNotes,
 		})
 		_node.Notes = value
+	}
+	if value, ok := ic.mutation.Quantity(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: item.FieldQuantity,
+		})
+		_node.Quantity = value
+	}
+	if value, ok := ic.mutation.Insured(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: item.FieldInsured,
+		})
+		_node.Insured = value
 	}
 	if value, ok := ic.mutation.SerialNumber(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -759,6 +833,25 @@ func (ic *ItemCreate) createSpec() (*Item, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: label.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ic.mutation.AttachmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   item.AttachmentsTable,
+			Columns: []string{item.AttachmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: attachment.FieldID,
 				},
 			},
 		}

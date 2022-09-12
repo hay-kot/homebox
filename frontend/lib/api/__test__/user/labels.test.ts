@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { Label } from "../../classes/labels";
+import { LabelOut } from "../../types/data-contracts";
 import { UserApi } from "../../user";
 import { sharedUserClient } from "../test-utils";
 
@@ -10,7 +10,7 @@ describe("locations lifecycle (create, update, delete)", () => {
    * useLabel sets up a label resource for testing, and returns a function
    * that can be used to delete the label from the backend server.
    */
-  async function useLabel(api: UserApi): Promise<[Label, () => Promise<void>]> {
+  async function useLabel(api: UserApi): Promise<[LabelOut, () => Promise<void>]> {
     const { response, data } = await api.labels.create({
       name: `__test__.label.name_${increment}`,
       description: `__test__.label.description_${increment}`,

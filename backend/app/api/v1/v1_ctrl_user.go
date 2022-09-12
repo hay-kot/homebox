@@ -41,7 +41,7 @@ func (ctrl *V1Controller) HandleUserRegistration() http.HandlerFunc {
 // @Summary   Get the current user
 // @Tags      User
 // @Produce   json
-// @Success   200  {object}  server.Result{item=ent.User}
+// @Success   200  {object}  server.Result{item=types.UserOut}
 // @Router    /v1/users/self [GET]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleUserSelf() http.HandlerFunc {

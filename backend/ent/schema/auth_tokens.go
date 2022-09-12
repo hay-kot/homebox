@@ -42,7 +42,6 @@ func (AuthTokens) Edges() []ent.Edge {
 
 func (AuthTokens) Indexes() []ent.Index {
 	return []ent.Index{
-		// non-unique index.
 		index.Fields("token"),
 	}
 }

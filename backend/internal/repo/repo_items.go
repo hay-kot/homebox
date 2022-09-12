@@ -21,9 +21,13 @@ func (e *ItemsRepository) GetOne(ctx context.Context, id uuid.UUID) (*ent.Item, 
 		WithLabel().
 		WithLocation().
 		WithGroup().
+		WithAttachments(func(aq *ent.AttachmentQuery) {
+			aq.WithDocument()
+		}).
 		Only(ctx)
 }
 
+// GetAll returns all the items in the database with the Labels and Locations eager loaded.
 func (e *ItemsRepository) GetAll(ctx context.Context, gid uuid.UUID) ([]*ent.Item, error) {
 	return e.db.Item.Query().
 		Where(item.HasGroupWith(group.ID(gid))).
@@ -72,11 +76,31 @@ func (e *ItemsRepository) Update(ctx context.Context, data types.ItemUpdate) (*e
 		SetSoldNotes(data.SoldNotes).
 		SetNotes(data.Notes).
 		SetLifetimeWarranty(data.LifetimeWarranty).
+		SetInsured(data.Insured).
 		SetWarrantyExpires(data.WarrantyExpires).
-		SetWarrantyDetails(data.WarrantyDetails)
+		SetWarrantyDetails(data.WarrantyDetails).
+		SetQuantity(data.Quantity)
 
-	err := q.Exec(ctx)
+	currentLabels, err := e.db.Item.Query().Where(item.ID(data.ID)).QueryLabel().All(ctx)
+	if err != nil {
+		return nil, err
+	}
 
+	set := EntitiesToIDSet(currentLabels)
+
+	for _, l := range data.LabelIDs {
+		if set.Has(l) {
+			set.Remove(l)
+			continue
+		}
+		q.AddLabelIDs(l)
+	}
+
+	if set.Len() > 0 {
+		q.RemoveLabelIDs(set.Slice()...)
+	}
+
+	err = q.Exec(ctx)
 	if err != nil {
 		return nil, err
 	}

@@ -49,7 +49,7 @@ func Test_ErrorBuilder_AddError(t *testing.T) {
 	errorStrings := make([]string, 10)
 
 	for i := 0; i < 10; i++ {
-		err := errors.New(f.RandomString(10))
+		err := errors.New(f.Str(10))
 		randomError[i] = err
 		errorStrings[i] = err.Error()
 	}
@@ -72,7 +72,7 @@ func Test_ErrorBuilder_Respond(t *testing.T) {
 	randomError := make([]error, 5)
 
 	for i := 0; i < 5; i++ {
-		err := errors.New(f.RandomString(5))
+		err := errors.New(f.Str(5))
 		randomError[i] = err
 	}
 

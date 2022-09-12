@@ -11,7 +11,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/hay-kot/content/backend/ent/migrate"
 
+	"github.com/hay-kot/content/backend/ent/attachment"
 	"github.com/hay-kot/content/backend/ent/authtokens"
+	"github.com/hay-kot/content/backend/ent/document"
+	"github.com/hay-kot/content/backend/ent/documenttoken"
 	"github.com/hay-kot/content/backend/ent/group"
 	"github.com/hay-kot/content/backend/ent/item"
 	"github.com/hay-kot/content/backend/ent/itemfield"
@@ -29,8 +32,14 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// Attachment is the client for interacting with the Attachment builders.
+	Attachment *AttachmentClient
 	// AuthTokens is the client for interacting with the AuthTokens builders.
 	AuthTokens *AuthTokensClient
+	// Document is the client for interacting with the Document builders.
+	Document *DocumentClient
+	// DocumentToken is the client for interacting with the DocumentToken builders.
+	DocumentToken *DocumentTokenClient
 	// Group is the client for interacting with the Group builders.
 	Group *GroupClient
 	// Item is the client for interacting with the Item builders.
@@ -56,7 +65,10 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.Attachment = NewAttachmentClient(c.config)
 	c.AuthTokens = NewAuthTokensClient(c.config)
+	c.Document = NewDocumentClient(c.config)
+	c.DocumentToken = NewDocumentTokenClient(c.config)
 	c.Group = NewGroupClient(c.config)
 	c.Item = NewItemClient(c.config)
 	c.ItemField = NewItemFieldClient(c.config)
@@ -94,15 +106,18 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:        ctx,
-		config:     cfg,
-		AuthTokens: NewAuthTokensClient(cfg),
-		Group:      NewGroupClient(cfg),
-		Item:       NewItemClient(cfg),
-		ItemField:  NewItemFieldClient(cfg),
-		Label:      NewLabelClient(cfg),
-		Location:   NewLocationClient(cfg),
-		User:       NewUserClient(cfg),
+		ctx:           ctx,
+		config:        cfg,
+		Attachment:    NewAttachmentClient(cfg),
+		AuthTokens:    NewAuthTokensClient(cfg),
+		Document:      NewDocumentClient(cfg),
+		DocumentToken: NewDocumentTokenClient(cfg),
+		Group:         NewGroupClient(cfg),
+		Item:          NewItemClient(cfg),
+		ItemField:     NewItemFieldClient(cfg),
+		Label:         NewLabelClient(cfg),
+		Location:      NewLocationClient(cfg),
+		User:          NewUserClient(cfg),
 	}, nil
 }
 
@@ -120,22 +135,25 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:        ctx,
-		config:     cfg,
-		AuthTokens: NewAuthTokensClient(cfg),
-		Group:      NewGroupClient(cfg),
-		Item:       NewItemClient(cfg),
-		ItemField:  NewItemFieldClient(cfg),
-		Label:      NewLabelClient(cfg),
-		Location:   NewLocationClient(cfg),
-		User:       NewUserClient(cfg),
+		ctx:           ctx,
+		config:        cfg,
+		Attachment:    NewAttachmentClient(cfg),
+		AuthTokens:    NewAuthTokensClient(cfg),
+		Document:      NewDocumentClient(cfg),
+		DocumentToken: NewDocumentTokenClient(cfg),
+		Group:         NewGroupClient(cfg),
+		Item:          NewItemClient(cfg),
+		ItemField:     NewItemFieldClient(cfg),
+		Label:         NewLabelClient(cfg),
+		Location:      NewLocationClient(cfg),
+		User:          NewUserClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		AuthTokens.
+//		Attachment.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -157,13 +175,138 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.Attachment.Use(hooks...)
 	c.AuthTokens.Use(hooks...)
+	c.Document.Use(hooks...)
+	c.DocumentToken.Use(hooks...)
 	c.Group.Use(hooks...)
 	c.Item.Use(hooks...)
 	c.ItemField.Use(hooks...)
 	c.Label.Use(hooks...)
 	c.Location.Use(hooks...)
 	c.User.Use(hooks...)
+}
+
+// AttachmentClient is a client for the Attachment schema.
+type AttachmentClient struct {
+	config
+}
+
+// NewAttachmentClient returns a client for the Attachment from the given config.
+func NewAttachmentClient(c config) *AttachmentClient {
+	return &AttachmentClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `attachment.Hooks(f(g(h())))`.
+func (c *AttachmentClient) Use(hooks ...Hook) {
+	c.hooks.Attachment = append(c.hooks.Attachment, hooks...)
+}
+
+// Create returns a builder for creating a Attachment entity.
+func (c *AttachmentClient) Create() *AttachmentCreate {
+	mutation := newAttachmentMutation(c.config, OpCreate)
+	return &AttachmentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Attachment entities.
+func (c *AttachmentClient) CreateBulk(builders ...*AttachmentCreate) *AttachmentCreateBulk {
+	return &AttachmentCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Attachment.
+func (c *AttachmentClient) Update() *AttachmentUpdate {
+	mutation := newAttachmentMutation(c.config, OpUpdate)
+	return &AttachmentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AttachmentClient) UpdateOne(a *Attachment) *AttachmentUpdateOne {
+	mutation := newAttachmentMutation(c.config, OpUpdateOne, withAttachment(a))
+	return &AttachmentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AttachmentClient) UpdateOneID(id uuid.UUID) *AttachmentUpdateOne {
+	mutation := newAttachmentMutation(c.config, OpUpdateOne, withAttachmentID(id))
+	return &AttachmentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Attachment.
+func (c *AttachmentClient) Delete() *AttachmentDelete {
+	mutation := newAttachmentMutation(c.config, OpDelete)
+	return &AttachmentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AttachmentClient) DeleteOne(a *Attachment) *AttachmentDeleteOne {
+	return c.DeleteOneID(a.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *AttachmentClient) DeleteOneID(id uuid.UUID) *AttachmentDeleteOne {
+	builder := c.Delete().Where(attachment.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AttachmentDeleteOne{builder}
+}
+
+// Query returns a query builder for Attachment.
+func (c *AttachmentClient) Query() *AttachmentQuery {
+	return &AttachmentQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Attachment entity by its id.
+func (c *AttachmentClient) Get(ctx context.Context, id uuid.UUID) (*Attachment, error) {
+	return c.Query().Where(attachment.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AttachmentClient) GetX(ctx context.Context, id uuid.UUID) *Attachment {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryItem queries the item edge of a Attachment.
+func (c *AttachmentClient) QueryItem(a *Attachment) *ItemQuery {
+	query := &ItemQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(attachment.Table, attachment.FieldID, id),
+			sqlgraph.To(item.Table, item.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, attachment.ItemTable, attachment.ItemColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryDocument queries the document edge of a Attachment.
+func (c *AttachmentClient) QueryDocument(a *Attachment) *DocumentQuery {
+	query := &DocumentQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(attachment.Table, attachment.FieldID, id),
+			sqlgraph.To(document.Table, document.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, attachment.DocumentTable, attachment.DocumentColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *AttachmentClient) Hooks() []Hook {
+	return c.hooks.Attachment
 }
 
 // AuthTokensClient is a client for the AuthTokens schema.
@@ -270,6 +413,250 @@ func (c *AuthTokensClient) QueryUser(at *AuthTokens) *UserQuery {
 // Hooks returns the client hooks.
 func (c *AuthTokensClient) Hooks() []Hook {
 	return c.hooks.AuthTokens
+}
+
+// DocumentClient is a client for the Document schema.
+type DocumentClient struct {
+	config
+}
+
+// NewDocumentClient returns a client for the Document from the given config.
+func NewDocumentClient(c config) *DocumentClient {
+	return &DocumentClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `document.Hooks(f(g(h())))`.
+func (c *DocumentClient) Use(hooks ...Hook) {
+	c.hooks.Document = append(c.hooks.Document, hooks...)
+}
+
+// Create returns a builder for creating a Document entity.
+func (c *DocumentClient) Create() *DocumentCreate {
+	mutation := newDocumentMutation(c.config, OpCreate)
+	return &DocumentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Document entities.
+func (c *DocumentClient) CreateBulk(builders ...*DocumentCreate) *DocumentCreateBulk {
+	return &DocumentCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Document.
+func (c *DocumentClient) Update() *DocumentUpdate {
+	mutation := newDocumentMutation(c.config, OpUpdate)
+	return &DocumentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *DocumentClient) UpdateOne(d *Document) *DocumentUpdateOne {
+	mutation := newDocumentMutation(c.config, OpUpdateOne, withDocument(d))
+	return &DocumentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *DocumentClient) UpdateOneID(id uuid.UUID) *DocumentUpdateOne {
+	mutation := newDocumentMutation(c.config, OpUpdateOne, withDocumentID(id))
+	return &DocumentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Document.
+func (c *DocumentClient) Delete() *DocumentDelete {
+	mutation := newDocumentMutation(c.config, OpDelete)
+	return &DocumentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *DocumentClient) DeleteOne(d *Document) *DocumentDeleteOne {
+	return c.DeleteOneID(d.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *DocumentClient) DeleteOneID(id uuid.UUID) *DocumentDeleteOne {
+	builder := c.Delete().Where(document.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &DocumentDeleteOne{builder}
+}
+
+// Query returns a query builder for Document.
+func (c *DocumentClient) Query() *DocumentQuery {
+	return &DocumentQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Document entity by its id.
+func (c *DocumentClient) Get(ctx context.Context, id uuid.UUID) (*Document, error) {
+	return c.Query().Where(document.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *DocumentClient) GetX(ctx context.Context, id uuid.UUID) *Document {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryGroup queries the group edge of a Document.
+func (c *DocumentClient) QueryGroup(d *Document) *GroupQuery {
+	query := &GroupQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := d.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(document.Table, document.FieldID, id),
+			sqlgraph.To(group.Table, group.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, document.GroupTable, document.GroupColumn),
+		)
+		fromV = sqlgraph.Neighbors(d.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryDocumentTokens queries the document_tokens edge of a Document.
+func (c *DocumentClient) QueryDocumentTokens(d *Document) *DocumentTokenQuery {
+	query := &DocumentTokenQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := d.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(document.Table, document.FieldID, id),
+			sqlgraph.To(documenttoken.Table, documenttoken.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, document.DocumentTokensTable, document.DocumentTokensColumn),
+		)
+		fromV = sqlgraph.Neighbors(d.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAttachments queries the attachments edge of a Document.
+func (c *DocumentClient) QueryAttachments(d *Document) *AttachmentQuery {
+	query := &AttachmentQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := d.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(document.Table, document.FieldID, id),
+			sqlgraph.To(attachment.Table, attachment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, document.AttachmentsTable, document.AttachmentsColumn),
+		)
+		fromV = sqlgraph.Neighbors(d.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *DocumentClient) Hooks() []Hook {
+	return c.hooks.Document
+}
+
+// DocumentTokenClient is a client for the DocumentToken schema.
+type DocumentTokenClient struct {
+	config
+}
+
+// NewDocumentTokenClient returns a client for the DocumentToken from the given config.
+func NewDocumentTokenClient(c config) *DocumentTokenClient {
+	return &DocumentTokenClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `documenttoken.Hooks(f(g(h())))`.
+func (c *DocumentTokenClient) Use(hooks ...Hook) {
+	c.hooks.DocumentToken = append(c.hooks.DocumentToken, hooks...)
+}
+
+// Create returns a builder for creating a DocumentToken entity.
+func (c *DocumentTokenClient) Create() *DocumentTokenCreate {
+	mutation := newDocumentTokenMutation(c.config, OpCreate)
+	return &DocumentTokenCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of DocumentToken entities.
+func (c *DocumentTokenClient) CreateBulk(builders ...*DocumentTokenCreate) *DocumentTokenCreateBulk {
+	return &DocumentTokenCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for DocumentToken.
+func (c *DocumentTokenClient) Update() *DocumentTokenUpdate {
+	mutation := newDocumentTokenMutation(c.config, OpUpdate)
+	return &DocumentTokenUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *DocumentTokenClient) UpdateOne(dt *DocumentToken) *DocumentTokenUpdateOne {
+	mutation := newDocumentTokenMutation(c.config, OpUpdateOne, withDocumentToken(dt))
+	return &DocumentTokenUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *DocumentTokenClient) UpdateOneID(id uuid.UUID) *DocumentTokenUpdateOne {
+	mutation := newDocumentTokenMutation(c.config, OpUpdateOne, withDocumentTokenID(id))
+	return &DocumentTokenUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for DocumentToken.
+func (c *DocumentTokenClient) Delete() *DocumentTokenDelete {
+	mutation := newDocumentTokenMutation(c.config, OpDelete)
+	return &DocumentTokenDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *DocumentTokenClient) DeleteOne(dt *DocumentToken) *DocumentTokenDeleteOne {
+	return c.DeleteOneID(dt.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *DocumentTokenClient) DeleteOneID(id uuid.UUID) *DocumentTokenDeleteOne {
+	builder := c.Delete().Where(documenttoken.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &DocumentTokenDeleteOne{builder}
+}
+
+// Query returns a query builder for DocumentToken.
+func (c *DocumentTokenClient) Query() *DocumentTokenQuery {
+	return &DocumentTokenQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a DocumentToken entity by its id.
+func (c *DocumentTokenClient) Get(ctx context.Context, id uuid.UUID) (*DocumentToken, error) {
+	return c.Query().Where(documenttoken.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *DocumentTokenClient) GetX(ctx context.Context, id uuid.UUID) *DocumentToken {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryDocument queries the document edge of a DocumentToken.
+func (c *DocumentTokenClient) QueryDocument(dt *DocumentToken) *DocumentQuery {
+	query := &DocumentQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := dt.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(documenttoken.Table, documenttoken.FieldID, id),
+			sqlgraph.To(document.Table, document.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, documenttoken.DocumentTable, documenttoken.DocumentColumn),
+		)
+		fromV = sqlgraph.Neighbors(dt.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *DocumentTokenClient) Hooks() []Hook {
+	return c.hooks.DocumentToken
 }
 
 // GroupClient is a client for the Group schema.
@@ -414,6 +801,22 @@ func (c *GroupClient) QueryLabels(gr *Group) *LabelQuery {
 			sqlgraph.From(group.Table, group.FieldID, id),
 			sqlgraph.To(label.Table, label.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, group.LabelsTable, group.LabelsColumn),
+		)
+		fromV = sqlgraph.Neighbors(gr.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryDocuments queries the documents edge of a Group.
+func (c *GroupClient) QueryDocuments(gr *Group) *DocumentQuery {
+	query := &DocumentQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := gr.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(group.Table, group.FieldID, id),
+			sqlgraph.To(document.Table, document.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, group.DocumentsTable, group.DocumentsColumn),
 		)
 		fromV = sqlgraph.Neighbors(gr.driver.Dialect(), step)
 		return fromV, nil
@@ -568,6 +971,22 @@ func (c *ItemClient) QueryLabel(i *Item) *LabelQuery {
 			sqlgraph.From(item.Table, item.FieldID, id),
 			sqlgraph.To(label.Table, label.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, item.LabelTable, item.LabelPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(i.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAttachments queries the attachments edge of a Item.
+func (c *ItemClient) QueryAttachments(i *Item) *AttachmentQuery {
+	query := &AttachmentQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := i.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(item.Table, item.FieldID, id),
+			sqlgraph.To(attachment.Table, attachment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, item.AttachmentsTable, item.AttachmentsColumn),
 		)
 		fromV = sqlgraph.Neighbors(i.driver.Dialect(), step)
 		return fromV, nil

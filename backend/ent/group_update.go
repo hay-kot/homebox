@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
+	"github.com/hay-kot/content/backend/ent/document"
 	"github.com/hay-kot/content/backend/ent/group"
 	"github.com/hay-kot/content/backend/ent/item"
 	"github.com/hay-kot/content/backend/ent/label"
@@ -119,6 +120,21 @@ func (gu *GroupUpdate) AddLabels(l ...*Label) *GroupUpdate {
 	return gu.AddLabelIDs(ids...)
 }
 
+// AddDocumentIDs adds the "documents" edge to the Document entity by IDs.
+func (gu *GroupUpdate) AddDocumentIDs(ids ...uuid.UUID) *GroupUpdate {
+	gu.mutation.AddDocumentIDs(ids...)
+	return gu
+}
+
+// AddDocuments adds the "documents" edges to the Document entity.
+func (gu *GroupUpdate) AddDocuments(d ...*Document) *GroupUpdate {
+	ids := make([]uuid.UUID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return gu.AddDocumentIDs(ids...)
+}
+
 // Mutation returns the GroupMutation object of the builder.
 func (gu *GroupUpdate) Mutation() *GroupMutation {
 	return gu.mutation
@@ -206,6 +222,27 @@ func (gu *GroupUpdate) RemoveLabels(l ...*Label) *GroupUpdate {
 		ids[i] = l[i].ID
 	}
 	return gu.RemoveLabelIDs(ids...)
+}
+
+// ClearDocuments clears all "documents" edges to the Document entity.
+func (gu *GroupUpdate) ClearDocuments() *GroupUpdate {
+	gu.mutation.ClearDocuments()
+	return gu
+}
+
+// RemoveDocumentIDs removes the "documents" edge to Document entities by IDs.
+func (gu *GroupUpdate) RemoveDocumentIDs(ids ...uuid.UUID) *GroupUpdate {
+	gu.mutation.RemoveDocumentIDs(ids...)
+	return gu
+}
+
+// RemoveDocuments removes "documents" edges to Document entities.
+func (gu *GroupUpdate) RemoveDocuments(d ...*Document) *GroupUpdate {
+	ids := make([]uuid.UUID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return gu.RemoveDocumentIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -547,6 +584,60 @@ func (gu *GroupUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if gu.mutation.DocumentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.DocumentsTable,
+			Columns: []string{group.DocumentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: document.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := gu.mutation.RemovedDocumentsIDs(); len(nodes) > 0 && !gu.mutation.DocumentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.DocumentsTable,
+			Columns: []string{group.DocumentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: document.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := gu.mutation.DocumentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.DocumentsTable,
+			Columns: []string{group.DocumentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: document.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, gu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{group.Label}
@@ -652,6 +743,21 @@ func (guo *GroupUpdateOne) AddLabels(l ...*Label) *GroupUpdateOne {
 	return guo.AddLabelIDs(ids...)
 }
 
+// AddDocumentIDs adds the "documents" edge to the Document entity by IDs.
+func (guo *GroupUpdateOne) AddDocumentIDs(ids ...uuid.UUID) *GroupUpdateOne {
+	guo.mutation.AddDocumentIDs(ids...)
+	return guo
+}
+
+// AddDocuments adds the "documents" edges to the Document entity.
+func (guo *GroupUpdateOne) AddDocuments(d ...*Document) *GroupUpdateOne {
+	ids := make([]uuid.UUID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return guo.AddDocumentIDs(ids...)
+}
+
 // Mutation returns the GroupMutation object of the builder.
 func (guo *GroupUpdateOne) Mutation() *GroupMutation {
 	return guo.mutation
@@ -739,6 +845,27 @@ func (guo *GroupUpdateOne) RemoveLabels(l ...*Label) *GroupUpdateOne {
 		ids[i] = l[i].ID
 	}
 	return guo.RemoveLabelIDs(ids...)
+}
+
+// ClearDocuments clears all "documents" edges to the Document entity.
+func (guo *GroupUpdateOne) ClearDocuments() *GroupUpdateOne {
+	guo.mutation.ClearDocuments()
+	return guo
+}
+
+// RemoveDocumentIDs removes the "documents" edge to Document entities by IDs.
+func (guo *GroupUpdateOne) RemoveDocumentIDs(ids ...uuid.UUID) *GroupUpdateOne {
+	guo.mutation.RemoveDocumentIDs(ids...)
+	return guo
+}
+
+// RemoveDocuments removes "documents" edges to Document entities.
+func (guo *GroupUpdateOne) RemoveDocuments(d ...*Document) *GroupUpdateOne {
+	ids := make([]uuid.UUID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return guo.RemoveDocumentIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1102,6 +1229,60 @@ func (guo *GroupUpdateOne) sqlSave(ctx context.Context) (_node *Group, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: label.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if guo.mutation.DocumentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.DocumentsTable,
+			Columns: []string{group.DocumentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: document.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := guo.mutation.RemovedDocumentsIDs(); len(nodes) > 0 && !guo.mutation.DocumentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.DocumentsTable,
+			Columns: []string{group.DocumentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: document.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := guo.mutation.DocumentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.DocumentsTable,
+			Columns: []string{group.DocumentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: document.FieldID,
 				},
 			},
 		}

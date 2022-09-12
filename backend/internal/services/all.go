@@ -16,6 +16,9 @@ func NewServices(repos *repo.AllRepos) *AllServices {
 		Admin:    &AdminService{repos},
 		Location: &LocationService{repos},
 		Labels:   &LabelService{repos},
-		Items:    &ItemService{repos},
+		Items: &ItemService{
+			repo:     repos,
+			filepath: "/tmp/content",
+		},
 	}
 }

@@ -8,6 +8,35 @@ import (
 )
 
 var (
+	// AttachmentsColumns holds the columns for the "attachments" table.
+	AttachmentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"photo", "manual", "warranty", "attachment"}, Default: "attachment"},
+		{Name: "document_attachments", Type: field.TypeUUID},
+		{Name: "item_attachments", Type: field.TypeUUID},
+	}
+	// AttachmentsTable holds the schema information for the "attachments" table.
+	AttachmentsTable = &schema.Table{
+		Name:       "attachments",
+		Columns:    AttachmentsColumns,
+		PrimaryKey: []*schema.Column{AttachmentsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "attachments_documents_attachments",
+				Columns:    []*schema.Column{AttachmentsColumns[4]},
+				RefColumns: []*schema.Column{DocumentsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "attachments_items_attachments",
+				Columns:    []*schema.Column{AttachmentsColumns[5]},
+				RefColumns: []*schema.Column{ItemsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// AuthTokensColumns holds the columns for the "auth_tokens" table.
 	AuthTokensColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -38,6 +67,60 @@ var (
 			},
 		},
 	}
+	// DocumentsColumns holds the columns for the "documents" table.
+	DocumentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "title", Type: field.TypeString, Size: 255},
+		{Name: "path", Type: field.TypeString, Size: 500},
+		{Name: "group_documents", Type: field.TypeUUID},
+	}
+	// DocumentsTable holds the schema information for the "documents" table.
+	DocumentsTable = &schema.Table{
+		Name:       "documents",
+		Columns:    DocumentsColumns,
+		PrimaryKey: []*schema.Column{DocumentsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "documents_groups_documents",
+				Columns:    []*schema.Column{DocumentsColumns[5]},
+				RefColumns: []*schema.Column{GroupsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// DocumentTokensColumns holds the columns for the "document_tokens" table.
+	DocumentTokensColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "token", Type: field.TypeBytes, Unique: true},
+		{Name: "uses", Type: field.TypeInt, Default: 1},
+		{Name: "expires_at", Type: field.TypeTime},
+		{Name: "document_document_tokens", Type: field.TypeUUID, Nullable: true},
+	}
+	// DocumentTokensTable holds the schema information for the "document_tokens" table.
+	DocumentTokensTable = &schema.Table{
+		Name:       "document_tokens",
+		Columns:    DocumentTokensColumns,
+		PrimaryKey: []*schema.Column{DocumentTokensColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "document_tokens_documents_document_tokens",
+				Columns:    []*schema.Column{DocumentTokensColumns[6]},
+				RefColumns: []*schema.Column{DocumentsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "documenttoken_token",
+				Unique:  false,
+				Columns: []*schema.Column{DocumentTokensColumns[3]},
+			},
+		},
+	}
 	// GroupsColumns holds the columns for the "groups" table.
 	GroupsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -60,6 +143,8 @@ var (
 		{Name: "name", Type: field.TypeString, Size: 255},
 		{Name: "description", Type: field.TypeString, Nullable: true, Size: 1000},
 		{Name: "notes", Type: field.TypeString, Nullable: true, Size: 1000},
+		{Name: "quantity", Type: field.TypeInt, Default: 1},
+		{Name: "insured", Type: field.TypeBool, Default: false},
 		{Name: "serial_number", Type: field.TypeString, Nullable: true, Size: 255},
 		{Name: "model_number", Type: field.TypeString, Nullable: true, Size: 255},
 		{Name: "manufacturer", Type: field.TypeString, Nullable: true, Size: 255},
@@ -84,13 +169,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "items_groups_items",
-				Columns:    []*schema.Column{ItemsColumns[19]},
+				Columns:    []*schema.Column{ItemsColumns[21]},
 				RefColumns: []*schema.Column{GroupsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "items_locations_items",
-				Columns:    []*schema.Column{ItemsColumns[20]},
+				Columns:    []*schema.Column{ItemsColumns[22]},
 				RefColumns: []*schema.Column{LocationsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -104,17 +189,17 @@ var (
 			{
 				Name:    "item_manufacturer",
 				Unique:  false,
-				Columns: []*schema.Column{ItemsColumns[8]},
+				Columns: []*schema.Column{ItemsColumns[10]},
 			},
 			{
 				Name:    "item_model_number",
 				Unique:  false,
-				Columns: []*schema.Column{ItemsColumns[7]},
+				Columns: []*schema.Column{ItemsColumns[9]},
 			},
 			{
 				Name:    "item_serial_number",
 				Unique:  false,
-				Columns: []*schema.Column{ItemsColumns[6]},
+				Columns: []*schema.Column{ItemsColumns[8]},
 			},
 		},
 	}
@@ -245,7 +330,10 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		AttachmentsTable,
 		AuthTokensTable,
+		DocumentsTable,
+		DocumentTokensTable,
 		GroupsTable,
 		ItemsTable,
 		ItemFieldsTable,
@@ -257,7 +345,11 @@ var (
 )
 
 func init() {
+	AttachmentsTable.ForeignKeys[0].RefTable = DocumentsTable
+	AttachmentsTable.ForeignKeys[1].RefTable = ItemsTable
 	AuthTokensTable.ForeignKeys[0].RefTable = UsersTable
+	DocumentsTable.ForeignKeys[0].RefTable = GroupsTable
+	DocumentTokensTable.ForeignKeys[0].RefTable = DocumentsTable
 	ItemsTable.ForeignKeys[0].RefTable = GroupsTable
 	ItemsTable.ForeignKeys[1].RefTable = LocationsTable
 	ItemFieldsTable.ForeignKeys[0].RefTable = ItemsTable

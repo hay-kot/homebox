@@ -19,6 +19,8 @@ type ItemUpdate struct {
 	ID          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
+	Quantity    int       `json:"quantity"`
+	Insured     bool      `json:"insured"`
 
 	// Edges
 	LocationID uuid.UUID   `json:"locationId"`
@@ -37,12 +39,12 @@ type ItemUpdate struct {
 	// Purchase
 	PurchaseTime  time.Time `json:"purchaseTime"`
 	PurchaseFrom  string    `json:"purchaseFrom"`
-	PurchasePrice float64   `json:"purchasePrice"`
+	PurchasePrice float64   `json:"purchasePrice,string"`
 
 	// Sold
 	SoldTime  time.Time `json:"soldTime"`
 	SoldTo    string    `json:"soldTo"`
-	SoldPrice float64   `json:"soldPrice"`
+	SoldPrice float64   `json:"soldPrice,string"`
 	SoldNotes string    `json:"soldNotes"`
 
 	// Extras
@@ -56,6 +58,8 @@ type ItemSummary struct {
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
+	Quantity    int       `json:"quantity"`
+	Insured     bool      `json:"insured"`
 
 	// Edges
 	Location *LocationSummary `json:"location"`
@@ -74,12 +78,12 @@ type ItemSummary struct {
 	// Purchase
 	PurchaseTime  time.Time `json:"purchaseTime"`
 	PurchaseFrom  string    `json:"purchaseFrom"`
-	PurchasePrice float64   `json:"purchasePrice"`
+	PurchasePrice float64   `json:"purchasePrice,string"`
 
 	// Sold
 	SoldTime  time.Time `json:"soldTime"`
 	SoldTo    string    `json:"soldTo"`
-	SoldPrice float64   `json:"soldPrice"`
+	SoldPrice float64   `json:"soldPrice,string"`
 	SoldNotes string    `json:"soldNotes"`
 
 	// Extras
@@ -88,6 +92,14 @@ type ItemSummary struct {
 
 type ItemOut struct {
 	ItemSummary
+	Attachments []*ItemAttachment `json:"attachments"`
 	// Future
 	// Fields []*FieldSummary `json:"fields"`
+}
+
+type ItemAttachment struct {
+	ID        uuid.UUID   `json:"id"`
+	CreatedAt time.Time   `json:"createdAt"`
+	UpdatedAt time.Time   `json:"updatedAt"`
+	Document  DocumentOut `json:"document"`
 }

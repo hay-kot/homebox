@@ -1,20 +1,27 @@
 version: "3"
 
 tasks:
+  generate:
+    cmds:
+      - |
+        cd backend && ent generate ./ent/schema \
+          --template=ent/schema/templates/has_id.tmpl
+      - cd backend/app/api/ && swag fmt
+      - cd backend/app/api/ && swag init --dir=./,../../internal,../../pkgs
+      - |
+        npx swagger-typescript-api \
+          --no-client \
+          --clean-output \
+          --modular \
+          --path ./backend/app/api/docs/swagger.json \
+          --output ./frontend/lib/api/types
+
+        python3 ./scripts/process-types.py ./frontend/lib/api/types/data-contracts.ts
   api:
     cmds:
-      - cd backend/app/api/ && swag fmt
-      - cd backend/app/api/ && swag init --dir=./,../../internal,../../pkgs,../../ent
-      # - |
-      #   npx swagger-typescript-api \
-      #     --path ./backend/app/api/docs/swagger.json \
-      #     --output ./client/auto-client \
-      #     --module-name-first-tag \
-      #     --modular
+      - task: generate
       - cd backend && go run ./app/api/ {{.CLI_ARGS}}
     silent: false
-    sources:
-      - ./backend/**/*.go
 
   api:build:
     cmds:
@@ -25,6 +32,10 @@ tasks:
     cmds:
       - cd backend && go test ./app/api/
     silent: true
+
+  api:watch:
+    cmds:
+      - cd backend && gotestsum --watch ./...
 
   api:coverage:
     cmds:
@@ -39,12 +50,12 @@ tasks:
       - cd frontend && pnpm run test:ci
     silent: true
 
-  docker:build:
+  frontend:watch:
+    desc: Starts the vitest test runner in watch mode
     cmds:
-      - cd backend && docker-compose up --build
-    silent: true
+      - cd frontend && pnpm vitest --watch
 
-  generate:types:
+  frontend:
+    desc: Run frontend development server
     cmds:
-      - cd backend && go run ./app/generator
-    silent: true
+      - cd frontend && pnpm dev

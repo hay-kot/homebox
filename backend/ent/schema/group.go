@@ -34,17 +34,25 @@ func (Group) Fields() []ent.Field {
 // Edges of the Home.
 func (Group) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("users", User.Type).Annotations(entsql.Annotation{
-			OnDelete: entsql.Cascade,
-		}),
-		edge.To("locations", Location.Type).Annotations(entsql.Annotation{
-			OnDelete: entsql.Cascade,
-		}),
-		edge.To("items", Item.Type).Annotations(entsql.Annotation{
-			OnDelete: entsql.Cascade,
-		}),
-		edge.To("labels", Label.Type).Annotations(entsql.Annotation{
-			OnDelete: entsql.Cascade,
-		}),
+		edge.To("users", User.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
+		edge.To("locations", Location.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
+		edge.To("items", Item.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
+		edge.To("labels", Label.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
+		edge.To("documents", Document.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
 	}
 }

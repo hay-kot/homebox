@@ -1,4 +1,19 @@
-# Welcome to Homebox!
+<h1 align="center">
+  <br>
+  <img src="assets/img/lilbox.svg" width="200px">
+  <br>
+  Homebox
+  <br>
+</h1>
+<p align="center" style="width: 100; margin-top: -30px;">
+   <a href="https://hay-kot.github.io/homebox/">Docs</a>
+   |
+   <a href="https://homebox.fly.dev">Demo</a>
+   |
+   <a href="https://discord.gg/tuncmNrE4z">Discord</a>
+</p>
+
+
 
 Homebox is the inventory and organization system built for the Home User! With a focus on simplicity and ease of use, Homebox is the perfect solution for your home inventory, organization, and management needs. While developing this project I've tried to keep the following principles in mind:
 

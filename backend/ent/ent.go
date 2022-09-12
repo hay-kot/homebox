@@ -10,7 +10,10 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/hay-kot/content/backend/ent/attachment"
 	"github.com/hay-kot/content/backend/ent/authtokens"
+	"github.com/hay-kot/content/backend/ent/document"
+	"github.com/hay-kot/content/backend/ent/documenttoken"
 	"github.com/hay-kot/content/backend/ent/group"
 	"github.com/hay-kot/content/backend/ent/item"
 	"github.com/hay-kot/content/backend/ent/itemfield"
@@ -37,13 +40,16 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
-		authtokens.Table: authtokens.ValidColumn,
-		group.Table:      group.ValidColumn,
-		item.Table:       item.ValidColumn,
-		itemfield.Table:  itemfield.ValidColumn,
-		label.Table:      label.ValidColumn,
-		location.Table:   location.ValidColumn,
-		user.Table:       user.ValidColumn,
+		attachment.Table:    attachment.ValidColumn,
+		authtokens.Table:    authtokens.ValidColumn,
+		document.Table:      document.ValidColumn,
+		documenttoken.Table: documenttoken.ValidColumn,
+		group.Table:         group.ValidColumn,
+		item.Table:          item.ValidColumn,
+		itemfield.Table:     itemfield.ValidColumn,
+		label.Table:         label.ValidColumn,
+		location.Table:      location.ValidColumn,
+		user.Table:          user.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

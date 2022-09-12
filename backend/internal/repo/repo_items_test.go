@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/hay-kot/content/backend/ent"
 	"github.com/hay-kot/content/backend/internal/types"
 	"github.com/stretchr/testify/assert"
@@ -12,12 +13,12 @@ import (
 
 func itemFactory() types.ItemCreate {
 	return types.ItemCreate{
-		Name:        fk.RandomString(10),
-		Description: fk.RandomString(100),
+		Name:        fk.Str(10),
+		Description: fk.Str(100),
 	}
 }
 
-func useItems(t *testing.T, len int) ([]*ent.Item, func()) {
+func useItems(t *testing.T, len int) []*ent.Item {
 	t.Helper()
 
 	location, err := tRepos.Locations.Create(context.Background(), tGroup.ID, locationFactory())
@@ -33,17 +34,17 @@ func useItems(t *testing.T, len int) ([]*ent.Item, func()) {
 		items[i] = item
 	}
 
-	return items, func() {
+	t.Cleanup(func() {
 		for _, item := range items {
-			err := tRepos.Items.Delete(context.Background(), item.ID)
-			assert.NoError(t, err)
+			_ = tRepos.Items.Delete(context.Background(), item.ID)
 		}
-	}
+	})
+
+	return items
 }
 
 func TestItemsRepository_GetOne(t *testing.T) {
-	entity, cleanup := useItems(t, 3)
-	defer cleanup()
+	entity := useItems(t, 3)
 
 	for _, item := range entity {
 		result, err := tRepos.Items.GetOne(context.Background(), item.ID)
@@ -54,8 +55,7 @@ func TestItemsRepository_GetOne(t *testing.T) {
 
 func TestItemsRepository_GetAll(t *testing.T) {
 	length := 10
-	expected, cleanup := useItems(t, length)
-	defer cleanup()
+	expected := useItems(t, length)
 
 	results, err := tRepos.Items.GetAll(context.Background(), tGroup.ID)
 	assert.NoError(t, err)
@@ -119,7 +119,7 @@ func TestItemsRepository_Create_Location(t *testing.T) {
 }
 
 func TestItemsRepository_Delete(t *testing.T) {
-	entities, _ := useItems(t, 3)
+	entities := useItems(t, 3)
 
 	for _, item := range entities {
 		err := tRepos.Items.Delete(context.Background(), item.ID)
@@ -131,9 +131,68 @@ func TestItemsRepository_Delete(t *testing.T) {
 	assert.Empty(t, results)
 }
 
+func TestItemsRepository_Update_Labels(t *testing.T) {
+	entity := useItems(t, 1)[0]
+	labels := useLabels(t, 3)
+
+	labelsIDs := []uuid.UUID{labels[0].ID, labels[1].ID, labels[2].ID}
+
+	type args struct {
+		labelIds []uuid.UUID
+	}
+
+	tests := []struct {
+		name string
+		args args
+		want []uuid.UUID
+	}{
+		{
+			name: "add all labels",
+			args: args{
+				labelIds: labelsIDs,
+			},
+			want: labelsIDs,
+		},
+		{
+			name: "update with one label",
+			args: args{
+				labelIds: labelsIDs[:1],
+			},
+			want: labelsIDs[:1],
+		},
+		{
+			name: "add one new label to existing single label",
+			args: args{
+				labelIds: labelsIDs[1:],
+			},
+			want: labelsIDs[1:],
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Apply all labels to entity
+			updateData := types.ItemUpdate{
+				ID:         entity.ID,
+				Name:       entity.Name,
+				LocationID: entity.Edges.Location.ID,
+				LabelIDs:   tt.args.labelIds,
+			}
+
+			updated, err := tRepos.Items.Update(context.Background(), updateData)
+			assert.NoError(t, err)
+			assert.Len(t, tt.want, len(updated.Edges.Label))
+
+			for _, label := range updated.Edges.Label {
+				assert.Contains(t, tt.want, label.ID)
+			}
+		})
+	}
+
+}
+
 func TestItemsRepository_Update(t *testing.T) {
-	entities, cleanup := useItems(t, 3)
-	defer cleanup()
+	entities := useItems(t, 3)
 
 	entity := entities[0]
 
@@ -141,20 +200,20 @@ func TestItemsRepository_Update(t *testing.T) {
 		ID:               entity.ID,
 		Name:             entity.Name,
 		LocationID:       entity.Edges.Location.ID,
-		SerialNumber:     fk.RandomString(10),
+		SerialNumber:     fk.Str(10),
 		LabelIDs:         nil,
-		ModelNumber:      fk.RandomString(10),
-		Manufacturer:     fk.RandomString(10),
+		ModelNumber:      fk.Str(10),
+		Manufacturer:     fk.Str(10),
 		PurchaseTime:     time.Now(),
-		PurchaseFrom:     fk.RandomString(10),
+		PurchaseFrom:     fk.Str(10),
 		PurchasePrice:    300.99,
 		SoldTime:         time.Now(),
-		SoldTo:           fk.RandomString(10),
+		SoldTo:           fk.Str(10),
 		SoldPrice:        300.99,
-		SoldNotes:        fk.RandomString(10),
-		Notes:            fk.RandomString(10),
+		SoldNotes:        fk.Str(10),
+		Notes:            fk.Str(10),
 		WarrantyExpires:  time.Now(),
-		WarrantyDetails:  fk.RandomString(10),
+		WarrantyDetails:  fk.Str(10),
 		LifetimeWarranty: true,
 	}
 

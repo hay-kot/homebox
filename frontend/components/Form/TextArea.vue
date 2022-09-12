@@ -1,9 +1,9 @@
 <template>
-  <div v-if="!inline" class="form-control">
+  <div v-if="!inline" class="form-control w-full">
     <label class="label">
       <span class="label-text">{{ label }}</span>
     </label>
-    <textarea v-model="value" class="textarea textarea-bordered h-24" :placeholder="placeholder" />
+    <textarea ref="el" v-model="value" class="textarea w-full textarea-bordered h-28" :placeholder="placeholder" />
     <label v-if="limit" class="label">
       <span class="label-text-alt"></span>
       <span class="label-text-alt"> {{ valueLen }}/{{ limit }}</span>
@@ -14,10 +14,12 @@
       <span class="label-text">{{ label }}</span>
     </label>
     <textarea
+      ref="el"
       v-model="value"
-      class="textarea textarea-bordered col-span-3 mt-3 h-24"
+      class="textarea textarea-bordered w-full col-span-3 mt-3 h-28"
       auto-grow
       :placeholder="placeholder"
+      auto-height
     />
   </div>
 </template>
@@ -49,6 +51,19 @@
       type: Boolean,
       default: false,
     },
+  });
+
+  const el = ref();
+  function setHeight() {
+    el.value.style.height = "auto";
+    el.value.style.height = el.value.scrollHeight + 5 + "px";
+  }
+
+  onUpdated(() => {
+    console.log("updated");
+    if (props.inline) {
+      setHeight();
+    }
   });
 
   const value = useVModel(props, "modelValue", emit);

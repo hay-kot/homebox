@@ -3,6 +3,7 @@ import { Ref } from "vue";
 export type LocationViewPreferences = {
   showDetails: boolean;
   showEmpty: boolean;
+  editorSimpleView: boolean;
 };
 
 /**
@@ -15,6 +16,7 @@ export function useViewPreferences(): Ref<LocationViewPreferences> {
     {
       showDetails: true,
       showEmpty: true,
+      editorSimpleView: true,
     },
     { mergeDefaults: true }
   );

@@ -10,7 +10,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/hay-kot/content/backend/ent/attachment"
 	"github.com/hay-kot/content/backend/ent/authtokens"
+	"github.com/hay-kot/content/backend/ent/document"
+	"github.com/hay-kot/content/backend/ent/documenttoken"
 	"github.com/hay-kot/content/backend/ent/group"
 	"github.com/hay-kot/content/backend/ent/item"
 	"github.com/hay-kot/content/backend/ent/itemfield"
@@ -31,14 +34,570 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeAuthTokens = "AuthTokens"
-	TypeGroup      = "Group"
-	TypeItem       = "Item"
-	TypeItemField  = "ItemField"
-	TypeLabel      = "Label"
-	TypeLocation   = "Location"
-	TypeUser       = "User"
+	TypeAttachment    = "Attachment"
+	TypeAuthTokens    = "AuthTokens"
+	TypeDocument      = "Document"
+	TypeDocumentToken = "DocumentToken"
+	TypeGroup         = "Group"
+	TypeItem          = "Item"
+	TypeItemField     = "ItemField"
+	TypeLabel         = "Label"
+	TypeLocation      = "Location"
+	TypeUser          = "User"
 )
+
+// AttachmentMutation represents an operation that mutates the Attachment nodes in the graph.
+type AttachmentMutation struct {
+	config
+	op              Op
+	typ             string
+	id              *uuid.UUID
+	created_at      *time.Time
+	updated_at      *time.Time
+	_type           *attachment.Type
+	clearedFields   map[string]struct{}
+	item            *uuid.UUID
+	cleareditem     bool
+	document        *uuid.UUID
+	cleareddocument bool
+	done            bool
+	oldValue        func(context.Context) (*Attachment, error)
+	predicates      []predicate.Attachment
+}
+
+var _ ent.Mutation = (*AttachmentMutation)(nil)
+
+// attachmentOption allows management of the mutation configuration using functional options.
+type attachmentOption func(*AttachmentMutation)
+
+// newAttachmentMutation creates new mutation for the Attachment entity.
+func newAttachmentMutation(c config, op Op, opts ...attachmentOption) *AttachmentMutation {
+	m := &AttachmentMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeAttachment,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withAttachmentID sets the ID field of the mutation.
+func withAttachmentID(id uuid.UUID) attachmentOption {
+	return func(m *AttachmentMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Attachment
+		)
+		m.oldValue = func(ctx context.Context) (*Attachment, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Attachment.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withAttachment sets the old Attachment of the mutation.
+func withAttachment(node *Attachment) attachmentOption {
+	return func(m *AttachmentMutation) {
+		m.oldValue = func(context.Context) (*Attachment, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m AttachmentMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m AttachmentMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Attachment entities.
+func (m *AttachmentMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *AttachmentMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *AttachmentMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Attachment.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *AttachmentMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *AttachmentMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Attachment entity.
+// If the Attachment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AttachmentMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *AttachmentMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *AttachmentMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *AttachmentMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Attachment entity.
+// If the Attachment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AttachmentMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *AttachmentMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetType sets the "type" field.
+func (m *AttachmentMutation) SetType(a attachment.Type) {
+	m._type = &a
+}
+
+// GetType returns the value of the "type" field in the mutation.
+func (m *AttachmentMutation) GetType() (r attachment.Type, exists bool) {
+	v := m._type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldType returns the old "type" field's value of the Attachment entity.
+// If the Attachment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AttachmentMutation) OldType(ctx context.Context) (v attachment.Type, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldType: %w", err)
+	}
+	return oldValue.Type, nil
+}
+
+// ResetType resets all changes to the "type" field.
+func (m *AttachmentMutation) ResetType() {
+	m._type = nil
+}
+
+// SetItemID sets the "item" edge to the Item entity by id.
+func (m *AttachmentMutation) SetItemID(id uuid.UUID) {
+	m.item = &id
+}
+
+// ClearItem clears the "item" edge to the Item entity.
+func (m *AttachmentMutation) ClearItem() {
+	m.cleareditem = true
+}
+
+// ItemCleared reports if the "item" edge to the Item entity was cleared.
+func (m *AttachmentMutation) ItemCleared() bool {
+	return m.cleareditem
+}
+
+// ItemID returns the "item" edge ID in the mutation.
+func (m *AttachmentMutation) ItemID() (id uuid.UUID, exists bool) {
+	if m.item != nil {
+		return *m.item, true
+	}
+	return
+}
+
+// ItemIDs returns the "item" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ItemID instead. It exists only for internal usage by the builders.
+func (m *AttachmentMutation) ItemIDs() (ids []uuid.UUID) {
+	if id := m.item; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetItem resets all changes to the "item" edge.
+func (m *AttachmentMutation) ResetItem() {
+	m.item = nil
+	m.cleareditem = false
+}
+
+// SetDocumentID sets the "document" edge to the Document entity by id.
+func (m *AttachmentMutation) SetDocumentID(id uuid.UUID) {
+	m.document = &id
+}
+
+// ClearDocument clears the "document" edge to the Document entity.
+func (m *AttachmentMutation) ClearDocument() {
+	m.cleareddocument = true
+}
+
+// DocumentCleared reports if the "document" edge to the Document entity was cleared.
+func (m *AttachmentMutation) DocumentCleared() bool {
+	return m.cleareddocument
+}
+
+// DocumentID returns the "document" edge ID in the mutation.
+func (m *AttachmentMutation) DocumentID() (id uuid.UUID, exists bool) {
+	if m.document != nil {
+		return *m.document, true
+	}
+	return
+}
+
+// DocumentIDs returns the "document" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// DocumentID instead. It exists only for internal usage by the builders.
+func (m *AttachmentMutation) DocumentIDs() (ids []uuid.UUID) {
+	if id := m.document; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetDocument resets all changes to the "document" edge.
+func (m *AttachmentMutation) ResetDocument() {
+	m.document = nil
+	m.cleareddocument = false
+}
+
+// Where appends a list predicates to the AttachmentMutation builder.
+func (m *AttachmentMutation) Where(ps ...predicate.Attachment) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *AttachmentMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Attachment).
+func (m *AttachmentMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *AttachmentMutation) Fields() []string {
+	fields := make([]string, 0, 3)
+	if m.created_at != nil {
+		fields = append(fields, attachment.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, attachment.FieldUpdatedAt)
+	}
+	if m._type != nil {
+		fields = append(fields, attachment.FieldType)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *AttachmentMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case attachment.FieldCreatedAt:
+		return m.CreatedAt()
+	case attachment.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case attachment.FieldType:
+		return m.GetType()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *AttachmentMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case attachment.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case attachment.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case attachment.FieldType:
+		return m.OldType(ctx)
+	}
+	return nil, fmt.Errorf("unknown Attachment field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AttachmentMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case attachment.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case attachment.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case attachment.FieldType:
+		v, ok := value.(attachment.Type)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetType(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Attachment field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *AttachmentMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *AttachmentMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AttachmentMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Attachment numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *AttachmentMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *AttachmentMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *AttachmentMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Attachment nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *AttachmentMutation) ResetField(name string) error {
+	switch name {
+	case attachment.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case attachment.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case attachment.FieldType:
+		m.ResetType()
+		return nil
+	}
+	return fmt.Errorf("unknown Attachment field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *AttachmentMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.item != nil {
+		edges = append(edges, attachment.EdgeItem)
+	}
+	if m.document != nil {
+		edges = append(edges, attachment.EdgeDocument)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *AttachmentMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case attachment.EdgeItem:
+		if id := m.item; id != nil {
+			return []ent.Value{*id}
+		}
+	case attachment.EdgeDocument:
+		if id := m.document; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *AttachmentMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *AttachmentMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *AttachmentMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.cleareditem {
+		edges = append(edges, attachment.EdgeItem)
+	}
+	if m.cleareddocument {
+		edges = append(edges, attachment.EdgeDocument)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *AttachmentMutation) EdgeCleared(name string) bool {
+	switch name {
+	case attachment.EdgeItem:
+		return m.cleareditem
+	case attachment.EdgeDocument:
+		return m.cleareddocument
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *AttachmentMutation) ClearEdge(name string) error {
+	switch name {
+	case attachment.EdgeItem:
+		m.ClearItem()
+		return nil
+	case attachment.EdgeDocument:
+		m.ClearDocument()
+		return nil
+	}
+	return fmt.Errorf("unknown Attachment unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *AttachmentMutation) ResetEdge(name string) error {
+	switch name {
+	case attachment.EdgeItem:
+		m.ResetItem()
+		return nil
+	case attachment.EdgeDocument:
+		m.ResetDocument()
+		return nil
+	}
+	return fmt.Errorf("unknown Attachment edge %s", name)
+}
 
 // AuthTokensMutation represents an operation that mutates the AuthTokens nodes in the graph.
 type AuthTokensMutation struct {
@@ -588,6 +1147,1358 @@ func (m *AuthTokensMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown AuthTokens edge %s", name)
 }
 
+// DocumentMutation represents an operation that mutates the Document nodes in the graph.
+type DocumentMutation struct {
+	config
+	op                     Op
+	typ                    string
+	id                     *uuid.UUID
+	created_at             *time.Time
+	updated_at             *time.Time
+	title                  *string
+	_path                  *string
+	clearedFields          map[string]struct{}
+	group                  *uuid.UUID
+	clearedgroup           bool
+	document_tokens        map[uuid.UUID]struct{}
+	removeddocument_tokens map[uuid.UUID]struct{}
+	cleareddocument_tokens bool
+	attachments            map[uuid.UUID]struct{}
+	removedattachments     map[uuid.UUID]struct{}
+	clearedattachments     bool
+	done                   bool
+	oldValue               func(context.Context) (*Document, error)
+	predicates             []predicate.Document
+}
+
+var _ ent.Mutation = (*DocumentMutation)(nil)
+
+// documentOption allows management of the mutation configuration using functional options.
+type documentOption func(*DocumentMutation)
+
+// newDocumentMutation creates new mutation for the Document entity.
+func newDocumentMutation(c config, op Op, opts ...documentOption) *DocumentMutation {
+	m := &DocumentMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeDocument,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withDocumentID sets the ID field of the mutation.
+func withDocumentID(id uuid.UUID) documentOption {
+	return func(m *DocumentMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Document
+		)
+		m.oldValue = func(ctx context.Context) (*Document, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Document.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withDocument sets the old Document of the mutation.
+func withDocument(node *Document) documentOption {
+	return func(m *DocumentMutation) {
+		m.oldValue = func(context.Context) (*Document, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m DocumentMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m DocumentMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Document entities.
+func (m *DocumentMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *DocumentMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *DocumentMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Document.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *DocumentMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *DocumentMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Document entity.
+// If the Document object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DocumentMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *DocumentMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *DocumentMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *DocumentMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Document entity.
+// If the Document object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DocumentMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *DocumentMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetTitle sets the "title" field.
+func (m *DocumentMutation) SetTitle(s string) {
+	m.title = &s
+}
+
+// Title returns the value of the "title" field in the mutation.
+func (m *DocumentMutation) Title() (r string, exists bool) {
+	v := m.title
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTitle returns the old "title" field's value of the Document entity.
+// If the Document object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DocumentMutation) OldTitle(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTitle is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTitle requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTitle: %w", err)
+	}
+	return oldValue.Title, nil
+}
+
+// ResetTitle resets all changes to the "title" field.
+func (m *DocumentMutation) ResetTitle() {
+	m.title = nil
+}
+
+// SetPath sets the "path" field.
+func (m *DocumentMutation) SetPath(s string) {
+	m._path = &s
+}
+
+// Path returns the value of the "path" field in the mutation.
+func (m *DocumentMutation) Path() (r string, exists bool) {
+	v := m._path
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPath returns the old "path" field's value of the Document entity.
+// If the Document object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DocumentMutation) OldPath(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPath is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPath requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPath: %w", err)
+	}
+	return oldValue.Path, nil
+}
+
+// ResetPath resets all changes to the "path" field.
+func (m *DocumentMutation) ResetPath() {
+	m._path = nil
+}
+
+// SetGroupID sets the "group" edge to the Group entity by id.
+func (m *DocumentMutation) SetGroupID(id uuid.UUID) {
+	m.group = &id
+}
+
+// ClearGroup clears the "group" edge to the Group entity.
+func (m *DocumentMutation) ClearGroup() {
+	m.clearedgroup = true
+}
+
+// GroupCleared reports if the "group" edge to the Group entity was cleared.
+func (m *DocumentMutation) GroupCleared() bool {
+	return m.clearedgroup
+}
+
+// GroupID returns the "group" edge ID in the mutation.
+func (m *DocumentMutation) GroupID() (id uuid.UUID, exists bool) {
+	if m.group != nil {
+		return *m.group, true
+	}
+	return
+}
+
+// GroupIDs returns the "group" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// GroupID instead. It exists only for internal usage by the builders.
+func (m *DocumentMutation) GroupIDs() (ids []uuid.UUID) {
+	if id := m.group; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetGroup resets all changes to the "group" edge.
+func (m *DocumentMutation) ResetGroup() {
+	m.group = nil
+	m.clearedgroup = false
+}
+
+// AddDocumentTokenIDs adds the "document_tokens" edge to the DocumentToken entity by ids.
+func (m *DocumentMutation) AddDocumentTokenIDs(ids ...uuid.UUID) {
+	if m.document_tokens == nil {
+		m.document_tokens = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.document_tokens[ids[i]] = struct{}{}
+	}
+}
+
+// ClearDocumentTokens clears the "document_tokens" edge to the DocumentToken entity.
+func (m *DocumentMutation) ClearDocumentTokens() {
+	m.cleareddocument_tokens = true
+}
+
+// DocumentTokensCleared reports if the "document_tokens" edge to the DocumentToken entity was cleared.
+func (m *DocumentMutation) DocumentTokensCleared() bool {
+	return m.cleareddocument_tokens
+}
+
+// RemoveDocumentTokenIDs removes the "document_tokens" edge to the DocumentToken entity by IDs.
+func (m *DocumentMutation) RemoveDocumentTokenIDs(ids ...uuid.UUID) {
+	if m.removeddocument_tokens == nil {
+		m.removeddocument_tokens = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.document_tokens, ids[i])
+		m.removeddocument_tokens[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedDocumentTokens returns the removed IDs of the "document_tokens" edge to the DocumentToken entity.
+func (m *DocumentMutation) RemovedDocumentTokensIDs() (ids []uuid.UUID) {
+	for id := range m.removeddocument_tokens {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// DocumentTokensIDs returns the "document_tokens" edge IDs in the mutation.
+func (m *DocumentMutation) DocumentTokensIDs() (ids []uuid.UUID) {
+	for id := range m.document_tokens {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetDocumentTokens resets all changes to the "document_tokens" edge.
+func (m *DocumentMutation) ResetDocumentTokens() {
+	m.document_tokens = nil
+	m.cleareddocument_tokens = false
+	m.removeddocument_tokens = nil
+}
+
+// AddAttachmentIDs adds the "attachments" edge to the Attachment entity by ids.
+func (m *DocumentMutation) AddAttachmentIDs(ids ...uuid.UUID) {
+	if m.attachments == nil {
+		m.attachments = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.attachments[ids[i]] = struct{}{}
+	}
+}
+
+// ClearAttachments clears the "attachments" edge to the Attachment entity.
+func (m *DocumentMutation) ClearAttachments() {
+	m.clearedattachments = true
+}
+
+// AttachmentsCleared reports if the "attachments" edge to the Attachment entity was cleared.
+func (m *DocumentMutation) AttachmentsCleared() bool {
+	return m.clearedattachments
+}
+
+// RemoveAttachmentIDs removes the "attachments" edge to the Attachment entity by IDs.
+func (m *DocumentMutation) RemoveAttachmentIDs(ids ...uuid.UUID) {
+	if m.removedattachments == nil {
+		m.removedattachments = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.attachments, ids[i])
+		m.removedattachments[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedAttachments returns the removed IDs of the "attachments" edge to the Attachment entity.
+func (m *DocumentMutation) RemovedAttachmentsIDs() (ids []uuid.UUID) {
+	for id := range m.removedattachments {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// AttachmentsIDs returns the "attachments" edge IDs in the mutation.
+func (m *DocumentMutation) AttachmentsIDs() (ids []uuid.UUID) {
+	for id := range m.attachments {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetAttachments resets all changes to the "attachments" edge.
+func (m *DocumentMutation) ResetAttachments() {
+	m.attachments = nil
+	m.clearedattachments = false
+	m.removedattachments = nil
+}
+
+// Where appends a list predicates to the DocumentMutation builder.
+func (m *DocumentMutation) Where(ps ...predicate.Document) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *DocumentMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Document).
+func (m *DocumentMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *DocumentMutation) Fields() []string {
+	fields := make([]string, 0, 4)
+	if m.created_at != nil {
+		fields = append(fields, document.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, document.FieldUpdatedAt)
+	}
+	if m.title != nil {
+		fields = append(fields, document.FieldTitle)
+	}
+	if m._path != nil {
+		fields = append(fields, document.FieldPath)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *DocumentMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case document.FieldCreatedAt:
+		return m.CreatedAt()
+	case document.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case document.FieldTitle:
+		return m.Title()
+	case document.FieldPath:
+		return m.Path()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *DocumentMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case document.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case document.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case document.FieldTitle:
+		return m.OldTitle(ctx)
+	case document.FieldPath:
+		return m.OldPath(ctx)
+	}
+	return nil, fmt.Errorf("unknown Document field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DocumentMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case document.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case document.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case document.FieldTitle:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTitle(v)
+		return nil
+	case document.FieldPath:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPath(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Document field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *DocumentMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *DocumentMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DocumentMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Document numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *DocumentMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *DocumentMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *DocumentMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Document nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *DocumentMutation) ResetField(name string) error {
+	switch name {
+	case document.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case document.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case document.FieldTitle:
+		m.ResetTitle()
+		return nil
+	case document.FieldPath:
+		m.ResetPath()
+		return nil
+	}
+	return fmt.Errorf("unknown Document field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *DocumentMutation) AddedEdges() []string {
+	edges := make([]string, 0, 3)
+	if m.group != nil {
+		edges = append(edges, document.EdgeGroup)
+	}
+	if m.document_tokens != nil {
+		edges = append(edges, document.EdgeDocumentTokens)
+	}
+	if m.attachments != nil {
+		edges = append(edges, document.EdgeAttachments)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *DocumentMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case document.EdgeGroup:
+		if id := m.group; id != nil {
+			return []ent.Value{*id}
+		}
+	case document.EdgeDocumentTokens:
+		ids := make([]ent.Value, 0, len(m.document_tokens))
+		for id := range m.document_tokens {
+			ids = append(ids, id)
+		}
+		return ids
+	case document.EdgeAttachments:
+		ids := make([]ent.Value, 0, len(m.attachments))
+		for id := range m.attachments {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *DocumentMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 3)
+	if m.removeddocument_tokens != nil {
+		edges = append(edges, document.EdgeDocumentTokens)
+	}
+	if m.removedattachments != nil {
+		edges = append(edges, document.EdgeAttachments)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *DocumentMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case document.EdgeDocumentTokens:
+		ids := make([]ent.Value, 0, len(m.removeddocument_tokens))
+		for id := range m.removeddocument_tokens {
+			ids = append(ids, id)
+		}
+		return ids
+	case document.EdgeAttachments:
+		ids := make([]ent.Value, 0, len(m.removedattachments))
+		for id := range m.removedattachments {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *DocumentMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 3)
+	if m.clearedgroup {
+		edges = append(edges, document.EdgeGroup)
+	}
+	if m.cleareddocument_tokens {
+		edges = append(edges, document.EdgeDocumentTokens)
+	}
+	if m.clearedattachments {
+		edges = append(edges, document.EdgeAttachments)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *DocumentMutation) EdgeCleared(name string) bool {
+	switch name {
+	case document.EdgeGroup:
+		return m.clearedgroup
+	case document.EdgeDocumentTokens:
+		return m.cleareddocument_tokens
+	case document.EdgeAttachments:
+		return m.clearedattachments
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *DocumentMutation) ClearEdge(name string) error {
+	switch name {
+	case document.EdgeGroup:
+		m.ClearGroup()
+		return nil
+	}
+	return fmt.Errorf("unknown Document unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *DocumentMutation) ResetEdge(name string) error {
+	switch name {
+	case document.EdgeGroup:
+		m.ResetGroup()
+		return nil
+	case document.EdgeDocumentTokens:
+		m.ResetDocumentTokens()
+		return nil
+	case document.EdgeAttachments:
+		m.ResetAttachments()
+		return nil
+	}
+	return fmt.Errorf("unknown Document edge %s", name)
+}
+
+// DocumentTokenMutation represents an operation that mutates the DocumentToken nodes in the graph.
+type DocumentTokenMutation struct {
+	config
+	op              Op
+	typ             string
+	id              *uuid.UUID
+	created_at      *time.Time
+	updated_at      *time.Time
+	token           *[]byte
+	uses            *int
+	adduses         *int
+	expires_at      *time.Time
+	clearedFields   map[string]struct{}
+	document        *uuid.UUID
+	cleareddocument bool
+	done            bool
+	oldValue        func(context.Context) (*DocumentToken, error)
+	predicates      []predicate.DocumentToken
+}
+
+var _ ent.Mutation = (*DocumentTokenMutation)(nil)
+
+// documenttokenOption allows management of the mutation configuration using functional options.
+type documenttokenOption func(*DocumentTokenMutation)
+
+// newDocumentTokenMutation creates new mutation for the DocumentToken entity.
+func newDocumentTokenMutation(c config, op Op, opts ...documenttokenOption) *DocumentTokenMutation {
+	m := &DocumentTokenMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeDocumentToken,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withDocumentTokenID sets the ID field of the mutation.
+func withDocumentTokenID(id uuid.UUID) documenttokenOption {
+	return func(m *DocumentTokenMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *DocumentToken
+		)
+		m.oldValue = func(ctx context.Context) (*DocumentToken, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().DocumentToken.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withDocumentToken sets the old DocumentToken of the mutation.
+func withDocumentToken(node *DocumentToken) documenttokenOption {
+	return func(m *DocumentTokenMutation) {
+		m.oldValue = func(context.Context) (*DocumentToken, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m DocumentTokenMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m DocumentTokenMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of DocumentToken entities.
+func (m *DocumentTokenMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *DocumentTokenMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *DocumentTokenMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().DocumentToken.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *DocumentTokenMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *DocumentTokenMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the DocumentToken entity.
+// If the DocumentToken object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DocumentTokenMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *DocumentTokenMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *DocumentTokenMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *DocumentTokenMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the DocumentToken entity.
+// If the DocumentToken object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DocumentTokenMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *DocumentTokenMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetToken sets the "token" field.
+func (m *DocumentTokenMutation) SetToken(b []byte) {
+	m.token = &b
+}
+
+// Token returns the value of the "token" field in the mutation.
+func (m *DocumentTokenMutation) Token() (r []byte, exists bool) {
+	v := m.token
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldToken returns the old "token" field's value of the DocumentToken entity.
+// If the DocumentToken object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DocumentTokenMutation) OldToken(ctx context.Context) (v []byte, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldToken is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldToken requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldToken: %w", err)
+	}
+	return oldValue.Token, nil
+}
+
+// ResetToken resets all changes to the "token" field.
+func (m *DocumentTokenMutation) ResetToken() {
+	m.token = nil
+}
+
+// SetUses sets the "uses" field.
+func (m *DocumentTokenMutation) SetUses(i int) {
+	m.uses = &i
+	m.adduses = nil
+}
+
+// Uses returns the value of the "uses" field in the mutation.
+func (m *DocumentTokenMutation) Uses() (r int, exists bool) {
+	v := m.uses
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUses returns the old "uses" field's value of the DocumentToken entity.
+// If the DocumentToken object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DocumentTokenMutation) OldUses(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUses is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUses requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUses: %w", err)
+	}
+	return oldValue.Uses, nil
+}
+
+// AddUses adds i to the "uses" field.
+func (m *DocumentTokenMutation) AddUses(i int) {
+	if m.adduses != nil {
+		*m.adduses += i
+	} else {
+		m.adduses = &i
+	}
+}
+
+// AddedUses returns the value that was added to the "uses" field in this mutation.
+func (m *DocumentTokenMutation) AddedUses() (r int, exists bool) {
+	v := m.adduses
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetUses resets all changes to the "uses" field.
+func (m *DocumentTokenMutation) ResetUses() {
+	m.uses = nil
+	m.adduses = nil
+}
+
+// SetExpiresAt sets the "expires_at" field.
+func (m *DocumentTokenMutation) SetExpiresAt(t time.Time) {
+	m.expires_at = &t
+}
+
+// ExpiresAt returns the value of the "expires_at" field in the mutation.
+func (m *DocumentTokenMutation) ExpiresAt() (r time.Time, exists bool) {
+	v := m.expires_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldExpiresAt returns the old "expires_at" field's value of the DocumentToken entity.
+// If the DocumentToken object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DocumentTokenMutation) OldExpiresAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldExpiresAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldExpiresAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldExpiresAt: %w", err)
+	}
+	return oldValue.ExpiresAt, nil
+}
+
+// ResetExpiresAt resets all changes to the "expires_at" field.
+func (m *DocumentTokenMutation) ResetExpiresAt() {
+	m.expires_at = nil
+}
+
+// SetDocumentID sets the "document" edge to the Document entity by id.
+func (m *DocumentTokenMutation) SetDocumentID(id uuid.UUID) {
+	m.document = &id
+}
+
+// ClearDocument clears the "document" edge to the Document entity.
+func (m *DocumentTokenMutation) ClearDocument() {
+	m.cleareddocument = true
+}
+
+// DocumentCleared reports if the "document" edge to the Document entity was cleared.
+func (m *DocumentTokenMutation) DocumentCleared() bool {
+	return m.cleareddocument
+}
+
+// DocumentID returns the "document" edge ID in the mutation.
+func (m *DocumentTokenMutation) DocumentID() (id uuid.UUID, exists bool) {
+	if m.document != nil {
+		return *m.document, true
+	}
+	return
+}
+
+// DocumentIDs returns the "document" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// DocumentID instead. It exists only for internal usage by the builders.
+func (m *DocumentTokenMutation) DocumentIDs() (ids []uuid.UUID) {
+	if id := m.document; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetDocument resets all changes to the "document" edge.
+func (m *DocumentTokenMutation) ResetDocument() {
+	m.document = nil
+	m.cleareddocument = false
+}
+
+// Where appends a list predicates to the DocumentTokenMutation builder.
+func (m *DocumentTokenMutation) Where(ps ...predicate.DocumentToken) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *DocumentTokenMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (DocumentToken).
+func (m *DocumentTokenMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *DocumentTokenMutation) Fields() []string {
+	fields := make([]string, 0, 5)
+	if m.created_at != nil {
+		fields = append(fields, documenttoken.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, documenttoken.FieldUpdatedAt)
+	}
+	if m.token != nil {
+		fields = append(fields, documenttoken.FieldToken)
+	}
+	if m.uses != nil {
+		fields = append(fields, documenttoken.FieldUses)
+	}
+	if m.expires_at != nil {
+		fields = append(fields, documenttoken.FieldExpiresAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *DocumentTokenMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case documenttoken.FieldCreatedAt:
+		return m.CreatedAt()
+	case documenttoken.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case documenttoken.FieldToken:
+		return m.Token()
+	case documenttoken.FieldUses:
+		return m.Uses()
+	case documenttoken.FieldExpiresAt:
+		return m.ExpiresAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *DocumentTokenMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case documenttoken.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case documenttoken.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case documenttoken.FieldToken:
+		return m.OldToken(ctx)
+	case documenttoken.FieldUses:
+		return m.OldUses(ctx)
+	case documenttoken.FieldExpiresAt:
+		return m.OldExpiresAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown DocumentToken field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DocumentTokenMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case documenttoken.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case documenttoken.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case documenttoken.FieldToken:
+		v, ok := value.([]byte)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetToken(v)
+		return nil
+	case documenttoken.FieldUses:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUses(v)
+		return nil
+	case documenttoken.FieldExpiresAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetExpiresAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown DocumentToken field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *DocumentTokenMutation) AddedFields() []string {
+	var fields []string
+	if m.adduses != nil {
+		fields = append(fields, documenttoken.FieldUses)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *DocumentTokenMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case documenttoken.FieldUses:
+		return m.AddedUses()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DocumentTokenMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case documenttoken.FieldUses:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUses(v)
+		return nil
+	}
+	return fmt.Errorf("unknown DocumentToken numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *DocumentTokenMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *DocumentTokenMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *DocumentTokenMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown DocumentToken nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *DocumentTokenMutation) ResetField(name string) error {
+	switch name {
+	case documenttoken.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case documenttoken.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case documenttoken.FieldToken:
+		m.ResetToken()
+		return nil
+	case documenttoken.FieldUses:
+		m.ResetUses()
+		return nil
+	case documenttoken.FieldExpiresAt:
+		m.ResetExpiresAt()
+		return nil
+	}
+	return fmt.Errorf("unknown DocumentToken field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *DocumentTokenMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.document != nil {
+		edges = append(edges, documenttoken.EdgeDocument)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *DocumentTokenMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case documenttoken.EdgeDocument:
+		if id := m.document; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *DocumentTokenMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *DocumentTokenMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *DocumentTokenMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.cleareddocument {
+		edges = append(edges, documenttoken.EdgeDocument)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *DocumentTokenMutation) EdgeCleared(name string) bool {
+	switch name {
+	case documenttoken.EdgeDocument:
+		return m.cleareddocument
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *DocumentTokenMutation) ClearEdge(name string) error {
+	switch name {
+	case documenttoken.EdgeDocument:
+		m.ClearDocument()
+		return nil
+	}
+	return fmt.Errorf("unknown DocumentToken unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *DocumentTokenMutation) ResetEdge(name string) error {
+	switch name {
+	case documenttoken.EdgeDocument:
+		m.ResetDocument()
+		return nil
+	}
+	return fmt.Errorf("unknown DocumentToken edge %s", name)
+}
+
 // GroupMutation represents an operation that mutates the Group nodes in the graph.
 type GroupMutation struct {
 	config
@@ -611,6 +2522,9 @@ type GroupMutation struct {
 	labels           map[uuid.UUID]struct{}
 	removedlabels    map[uuid.UUID]struct{}
 	clearedlabels    bool
+	documents        map[uuid.UUID]struct{}
+	removeddocuments map[uuid.UUID]struct{}
+	cleareddocuments bool
 	done             bool
 	oldValue         func(context.Context) (*Group, error)
 	predicates       []predicate.Group
@@ -1080,6 +2994,60 @@ func (m *GroupMutation) ResetLabels() {
 	m.removedlabels = nil
 }
 
+// AddDocumentIDs adds the "documents" edge to the Document entity by ids.
+func (m *GroupMutation) AddDocumentIDs(ids ...uuid.UUID) {
+	if m.documents == nil {
+		m.documents = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.documents[ids[i]] = struct{}{}
+	}
+}
+
+// ClearDocuments clears the "documents" edge to the Document entity.
+func (m *GroupMutation) ClearDocuments() {
+	m.cleareddocuments = true
+}
+
+// DocumentsCleared reports if the "documents" edge to the Document entity was cleared.
+func (m *GroupMutation) DocumentsCleared() bool {
+	return m.cleareddocuments
+}
+
+// RemoveDocumentIDs removes the "documents" edge to the Document entity by IDs.
+func (m *GroupMutation) RemoveDocumentIDs(ids ...uuid.UUID) {
+	if m.removeddocuments == nil {
+		m.removeddocuments = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.documents, ids[i])
+		m.removeddocuments[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedDocuments returns the removed IDs of the "documents" edge to the Document entity.
+func (m *GroupMutation) RemovedDocumentsIDs() (ids []uuid.UUID) {
+	for id := range m.removeddocuments {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// DocumentsIDs returns the "documents" edge IDs in the mutation.
+func (m *GroupMutation) DocumentsIDs() (ids []uuid.UUID) {
+	for id := range m.documents {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetDocuments resets all changes to the "documents" edge.
+func (m *GroupMutation) ResetDocuments() {
+	m.documents = nil
+	m.cleareddocuments = false
+	m.removeddocuments = nil
+}
+
 // Where appends a list predicates to the GroupMutation builder.
 func (m *GroupMutation) Where(ps ...predicate.Group) {
 	m.predicates = append(m.predicates, ps...)
@@ -1249,7 +3217,7 @@ func (m *GroupMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *GroupMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.users != nil {
 		edges = append(edges, group.EdgeUsers)
 	}
@@ -1261,6 +3229,9 @@ func (m *GroupMutation) AddedEdges() []string {
 	}
 	if m.labels != nil {
 		edges = append(edges, group.EdgeLabels)
+	}
+	if m.documents != nil {
+		edges = append(edges, group.EdgeDocuments)
 	}
 	return edges
 }
@@ -1293,13 +3264,19 @@ func (m *GroupMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case group.EdgeDocuments:
+		ids := make([]ent.Value, 0, len(m.documents))
+		for id := range m.documents {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *GroupMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.removedusers != nil {
 		edges = append(edges, group.EdgeUsers)
 	}
@@ -1311,6 +3288,9 @@ func (m *GroupMutation) RemovedEdges() []string {
 	}
 	if m.removedlabels != nil {
 		edges = append(edges, group.EdgeLabels)
+	}
+	if m.removeddocuments != nil {
+		edges = append(edges, group.EdgeDocuments)
 	}
 	return edges
 }
@@ -1343,13 +3323,19 @@ func (m *GroupMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case group.EdgeDocuments:
+		ids := make([]ent.Value, 0, len(m.removeddocuments))
+		for id := range m.removeddocuments {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *GroupMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.clearedusers {
 		edges = append(edges, group.EdgeUsers)
 	}
@@ -1361,6 +3347,9 @@ func (m *GroupMutation) ClearedEdges() []string {
 	}
 	if m.clearedlabels {
 		edges = append(edges, group.EdgeLabels)
+	}
+	if m.cleareddocuments {
+		edges = append(edges, group.EdgeDocuments)
 	}
 	return edges
 }
@@ -1377,6 +3366,8 @@ func (m *GroupMutation) EdgeCleared(name string) bool {
 		return m.cleareditems
 	case group.EdgeLabels:
 		return m.clearedlabels
+	case group.EdgeDocuments:
+		return m.cleareddocuments
 	}
 	return false
 }
@@ -1405,6 +3396,9 @@ func (m *GroupMutation) ResetEdge(name string) error {
 	case group.EdgeLabels:
 		m.ResetLabels()
 		return nil
+	case group.EdgeDocuments:
+		m.ResetDocuments()
+		return nil
 	}
 	return fmt.Errorf("unknown Group edge %s", name)
 }
@@ -1412,43 +3406,49 @@ func (m *GroupMutation) ResetEdge(name string) error {
 // ItemMutation represents an operation that mutates the Item nodes in the graph.
 type ItemMutation struct {
 	config
-	op                Op
-	typ               string
-	id                *uuid.UUID
-	created_at        *time.Time
-	updated_at        *time.Time
-	name              *string
-	description       *string
-	notes             *string
-	serial_number     *string
-	model_number      *string
-	manufacturer      *string
-	lifetime_warranty *bool
-	warranty_expires  *time.Time
-	warranty_details  *string
-	purchase_time     *time.Time
-	purchase_from     *string
-	purchase_price    *float64
-	addpurchase_price *float64
-	sold_time         *time.Time
-	sold_to           *string
-	sold_price        *float64
-	addsold_price     *float64
-	sold_notes        *string
-	clearedFields     map[string]struct{}
-	group             *uuid.UUID
-	clearedgroup      bool
-	location          *uuid.UUID
-	clearedlocation   bool
-	fields            map[uuid.UUID]struct{}
-	removedfields     map[uuid.UUID]struct{}
-	clearedfields     bool
-	label             map[uuid.UUID]struct{}
-	removedlabel      map[uuid.UUID]struct{}
-	clearedlabel      bool
-	done              bool
-	oldValue          func(context.Context) (*Item, error)
-	predicates        []predicate.Item
+	op                 Op
+	typ                string
+	id                 *uuid.UUID
+	created_at         *time.Time
+	updated_at         *time.Time
+	name               *string
+	description        *string
+	notes              *string
+	quantity           *int
+	addquantity        *int
+	insured            *bool
+	serial_number      *string
+	model_number       *string
+	manufacturer       *string
+	lifetime_warranty  *bool
+	warranty_expires   *time.Time
+	warranty_details   *string
+	purchase_time      *time.Time
+	purchase_from      *string
+	purchase_price     *float64
+	addpurchase_price  *float64
+	sold_time          *time.Time
+	sold_to            *string
+	sold_price         *float64
+	addsold_price      *float64
+	sold_notes         *string
+	clearedFields      map[string]struct{}
+	group              *uuid.UUID
+	clearedgroup       bool
+	location           *uuid.UUID
+	clearedlocation    bool
+	fields             map[uuid.UUID]struct{}
+	removedfields      map[uuid.UUID]struct{}
+	clearedfields      bool
+	label              map[uuid.UUID]struct{}
+	removedlabel       map[uuid.UUID]struct{}
+	clearedlabel       bool
+	attachments        map[uuid.UUID]struct{}
+	removedattachments map[uuid.UUID]struct{}
+	clearedattachments bool
+	done               bool
+	oldValue           func(context.Context) (*Item, error)
+	predicates         []predicate.Item
 }
 
 var _ ent.Mutation = (*ItemMutation)(nil)
@@ -1759,6 +3759,98 @@ func (m *ItemMutation) NotesCleared() bool {
 func (m *ItemMutation) ResetNotes() {
 	m.notes = nil
 	delete(m.clearedFields, item.FieldNotes)
+}
+
+// SetQuantity sets the "quantity" field.
+func (m *ItemMutation) SetQuantity(i int) {
+	m.quantity = &i
+	m.addquantity = nil
+}
+
+// Quantity returns the value of the "quantity" field in the mutation.
+func (m *ItemMutation) Quantity() (r int, exists bool) {
+	v := m.quantity
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldQuantity returns the old "quantity" field's value of the Item entity.
+// If the Item object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ItemMutation) OldQuantity(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldQuantity is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldQuantity requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldQuantity: %w", err)
+	}
+	return oldValue.Quantity, nil
+}
+
+// AddQuantity adds i to the "quantity" field.
+func (m *ItemMutation) AddQuantity(i int) {
+	if m.addquantity != nil {
+		*m.addquantity += i
+	} else {
+		m.addquantity = &i
+	}
+}
+
+// AddedQuantity returns the value that was added to the "quantity" field in this mutation.
+func (m *ItemMutation) AddedQuantity() (r int, exists bool) {
+	v := m.addquantity
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetQuantity resets all changes to the "quantity" field.
+func (m *ItemMutation) ResetQuantity() {
+	m.quantity = nil
+	m.addquantity = nil
+}
+
+// SetInsured sets the "insured" field.
+func (m *ItemMutation) SetInsured(b bool) {
+	m.insured = &b
+}
+
+// Insured returns the value of the "insured" field in the mutation.
+func (m *ItemMutation) Insured() (r bool, exists bool) {
+	v := m.insured
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldInsured returns the old "insured" field's value of the Item entity.
+// If the Item object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ItemMutation) OldInsured(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldInsured is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldInsured requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldInsured: %w", err)
+	}
+	return oldValue.Insured, nil
+}
+
+// ResetInsured resets all changes to the "insured" field.
+func (m *ItemMutation) ResetInsured() {
+	m.insured = nil
 }
 
 // SetSerialNumber sets the "serial_number" field.
@@ -2585,6 +4677,60 @@ func (m *ItemMutation) ResetLabel() {
 	m.removedlabel = nil
 }
 
+// AddAttachmentIDs adds the "attachments" edge to the Attachment entity by ids.
+func (m *ItemMutation) AddAttachmentIDs(ids ...uuid.UUID) {
+	if m.attachments == nil {
+		m.attachments = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.attachments[ids[i]] = struct{}{}
+	}
+}
+
+// ClearAttachments clears the "attachments" edge to the Attachment entity.
+func (m *ItemMutation) ClearAttachments() {
+	m.clearedattachments = true
+}
+
+// AttachmentsCleared reports if the "attachments" edge to the Attachment entity was cleared.
+func (m *ItemMutation) AttachmentsCleared() bool {
+	return m.clearedattachments
+}
+
+// RemoveAttachmentIDs removes the "attachments" edge to the Attachment entity by IDs.
+func (m *ItemMutation) RemoveAttachmentIDs(ids ...uuid.UUID) {
+	if m.removedattachments == nil {
+		m.removedattachments = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.attachments, ids[i])
+		m.removedattachments[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedAttachments returns the removed IDs of the "attachments" edge to the Attachment entity.
+func (m *ItemMutation) RemovedAttachmentsIDs() (ids []uuid.UUID) {
+	for id := range m.removedattachments {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// AttachmentsIDs returns the "attachments" edge IDs in the mutation.
+func (m *ItemMutation) AttachmentsIDs() (ids []uuid.UUID) {
+	for id := range m.attachments {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetAttachments resets all changes to the "attachments" edge.
+func (m *ItemMutation) ResetAttachments() {
+	m.attachments = nil
+	m.clearedattachments = false
+	m.removedattachments = nil
+}
+
 // Where appends a list predicates to the ItemMutation builder.
 func (m *ItemMutation) Where(ps ...predicate.Item) {
 	m.predicates = append(m.predicates, ps...)
@@ -2604,7 +4750,7 @@ func (m *ItemMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ItemMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 20)
 	if m.created_at != nil {
 		fields = append(fields, item.FieldCreatedAt)
 	}
@@ -2619,6 +4765,12 @@ func (m *ItemMutation) Fields() []string {
 	}
 	if m.notes != nil {
 		fields = append(fields, item.FieldNotes)
+	}
+	if m.quantity != nil {
+		fields = append(fields, item.FieldQuantity)
+	}
+	if m.insured != nil {
+		fields = append(fields, item.FieldInsured)
 	}
 	if m.serial_number != nil {
 		fields = append(fields, item.FieldSerialNumber)
@@ -2677,6 +4829,10 @@ func (m *ItemMutation) Field(name string) (ent.Value, bool) {
 		return m.Description()
 	case item.FieldNotes:
 		return m.Notes()
+	case item.FieldQuantity:
+		return m.Quantity()
+	case item.FieldInsured:
+		return m.Insured()
 	case item.FieldSerialNumber:
 		return m.SerialNumber()
 	case item.FieldModelNumber:
@@ -2722,6 +4878,10 @@ func (m *ItemMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldDescription(ctx)
 	case item.FieldNotes:
 		return m.OldNotes(ctx)
+	case item.FieldQuantity:
+		return m.OldQuantity(ctx)
+	case item.FieldInsured:
+		return m.OldInsured(ctx)
 	case item.FieldSerialNumber:
 		return m.OldSerialNumber(ctx)
 	case item.FieldModelNumber:
@@ -2791,6 +4951,20 @@ func (m *ItemMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetNotes(v)
+		return nil
+	case item.FieldQuantity:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetQuantity(v)
+		return nil
+	case item.FieldInsured:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInsured(v)
 		return nil
 	case item.FieldSerialNumber:
 		v, ok := value.(string)
@@ -2891,6 +5065,9 @@ func (m *ItemMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *ItemMutation) AddedFields() []string {
 	var fields []string
+	if m.addquantity != nil {
+		fields = append(fields, item.FieldQuantity)
+	}
 	if m.addpurchase_price != nil {
 		fields = append(fields, item.FieldPurchasePrice)
 	}
@@ -2905,6 +5082,8 @@ func (m *ItemMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *ItemMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case item.FieldQuantity:
+		return m.AddedQuantity()
 	case item.FieldPurchasePrice:
 		return m.AddedPurchasePrice()
 	case item.FieldSoldPrice:
@@ -2918,6 +5097,13 @@ func (m *ItemMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *ItemMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case item.FieldQuantity:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddQuantity(v)
+		return nil
 	case item.FieldPurchasePrice:
 		v, ok := value.(float64)
 		if !ok {
@@ -3049,6 +5235,12 @@ func (m *ItemMutation) ResetField(name string) error {
 	case item.FieldNotes:
 		m.ResetNotes()
 		return nil
+	case item.FieldQuantity:
+		m.ResetQuantity()
+		return nil
+	case item.FieldInsured:
+		m.ResetInsured()
+		return nil
 	case item.FieldSerialNumber:
 		m.ResetSerialNumber()
 		return nil
@@ -3094,7 +5286,7 @@ func (m *ItemMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ItemMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.group != nil {
 		edges = append(edges, item.EdgeGroup)
 	}
@@ -3106,6 +5298,9 @@ func (m *ItemMutation) AddedEdges() []string {
 	}
 	if m.label != nil {
 		edges = append(edges, item.EdgeLabel)
+	}
+	if m.attachments != nil {
+		edges = append(edges, item.EdgeAttachments)
 	}
 	return edges
 }
@@ -3134,18 +5329,27 @@ func (m *ItemMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case item.EdgeAttachments:
+		ids := make([]ent.Value, 0, len(m.attachments))
+		for id := range m.attachments {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ItemMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.removedfields != nil {
 		edges = append(edges, item.EdgeFields)
 	}
 	if m.removedlabel != nil {
 		edges = append(edges, item.EdgeLabel)
+	}
+	if m.removedattachments != nil {
+		edges = append(edges, item.EdgeAttachments)
 	}
 	return edges
 }
@@ -3166,13 +5370,19 @@ func (m *ItemMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case item.EdgeAttachments:
+		ids := make([]ent.Value, 0, len(m.removedattachments))
+		for id := range m.removedattachments {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ItemMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.clearedgroup {
 		edges = append(edges, item.EdgeGroup)
 	}
@@ -3184,6 +5394,9 @@ func (m *ItemMutation) ClearedEdges() []string {
 	}
 	if m.clearedlabel {
 		edges = append(edges, item.EdgeLabel)
+	}
+	if m.clearedattachments {
+		edges = append(edges, item.EdgeAttachments)
 	}
 	return edges
 }
@@ -3200,6 +5413,8 @@ func (m *ItemMutation) EdgeCleared(name string) bool {
 		return m.clearedfields
 	case item.EdgeLabel:
 		return m.clearedlabel
+	case item.EdgeAttachments:
+		return m.clearedattachments
 	}
 	return false
 }
@@ -3233,6 +5448,9 @@ func (m *ItemMutation) ResetEdge(name string) error {
 		return nil
 	case item.EdgeLabel:
 		m.ResetLabel()
+		return nil
+	case item.EdgeAttachments:
+		m.ResetAttachments()
 		return nil
 	}
 	return fmt.Errorf("unknown Item edge %s", name)

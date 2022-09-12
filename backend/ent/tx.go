@@ -12,8 +12,14 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// Attachment is the client for interacting with the Attachment builders.
+	Attachment *AttachmentClient
 	// AuthTokens is the client for interacting with the AuthTokens builders.
 	AuthTokens *AuthTokensClient
+	// Document is the client for interacting with the Document builders.
+	Document *DocumentClient
+	// DocumentToken is the client for interacting with the DocumentToken builders.
+	DocumentToken *DocumentTokenClient
 	// Group is the client for interacting with the Group builders.
 	Group *GroupClient
 	// Item is the client for interacting with the Item builders.
@@ -161,7 +167,10 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.Attachment = NewAttachmentClient(tx.config)
 	tx.AuthTokens = NewAuthTokensClient(tx.config)
+	tx.Document = NewDocumentClient(tx.config)
+	tx.DocumentToken = NewDocumentTokenClient(tx.config)
 	tx.Group = NewGroupClient(tx.config)
 	tx.Item = NewItemClient(tx.config)
 	tx.ItemField = NewItemFieldClient(tx.config)
@@ -177,7 +186,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: AuthTokens.QueryXXX(), the query will be executed
+// applies a query, for example: Attachment.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

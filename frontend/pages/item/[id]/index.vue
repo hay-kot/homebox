@@ -10,7 +10,7 @@
   const itemId = computed<string>(() => route.params.id as string);
   const preferences = useViewPreferences();
 
-  const { data: item } = useAsyncData(async () => {
+  const { data: item, refresh } = useAsyncData(itemId.value, async () => {
     const { data, error } = await api.items.get(itemId.value);
     if (error) {
       toast.error("Failed to load item");
@@ -20,6 +20,11 @@
     return data;
   });
 
+  // Trigger Refresh on navigate
+  onMounted(() => {
+    refresh();
+  });
+
   const itemSummary = computed(() => {
     return {
       Description: item.value?.description || "",
@@ -27,6 +32,7 @@
       "Model Number": item.value?.modelNumber || "",
       Manufacturer: item.value?.manufacturer || "",
       Notes: item.value?.notes || "",
+      Insured: item.value?.insured ? "Yes" : "No",
       Attachments: "", // TODO: Attachments
     };
   });
@@ -35,15 +41,15 @@
     if (preferences.value.showEmpty) {
       return true;
     }
-    return item.value?.warrantyExpires !== undefined;
+    return validDate(item.value?.warrantyExpires);
   });
 
   const warrantyDetails = computed(() => {
-    const payload = {};
+    const payload = {
+      "Lifetime Warranty": item.value?.lifetimeWarranty ? "Yes" : "No",
+    };
 
-    if (item.value.lifetimeWarranty) {
-      payload["Lifetime Warranty"] = "Yes";
-    } else {
+    if (showWarranty.value) {
       payload["Warranty Expires"] = item.value?.warrantyExpires || "";
     }
 
@@ -62,7 +68,7 @@
   const purchaseDetails = computed(() => {
     return {
       "Purchased From": item.value?.purchaseFrom || "",
-      "Purchased Price": item.value?.purchasePrice || "",
+      "Purchased Price": item.value?.purchasePrice ? fmtCurrency(item.value.purchasePrice) : "",
       "Purchased At": item.value?.purchaseTime || "",
     };
   });
@@ -78,7 +84,7 @@
   const soldDetails = computed(() => {
     return {
       "Sold To": item.value?.soldTo || "",
-      "Sold Price": item.value?.soldPrice || "",
+      "Sold Price": item.value?.soldPrice ? fmtCurrency(item.value.soldPrice) : "",
       "Sold At": item.value?.soldTime || "",
     };
   });
@@ -103,7 +109,7 @@
 </script>
 
 <template>
-  <BaseContainer class="pb-8">
+  <BaseContainer v-if="item" class="pb-8">
     <section class="px-3">
       <div class="flex justify-between items-center">
         <div class="form-control"></div>
@@ -116,11 +122,14 @@
               <span class="text-gray-600">
                 {{ item.name }}
               </span>
+              <p class="text-sm text-gray-600 font-bold pb-0 mb-0">
+                {{ item.location.name }} - Quantity {{ item.quantity }}
+              </p>
               <template #after>
-                <div class="flex flex-wrap gap-3 mt-3">
+                <div v-if="item.labels && item.labels.length > 0" class="flex flex-wrap gap-3 mt-3">
                   <LabelChip v-for="label in item.labels" :key="label.id" class="badge-primary" :label="label" />
                 </div>
-                <div class="modal-action">
+                <div class="modal-action mt-3">
                   <label class="label cursor-pointer mr-auto">
                     <input v-model="preferences.showEmpty" type="checkbox" class="toggle toggle-primary" />
                     <span class="label-text ml-4"> Show Empty </span>
@@ -166,12 +175,21 @@
         </BaseDetails>
         <BaseDetails v-if="showPurchase" :details="purchaseDetails">
           <template #title> Purchase Details </template>
+          <template #PurchasedAt>
+            <DateTime :date="item.purchaseTime" />
+          </template>
         </BaseDetails>
         <BaseDetails v-if="showWarranty" :details="warrantyDetails">
           <template #title> Warranty </template>
+          <template #WarrantyExpires>
+            <DateTime :date="item.warrantyExpires" />
+          </template>
         </BaseDetails>
         <BaseDetails v-if="showSold" :details="soldDetails">
           <template #title> Sold </template>
+          <template #SoldAt>
+            <DateTime :date="item.soldTime" />
+          </template>
         </BaseDetails>
       </div>
     </section>

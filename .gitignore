@@ -2,7 +2,6 @@
 config.yml
 homebox.db
 .idea
-.vscode
 
 .DS_Store
 test-mailer.json
@@ -36,3 +35,12 @@ backend/.env
 # Output Directory for Nuxt/Frontend during build step
 backend/app/api/public/*
 !backend/app/api/public/.gitkeep
+
+node_modules
+*.log*
+.nuxt
+.nitro
+.cache
+.output
+.env
+dist

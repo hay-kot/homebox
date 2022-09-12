@@ -3,9 +3,9 @@
     <label class="label">
       <span class="label-text">{{ label }}</span>
     </label>
-    <select v-model="value" class="select select-bordered">
+    <select v-model="selectedIdx" class="select select-bordered">
       <option disabled selected>Pick one</option>
-      <option v-for="obj in items" :key="name != '' ? obj[name] : obj" :value="obj">
+      <option v-for="(obj, idx) in items" :key="name != '' ? obj[name] : obj" :value="idx">
         {{ name != "" ? obj[name] : obj }}
       </option>
     </select>
@@ -24,10 +24,12 @@
       default: "",
     },
     modelValue: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       type: Object as any,
       default: null,
     },
     items: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       type: Array as () => any[],
       required: true,
     },
@@ -45,10 +47,16 @@
     () => props.items,
     () => {
       if (props.selectFirst && props.items.length > 0) {
-        value.value = props.items[0];
+        selectedIdx.value = 0;
       }
     }
   );
 
-  const value = useVModel(props, "modelValue", emit);
+  const selectedIdx = ref(0);
+  watch(
+    () => selectedIdx.value,
+    () => {
+      emit("update:modelValue", props.items[selectedIdx.value]);
+    }
+  );
 </script>

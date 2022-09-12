@@ -1,0 +1,31 @@
+version: 2
+updates:
+  # Fetch and update latest `npm` packages
+  - package-ecosystem: npm
+    directory: "/frontend"
+    schedule:
+      interval: daily
+      time: "00:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - hay-kot
+    assignees:
+      - hay-kot
+    commit-message:
+      prefix: fix
+      prefix-development: chore
+      include: scope
+  - package-ecosystem: gomod
+    directory: backend
+    schedule:
+      interval: daily
+      time: "00:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - hay-kot
+    assignees:
+      - hay-kot
+    commit-message:
+      prefix: fix
+      prefix-development: chore
+      include: scope

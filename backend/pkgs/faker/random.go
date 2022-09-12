@@ -15,7 +15,11 @@ func NewFaker() *Faker {
 	return &Faker{}
 }
 
-func (f *Faker) RandomString(length int) string {
+func (f *Faker) Time() time.Time {
+	return time.Now().Add(time.Duration(f.Num(1, 100)) * time.Hour)
+}
+
+func (f *Faker) Str(length int) string {
 
 	b := make([]rune, length)
 	for i := range b {
@@ -24,14 +28,18 @@ func (f *Faker) RandomString(length int) string {
 	return string(b)
 }
 
-func (f *Faker) RandomEmail() string {
-	return f.RandomString(10) + "@email.com"
+func (f *Faker) Path() string {
+	return "/" + f.Str(10) + "/" + f.Str(10) + "/" + f.Str(10)
 }
 
-func (f *Faker) RandomBool() bool {
+func (f *Faker) Email() string {
+	return f.Str(10) + "@email.com"
+}
+
+func (f *Faker) Bool() bool {
 	return rand.Intn(2) == 1
 }
 
-func (f *Faker) RandomNumber(min, max int) int {
+func (f *Faker) Num(min, max int) int {
 	return rand.Intn(max-min) + min
 }

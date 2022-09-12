@@ -14,7 +14,7 @@ import (
 // @Summary   Get All Items
 // @Tags      Items
 // @Produce   json
-// @Success   200  {object}  server.Results{items=[]types.ItemOut}
+// @Success   200  {object}  server.Results{items=[]types.ItemSummary}
 // @Router    /v1/items [GET]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleItemsGetAll() http.HandlerFunc {
@@ -64,7 +64,7 @@ func (ctrl *V1Controller) HandleItemsCreate() http.HandlerFunc {
 // @Summary   deletes a item
 // @Tags      Items
 // @Produce   json
-// @Param     id   path      string  true  "Item ID"
+// @Param     id       path      string            true  "Item ID"
 // @Success   204
 // @Router    /v1/items/{id} [DELETE]
 // @Security  Bearer
@@ -90,7 +90,7 @@ func (ctrl *V1Controller) HandleItemDelete() http.HandlerFunc {
 // @Tags      Items
 // @Produce   json
 // @Param     id   path      string  true  "Item ID"
-// @Success   200  {object}  types.ItemOut
+// @Success   200      {object}  types.ItemOut
 // @Router    /v1/items/{id} [GET]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleItemGet() http.HandlerFunc {
@@ -115,6 +115,7 @@ func (ctrl *V1Controller) HandleItemGet() http.HandlerFunc {
 // @Tags      Items
 // @Produce   json
 // @Param     id  path  string  true  "Item ID"
+// @Param     payload  body      types.ItemUpdate  true  "Item Data"
 // @Success   200  {object}  types.ItemOut
 // @Router    /v1/items/{id} [PUT]
 // @Security  Bearer

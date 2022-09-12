@@ -13,10 +13,10 @@ import (
 func userFactory() types.UserCreate {
 
 	return types.UserCreate{
-		Name:        fk.RandomString(10),
-		Email:       fk.RandomEmail(),
-		Password:    fk.RandomString(10),
-		IsSuperuser: fk.RandomBool(),
+		Name:        fk.Str(10),
+		Email:       fk.Email(),
+		Password:    fk.Str(10),
+		IsSuperuser: fk.Bool(),
 		GroupID:     tGroup.ID,
 	}
 }
@@ -109,8 +109,8 @@ func TestUserRepo_Update(t *testing.T) {
 	assert.NoError(t, err)
 
 	updateData := types.UserUpdate{
-		Name:  fk.RandomString(10),
-		Email: fk.RandomEmail(),
+		Name:  fk.Str(10),
+		Email: fk.Email(),
 	}
 
 	// Update

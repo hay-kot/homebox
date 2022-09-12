@@ -29,6 +29,10 @@ type Item struct {
 	Description string `json:"description,omitempty"`
 	// Notes holds the value of the "notes" field.
 	Notes string `json:"notes,omitempty"`
+	// Quantity holds the value of the "quantity" field.
+	Quantity int `json:"quantity,omitempty"`
+	// Insured holds the value of the "insured" field.
+	Insured bool `json:"insured,omitempty"`
 	// SerialNumber holds the value of the "serial_number" field.
 	SerialNumber string `json:"serial_number,omitempty"`
 	// ModelNumber holds the value of the "model_number" field.
@@ -72,9 +76,11 @@ type ItemEdges struct {
 	Fields []*ItemField `json:"fields,omitempty"`
 	// Label holds the value of the label edge.
 	Label []*Label `json:"label,omitempty"`
+	// Attachments holds the value of the attachments edge.
+	Attachments []*Attachment `json:"attachments,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [5]bool
 }
 
 // GroupOrErr returns the Group value or an error if the edge
@@ -121,15 +127,26 @@ func (e ItemEdges) LabelOrErr() ([]*Label, error) {
 	return nil, &NotLoadedError{edge: "label"}
 }
 
+// AttachmentsOrErr returns the Attachments value or an error if the edge
+// was not loaded in eager-loading.
+func (e ItemEdges) AttachmentsOrErr() ([]*Attachment, error) {
+	if e.loadedTypes[4] {
+		return e.Attachments, nil
+	}
+	return nil, &NotLoadedError{edge: "attachments"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Item) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case item.FieldLifetimeWarranty:
+		case item.FieldInsured, item.FieldLifetimeWarranty:
 			values[i] = new(sql.NullBool)
 		case item.FieldPurchasePrice, item.FieldSoldPrice:
 			values[i] = new(sql.NullFloat64)
+		case item.FieldQuantity:
+			values[i] = new(sql.NullInt64)
 		case item.FieldName, item.FieldDescription, item.FieldNotes, item.FieldSerialNumber, item.FieldModelNumber, item.FieldManufacturer, item.FieldWarrantyDetails, item.FieldPurchaseFrom, item.FieldSoldTo, item.FieldSoldNotes:
 			values[i] = new(sql.NullString)
 		case item.FieldCreatedAt, item.FieldUpdatedAt, item.FieldWarrantyExpires, item.FieldPurchaseTime, item.FieldSoldTime:
@@ -190,6 +207,18 @@ func (i *Item) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field notes", values[j])
 			} else if value.Valid {
 				i.Notes = value.String
+			}
+		case item.FieldQuantity:
+			if value, ok := values[j].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field quantity", values[j])
+			} else if value.Valid {
+				i.Quantity = int(value.Int64)
+			}
+		case item.FieldInsured:
+			if value, ok := values[j].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field insured", values[j])
+			} else if value.Valid {
+				i.Insured = value.Bool
 			}
 		case item.FieldSerialNumber:
 			if value, ok := values[j].(*sql.NullString); !ok {
@@ -308,6 +337,11 @@ func (i *Item) QueryLabel() *LabelQuery {
 	return (&ItemClient{config: i.config}).QueryLabel(i)
 }
 
+// QueryAttachments queries the "attachments" edge of the Item entity.
+func (i *Item) QueryAttachments() *AttachmentQuery {
+	return (&ItemClient{config: i.config}).QueryAttachments(i)
+}
+
 // Update returns a builder for updating this Item.
 // Note that you need to call Item.Unwrap() before calling this method if this Item
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -345,6 +379,12 @@ func (i *Item) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("notes=")
 	builder.WriteString(i.Notes)
+	builder.WriteString(", ")
+	builder.WriteString("quantity=")
+	builder.WriteString(fmt.Sprintf("%v", i.Quantity))
+	builder.WriteString(", ")
+	builder.WriteString("insured=")
+	builder.WriteString(fmt.Sprintf("%v", i.Insured))
 	builder.WriteString(", ")
 	builder.WriteString("serial_number=")
 	builder.WriteString(i.SerialNumber)

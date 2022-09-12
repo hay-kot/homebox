@@ -8,9 +8,9 @@ import (
 func UserFactory() types.UserCreate {
 	f := faker.NewFaker()
 	return types.UserCreate{
-		Name:        f.RandomString(10),
-		Email:       f.RandomEmail(),
-		Password:    f.RandomString(10),
-		IsSuperuser: f.RandomBool(),
+		Name:        f.Str(10),
+		Email:       f.Email(),
+		Password:    f.Str(10),
+		IsSuperuser: f.Bool(),
 	}
 }

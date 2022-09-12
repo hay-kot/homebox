@@ -5,6 +5,19 @@ import (
 	"github.com/hay-kot/content/backend/internal/types"
 )
 
+func ToItemAttachment(attachment *ent.Attachment) *types.ItemAttachment {
+	return &types.ItemAttachment{
+		ID:        attachment.ID,
+		CreatedAt: attachment.CreatedAt,
+		UpdatedAt: attachment.UpdatedAt,
+		Document: types.DocumentOut{
+			ID:    attachment.Edges.Document.ID,
+			Title: attachment.Edges.Document.Title,
+			Path:  attachment.Edges.Document.Path,
+		},
+	}
+}
+
 func ToItemSummary(item *ent.Item) *types.ItemSummary {
 	var location *types.LocationSummary
 	if item.Edges.Location != nil {
@@ -22,6 +35,14 @@ func ToItemSummary(item *ent.Item) *types.ItemSummary {
 		Description: item.Description,
 		CreatedAt:   item.CreatedAt,
 		UpdatedAt:   item.UpdatedAt,
+
+		Quantity: item.Quantity,
+		Insured:  item.Insured,
+
+		// Warranty
+		LifetimeWarranty: item.LifetimeWarranty,
+		WarrantyExpires:  item.WarrantyExpires,
+		WarrantyDetails:  item.WarrantyDetails,
 
 		// Edges
 		Location: location,
@@ -53,8 +74,14 @@ func ToItemSummaryErr(item *ent.Item, err error) (*types.ItemSummary, error) {
 }
 
 func ToItemOut(item *ent.Item) *types.ItemOut {
+	var attachments []*types.ItemAttachment
+	if item.Edges.Attachments != nil {
+		attachments = MapEach(item.Edges.Attachments, ToItemAttachment)
+	}
+
 	return &types.ItemOut{
 		ItemSummary: *ToItemSummary(item),
+		Attachments: attachments,
 	}
 }
 
