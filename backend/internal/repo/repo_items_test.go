@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/hay-kot/content/backend/ent"
 	"github.com/hay-kot/content/backend/internal/types"
 	"github.com/stretchr/testify/assert"
@@ -128,6 +129,66 @@ func TestItemsRepository_Delete(t *testing.T) {
 	results, err := tRepos.Items.GetAll(context.Background(), tGroup.ID)
 	assert.NoError(t, err)
 	assert.Empty(t, results)
+}
+
+func TestItemsRepository_Update_Labels(t *testing.T) {
+	entity := useItems(t, 1)[0]
+	labels := useLabels(t, 3)
+
+	labelsIDs := []uuid.UUID{labels[0].ID, labels[1].ID, labels[2].ID}
+
+	type args struct {
+		labelIds []uuid.UUID
+	}
+
+	tests := []struct {
+		name string
+		args args
+		want []uuid.UUID
+	}{
+		{
+			name: "add all labels",
+			args: args{
+				labelIds: labelsIDs,
+			},
+			want: labelsIDs,
+		},
+		{
+			name: "update with one label",
+			args: args{
+				labelIds: labelsIDs[:1],
+			},
+			want: labelsIDs[:1],
+		},
+		{
+			name: "add one new label to existing single label",
+			args: args{
+				labelIds: labelsIDs[1:],
+			},
+			want: labelsIDs[1:],
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Apply all labels to entity
+			updateData := types.ItemUpdate{
+				ID:         entity.ID,
+				Name:       entity.Name,
+				LocationID: entity.Edges.Location.ID,
+				LabelIDs:   tt.args.labelIds,
+			}
+
+			updated, err := tRepos.Items.Update(context.Background(), updateData)
+			assert.NoError(t, err)
+			assert.Len(t, tt.want, len(updated.Edges.Label))
+
+			for _, label := range updated.Edges.Label {
+				assert.Contains(t, tt.want, label.ID)
+			}
+		})
+	}
+
 }
 
 func TestItemsRepository_Update(t *testing.T) {

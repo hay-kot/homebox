@@ -16,7 +16,7 @@ func labelFactory() types.LabelCreate {
 	}
 }
 
-func useLabels(t *testing.T, len int) ([]*ent.Label, func()) {
+func useLabels(t *testing.T, len int) []*ent.Label {
 	t.Helper()
 
 	labels := make([]*ent.Label, len)
@@ -28,17 +28,17 @@ func useLabels(t *testing.T, len int) ([]*ent.Label, func()) {
 		labels[i] = item
 	}
 
-	return labels, func() {
+	t.Cleanup(func() {
 		for _, item := range labels {
-			err := tRepos.Labels.Delete(context.Background(), item.ID)
-			assert.NoError(t, err)
+			_ = tRepos.Labels.Delete(context.Background(), item.ID)
 		}
-	}
+	})
+
+	return labels
 }
 
 func TestLabelRepository_Get(t *testing.T) {
-	labels, cleanup := useLabels(t, 1)
-	defer cleanup()
+	labels := useLabels(t, 1)
 	label := labels[0]
 
 	// Get by ID
@@ -48,8 +48,7 @@ func TestLabelRepository_Get(t *testing.T) {
 }
 
 func TestLabelRepositoryGetAll(t *testing.T) {
-	_, cleanup := useLabels(t, 10)
-	defer cleanup()
+	useLabels(t, 10)
 
 	all, err := tRepos.Labels.GetAll(context.Background(), tGroup.ID)
 	assert.NoError(t, err)

@@ -3,7 +3,10 @@ version: "3"
 tasks:
   generate:
     cmds:
-      - cd backend && go generate ./...
+      - |
+        cd backend && ent generate ./ent/schema \
+          --template=ent/schema/templates/stringer.tmpl \
+          --template=ent/schema/templates/has_id.tmpl
       - cd backend/app/api/ && swag fmt
       - cd backend/app/api/ && swag init --dir=./,../../internal,../../pkgs
       - |
