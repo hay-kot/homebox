@@ -128,7 +128,11 @@ func (svc *ItemService) AddAttachment(ctx context.Context, gid, itemId uuid.UUID
 	}
 
 	// Read the contents and write them to a file on the file system
-	os.MkdirAll(filepath.Dir(doc.Path), os.ModePerm)
+	err = os.MkdirAll(filepath.Dir(doc.Path), os.ModePerm)
+	if err != nil {
+		return nil, err
+	}
+
 	f, err := os.Create(doc.Path)
 	if err != nil {
 		log.Err(err).Msg("failed to create file")
