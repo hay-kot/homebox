@@ -12,11 +12,6 @@
 
   const itemId = computed<string>(() => route.params.id as string);
 
-  const originalItem = ref({
-    name: "",
-    quantity: 0,
-  });
-
   const { data: locations } = useAsyncData(async () => {
     const { data } = await api.locations.getAll();
     return data.items;
