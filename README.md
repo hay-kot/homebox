@@ -35,8 +35,9 @@
   - [ ] Update
   - [x] Delete
 - [ ] Asset Attachments for Items
-- [ ] Fields To Add
-  - [ ] Quantity
+- [x] Fields To Add
+  - [x] Quantity
+  - [x] Insured (bool)
 - [ ] Bulk Import via CSV
   - [x] Initial
   - [ ] Add Warranty Columns
@@ -52,10 +53,11 @@
 - [ ] Db Migrations
   - [ ] How To
 - [ ] Repo House Keeping
+  - [x] Add License
   - [ ] Issues Template
-  - [ ] PR Templates
+  - [x] PR Templates
   - [ ] Contributors Guide
-  - [ ] Security Policy
+  - [x] Security Policy
   - [ ] Feature Request Template
 - [ ] Embedded Version Info
   - [ ] Version Number
