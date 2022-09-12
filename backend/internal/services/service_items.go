@@ -77,7 +77,21 @@ func (svc *ItemService) Delete(ctx context.Context, gid uuid.UUID, id uuid.UUID)
 }
 
 func (svc *ItemService) Update(ctx context.Context, gid uuid.UUID, data types.ItemUpdate) (*types.ItemOut, error) {
-	panic("implement me")
+	item, err := svc.repo.Items.GetOne(ctx, data.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	if item.Edges.Group.ID != gid {
+		return nil, ErrNotOwner
+	}
+
+	item, err = svc.repo.Items.Update(ctx, data)
+	if err != nil {
+		return nil, err
+	}
+
+	return mappers.ToItemOut(item), nil
 }
 
 func (svc *ItemService) attachmentPath(gid, itemId uuid.UUID, filename string) string {
