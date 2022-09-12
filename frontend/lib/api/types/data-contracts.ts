@@ -55,6 +55,7 @@ export interface ItemOut {
   createdAt: Date;
   description: string;
   id: string;
+  insured: boolean;
   labels: LabelSummary[];
 
   /** Warranty */
@@ -73,6 +74,7 @@ export interface ItemOut {
 
   /** Purchase */
   purchaseTime: Date;
+  quantity: number;
 
   /** Identifications */
   serialNumber: string;
@@ -91,6 +93,7 @@ export interface ItemSummary {
   createdAt: Date;
   description: string;
   id: string;
+  insured: boolean;
   labels: LabelSummary[];
 
   /** Warranty */
@@ -109,6 +112,7 @@ export interface ItemSummary {
 
   /** Purchase */
   purchaseTime: Date;
+  quantity: number;
 
   /** Identifications */
   serialNumber: string;

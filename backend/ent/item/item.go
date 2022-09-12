@@ -23,6 +23,10 @@ const (
 	FieldDescription = "description"
 	// FieldNotes holds the string denoting the notes field in the database.
 	FieldNotes = "notes"
+	// FieldQuantity holds the string denoting the quantity field in the database.
+	FieldQuantity = "quantity"
+	// FieldInsured holds the string denoting the insured field in the database.
+	FieldInsured = "insured"
 	// FieldSerialNumber holds the string denoting the serial_number field in the database.
 	FieldSerialNumber = "serial_number"
 	// FieldModelNumber holds the string denoting the model_number field in the database.
@@ -104,6 +108,8 @@ var Columns = []string{
 	FieldName,
 	FieldDescription,
 	FieldNotes,
+	FieldQuantity,
+	FieldInsured,
 	FieldSerialNumber,
 	FieldModelNumber,
 	FieldManufacturer,
@@ -160,6 +166,10 @@ var (
 	DescriptionValidator func(string) error
 	// NotesValidator is a validator for the "notes" field. It is called by the builders before save.
 	NotesValidator func(string) error
+	// DefaultQuantity holds the default value on creation for the "quantity" field.
+	DefaultQuantity int
+	// DefaultInsured holds the default value on creation for the "insured" field.
+	DefaultInsured bool
 	// SerialNumberValidator is a validator for the "serial_number" field. It is called by the builders before save.
 	SerialNumberValidator func(string) error
 	// ModelNumberValidator is a validator for the "model_number" field. It is called by the builders before save.

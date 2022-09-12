@@ -14,7 +14,7 @@ import (
 // @Summary   Get All Items
 // @Tags      Items
 // @Produce   json
-// @Success   200  {object}  server.Results{items=[]types.ItemOut}
+// @Success   200  {object}  server.Results{items=[]types.ItemSummary}
 // @Router    /v1/items [GET]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleItemsGetAll() http.HandlerFunc {

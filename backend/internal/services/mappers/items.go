@@ -36,6 +36,9 @@ func ToItemSummary(item *ent.Item) *types.ItemSummary {
 		CreatedAt:   item.CreatedAt,
 		UpdatedAt:   item.UpdatedAt,
 
+		Quantity: item.Quantity,
+		Insured:  item.Insured,
+
 		// Edges
 		Location: location,
 		Labels:   labels,

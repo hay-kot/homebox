@@ -73,6 +73,8 @@ definitions:
         type: string
       id:
         type: string
+      insured:
+        type: boolean
       labels:
         items:
           $ref: '#/definitions/types.LabelSummary'
@@ -99,6 +101,8 @@ definitions:
       purchaseTime:
         description: Purchase
         type: string
+      quantity:
+        type: integer
       serialNumber:
         description: Identifications
         type: string
@@ -126,6 +130,8 @@ definitions:
         type: string
       id:
         type: string
+      insured:
+        type: boolean
       labels:
         items:
           $ref: '#/definitions/types.LabelSummary'
@@ -152,6 +158,8 @@ definitions:
       purchaseTime:
         description: Purchase
         type: string
+      quantity:
+        type: integer
       serialNumber:
         description: Identifications
         type: string
@@ -335,7 +343,7 @@ paths:
             - properties:
                 items:
                   items:
-                    $ref: '#/definitions/types.ItemOut'
+                    $ref: '#/definitions/types.ItemSummary'
                   type: array
               type: object
       security:

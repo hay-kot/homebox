@@ -88,6 +88,34 @@ func (ic *ItemCreate) SetNillableNotes(s *string) *ItemCreate {
 	return ic
 }
 
+// SetQuantity sets the "quantity" field.
+func (ic *ItemCreate) SetQuantity(i int) *ItemCreate {
+	ic.mutation.SetQuantity(i)
+	return ic
+}
+
+// SetNillableQuantity sets the "quantity" field if the given value is not nil.
+func (ic *ItemCreate) SetNillableQuantity(i *int) *ItemCreate {
+	if i != nil {
+		ic.SetQuantity(*i)
+	}
+	return ic
+}
+
+// SetInsured sets the "insured" field.
+func (ic *ItemCreate) SetInsured(b bool) *ItemCreate {
+	ic.mutation.SetInsured(b)
+	return ic
+}
+
+// SetNillableInsured sets the "insured" field if the given value is not nil.
+func (ic *ItemCreate) SetNillableInsured(b *bool) *ItemCreate {
+	if b != nil {
+		ic.SetInsured(*b)
+	}
+	return ic
+}
+
 // SetSerialNumber sets the "serial_number" field.
 func (ic *ItemCreate) SetSerialNumber(s string) *ItemCreate {
 	ic.mutation.SetSerialNumber(s)
@@ -444,6 +472,14 @@ func (ic *ItemCreate) defaults() {
 		v := item.DefaultUpdatedAt()
 		ic.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := ic.mutation.Quantity(); !ok {
+		v := item.DefaultQuantity
+		ic.mutation.SetQuantity(v)
+	}
+	if _, ok := ic.mutation.Insured(); !ok {
+		v := item.DefaultInsured
+		ic.mutation.SetInsured(v)
+	}
 	if _, ok := ic.mutation.LifetimeWarranty(); !ok {
 		v := item.DefaultLifetimeWarranty
 		ic.mutation.SetLifetimeWarranty(v)
@@ -487,6 +523,12 @@ func (ic *ItemCreate) check() error {
 		if err := item.NotesValidator(v); err != nil {
 			return &ValidationError{Name: "notes", err: fmt.Errorf(`ent: validator failed for field "Item.notes": %w`, err)}
 		}
+	}
+	if _, ok := ic.mutation.Quantity(); !ok {
+		return &ValidationError{Name: "quantity", err: errors.New(`ent: missing required field "Item.quantity"`)}
+	}
+	if _, ok := ic.mutation.Insured(); !ok {
+		return &ValidationError{Name: "insured", err: errors.New(`ent: missing required field "Item.insured"`)}
 	}
 	if v, ok := ic.mutation.SerialNumber(); ok {
 		if err := item.SerialNumberValidator(v); err != nil {
@@ -600,6 +642,22 @@ func (ic *ItemCreate) createSpec() (*Item, *sqlgraph.CreateSpec) {
 			Column: item.FieldNotes,
 		})
 		_node.Notes = value
+	}
+	if value, ok := ic.mutation.Quantity(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: item.FieldQuantity,
+		})
+		_node.Quantity = value
+	}
+	if value, ok := ic.mutation.Insured(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: item.FieldInsured,
+		})
+		_node.Insured = value
 	}
 	if value, ok := ic.mutation.SerialNumber(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

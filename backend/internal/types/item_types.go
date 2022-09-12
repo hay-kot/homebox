@@ -19,6 +19,8 @@ type ItemUpdate struct {
 	ID          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
+	Quantity    int       `json:"quantity"`
+	Insured     bool      `json:"insured"`
 
 	// Edges
 	LocationID uuid.UUID   `json:"locationId"`
@@ -56,6 +58,8 @@ type ItemSummary struct {
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
+	Quantity    int       `json:"quantity"`
+	Insured     bool      `json:"insured"`
 
 	// Edges
 	Location *LocationSummary `json:"location"`

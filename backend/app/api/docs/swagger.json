@@ -41,7 +41,7 @@
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/types.ItemOut"
+                                                "$ref": "#/definitions/types.ItemSummary"
                                             }
                                         }
                                     }
@@ -891,6 +891,9 @@
                 "id": {
                     "type": "string"
                 },
+                "insured": {
+                    "type": "boolean"
+                },
                 "labels": {
                     "type": "array",
                     "items": {
@@ -927,6 +930,9 @@
                 "purchaseTime": {
                     "description": "Purchase",
                     "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
                 },
                 "serialNumber": {
                     "description": "Identifications",
@@ -968,6 +974,9 @@
                 "id": {
                     "type": "string"
                 },
+                "insured": {
+                    "type": "boolean"
+                },
                 "labels": {
                     "type": "array",
                     "items": {
@@ -1004,6 +1013,9 @@
                 "purchaseTime": {
                     "description": "Purchase",
                     "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
                 },
                 "serialNumber": {
                     "description": "Identifications",

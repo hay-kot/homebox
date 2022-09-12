@@ -3414,6 +3414,9 @@ type ItemMutation struct {
 	name               *string
 	description        *string
 	notes              *string
+	quantity           *int
+	addquantity        *int
+	insured            *bool
 	serial_number      *string
 	model_number       *string
 	manufacturer       *string
@@ -3756,6 +3759,98 @@ func (m *ItemMutation) NotesCleared() bool {
 func (m *ItemMutation) ResetNotes() {
 	m.notes = nil
 	delete(m.clearedFields, item.FieldNotes)
+}
+
+// SetQuantity sets the "quantity" field.
+func (m *ItemMutation) SetQuantity(i int) {
+	m.quantity = &i
+	m.addquantity = nil
+}
+
+// Quantity returns the value of the "quantity" field in the mutation.
+func (m *ItemMutation) Quantity() (r int, exists bool) {
+	v := m.quantity
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldQuantity returns the old "quantity" field's value of the Item entity.
+// If the Item object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ItemMutation) OldQuantity(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldQuantity is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldQuantity requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldQuantity: %w", err)
+	}
+	return oldValue.Quantity, nil
+}
+
+// AddQuantity adds i to the "quantity" field.
+func (m *ItemMutation) AddQuantity(i int) {
+	if m.addquantity != nil {
+		*m.addquantity += i
+	} else {
+		m.addquantity = &i
+	}
+}
+
+// AddedQuantity returns the value that was added to the "quantity" field in this mutation.
+func (m *ItemMutation) AddedQuantity() (r int, exists bool) {
+	v := m.addquantity
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetQuantity resets all changes to the "quantity" field.
+func (m *ItemMutation) ResetQuantity() {
+	m.quantity = nil
+	m.addquantity = nil
+}
+
+// SetInsured sets the "insured" field.
+func (m *ItemMutation) SetInsured(b bool) {
+	m.insured = &b
+}
+
+// Insured returns the value of the "insured" field in the mutation.
+func (m *ItemMutation) Insured() (r bool, exists bool) {
+	v := m.insured
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldInsured returns the old "insured" field's value of the Item entity.
+// If the Item object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ItemMutation) OldInsured(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldInsured is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldInsured requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldInsured: %w", err)
+	}
+	return oldValue.Insured, nil
+}
+
+// ResetInsured resets all changes to the "insured" field.
+func (m *ItemMutation) ResetInsured() {
+	m.insured = nil
 }
 
 // SetSerialNumber sets the "serial_number" field.
@@ -4655,7 +4750,7 @@ func (m *ItemMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ItemMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 20)
 	if m.created_at != nil {
 		fields = append(fields, item.FieldCreatedAt)
 	}
@@ -4670,6 +4765,12 @@ func (m *ItemMutation) Fields() []string {
 	}
 	if m.notes != nil {
 		fields = append(fields, item.FieldNotes)
+	}
+	if m.quantity != nil {
+		fields = append(fields, item.FieldQuantity)
+	}
+	if m.insured != nil {
+		fields = append(fields, item.FieldInsured)
 	}
 	if m.serial_number != nil {
 		fields = append(fields, item.FieldSerialNumber)
@@ -4728,6 +4829,10 @@ func (m *ItemMutation) Field(name string) (ent.Value, bool) {
 		return m.Description()
 	case item.FieldNotes:
 		return m.Notes()
+	case item.FieldQuantity:
+		return m.Quantity()
+	case item.FieldInsured:
+		return m.Insured()
 	case item.FieldSerialNumber:
 		return m.SerialNumber()
 	case item.FieldModelNumber:
@@ -4773,6 +4878,10 @@ func (m *ItemMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldDescription(ctx)
 	case item.FieldNotes:
 		return m.OldNotes(ctx)
+	case item.FieldQuantity:
+		return m.OldQuantity(ctx)
+	case item.FieldInsured:
+		return m.OldInsured(ctx)
 	case item.FieldSerialNumber:
 		return m.OldSerialNumber(ctx)
 	case item.FieldModelNumber:
@@ -4842,6 +4951,20 @@ func (m *ItemMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetNotes(v)
+		return nil
+	case item.FieldQuantity:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetQuantity(v)
+		return nil
+	case item.FieldInsured:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInsured(v)
 		return nil
 	case item.FieldSerialNumber:
 		v, ok := value.(string)
@@ -4942,6 +5065,9 @@ func (m *ItemMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *ItemMutation) AddedFields() []string {
 	var fields []string
+	if m.addquantity != nil {
+		fields = append(fields, item.FieldQuantity)
+	}
 	if m.addpurchase_price != nil {
 		fields = append(fields, item.FieldPurchasePrice)
 	}
@@ -4956,6 +5082,8 @@ func (m *ItemMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *ItemMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case item.FieldQuantity:
+		return m.AddedQuantity()
 	case item.FieldPurchasePrice:
 		return m.AddedPurchasePrice()
 	case item.FieldSoldPrice:
@@ -4969,6 +5097,13 @@ func (m *ItemMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *ItemMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case item.FieldQuantity:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddQuantity(v)
+		return nil
 	case item.FieldPurchasePrice:
 		v, ok := value.(float64)
 		if !ok {
@@ -5099,6 +5234,12 @@ func (m *ItemMutation) ResetField(name string) error {
 		return nil
 	case item.FieldNotes:
 		m.ResetNotes()
+		return nil
+	case item.FieldQuantity:
+		m.ResetQuantity()
+		return nil
+	case item.FieldInsured:
+		m.ResetInsured()
 		return nil
 	case item.FieldSerialNumber:
 		m.ResetSerialNumber()

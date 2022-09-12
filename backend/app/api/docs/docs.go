@@ -49,7 +49,7 @@ const docTemplate = `{
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/types.ItemOut"
+                                                "$ref": "#/definitions/types.ItemSummary"
                                             }
                                         }
                                     }
@@ -899,6 +899,9 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "insured": {
+                    "type": "boolean"
+                },
                 "labels": {
                     "type": "array",
                     "items": {
@@ -935,6 +938,9 @@ const docTemplate = `{
                 "purchaseTime": {
                     "description": "Purchase",
                     "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
                 },
                 "serialNumber": {
                     "description": "Identifications",
@@ -976,6 +982,9 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "insured": {
+                    "type": "boolean"
+                },
                 "labels": {
                     "type": "array",
                     "items": {
@@ -1012,6 +1021,9 @@ const docTemplate = `{
                 "purchaseTime": {
                     "description": "Purchase",
                     "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
                 },
                 "serialNumber": {
                     "description": "Identifications",

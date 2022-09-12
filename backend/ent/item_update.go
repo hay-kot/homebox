@@ -86,6 +86,41 @@ func (iu *ItemUpdate) ClearNotes() *ItemUpdate {
 	return iu
 }
 
+// SetQuantity sets the "quantity" field.
+func (iu *ItemUpdate) SetQuantity(i int) *ItemUpdate {
+	iu.mutation.ResetQuantity()
+	iu.mutation.SetQuantity(i)
+	return iu
+}
+
+// SetNillableQuantity sets the "quantity" field if the given value is not nil.
+func (iu *ItemUpdate) SetNillableQuantity(i *int) *ItemUpdate {
+	if i != nil {
+		iu.SetQuantity(*i)
+	}
+	return iu
+}
+
+// AddQuantity adds i to the "quantity" field.
+func (iu *ItemUpdate) AddQuantity(i int) *ItemUpdate {
+	iu.mutation.AddQuantity(i)
+	return iu
+}
+
+// SetInsured sets the "insured" field.
+func (iu *ItemUpdate) SetInsured(b bool) *ItemUpdate {
+	iu.mutation.SetInsured(b)
+	return iu
+}
+
+// SetNillableInsured sets the "insured" field if the given value is not nil.
+func (iu *ItemUpdate) SetNillableInsured(b *bool) *ItemUpdate {
+	if b != nil {
+		iu.SetInsured(*b)
+	}
+	return iu
+}
+
 // SetSerialNumber sets the "serial_number" field.
 func (iu *ItemUpdate) SetSerialNumber(s string) *ItemUpdate {
 	iu.mutation.SetSerialNumber(s)
@@ -672,6 +707,27 @@ func (iu *ItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: item.FieldNotes,
 		})
 	}
+	if value, ok := iu.mutation.Quantity(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: item.FieldQuantity,
+		})
+	}
+	if value, ok := iu.mutation.AddedQuantity(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: item.FieldQuantity,
+		})
+	}
+	if value, ok := iu.mutation.Insured(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: item.FieldInsured,
+		})
+	}
 	if value, ok := iu.mutation.SerialNumber(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -1137,6 +1193,41 @@ func (iuo *ItemUpdateOne) SetNillableNotes(s *string) *ItemUpdateOne {
 // ClearNotes clears the value of the "notes" field.
 func (iuo *ItemUpdateOne) ClearNotes() *ItemUpdateOne {
 	iuo.mutation.ClearNotes()
+	return iuo
+}
+
+// SetQuantity sets the "quantity" field.
+func (iuo *ItemUpdateOne) SetQuantity(i int) *ItemUpdateOne {
+	iuo.mutation.ResetQuantity()
+	iuo.mutation.SetQuantity(i)
+	return iuo
+}
+
+// SetNillableQuantity sets the "quantity" field if the given value is not nil.
+func (iuo *ItemUpdateOne) SetNillableQuantity(i *int) *ItemUpdateOne {
+	if i != nil {
+		iuo.SetQuantity(*i)
+	}
+	return iuo
+}
+
+// AddQuantity adds i to the "quantity" field.
+func (iuo *ItemUpdateOne) AddQuantity(i int) *ItemUpdateOne {
+	iuo.mutation.AddQuantity(i)
+	return iuo
+}
+
+// SetInsured sets the "insured" field.
+func (iuo *ItemUpdateOne) SetInsured(b bool) *ItemUpdateOne {
+	iuo.mutation.SetInsured(b)
+	return iuo
+}
+
+// SetNillableInsured sets the "insured" field if the given value is not nil.
+func (iuo *ItemUpdateOne) SetNillableInsured(b *bool) *ItemUpdateOne {
+	if b != nil {
+		iuo.SetInsured(*b)
+	}
 	return iuo
 }
 
@@ -1754,6 +1845,27 @@ func (iuo *ItemUpdateOne) sqlSave(ctx context.Context) (_node *Item, err error) 
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: item.FieldNotes,
+		})
+	}
+	if value, ok := iuo.mutation.Quantity(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: item.FieldQuantity,
+		})
+	}
+	if value, ok := iuo.mutation.AddedQuantity(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: item.FieldQuantity,
+		})
+	}
+	if value, ok := iuo.mutation.Insured(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: item.FieldInsured,
 		})
 	}
 	if value, ok := iuo.mutation.SerialNumber(); ok {
