@@ -1,430 +1,5 @@
 basePath: /api
 definitions:
-  ent.Attachment:
-    properties:
-      created_at:
-        description: CreatedAt holds the value of the "created_at" field.
-        type: string
-      edges:
-        $ref: '#/definitions/ent.AttachmentEdges'
-        description: |-
-          Edges holds the relations/edges for other nodes in the graph.
-          The values are being populated by the AttachmentQuery when eager-loading is set.
-      id:
-        description: ID of the ent.
-        type: string
-      type:
-        description: Type holds the value of the "type" field.
-        type: string
-      updated_at:
-        description: UpdatedAt holds the value of the "updated_at" field.
-        type: string
-    type: object
-  ent.AttachmentEdges:
-    properties:
-      document:
-        $ref: '#/definitions/ent.Document'
-        description: Document holds the value of the document edge.
-      item:
-        $ref: '#/definitions/ent.Item'
-        description: Item holds the value of the item edge.
-    type: object
-  ent.AuthTokens:
-    properties:
-      created_at:
-        description: CreatedAt holds the value of the "created_at" field.
-        type: string
-      edges:
-        $ref: '#/definitions/ent.AuthTokensEdges'
-        description: |-
-          Edges holds the relations/edges for other nodes in the graph.
-          The values are being populated by the AuthTokensQuery when eager-loading is set.
-      expires_at:
-        description: ExpiresAt holds the value of the "expires_at" field.
-        type: string
-      id:
-        description: ID of the ent.
-        type: string
-      token:
-        description: Token holds the value of the "token" field.
-        items:
-          type: integer
-        type: array
-      updated_at:
-        description: UpdatedAt holds the value of the "updated_at" field.
-        type: string
-    type: object
-  ent.AuthTokensEdges:
-    properties:
-      user:
-        $ref: '#/definitions/ent.User'
-        description: User holds the value of the user edge.
-    type: object
-  ent.Document:
-    properties:
-      created_at:
-        description: CreatedAt holds the value of the "created_at" field.
-        type: string
-      edges:
-        $ref: '#/definitions/ent.DocumentEdges'
-        description: |-
-          Edges holds the relations/edges for other nodes in the graph.
-          The values are being populated by the DocumentQuery when eager-loading is set.
-      id:
-        description: ID of the ent.
-        type: string
-      path:
-        description: Path holds the value of the "path" field.
-        type: string
-      title:
-        description: Title holds the value of the "title" field.
-        type: string
-      updated_at:
-        description: UpdatedAt holds the value of the "updated_at" field.
-        type: string
-    type: object
-  ent.DocumentEdges:
-    properties:
-      attachments:
-        description: Attachments holds the value of the attachments edge.
-        items:
-          $ref: '#/definitions/ent.Attachment'
-        type: array
-      document_tokens:
-        description: DocumentTokens holds the value of the document_tokens edge.
-        items:
-          $ref: '#/definitions/ent.DocumentToken'
-        type: array
-      group:
-        $ref: '#/definitions/ent.Group'
-        description: Group holds the value of the group edge.
-    type: object
-  ent.DocumentToken:
-    properties:
-      created_at:
-        description: CreatedAt holds the value of the "created_at" field.
-        type: string
-      edges:
-        $ref: '#/definitions/ent.DocumentTokenEdges'
-        description: |-
-          Edges holds the relations/edges for other nodes in the graph.
-          The values are being populated by the DocumentTokenQuery when eager-loading is set.
-      expires_at:
-        description: ExpiresAt holds the value of the "expires_at" field.
-        type: string
-      id:
-        description: ID of the ent.
-        type: string
-      token:
-        description: Token holds the value of the "token" field.
-        items:
-          type: integer
-        type: array
-      updated_at:
-        description: UpdatedAt holds the value of the "updated_at" field.
-        type: string
-      uses:
-        description: Uses holds the value of the "uses" field.
-        type: integer
-    type: object
-  ent.DocumentTokenEdges:
-    properties:
-      document:
-        $ref: '#/definitions/ent.Document'
-        description: Document holds the value of the document edge.
-    type: object
-  ent.Group:
-    properties:
-      created_at:
-        description: CreatedAt holds the value of the "created_at" field.
-        type: string
-      currency:
-        description: Currency holds the value of the "currency" field.
-        type: string
-      edges:
-        $ref: '#/definitions/ent.GroupEdges'
-        description: |-
-          Edges holds the relations/edges for other nodes in the graph.
-          The values are being populated by the GroupQuery when eager-loading is set.
-      id:
-        description: ID of the ent.
-        type: string
-      name:
-        description: Name holds the value of the "name" field.
-        type: string
-      updated_at:
-        description: UpdatedAt holds the value of the "updated_at" field.
-        type: string
-    type: object
-  ent.GroupEdges:
-    properties:
-      documents:
-        description: Documents holds the value of the documents edge.
-        items:
-          $ref: '#/definitions/ent.Document'
-        type: array
-      items:
-        description: Items holds the value of the items edge.
-        items:
-          $ref: '#/definitions/ent.Item'
-        type: array
-      labels:
-        description: Labels holds the value of the labels edge.
-        items:
-          $ref: '#/definitions/ent.Label'
-        type: array
-      locations:
-        description: Locations holds the value of the locations edge.
-        items:
-          $ref: '#/definitions/ent.Location'
-        type: array
-      users:
-        description: Users holds the value of the users edge.
-        items:
-          $ref: '#/definitions/ent.User'
-        type: array
-    type: object
-  ent.Item:
-    properties:
-      created_at:
-        description: CreatedAt holds the value of the "created_at" field.
-        type: string
-      description:
-        description: Description holds the value of the "description" field.
-        type: string
-      edges:
-        $ref: '#/definitions/ent.ItemEdges'
-        description: |-
-          Edges holds the relations/edges for other nodes in the graph.
-          The values are being populated by the ItemQuery when eager-loading is set.
-      id:
-        description: ID of the ent.
-        type: string
-      lifetime_warranty:
-        description: LifetimeWarranty holds the value of the "lifetime_warranty" field.
-        type: boolean
-      manufacturer:
-        description: Manufacturer holds the value of the "manufacturer" field.
-        type: string
-      model_number:
-        description: ModelNumber holds the value of the "model_number" field.
-        type: string
-      name:
-        description: Name holds the value of the "name" field.
-        type: string
-      notes:
-        description: Notes holds the value of the "notes" field.
-        type: string
-      purchase_from:
-        description: PurchaseFrom holds the value of the "purchase_from" field.
-        type: string
-      purchase_price:
-        description: PurchasePrice holds the value of the "purchase_price" field.
-        type: number
-      purchase_time:
-        description: PurchaseTime holds the value of the "purchase_time" field.
-        type: string
-      serial_number:
-        description: SerialNumber holds the value of the "serial_number" field.
-        type: string
-      sold_notes:
-        description: SoldNotes holds the value of the "sold_notes" field.
-        type: string
-      sold_price:
-        description: SoldPrice holds the value of the "sold_price" field.
-        type: number
-      sold_time:
-        description: SoldTime holds the value of the "sold_time" field.
-        type: string
-      sold_to:
-        description: SoldTo holds the value of the "sold_to" field.
-        type: string
-      updated_at:
-        description: UpdatedAt holds the value of the "updated_at" field.
-        type: string
-      warranty_details:
-        description: WarrantyDetails holds the value of the "warranty_details" field.
-        type: string
-      warranty_expires:
-        description: WarrantyExpires holds the value of the "warranty_expires" field.
-        type: string
-    type: object
-  ent.ItemEdges:
-    properties:
-      attachments:
-        description: Attachments holds the value of the attachments edge.
-        items:
-          $ref: '#/definitions/ent.Attachment'
-        type: array
-      fields:
-        description: Fields holds the value of the fields edge.
-        items:
-          $ref: '#/definitions/ent.ItemField'
-        type: array
-      group:
-        $ref: '#/definitions/ent.Group'
-        description: Group holds the value of the group edge.
-      label:
-        description: Label holds the value of the label edge.
-        items:
-          $ref: '#/definitions/ent.Label'
-        type: array
-      location:
-        $ref: '#/definitions/ent.Location'
-        description: Location holds the value of the location edge.
-    type: object
-  ent.ItemField:
-    properties:
-      boolean_value:
-        description: BooleanValue holds the value of the "boolean_value" field.
-        type: boolean
-      created_at:
-        description: CreatedAt holds the value of the "created_at" field.
-        type: string
-      description:
-        description: Description holds the value of the "description" field.
-        type: string
-      edges:
-        $ref: '#/definitions/ent.ItemFieldEdges'
-        description: |-
-          Edges holds the relations/edges for other nodes in the graph.
-          The values are being populated by the ItemFieldQuery when eager-loading is set.
-      id:
-        description: ID of the ent.
-        type: string
-      name:
-        description: Name holds the value of the "name" field.
-        type: string
-      number_value:
-        description: NumberValue holds the value of the "number_value" field.
-        type: integer
-      text_value:
-        description: TextValue holds the value of the "text_value" field.
-        type: string
-      time_value:
-        description: TimeValue holds the value of the "time_value" field.
-        type: string
-      type:
-        description: Type holds the value of the "type" field.
-        type: string
-      updated_at:
-        description: UpdatedAt holds the value of the "updated_at" field.
-        type: string
-    type: object
-  ent.ItemFieldEdges:
-    properties:
-      item:
-        $ref: '#/definitions/ent.Item'
-        description: Item holds the value of the item edge.
-    type: object
-  ent.Label:
-    properties:
-      color:
-        description: Color holds the value of the "color" field.
-        type: string
-      created_at:
-        description: CreatedAt holds the value of the "created_at" field.
-        type: string
-      description:
-        description: Description holds the value of the "description" field.
-        type: string
-      edges:
-        $ref: '#/definitions/ent.LabelEdges'
-        description: |-
-          Edges holds the relations/edges for other nodes in the graph.
-          The values are being populated by the LabelQuery when eager-loading is set.
-      id:
-        description: ID of the ent.
-        type: string
-      name:
-        description: Name holds the value of the "name" field.
-        type: string
-      updated_at:
-        description: UpdatedAt holds the value of the "updated_at" field.
-        type: string
-    type: object
-  ent.LabelEdges:
-    properties:
-      group:
-        $ref: '#/definitions/ent.Group'
-        description: Group holds the value of the group edge.
-      items:
-        description: Items holds the value of the items edge.
-        items:
-          $ref: '#/definitions/ent.Item'
-        type: array
-    type: object
-  ent.Location:
-    properties:
-      created_at:
-        description: CreatedAt holds the value of the "created_at" field.
-        type: string
-      description:
-        description: Description holds the value of the "description" field.
-        type: string
-      edges:
-        $ref: '#/definitions/ent.LocationEdges'
-        description: |-
-          Edges holds the relations/edges for other nodes in the graph.
-          The values are being populated by the LocationQuery when eager-loading is set.
-      id:
-        description: ID of the ent.
-        type: string
-      name:
-        description: Name holds the value of the "name" field.
-        type: string
-      updated_at:
-        description: UpdatedAt holds the value of the "updated_at" field.
-        type: string
-    type: object
-  ent.LocationEdges:
-    properties:
-      group:
-        $ref: '#/definitions/ent.Group'
-        description: Group holds the value of the group edge.
-      items:
-        description: Items holds the value of the items edge.
-        items:
-          $ref: '#/definitions/ent.Item'
-        type: array
-    type: object
-  ent.User:
-    properties:
-      created_at:
-        description: CreatedAt holds the value of the "created_at" field.
-        type: string
-      edges:
-        $ref: '#/definitions/ent.UserEdges'
-        description: |-
-          Edges holds the relations/edges for other nodes in the graph.
-          The values are being populated by the UserQuery when eager-loading is set.
-      email:
-        description: Email holds the value of the "email" field.
-        type: string
-      id:
-        description: ID of the ent.
-        type: string
-      is_superuser:
-        description: IsSuperuser holds the value of the "is_superuser" field.
-        type: boolean
-      name:
-        description: Name holds the value of the "name" field.
-        type: string
-      updated_at:
-        description: UpdatedAt holds the value of the "updated_at" field.
-        type: string
-    type: object
-  ent.UserEdges:
-    properties:
-      auth_tokens:
-        description: AuthTokens holds the value of the auth_tokens edge.
-        items:
-          $ref: '#/definitions/ent.AuthTokens'
-        type: array
-      group:
-        $ref: '#/definitions/ent.Group'
-        description: Group holds the value of the group edge.
-    type: object
   server.Result:
     properties:
       details: {}
@@ -452,6 +27,26 @@ definitions:
           type: string
         type: array
     type: object
+  types.DocumentOut:
+    properties:
+      id:
+        type: string
+      path:
+        type: string
+      title:
+        type: string
+    type: object
+  types.ItemAttachment:
+    properties:
+      createdAt:
+        type: string
+      document:
+        $ref: '#/definitions/types.DocumentOut'
+      id:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   types.ItemCreate:
     properties:
       description:
@@ -468,6 +63,10 @@ definitions:
     type: object
   types.ItemOut:
     properties:
+      attachments:
+        items:
+          $ref: '#/definitions/types.ItemAttachment'
+        type: array
       createdAt:
         type: string
       description:
@@ -681,6 +280,21 @@ definitions:
       name:
         type: string
       password:
+        type: string
+    type: object
+  types.UserOut:
+    properties:
+      email:
+        type: string
+      groupId:
+        type: string
+      groupName:
+        type: string
+      id:
+        type: string
+      isSuperuser:
+        type: boolean
+      name:
         type: string
     type: object
   types.UserRegistration:
@@ -1118,7 +732,7 @@ paths:
             - $ref: '#/definitions/server.Result'
             - properties:
                 item:
-                  $ref: '#/definitions/ent.User'
+                  $ref: '#/definitions/types.UserOut'
               type: object
       security:
       - Bearer: []

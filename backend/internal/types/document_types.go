@@ -9,6 +9,7 @@ import (
 type DocumentOut struct {
 	ID    uuid.UUID `json:"id"`
 	Title string    `json:"title"`
+	Path  string
 }
 
 type DocumentCreate struct {
