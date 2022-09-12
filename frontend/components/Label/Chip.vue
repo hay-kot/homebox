@@ -1,10 +1,10 @@
 <script setup lang="ts">
-  import { Label } from "~~/lib/api/classes/labels";
+  import { LabelOut, LabelSummary } from "~~/lib/api/types/data-contracts";
 
   export type sizes = "sm" | "md" | "lg";
   defineProps({
     label: {
-      type: Object as () => Label,
+      type: Object as () => LabelOut | LabelSummary,
       required: true,
     },
     size: {

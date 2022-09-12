@@ -37,10 +37,12 @@
       default: "",
     },
     modelValue: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       type: Array as () => any[],
       default: null,
     },
     items: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       type: Array as () => any[],
       required: true,
     },

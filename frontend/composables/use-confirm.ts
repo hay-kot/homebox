@@ -1,6 +1,7 @@
 import { UseConfirmDialogReturn } from "@vueuse/core";
 import { Ref } from "vue";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Store = UseConfirmDialogReturn<any, boolean, boolean> & {
   text: Ref<string>;
   setup: boolean;
@@ -21,6 +22,7 @@ const store: Partial<Store> = {
 export function useConfirm(): Store {
   if (!store.setup) {
     store.setup = true;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { isRevealed, reveal, confirm, cancel } = useConfirmDialog<any, boolean, boolean>();
     store.isRevealed = isRevealed;
     store.reveal = reveal;

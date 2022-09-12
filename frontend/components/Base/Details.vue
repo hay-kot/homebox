@@ -30,6 +30,7 @@
 
   defineProps({
     details: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       type: Object as () => Record<string, StringLike | any>,
       required: true,
     },
