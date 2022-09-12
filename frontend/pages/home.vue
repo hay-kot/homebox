@@ -55,7 +55,6 @@
 
   function setFile(e: Event & { target: HTMLInputElement }) {
     importCsv.value = e.target.files[0];
-    console.log("importCsv.value", importCsv.value);
   }
 
   const toast = useNotifier();

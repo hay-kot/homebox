@@ -70,7 +70,9 @@ export interface ItemOut {
   /** Extras */
   notes: string;
   purchaseFrom: string;
-  purchasePrice: number;
+
+  /** @example 0 */
+  purchasePrice: string;
 
   /** Purchase */
   purchaseTime: Date;
@@ -79,7 +81,9 @@ export interface ItemOut {
   /** Identifications */
   serialNumber: string;
   soldNotes: string;
-  soldPrice: number;
+
+  /** @example 0 */
+  soldPrice: string;
 
   /** Sold */
   soldTime: Date;
@@ -108,7 +112,9 @@ export interface ItemSummary {
   /** Extras */
   notes: string;
   purchaseFrom: string;
-  purchasePrice: number;
+
+  /** @example 0 */
+  purchasePrice: string;
 
   /** Purchase */
   purchaseTime: Date;
@@ -117,7 +123,9 @@ export interface ItemSummary {
   /** Identifications */
   serialNumber: string;
   soldNotes: string;
-  soldPrice: number;
+
+  /** @example 0 */
+  soldPrice: string;
 
   /** Sold */
   soldTime: Date;
@@ -145,7 +153,9 @@ export interface ItemUpdate {
   /** Extras */
   notes: string;
   purchaseFrom: string;
-  purchasePrice: number;
+
+  /** @example 0 */
+  purchasePrice: string;
 
   /** Purchase */
   purchaseTime: Date;
@@ -154,7 +164,9 @@ export interface ItemUpdate {
   /** Identifications */
   serialNumber: string;
   soldNotes: string;
-  soldPrice: number;
+
+  /** @example 0 */
+  soldPrice: string;
 
   /** Sold */
   soldTime: Date;

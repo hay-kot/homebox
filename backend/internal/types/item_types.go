@@ -39,12 +39,12 @@ type ItemUpdate struct {
 	// Purchase
 	PurchaseTime  time.Time `json:"purchaseTime"`
 	PurchaseFrom  string    `json:"purchaseFrom"`
-	PurchasePrice float64   `json:"purchasePrice"`
+	PurchasePrice float64   `json:"purchasePrice,string"`
 
 	// Sold
 	SoldTime  time.Time `json:"soldTime"`
 	SoldTo    string    `json:"soldTo"`
-	SoldPrice float64   `json:"soldPrice"`
+	SoldPrice float64   `json:"soldPrice,string"`
 	SoldNotes string    `json:"soldNotes"`
 
 	// Extras
@@ -78,12 +78,12 @@ type ItemSummary struct {
 	// Purchase
 	PurchaseTime  time.Time `json:"purchaseTime"`
 	PurchaseFrom  string    `json:"purchaseFrom"`
-	PurchasePrice float64   `json:"purchasePrice"`
+	PurchasePrice float64   `json:"purchasePrice,string"`
 
 	// Sold
 	SoldTime  time.Time `json:"soldTime"`
 	SoldTo    string    `json:"soldTo"`
-	SoldPrice float64   `json:"soldPrice"`
+	SoldPrice float64   `json:"soldPrice,string"`
 	SoldNotes string    `json:"soldNotes"`
 
 	// Extras

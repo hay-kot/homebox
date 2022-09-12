@@ -942,7 +942,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "purchasePrice": {
-                    "type": "number"
+                    "type": "string",
+                    "example": "0"
                 },
                 "purchaseTime": {
                     "description": "Purchase",
@@ -959,7 +960,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "soldPrice": {
-                    "type": "number"
+                    "type": "string",
+                    "example": "0"
                 },
                 "soldTime": {
                     "description": "Sold",
@@ -1025,7 +1027,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "purchasePrice": {
-                    "type": "number"
+                    "type": "string",
+                    "example": "0"
                 },
                 "purchaseTime": {
                     "description": "Purchase",
@@ -1042,7 +1045,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "soldPrice": {
-                    "type": "number"
+                    "type": "string",
+                    "example": "0"
                 },
                 "soldTime": {
                     "description": "Sold",
@@ -1105,7 +1109,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "purchasePrice": {
-                    "type": "number"
+                    "type": "string",
+                    "example": "0"
                 },
                 "purchaseTime": {
                     "description": "Purchase",
@@ -1122,7 +1127,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "soldPrice": {
-                    "type": "number"
+                    "type": "string",
+                    "example": "0"
                 },
                 "soldTime": {
                     "description": "Sold",

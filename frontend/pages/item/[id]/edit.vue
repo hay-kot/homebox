@@ -35,11 +35,6 @@
       return;
     }
 
-    originalItem.value = {
-      name: data.name,
-      quantity: data.quantity,
-    };
-
     return data;
   });
 
@@ -49,8 +44,6 @@
       locationId: item.value.location?.id,
       labelIds: item.value.labels.map(l => l.id),
     };
-
-    console.log(payload);
 
     const { error } = await api.items.update(itemId.value, payload);
 
@@ -64,7 +57,7 @@
   }
 
   type FormField = {
-    type: "text" | "textarea" | "select" | "date" | "label" | "location";
+    type: "text" | "textarea" | "select" | "date" | "label" | "location" | "number" | "checkbox";
     label: string;
     ref: string;
   };
@@ -74,6 +67,11 @@
       type: "text",
       label: "Name",
       ref: "name",
+    },
+    {
+      type: "number",
+      label: "Quantity",
+      ref: "quantity",
     },
     {
       type: "textarea",
@@ -100,6 +98,11 @@
       label: "Notes",
       ref: "notes",
     },
+    {
+      type: "checkbox",
+      label: "Insured",
+      ref: "insured",
+    },
   ];
 
   const purchaseFields: FormField[] = [
@@ -117,6 +120,24 @@
       type: "date",
       label: "Purchased At",
       ref: "purchaseTime",
+    },
+  ];
+
+  const warrantyFields: FormField[] = [
+    {
+      type: "checkbox",
+      label: "Lifetime Warranty",
+      ref: "lifetimeWarranty",
+    },
+    {
+      type: "date",
+      label: "Warranty Expires",
+      ref: "warrantyExpires",
+    },
+    {
+      type: "textarea",
+      label: "Warranty Notes",
+      ref: "warrantyDetails",
     },
   ];
 
@@ -147,13 +168,10 @@
           <BaseSectionHeader v-if="item" class="p-5">
             <Icon name="mdi-package-variant" class="-mt-1 mr-2 text-gray-600" />
             <span class="text-gray-600">
-              {{ originalItem.name }}
+              {{ item.name }}
             </span>
-            <p class="text-sm text-gray-600 font-bold pb-0 mb-0">Quantity {{ originalItem.quantity }}</p>
+            <p class="text-sm text-gray-600 font-bold pb-0 mb-0">Quantity {{ item.quantity }}</p>
             <template #after>
-              <div v-if="item.labels && item.labels.length > 0" class="flex flex-wrap gap-3 mt-3">
-                <LabelChip v-for="label in item.labels" :key="label.id" class="badge-primary" :label="label" />
-              </div>
               <div class="modal-action mt-3">
                 <div class="mr-auto tooltip" data-tip="Hide the cruft! ">
                   <label class="label cursor-pointer mr-auto">
@@ -170,14 +188,14 @@
               </div>
             </template>
           </BaseSectionHeader>
-          <div class="px-5 mb-6">
+          <div class="px-5 mb-6 grid md:grid-cols-2 gap-4">
             <FormSelect v-model="item.location" label="Location" :items="locations ?? []" select-first />
             <FormMultiselect v-model="item.labels" label="Labels" :items="labels ?? []" />
           </div>
 
           <div class="border-t border-gray-300 sm:p-0">
             <div v-for="field in mainFields" :key="field.ref" class="sm:divide-y sm:divide-gray-300 grid grid-cols-1">
-              <div class="pt-2 pb-4 sm:px-6 border-b border-gray-300">
+              <div class="pt-2 px-4 pb-4 sm:px-6 border-b border-gray-300">
                 <FormTextArea v-if="field.type === 'textarea'" v-model="item[field.ref]" :label="field.label" inline />
                 <FormTextField
                   v-else-if="field.type === 'text'"
@@ -185,8 +203,21 @@
                   :label="field.label"
                   inline
                 />
+                <FormTextField
+                  v-else-if="field.type === 'number'"
+                  v-model.number="item[field.ref]"
+                  type="number"
+                  :label="field.label"
+                  inline
+                />
                 <FormDatePicker
                   v-else-if="field.type === 'date'"
+                  v-model="item[field.ref]"
+                  :label="field.label"
+                  inline
+                />
+                <FormCheckbox
+                  v-else-if="field.type === 'checkbox'"
                   v-model="item[field.ref]"
                   :label="field.label"
                   inline
@@ -206,7 +237,7 @@
               :key="field.ref"
               class="sm:divide-y sm:divide-gray-300 grid grid-cols-1"
             >
-              <div class="pt-2 pb-4 sm:px-6 border-b border-gray-300">
+              <div class="pt-2 px-4 pb-4 sm:px-6 border-b border-gray-300">
                 <FormTextArea v-if="field.type === 'textarea'" v-model="item[field.ref]" :label="field.label" inline />
                 <FormTextField
                   v-else-if="field.type === 'text'"
@@ -214,8 +245,63 @@
                   :label="field.label"
                   inline
                 />
+                <FormTextField
+                  v-else-if="field.type === 'number'"
+                  v-model.number="item[field.ref]"
+                  type="number"
+                  :label="field.label"
+                  inline
+                />
                 <FormDatePicker
                   v-else-if="field.type === 'date'"
+                  v-model="item[field.ref]"
+                  :label="field.label"
+                  inline
+                />
+                <FormCheckbox
+                  v-else-if="field.type === 'checkbox'"
+                  v-model="item[field.ref]"
+                  :label="field.label"
+                  inline
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="!preferences.editorSimpleView" class="overflow-visible card bg-base-100 shadow-xl sm:rounded-lg">
+          <div class="px-4 py-5 sm:px-6">
+            <h3 class="text-lg font-medium leading-6">Warranty Details</h3>
+          </div>
+          <div class="border-t border-gray-300 sm:p-0">
+            <div
+              v-for="field in warrantyFields"
+              :key="field.ref"
+              class="sm:divide-y sm:divide-gray-300 grid grid-cols-1"
+            >
+              <div class="pt-2 px-4 pb-4 sm:px-6 border-b border-gray-300">
+                <FormTextArea v-if="field.type === 'textarea'" v-model="item[field.ref]" :label="field.label" inline />
+                <FormTextField
+                  v-else-if="field.type === 'text'"
+                  v-model="item[field.ref]"
+                  :label="field.label"
+                  inline
+                />
+                <FormTextField
+                  v-else-if="field.type === 'number'"
+                  v-model.number="item[field.ref]"
+                  type="number"
+                  :label="field.label"
+                  inline
+                />
+                <FormDatePicker
+                  v-else-if="field.type === 'date'"
+                  v-model="item[field.ref]"
+                  :label="field.label"
+                  inline
+                />
+                <FormCheckbox
+                  v-else-if="field.type === 'checkbox'"
                   v-model="item[field.ref]"
                   :label="field.label"
                   inline
@@ -231,7 +317,7 @@
           </div>
           <div class="border-t border-gray-300 sm:p-0">
             <div v-for="field in soldFields" :key="field.ref" class="sm:divide-y sm:divide-gray-300 grid grid-cols-1">
-              <div class="pt-2 pb-4 sm:px-6 border-b border-gray-300">
+              <div class="pt-2 pb-4 px-4 sm:px-6 border-b border-gray-300">
                 <FormTextArea v-if="field.type === 'textarea'" v-model="item[field.ref]" :label="field.label" inline />
                 <FormTextField
                   v-else-if="field.type === 'text'"
@@ -239,8 +325,21 @@
                   :label="field.label"
                   inline
                 />
+                <FormTextField
+                  v-else-if="field.type === 'number'"
+                  v-model.number="item[field.ref]"
+                  type="number"
+                  :label="field.label"
+                  inline
+                />
                 <FormDatePicker
                   v-else-if="field.type === 'date'"
+                  v-model="item[field.ref]"
+                  :label="field.label"
+                  inline
+                />
+                <FormCheckbox
+                  v-else-if="field.type === 'checkbox'"
                   v-model="item[field.ref]"
                   :label="field.label"
                   inline

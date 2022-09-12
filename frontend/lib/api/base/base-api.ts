@@ -45,17 +45,13 @@ export class BaseAPI {
    */
   dropFields<T>(obj: T, keys: Array<keyof T> = []): T {
     const result = { ...obj };
-    console.log("dropFields", result);
     [...keys, "createdAt", "updatedAt"].forEach(key => {
-      console.log(key);
       // @ts-ignore - we are checking for the key above
       if (hasKey(result, key)) {
         // @ts-ignore - we are guarding against this above
         delete result[key];
-        console.log("dropping", key);
       }
     });
-    console.log("dropFields", result);
     return result;
   }
 }

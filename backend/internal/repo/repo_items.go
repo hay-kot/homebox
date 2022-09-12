@@ -76,8 +76,10 @@ func (e *ItemsRepository) Update(ctx context.Context, data types.ItemUpdate) (*e
 		SetSoldNotes(data.SoldNotes).
 		SetNotes(data.Notes).
 		SetLifetimeWarranty(data.LifetimeWarranty).
+		SetInsured(data.Insured).
 		SetWarrantyExpires(data.WarrantyExpires).
-		SetWarrantyDetails(data.WarrantyDetails)
+		SetWarrantyDetails(data.WarrantyDetails).
+		SetQuantity(data.Quantity)
 
 	currentLabels, err := e.db.Item.Query().Where(item.ID(data.ID)).QueryLabel().All(ctx)
 	if err != nil {

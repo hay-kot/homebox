@@ -97,7 +97,8 @@ definitions:
       purchaseFrom:
         type: string
       purchasePrice:
-        type: number
+        example: "0"
+        type: string
       purchaseTime:
         description: Purchase
         type: string
@@ -109,7 +110,8 @@ definitions:
       soldNotes:
         type: string
       soldPrice:
-        type: number
+        example: "0"
+        type: string
       soldTime:
         description: Sold
         type: string
@@ -154,7 +156,8 @@ definitions:
       purchaseFrom:
         type: string
       purchasePrice:
-        type: number
+        example: "0"
+        type: string
       purchaseTime:
         description: Purchase
         type: string
@@ -166,7 +169,8 @@ definitions:
       soldNotes:
         type: string
       soldPrice:
-        type: number
+        example: "0"
+        type: string
       soldTime:
         description: Sold
         type: string
@@ -209,7 +213,8 @@ definitions:
       purchaseFrom:
         type: string
       purchasePrice:
-        type: number
+        example: "0"
+        type: string
       purchaseTime:
         description: Purchase
         type: string
@@ -221,7 +226,8 @@ definitions:
       soldNotes:
         type: string
       soldPrice:
-        type: number
+        example: "0"
+        type: string
       soldTime:
         description: Sold
         type: string

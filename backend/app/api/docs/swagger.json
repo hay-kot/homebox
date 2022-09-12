@@ -934,7 +934,8 @@
                     "type": "string"
                 },
                 "purchasePrice": {
-                    "type": "number"
+                    "type": "string",
+                    "example": "0"
                 },
                 "purchaseTime": {
                     "description": "Purchase",
@@ -951,7 +952,8 @@
                     "type": "string"
                 },
                 "soldPrice": {
-                    "type": "number"
+                    "type": "string",
+                    "example": "0"
                 },
                 "soldTime": {
                     "description": "Sold",
@@ -1017,7 +1019,8 @@
                     "type": "string"
                 },
                 "purchasePrice": {
-                    "type": "number"
+                    "type": "string",
+                    "example": "0"
                 },
                 "purchaseTime": {
                     "description": "Purchase",
@@ -1034,7 +1037,8 @@
                     "type": "string"
                 },
                 "soldPrice": {
-                    "type": "number"
+                    "type": "string",
+                    "example": "0"
                 },
                 "soldTime": {
                     "description": "Sold",
@@ -1097,7 +1101,8 @@
                     "type": "string"
                 },
                 "purchasePrice": {
-                    "type": "number"
+                    "type": "string",
+                    "example": "0"
                 },
                 "purchaseTime": {
                     "description": "Purchase",
@@ -1114,7 +1119,8 @@
                     "type": "string"
                 },
                 "soldPrice": {
-                    "type": "number"
+                    "type": "string",
+                    "example": "0"
                 },
                 "soldTime": {
                     "description": "Sold",

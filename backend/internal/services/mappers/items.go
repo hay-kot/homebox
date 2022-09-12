@@ -39,6 +39,11 @@ func ToItemSummary(item *ent.Item) *types.ItemSummary {
 		Quantity: item.Quantity,
 		Insured:  item.Insured,
 
+		// Warranty
+		LifetimeWarranty: item.LifetimeWarranty,
+		WarrantyExpires:  item.WarrantyExpires,
+		WarrantyDetails:  item.WarrantyDetails,
+
 		// Edges
 		Location: location,
 		Labels:   labels,

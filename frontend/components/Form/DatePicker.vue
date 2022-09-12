@@ -96,9 +96,7 @@
   });
 
   function select(e: MouseEvent, day: Date) {
-    console.log(day);
     selected.value = day;
-    console.log(selected.value);
     // @ts-ignore - this is a vue3 bug
     e.target.blur();
     resetTime();
