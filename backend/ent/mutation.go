@@ -3413,6 +3413,7 @@ type ItemMutation struct {
 	updated_at         *time.Time
 	name               *string
 	description        *string
+	import_ref         *string
 	notes              *string
 	quantity           *int
 	addquantity        *int
@@ -3710,6 +3711,55 @@ func (m *ItemMutation) DescriptionCleared() bool {
 func (m *ItemMutation) ResetDescription() {
 	m.description = nil
 	delete(m.clearedFields, item.FieldDescription)
+}
+
+// SetImportRef sets the "import_ref" field.
+func (m *ItemMutation) SetImportRef(s string) {
+	m.import_ref = &s
+}
+
+// ImportRef returns the value of the "import_ref" field in the mutation.
+func (m *ItemMutation) ImportRef() (r string, exists bool) {
+	v := m.import_ref
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldImportRef returns the old "import_ref" field's value of the Item entity.
+// If the Item object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ItemMutation) OldImportRef(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldImportRef is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldImportRef requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldImportRef: %w", err)
+	}
+	return oldValue.ImportRef, nil
+}
+
+// ClearImportRef clears the value of the "import_ref" field.
+func (m *ItemMutation) ClearImportRef() {
+	m.import_ref = nil
+	m.clearedFields[item.FieldImportRef] = struct{}{}
+}
+
+// ImportRefCleared returns if the "import_ref" field was cleared in this mutation.
+func (m *ItemMutation) ImportRefCleared() bool {
+	_, ok := m.clearedFields[item.FieldImportRef]
+	return ok
+}
+
+// ResetImportRef resets all changes to the "import_ref" field.
+func (m *ItemMutation) ResetImportRef() {
+	m.import_ref = nil
+	delete(m.clearedFields, item.FieldImportRef)
 }
 
 // SetNotes sets the "notes" field.
@@ -4750,7 +4800,7 @@ func (m *ItemMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ItemMutation) Fields() []string {
-	fields := make([]string, 0, 20)
+	fields := make([]string, 0, 21)
 	if m.created_at != nil {
 		fields = append(fields, item.FieldCreatedAt)
 	}
@@ -4762,6 +4812,9 @@ func (m *ItemMutation) Fields() []string {
 	}
 	if m.description != nil {
 		fields = append(fields, item.FieldDescription)
+	}
+	if m.import_ref != nil {
+		fields = append(fields, item.FieldImportRef)
 	}
 	if m.notes != nil {
 		fields = append(fields, item.FieldNotes)
@@ -4827,6 +4880,8 @@ func (m *ItemMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case item.FieldDescription:
 		return m.Description()
+	case item.FieldImportRef:
+		return m.ImportRef()
 	case item.FieldNotes:
 		return m.Notes()
 	case item.FieldQuantity:
@@ -4876,6 +4931,8 @@ func (m *ItemMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldName(ctx)
 	case item.FieldDescription:
 		return m.OldDescription(ctx)
+	case item.FieldImportRef:
+		return m.OldImportRef(ctx)
 	case item.FieldNotes:
 		return m.OldNotes(ctx)
 	case item.FieldQuantity:
@@ -4944,6 +5001,13 @@ func (m *ItemMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDescription(v)
+		return nil
+	case item.FieldImportRef:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetImportRef(v)
 		return nil
 	case item.FieldNotes:
 		v, ok := value.(string)
@@ -5129,6 +5193,9 @@ func (m *ItemMutation) ClearedFields() []string {
 	if m.FieldCleared(item.FieldDescription) {
 		fields = append(fields, item.FieldDescription)
 	}
+	if m.FieldCleared(item.FieldImportRef) {
+		fields = append(fields, item.FieldImportRef)
+	}
 	if m.FieldCleared(item.FieldNotes) {
 		fields = append(fields, item.FieldNotes)
 	}
@@ -5178,6 +5245,9 @@ func (m *ItemMutation) ClearField(name string) error {
 	switch name {
 	case item.FieldDescription:
 		m.ClearDescription()
+		return nil
+	case item.FieldImportRef:
+		m.ClearImportRef()
 		return nil
 	case item.FieldNotes:
 		m.ClearNotes()
@@ -5231,6 +5301,9 @@ func (m *ItemMutation) ResetField(name string) error {
 		return nil
 	case item.FieldDescription:
 		m.ResetDescription()
+		return nil
+	case item.FieldImportRef:
+		m.ResetImportRef()
 		return nil
 	case item.FieldNotes:
 		m.ResetNotes()

@@ -27,6 +27,8 @@ type Item struct {
 	Name string `json:"name,omitempty"`
 	// Description holds the value of the "description" field.
 	Description string `json:"description,omitempty"`
+	// ImportRef holds the value of the "import_ref" field.
+	ImportRef string `json:"import_ref,omitempty"`
 	// Notes holds the value of the "notes" field.
 	Notes string `json:"notes,omitempty"`
 	// Quantity holds the value of the "quantity" field.
@@ -147,7 +149,7 @@ func (*Item) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullFloat64)
 		case item.FieldQuantity:
 			values[i] = new(sql.NullInt64)
-		case item.FieldName, item.FieldDescription, item.FieldNotes, item.FieldSerialNumber, item.FieldModelNumber, item.FieldManufacturer, item.FieldWarrantyDetails, item.FieldPurchaseFrom, item.FieldSoldTo, item.FieldSoldNotes:
+		case item.FieldName, item.FieldDescription, item.FieldImportRef, item.FieldNotes, item.FieldSerialNumber, item.FieldModelNumber, item.FieldManufacturer, item.FieldWarrantyDetails, item.FieldPurchaseFrom, item.FieldSoldTo, item.FieldSoldNotes:
 			values[i] = new(sql.NullString)
 		case item.FieldCreatedAt, item.FieldUpdatedAt, item.FieldWarrantyExpires, item.FieldPurchaseTime, item.FieldSoldTime:
 			values[i] = new(sql.NullTime)
@@ -201,6 +203,12 @@ func (i *Item) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field description", values[j])
 			} else if value.Valid {
 				i.Description = value.String
+			}
+		case item.FieldImportRef:
+			if value, ok := values[j].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field import_ref", values[j])
+			} else if value.Valid {
+				i.ImportRef = value.String
 			}
 		case item.FieldNotes:
 			if value, ok := values[j].(*sql.NullString); !ok {
@@ -376,6 +384,9 @@ func (i *Item) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("description=")
 	builder.WriteString(i.Description)
+	builder.WriteString(", ")
+	builder.WriteString("import_ref=")
+	builder.WriteString(i.ImportRef)
 	builder.WriteString(", ")
 	builder.WriteString("notes=")
 	builder.WriteString(i.Notes)

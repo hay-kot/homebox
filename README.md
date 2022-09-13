@@ -41,10 +41,11 @@
 - [ ] Bulk Import via CSV
   - [x] Initial
   - [ ] Add Warranty Columns
+  - [ ] All Fields
+  - [ ] Documentations
 - [ ] Documentation
   - [ ] Docker Compose
   - [ ] Config File
-  - [ ] Import CSV Format
   - [ ] TLDR; Getting Started
 - [x] Release Flow
   - [x] CI/CD Docker Builds w/ Multi-arch

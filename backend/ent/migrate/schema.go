@@ -142,6 +142,7 @@ var (
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString, Size: 255},
 		{Name: "description", Type: field.TypeString, Nullable: true, Size: 1000},
+		{Name: "import_ref", Type: field.TypeString, Nullable: true, Size: 100},
 		{Name: "notes", Type: field.TypeString, Nullable: true, Size: 1000},
 		{Name: "quantity", Type: field.TypeInt, Default: 1},
 		{Name: "insured", Type: field.TypeBool, Default: false},
@@ -169,15 +170,15 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "items_groups_items",
-				Columns:    []*schema.Column{ItemsColumns[21]},
+				Columns:    []*schema.Column{ItemsColumns[22]},
 				RefColumns: []*schema.Column{GroupsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "items_locations_items",
-				Columns:    []*schema.Column{ItemsColumns[22]},
+				Columns:    []*schema.Column{ItemsColumns[23]},
 				RefColumns: []*schema.Column{LocationsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Cascade,
 			},
 		},
 		Indexes: []*schema.Index{
@@ -189,17 +190,17 @@ var (
 			{
 				Name:    "item_manufacturer",
 				Unique:  false,
-				Columns: []*schema.Column{ItemsColumns[10]},
+				Columns: []*schema.Column{ItemsColumns[11]},
 			},
 			{
 				Name:    "item_model_number",
 				Unique:  false,
-				Columns: []*schema.Column{ItemsColumns[9]},
+				Columns: []*schema.Column{ItemsColumns[10]},
 			},
 			{
 				Name:    "item_serial_number",
 				Unique:  false,
-				Columns: []*schema.Column{ItemsColumns[8]},
+				Columns: []*schema.Column{ItemsColumns[9]},
 			},
 		},
 	}

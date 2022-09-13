@@ -694,6 +694,12 @@ func (iu *ItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: item.FieldDescription,
 		})
 	}
+	if iu.mutation.ImportRefCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: item.FieldImportRef,
+		})
+	}
 	if value, ok := iu.mutation.Notes(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -1832,6 +1838,12 @@ func (iuo *ItemUpdateOne) sqlSave(ctx context.Context) (_node *Item, err error) 
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: item.FieldDescription,
+		})
+	}
+	if iuo.mutation.ImportRefCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: item.FieldImportRef,
 		})
 	}
 	if value, ok := iuo.mutation.Notes(); ok {

@@ -110,6 +110,13 @@ func Description(v string) predicate.Item {
 	})
 }
 
+// ImportRef applies equality check predicate on the "import_ref" field. It's identical to ImportRefEQ.
+func ImportRef(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldImportRef), v))
+	})
+}
+
 // Notes applies equality check predicate on the "notes" field. It's identical to NotesEQ.
 func Notes(v string) predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
@@ -559,6 +566,119 @@ func DescriptionEqualFold(v string) predicate.Item {
 func DescriptionContainsFold(v string) predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldDescription), v))
+	})
+}
+
+// ImportRefEQ applies the EQ predicate on the "import_ref" field.
+func ImportRefEQ(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldImportRef), v))
+	})
+}
+
+// ImportRefNEQ applies the NEQ predicate on the "import_ref" field.
+func ImportRefNEQ(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldImportRef), v))
+	})
+}
+
+// ImportRefIn applies the In predicate on the "import_ref" field.
+func ImportRefIn(vs ...string) predicate.Item {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldImportRef), v...))
+	})
+}
+
+// ImportRefNotIn applies the NotIn predicate on the "import_ref" field.
+func ImportRefNotIn(vs ...string) predicate.Item {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldImportRef), v...))
+	})
+}
+
+// ImportRefGT applies the GT predicate on the "import_ref" field.
+func ImportRefGT(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldImportRef), v))
+	})
+}
+
+// ImportRefGTE applies the GTE predicate on the "import_ref" field.
+func ImportRefGTE(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldImportRef), v))
+	})
+}
+
+// ImportRefLT applies the LT predicate on the "import_ref" field.
+func ImportRefLT(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldImportRef), v))
+	})
+}
+
+// ImportRefLTE applies the LTE predicate on the "import_ref" field.
+func ImportRefLTE(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldImportRef), v))
+	})
+}
+
+// ImportRefContains applies the Contains predicate on the "import_ref" field.
+func ImportRefContains(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldImportRef), v))
+	})
+}
+
+// ImportRefHasPrefix applies the HasPrefix predicate on the "import_ref" field.
+func ImportRefHasPrefix(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldImportRef), v))
+	})
+}
+
+// ImportRefHasSuffix applies the HasSuffix predicate on the "import_ref" field.
+func ImportRefHasSuffix(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldImportRef), v))
+	})
+}
+
+// ImportRefIsNil applies the IsNil predicate on the "import_ref" field.
+func ImportRefIsNil() predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldImportRef)))
+	})
+}
+
+// ImportRefNotNil applies the NotNil predicate on the "import_ref" field.
+func ImportRefNotNil() predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldImportRef)))
+	})
+}
+
+// ImportRefEqualFold applies the EqualFold predicate on the "import_ref" field.
+func ImportRefEqualFold(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldImportRef), v))
+	})
+}
+
+// ImportRefContainsFold applies the ContainsFold predicate on the "import_ref" field.
+func ImportRefContainsFold(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldImportRef), v))
 	})
 }
 
