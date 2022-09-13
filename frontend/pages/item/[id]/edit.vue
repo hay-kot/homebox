@@ -1,5 +1,7 @@
 <script setup lang="ts">
   import { ItemUpdate } from "~~/lib/api/types/data-contracts";
+  import { useLabelStore } from "~~/stores/labels";
+  import { useLocationStore } from "~~/stores/locations";
 
   definePageMeta({
     layout: "home",
@@ -12,17 +14,13 @@
 
   const itemId = computed<string>(() => route.params.id as string);
 
-  const { data: locations } = useAsyncData(async () => {
-    const { data } = await api.locations.getAll();
-    return data.items;
-  });
+  const locationStore = useLocationStore();
+  const locations = computed(() => locationStore.locations);
 
-  const { data: labels } = useAsyncData(async () => {
-    const { data } = await api.labels.getAll();
-    return data.items;
-  });
+  const labelStore = useLabelStore();
+  const labels = computed(() => labelStore.labels);
 
-  const { data: item } = useAsyncData(async () => {
+  const { data: item, refresh } = useAsyncData(async () => {
     const { data, error } = await api.items.get(itemId.value);
     if (error) {
       toast.error("Failed to load item");
@@ -31,6 +29,9 @@
     }
 
     return data;
+  });
+  onMounted(() => {
+    refresh();
   });
 
   async function saveItem() {

@@ -60,7 +60,6 @@
   }
 
   onUpdated(() => {
-    console.log("updated");
     if (props.inline) {
       setHeight();
     }

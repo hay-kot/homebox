@@ -19,8 +19,6 @@
     }
     return data;
   });
-
-  // Trigger Refresh on navigate
   onMounted(() => {
     refresh();
   });
