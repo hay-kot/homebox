@@ -38,11 +38,11 @@
 - [x] Fields To Add
   - [x] Quantity
   - [x] Insured (bool)
-- [ ] Bulk Import via CSV
+- [x] Bulk Import via CSV
   - [x] Initial
-  - [ ] Add Warranty Columns
-  - [ ] All Fields
-  - [ ] Documentations
+  - [x] Add Warranty Columns
+  - [x] All Fields
+  - [x] Documentations
 - [ ] Documentation
   - [ ] Docker Compose
   - [ ] Config File
