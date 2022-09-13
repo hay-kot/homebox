@@ -3,6 +3,22 @@ import { UserApi } from "~~/lib/api/user";
 import { Requests } from "~~/lib/requests";
 import { useAuthStore } from "~~/stores/auth";
 
+export type Observer = {
+  handler: (r: Response) => void;
+};
+
+export type RemoveObserver = () => void;
+
+const observers: Record<string, Observer> = {};
+
+export function defineObserver(key: string, observer: Observer): RemoveObserver {
+  observers[key] = observer;
+
+  return () => {
+    delete observers[key];
+  };
+}
+
 function logger(r: Response) {
   console.log(`${r.status}   ${r.url}   ${r.statusText}`);
 }
@@ -22,6 +38,10 @@ export function useUserApi(): UserApi {
       authStore.clearSession();
     }
   });
+
+  for (const [_, observer] of Object.entries(observers)) {
+    requests.addResponseInterceptor(observer.handler);
+  }
 
   return new UserApi(requests);
 }

@@ -27,6 +27,8 @@
 
 <script setup lang="ts">
   import { ItemCreate, LocationOut } from "~~/lib/api/types/data-contracts";
+  import { useLabelStore } from "~~/stores/labels";
+  import { useLocationStore } from "~~/stores/locations";
 
   const props = defineProps({
     modelValue: {
@@ -66,15 +68,11 @@
   const api = useUserApi();
   const toast = useNotifier();
 
-  const { data: locations } = useAsyncData(async () => {
-    const { data } = await api.locations.getAll();
-    return data.items;
-  });
+  const locationsStore = useLocationStore();
+  const locations = computed(() => locationsStore.locations);
 
-  const { data: labels } = useAsyncData(async () => {
-    const { data } = await api.labels.getAll();
-    return data.items;
-  });
+  const labelStore = useLabelStore();
+  const labels = computed(() => labelStore.labels);
 
   async function create() {
     if (!form.location) {

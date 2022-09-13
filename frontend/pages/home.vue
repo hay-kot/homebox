@@ -1,4 +1,8 @@
 <script setup lang="ts">
+  import { useItemStore } from "~~/stores/items";
+  import { useLabelStore } from "~~/stores/labels";
+  import { useLocationStore } from "~~/stores/locations";
+
   definePageMeta({
     layout: "home",
   });
@@ -8,20 +12,14 @@
 
   const api = useUserApi();
 
-  const { data: locations } = useAsyncData("locations", async () => {
-    const { data } = await api.locations.getAll();
-    return data.items;
-  });
+  const itemsStore = useItemStore();
+  const items = computed(() => itemsStore.items);
 
-  const { data: labels } = useAsyncData("labels", async () => {
-    const { data } = await api.labels.getAll();
-    return data.items;
-  });
+  const locationStore = useLocationStore();
+  const locations = computed(() => locationStore.locations);
 
-  const { data: items } = useAsyncData("items", async () => {
-    const { data } = await api.items.getAll();
-    return data.items;
-  });
+  const labelsStore = useLabelStore();
+  const labels = computed(() => labelsStore.labels);
 
   const totalItems = computed(() => items.value?.length || 0);
   const totalLocations = computed(() => locations.value?.length || 0);
@@ -67,6 +65,8 @@
     importRef.value.click();
   }
 
+  const eventBus = useEventBus();
+
   async function submitCsvFile() {
     importLoading.value = true;
 
@@ -81,6 +81,8 @@
     importLoading.value = false;
     importCsv.value = null;
     importRef.value.value = null;
+
+    eventBus.emit(EventTypes.ClearStores);
   }
 </script>
 

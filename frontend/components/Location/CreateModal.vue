@@ -62,9 +62,7 @@
 
     if (data) {
       toast.success("Location created");
-      navigateTo(`/location/${data.id}`);
     }
-
     reset();
   }
 </script>
