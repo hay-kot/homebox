@@ -7,6 +7,7 @@ import (
 )
 
 type ItemCreate struct {
+	ImportRef   string `json:"-"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 
@@ -53,6 +54,7 @@ type ItemUpdate struct {
 }
 
 type ItemSummary struct {
+	ImportRef   string    `json:"-"`
 	ID          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`

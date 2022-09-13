@@ -34,6 +34,10 @@ func (Item) Indexes() []ent.Index {
 // Fields of the Item.
 func (Item) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("import_ref").
+			Optional().
+			MaxLen(100).
+			Immutable(),
 		field.String("notes").
 			MaxLen(1000).
 			Optional(),
@@ -102,7 +106,10 @@ func (Item) Edges() []ent.Edge {
 				OnDelete: entsql.Cascade,
 			}),
 		edge.From("label", Label.Type).
-			Ref("items"),
+			Ref("items").
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
 		edge.To("attachments", Attachment.Type).
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,

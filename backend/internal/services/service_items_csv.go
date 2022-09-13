@@ -5,9 +5,13 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/hay-kot/content/backend/internal/types"
 )
 
 var ErrInvalidCsv = errors.New("invalid csv")
+
+const NumOfCols = 21
 
 func parseFloat(s string) float64 {
 	if s == "" {
@@ -26,60 +30,56 @@ func parseDate(s string) time.Time {
 	return p
 }
 
+func parseBool(s string) bool {
+	switch strings.ToLower(s) {
+	case "true", "yes", "1":
+		return true
+	default:
+		return false
+	}
+}
+
+func parseInt(s string) int {
+	i, _ := strconv.Atoi(s)
+	return i
+}
+
 type csvRow struct {
-	Location       string
-	Labels         string
-	Name           string
-	Description    string
-	SerialNumber   string
-	ModelNumber    string
-	Manufacturer   string
-	Notes          string
-	PurchaseFrom   string
-	PurchasedPrice string
-	PurchasedAt    string
-	SoldTo         string
-	SoldPrice      string
-	SoldAt         string
+	Item     types.ItemSummary
+	Location string
+	LabelStr string
 }
 
 func newCsvRow(row []string) csvRow {
 	return csvRow{
-		Location:       row[0],
-		Labels:         row[1],
-		Name:           row[2],
-		Description:    row[3],
-		SerialNumber:   row[4],
-		ModelNumber:    row[5],
-		Manufacturer:   row[6],
-		Notes:          row[7],
-		PurchaseFrom:   row[8],
-		PurchasedPrice: row[9],
-		PurchasedAt:    row[10],
-		SoldTo:         row[11],
-		SoldPrice:      row[12],
-		SoldAt:         row[13],
+		Location: row[1],
+		LabelStr: row[2],
+		Item: types.ItemSummary{
+			ImportRef:        row[0],
+			Quantity:         parseInt(row[3]),
+			Name:             row[4],
+			Description:      row[5],
+			Insured:          parseBool(row[6]),
+			SerialNumber:     row[7],
+			ModelNumber:      row[8],
+			Manufacturer:     row[9],
+			Notes:            row[10],
+			PurchaseFrom:     row[11],
+			PurchasePrice:    parseFloat(row[12]),
+			PurchaseTime:     parseDate(row[13]),
+			LifetimeWarranty: parseBool(row[14]),
+			WarrantyExpires:  parseDate(row[15]),
+			WarrantyDetails:  row[16],
+			SoldTo:           row[17],
+			SoldPrice:        parseFloat(row[18]),
+			SoldTime:         parseDate(row[19]),
+			SoldNotes:        row[20],
+		},
 	}
 }
 
-func (c csvRow) parsedSoldPrice() float64 {
-	return parseFloat(c.SoldPrice)
-}
-
-func (c csvRow) parsedPurchasedPrice() float64 {
-	return parseFloat(c.PurchasedPrice)
-}
-
-func (c csvRow) parsedPurchasedAt() time.Time {
-	return parseDate(c.PurchasedAt)
-}
-
-func (c csvRow) parsedSoldAt() time.Time {
-	return parseDate(c.SoldAt)
-}
-
 func (c csvRow) getLabels() []string {
-	split := strings.Split(c.Labels, ";")
+	split := strings.Split(c.LabelStr, ";")
 
 	// Trim each
 	for i, s := range split {

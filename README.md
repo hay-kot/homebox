@@ -30,21 +30,22 @@
   - [x] Create
   - [x] Update
   - [x] Delete
-- [ ] Items CRUD
+- [x] Items CRUD
   - [x] Create
-  - [ ] Update
+  - [x] Update
   - [x] Delete
 - [ ] Asset Attachments for Items
 - [x] Fields To Add
   - [x] Quantity
   - [x] Insured (bool)
-- [ ] Bulk Import via CSV
+- [x] Bulk Import via CSV
   - [x] Initial
-  - [ ] Add Warranty Columns
+  - [x] Add Warranty Columns
+  - [x] All Fields
+  - [x] Documentations
 - [ ] Documentation
   - [ ] Docker Compose
   - [ ] Config File
-  - [ ] Import CSV Format
   - [ ] TLDR; Getting Started
 - [x] Release Flow
   - [x] CI/CD Docker Builds w/ Multi-arch

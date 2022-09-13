@@ -84,12 +84,10 @@ func TestItemsRepository_Create(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, result.ID)
 
-	// Cleanup
+	// Cleanup - Also deletes item
 	err = tRepos.Locations.Delete(context.Background(), location.ID)
 	assert.NoError(t, err)
 
-	err = tRepos.Items.Delete(context.Background(), result.ID)
-	assert.NoError(t, err)
 }
 
 func TestItemsRepository_Create_Location(t *testing.T) {
@@ -111,10 +109,8 @@ func TestItemsRepository_Create_Location(t *testing.T) {
 	assert.Equal(t, result.ID, foundItem.ID)
 	assert.Equal(t, location.ID, foundItem.Edges.Location.ID)
 
-	// Cleanup
+	// Cleanup - Also deletes item
 	err = tRepos.Locations.Delete(context.Background(), location.ID)
-	assert.NoError(t, err)
-	err = tRepos.Items.Delete(context.Background(), result.ID)
 	assert.NoError(t, err)
 }
 

@@ -74,6 +74,20 @@ func (ic *ItemCreate) SetNillableDescription(s *string) *ItemCreate {
 	return ic
 }
 
+// SetImportRef sets the "import_ref" field.
+func (ic *ItemCreate) SetImportRef(s string) *ItemCreate {
+	ic.mutation.SetImportRef(s)
+	return ic
+}
+
+// SetNillableImportRef sets the "import_ref" field if the given value is not nil.
+func (ic *ItemCreate) SetNillableImportRef(s *string) *ItemCreate {
+	if s != nil {
+		ic.SetImportRef(*s)
+	}
+	return ic
+}
+
 // SetNotes sets the "notes" field.
 func (ic *ItemCreate) SetNotes(s string) *ItemCreate {
 	ic.mutation.SetNotes(s)
@@ -519,6 +533,11 @@ func (ic *ItemCreate) check() error {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "Item.description": %w`, err)}
 		}
 	}
+	if v, ok := ic.mutation.ImportRef(); ok {
+		if err := item.ImportRefValidator(v); err != nil {
+			return &ValidationError{Name: "import_ref", err: fmt.Errorf(`ent: validator failed for field "Item.import_ref": %w`, err)}
+		}
+	}
 	if v, ok := ic.mutation.Notes(); ok {
 		if err := item.NotesValidator(v); err != nil {
 			return &ValidationError{Name: "notes", err: fmt.Errorf(`ent: validator failed for field "Item.notes": %w`, err)}
@@ -634,6 +653,14 @@ func (ic *ItemCreate) createSpec() (*Item, *sqlgraph.CreateSpec) {
 			Column: item.FieldDescription,
 		})
 		_node.Description = value
+	}
+	if value, ok := ic.mutation.ImportRef(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: item.FieldImportRef,
+		})
+		_node.ImportRef = value
 	}
 	if value, ok := ic.mutation.Notes(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

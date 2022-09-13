@@ -21,6 +21,8 @@ const (
 	FieldName = "name"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
+	// FieldImportRef holds the string denoting the import_ref field in the database.
+	FieldImportRef = "import_ref"
 	// FieldNotes holds the string denoting the notes field in the database.
 	FieldNotes = "notes"
 	// FieldQuantity holds the string denoting the quantity field in the database.
@@ -107,6 +109,7 @@ var Columns = []string{
 	FieldUpdatedAt,
 	FieldName,
 	FieldDescription,
+	FieldImportRef,
 	FieldNotes,
 	FieldQuantity,
 	FieldInsured,
@@ -164,6 +167,8 @@ var (
 	NameValidator func(string) error
 	// DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
 	DescriptionValidator func(string) error
+	// ImportRefValidator is a validator for the "import_ref" field. It is called by the builders before save.
+	ImportRefValidator func(string) error
 	// NotesValidator is a validator for the "notes" field. It is called by the builders before save.
 	NotesValidator func(string) error
 	// DefaultQuantity holds the default value on creation for the "quantity" field.

@@ -156,7 +156,8 @@ func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]s
 		if len(row) == 0 {
 			continue
 		}
-		if len(row) != 14 {
+
+		if len(row) != NumOfCols {
 			return ErrInvalidCsv
 		}
 
@@ -227,15 +228,16 @@ func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]s
 		}
 
 		log.Info().
-			Str("name", row.Name).
+			Str("name", row.Item.Name).
 			Str("location", row.Location).
 			Strs("labels", row.getLabels()).
 			Str("locationId", locationID.String()).
-			Msgf("Creating Item: %s", row.Name)
+			Msgf("Creating Item: %s", row.Item.Name)
 
 		result, err := svc.repo.Items.Create(ctx, gid, types.ItemCreate{
-			Name:        row.Name,
-			Description: row.Description,
+			ImportRef:   row.Item.ImportRef,
+			Name:        row.Item.Name,
+			Description: row.Item.Description,
 			LabelIDs:    labelIDs,
 			LocationID:  locationID,
 		})
@@ -246,21 +248,36 @@ func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]s
 
 		// Update the item with the rest of the data
 		_, err = svc.repo.Items.Update(ctx, types.ItemUpdate{
-			ID:            result.ID,
-			Name:          result.Name,
-			LocationID:    locationID,
-			LabelIDs:      labelIDs,
-			Description:   result.Description,
-			SerialNumber:  row.SerialNumber,
-			ModelNumber:   row.ModelNumber,
-			Manufacturer:  row.Manufacturer,
-			Notes:         row.Notes,
-			PurchaseFrom:  row.PurchaseFrom,
-			PurchasePrice: row.parsedPurchasedPrice(),
-			PurchaseTime:  row.parsedPurchasedAt(),
-			SoldTo:        row.SoldTo,
-			SoldPrice:     row.parsedSoldPrice(),
-			SoldTime:      row.parsedSoldAt(),
+			// Edges
+			LocationID: locationID,
+			LabelIDs:   labelIDs,
+
+			// General Fields
+			ID:          result.ID,
+			Name:        result.Name,
+			Description: result.Description,
+			Insured:     row.Item.Insured,
+			Notes:       row.Item.Notes,
+
+			// Identifies the item as imported
+			SerialNumber: row.Item.SerialNumber,
+			ModelNumber:  row.Item.ModelNumber,
+			Manufacturer: row.Item.Manufacturer,
+
+			// Purchase
+			PurchaseFrom:  row.Item.PurchaseFrom,
+			PurchasePrice: row.Item.PurchasePrice,
+			PurchaseTime:  row.Item.PurchaseTime,
+
+			// Warranty
+			LifetimeWarranty: row.Item.LifetimeWarranty,
+			WarrantyExpires:  row.Item.WarrantyExpires,
+			WarrantyDetails:  row.Item.WarrantyDetails,
+
+			SoldTo:    row.Item.SoldTo,
+			SoldPrice: row.Item.SoldPrice,
+			SoldTime:  row.Item.SoldTime,
+			SoldNotes: row.Item.SoldNotes,
 		})
 
 		if err != nil {
