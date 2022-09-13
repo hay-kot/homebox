@@ -30,9 +30,9 @@
   - [x] Create
   - [x] Update
   - [x] Delete
-- [ ] Items CRUD
+- [x] Items CRUD
   - [x] Create
-  - [ ] Update
+  - [x] Update
   - [x] Delete
 - [ ] Asset Attachments for Items
 - [x] Fields To Add
