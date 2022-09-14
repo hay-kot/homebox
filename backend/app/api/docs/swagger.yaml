@@ -31,7 +31,7 @@ definitions:
     type: object
   types.Build:
     properties:
-      build_time:
+      buildTime:
         type: string
       commit:
         type: string

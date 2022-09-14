@@ -30,7 +30,7 @@ export interface ApiSummary {
 }
 
 export interface Build {
-  build_time: string;
+  buildTime: string;
   commit: string;
   version: string;
 }

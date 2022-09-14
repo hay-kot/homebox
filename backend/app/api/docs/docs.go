@@ -844,7 +844,7 @@ const docTemplate = `{
         "types.Build": {
             "type": "object",
             "properties": {
-                "build_time": {
+                "buildTime": {
                     "type": "string"
                 },
                 "commit": {

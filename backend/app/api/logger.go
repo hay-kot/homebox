@@ -14,7 +14,7 @@ import (
 func (a *app) setupLogger() {
 	// Logger Init
 	// zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
-	if a.conf.Mode != config.ModeProduction {
+	if a.conf.Log.Format != config.LogFormatJSON {
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	}
 

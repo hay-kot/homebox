@@ -20,15 +20,33 @@
    <a href="https://discord.gg/tuncmNrE4z">Discord</a>
 </p>
 
+## Quick Start
+
+```yml
+version: "3.4"
+ services:
+   homebox:
+     image: ghcr.io/hay-kot/homebox:nightly
+     container_name: homebox
+     restart: always
+     volumes:
+       - homebox-data:/data/
+     ports:
+       - 3100:7745
+
+volumes:
+   homebox-data:
+     driver: local
+```
+
 ## MVP Todo
 
 - [ ] Asset Attachments for Items
 - [ ] Db Migrations
   - [ ] How To
-- [ ] Documentation
-  - [ ] Docker Compose
-  - [ ] Config File
-  - [ ] TLDR; Getting Started
+- [x] Documentation
+  - [x] Docker Compose
+  - [x] Config Options
 - [x] Locations
   - [x] Create
   - [x] Update

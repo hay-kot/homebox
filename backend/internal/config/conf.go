@@ -40,7 +40,7 @@ type WebConfig struct {
 func NewConfig(file string) (*Config, error) {
 	var cfg Config
 
-	const prefix = "API"
+	const prefix = "HBOX"
 
 	help, err := func() (string, error) {
 		if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {

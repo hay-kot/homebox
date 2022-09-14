@@ -38,7 +38,7 @@ func TestHandlersv1_HandleBase(t *testing.T) {
 	}
 
 	// Validate Json Payload
-	expected := `{"health":true,"versions":null,"title":"Go API Template","message":"Welcome to the Go API Template Application!","Build":{"version":"0.1.0","commit":"HEAD","build_time":"now"}}`
+	expected := `{"health":true,"versions":null,"title":"Go API Template","message":"Welcome to the Go API Template Application!","Build":{"version":"0.1.0","commit":"HEAD","buildTime":"now"}}`
 
 	if rr.Body.String() != expected {
 		t.Errorf("Expected json to be %s, got %s", expected, rr.Body.String())

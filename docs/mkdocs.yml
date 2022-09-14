@@ -1,5 +1,7 @@
 site_name: Homebox
-# site_url: https://hay-kot.github.io/homebox/
+site_url: https://hay-kot.github.io/homebox/
+repo_name: Homebox
+repo_url: https://github.com/hay-kot/homebox
 use_directory_urls: true
 theme:
   name: material
@@ -41,3 +43,9 @@ markdown_extensions:
   - attr_list
   - pymdownx.tabbed
   - pymdownx.superfences
+
+nav:
+  - Home: index.md
+  - Quick Start: quick-start.md
+  - Importing Data: import-csv.md
+  - Building The Binary: build.md

@@ -18,12 +18,12 @@
 Homebox is the inventory and organization system built for the Home User! With a focus on simplicity and ease of use, Homebox is the perfect solution for your home inventory, organization, and management needs. While developing this project I've tried to keep the following principles in mind:
 
 - _Simple_ - Homebox is designed to be simple and easy to use. No complicated setup or configuration required. Use either a single docker container, or deploy yourself by compiling the binary for your platform of choice.
-- _Blazingly Fast_ - Homebox is written in Go which makes it extremely fast and requires minimal resources to deploy. In general idle memory usage is deploy 75MB for the whole container.
-- _Portable_ - Homebox is designed to be portable and run on any platform. It can be run as a single docker container, or compiled for your platform of choice. We use SQLite and an embedded Web UI to make it easy to deploy and use.
+- _Blazingly Fast_ - Homebox is written in Go which makes it extremely fast and requires minimal resources to deploy. In general idle memory usage is less than 50MB for the whole container.
+- _Portable_ - Homebox is designed to be portable and run on anywhere. We use SQLite and an embedded Web UI to make it easy to deploy, use, and backup.
 
 ## Project Status
 
-Homebox is currently in active development and is currently in **preview** stage. This means that the project may still be unstable and clunky. Overall we are striving to not introduce any breaking changes and have checks in place to ensure migrations and upgrades are smooth. However, we do not guarantee that there will be no breaking changes. We will try to keep the documentation up to date as we make changes.
+Homebox is currently in early-active development and is currently in **preview** stage. This means that the project may still be unstable and clunky. Overall we are striving to not introduce any breaking changes and have checks in place to ensure migrations and upgrades are smooth. However, we do not guarantee that there will be no breaking changes. We will try to keep the documentation up to date as we make changes.
 
 ## Features
 
