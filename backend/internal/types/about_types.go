@@ -14,5 +14,5 @@ type ApiSummary struct {
 type Build struct {
 	Version   string `json:"version"`
 	Commit    string `json:"commit"`
-	BuildTime string `json:"build_time"`
+	BuildTime string `json:"buildTime"`
 }

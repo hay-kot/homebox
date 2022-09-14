@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"os"
 	"time"
 
 	"github.com/hay-kot/content/backend/app/api/docs"
@@ -31,10 +32,16 @@ var (
 // @name                        Authorization
 // @description                 "Type 'Bearer TOKEN' to correctly set the API Key"
 func main() {
+	path := ""
+	if len(os.Args) > 1 {
+		path = os.Args[1]
+	}
 
-	cfgFile := "config.yml"
+	if path == "" {
+		log.Warn().Msg("No configuration detected, using defaults")
+	}
 
-	cfg, err := config.NewConfig(cfgFile)
+	cfg, err := config.NewConfig(path)
 	if err != nil {
 		panic(err)
 	}

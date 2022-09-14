@@ -20,7 +20,7 @@ tasks:
   api:
     cmds:
       - task: generate
-      - cd backend && go run ./app/api/ {{.CLI_ARGS}}
+      - cd backend && go run ./app/api/ {{.CLI_ARGS}} ./config.yml
     silent: false
 
   api:build:

@@ -60,10 +60,10 @@
   - [ ] Contributors Guide
   - [x] Security Policy
   - [ ] Feature Request Template
-- [ ] Embedded Version Info
-  - [ ] Version Number
-  - [ ] Git Has
-- [ ] Setup Docker Volumes in Dockerfile
+- [x] Embedded Version Info
+  - [x] Version Number
+  - [x] Git Hash
+- [x] Setup Docker Volumes in Dockerfile
 
 ## All Todo's
 

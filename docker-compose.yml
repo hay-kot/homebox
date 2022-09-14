@@ -6,5 +6,8 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
+      args:
+        - COMMIT=head
+        - BUILD_TIME=0001-01-01T00:00:00Z
     ports:
       - 3100:7745
