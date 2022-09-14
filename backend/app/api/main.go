@@ -14,6 +14,12 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+var (
+	Version   = "0.1.0"
+	Commit    = "HEAD"
+	BuildTime = "now"
+)
+
 // @title                       Go API Templates
 // @version                     1.0
 // @description                 This is a simple Rest API Server Template that implements some basic User and Authentication patterns to help you get started and bootstrap your next project!.

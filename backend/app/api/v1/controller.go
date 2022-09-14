@@ -37,13 +37,13 @@ type ReadyFunc func() bool
 // @Produce  json
 // @Success  200  {object}  types.ApiSummary
 // @Router   /v1/status [GET]
-func (ctrl *V1Controller) HandleBase(ready ReadyFunc, versions ...string) http.HandlerFunc {
+func (ctrl *V1Controller) HandleBase(ready ReadyFunc, build types.Build) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		server.Respond(w, http.StatusOK, types.ApiSummary{
-			Healthy:  ready(),
-			Versions: versions,
-			Title:    "Go API Template",
-			Message:  "Welcome to the Go API Template Application!",
+			Healthy: ready(),
+			Title:   "Go API Template",
+			Message: "Welcome to the Go API Template Application!",
+			Build:   build,
 		})
 	}
 }

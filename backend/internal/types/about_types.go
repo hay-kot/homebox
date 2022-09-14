@@ -8,4 +8,11 @@ type ApiSummary struct {
 	Versions []string `json:"versions"`
 	Title    string   `json:"title"`
 	Message  string   `json:"message"`
+	Build    Build
+}
+
+type Build struct {
+	Version   string `json:"version"`
+	Commit    string `json:"commit"`
+	BuildTime string `json:"build_time"`
 }

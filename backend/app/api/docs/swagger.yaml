@@ -16,6 +16,8 @@ definitions:
     type: object
   types.ApiSummary:
     properties:
+      build:
+        $ref: '#/definitions/types.Build'
       health:
         type: boolean
       message:
@@ -26,6 +28,15 @@ definitions:
         items:
           type: string
         type: array
+    type: object
+  types.Build:
+    properties:
+      build_time:
+        type: string
+      commit:
+        type: string
+      version:
+        type: string
     type: object
   types.DocumentOut:
     properties:

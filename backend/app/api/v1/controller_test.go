@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/hay-kot/content/backend/internal/types"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -21,7 +22,11 @@ func Test_NewHandlerV1(t *testing.T) {
 
 func TestHandlersv1_HandleBase(t *testing.T) {
 	// Setup
-	hdlrFunc := mockHandler.HandleBase(func() bool { return true }, "v1")
+	hdlrFunc := mockHandler.HandleBase(func() bool { return true }, types.Build{
+		Version:   "0.1.0",
+		Commit:    "HEAD",
+		BuildTime: "now",
+	})
 
 	// Call Handler Func
 	rr := httptest.NewRecorder()
@@ -33,7 +38,7 @@ func TestHandlersv1_HandleBase(t *testing.T) {
 	}
 
 	// Validate Json Payload
-	expected := `{"health":true,"versions":["v1"],"title":"Go API Template","message":"Welcome to the Go API Template Application!"}`
+	expected := `{"health":true,"versions":null,"title":"Go API Template","message":"Welcome to the Go API Template Application!","Build":{"version":"0.1.0","commit":"HEAD","build_time":"now"}}`
 
 	if rr.Body.String() != expected {
 		t.Errorf("Expected json to be %s, got %s", expected, rr.Body.String())

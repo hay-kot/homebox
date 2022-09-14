@@ -821,6 +821,9 @@ const docTemplate = `{
         "types.ApiSummary": {
             "type": "object",
             "properties": {
+                "build": {
+                    "$ref": "#/definitions/types.Build"
+                },
                 "health": {
                     "type": "boolean"
                 },
@@ -835,6 +838,20 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "types.Build": {
+            "type": "object",
+            "properties": {
+                "build_time": {
+                    "type": "string"
+                },
+                "commit": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
                 }
             }
         },

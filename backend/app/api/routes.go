@@ -14,6 +14,7 @@ import (
 	_ "github.com/hay-kot/content/backend/app/api/docs"
 	v1 "github.com/hay-kot/content/backend/app/api/v1"
 	"github.com/hay-kot/content/backend/internal/repo"
+	"github.com/hay-kot/content/backend/internal/types"
 	"github.com/rs/zerolog/log"
 	httpSwagger "github.com/swaggo/http-swagger" // http-swagger middleware
 )
@@ -44,7 +45,11 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 	v1Base := v1.BaseUrlFunc(prefix)
 	v1Ctrl := v1.NewControllerV1(a.services)
 	{
-		r.Get(v1Base("/status"), v1Ctrl.HandleBase(func() bool { return true }, "v1"))
+		r.Get(v1Base("/status"), v1Ctrl.HandleBase(func() bool { return true }, types.Build{
+			Version:   Version,
+			Commit:    Commit,
+			BuildTime: BuildTime,
+		}))
 
 		r.Post(v1Base("/users/register"), v1Ctrl.HandleUserRegistration())
 		r.Post(v1Base("/users/login"), v1Ctrl.HandleAuthLogin())

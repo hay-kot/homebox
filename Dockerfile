@@ -17,7 +17,10 @@ COPY ./backend .
 RUN go get -d -v ./...
 RUN rm -rf ./app/api/public
 COPY --from=frontend-builder /app/.output/public ./app/api/public
-RUN CGO_ENABLED=1 GOOS=linux go build -o /go/bin/api -v ./app/api/*.go
+RUN CGO_ENABLED=1 GOOS=linux go build \
+    -o /go/bin/api \
+    -v ./app/api/*.go \
+    -ldflags "-s -w -X main.Commit `git rev-parse HEAD` -X main.BuildTime `date -u +%Y-%m-%dT%H:%M:%SZ`"
 
 # Production Stage
 FROM alpine:latest

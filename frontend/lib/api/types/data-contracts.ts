@@ -22,10 +22,17 @@ export interface ServerResults {
 }
 
 export interface ApiSummary {
+  build: Build;
   health: boolean;
   message: string;
   title: string;
   versions: string[];
+}
+
+export interface Build {
+  build_time: string;
+  commit: string;
+  version: string;
 }
 
 export interface DocumentOut {
