@@ -81,13 +81,17 @@ volumes:
   - [x] Version Number
   - [x] Git Hash
 - [x] Setup Docker Volumes in Dockerfile
+- [x] Warranty Information
+  - [x] Option for Lifetime Warranty or Warranty Period
 
 ## All Todo's
 
+- [ ] Dev Container for Development
 - [ ] User Invitation Links to Join Group
 - [ ] Maintenance Logs
   - [ ] Schedule Future Maintenance
   - [ ] Email on Maintenance Due
+  - [ ] QR Code Stickers to Scan to enter a Maintenance Task
 - [ ] Export CSV (With IDs)
 - [ ] User Profile
   - [ ] Adjust Theme (Daisy UI)
@@ -100,8 +104,6 @@ volumes:
   - [ ] User Management
     - [ ] Delete User
     - [ ] Reset Password
-- [x] Warranty Information
-  - [x] Option for Lifetime Warranty or Warranty Period
 - [ ] Expose Swagger API Documentation
   - [ ] Dynamic Port / Host Settings
 
