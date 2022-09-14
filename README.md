@@ -13,90 +13,16 @@
 
 ## Quick Start
 
+[Configuration & Docker Compose](https://hay-kot.github.io/homebox/quick-start)
+
+```bash
+
 ```yml
-version: "3.4"
- services:
-   homebox:
-     image: ghcr.io/hay-kot/homebox:nightly
-     container_name: homebox
-     restart: always
-     volumes:
-       - homebox-data:/data/
-     ports:
-       - 3100:7745
-
-volumes:
-   homebox-data:
-     driver: local
+docker run --name=homebox \
+    --restart=always \
+    --publish=3100:7745 \
+    ghcr.io/hay-kot/homebox:nightly
 ```
-
-## MVP Todo
-
-- [ ] Asset Attachments for Items
-- [ ] Db Migrations
-  - [ ] How To
-- [x] Documentation
-  - [x] Docker Compose
-  - [x] Config Options
-- [x] Locations
-  - [x] Create
-  - [x] Update
-  - [x] Delete
-- [x] Labels
-  - [x] Create
-  - [x] Update
-  - [x] Delete
-- [x] Items CRUD
-  - [x] Create
-  - [x] Update
-  - [x] Delete
-- [x] Fields To Add
-  - [x] Quantity
-  - [x] Insured (bool)
-- [x] Bulk Import via CSV
-  - [x] Initial
-  - [x] Add Warranty Columns
-  - [x] All Fields
-  - [x] Documentations
-- [x] Release Flow
-  - [x] CI/CD Docker Builds w/ Multi-arch
-  - [x] Auto Fly.io Deploy for Nightly
-  - [x] Deploy Docs
-- [x] Repo House Keeping
-  - [x] Add License
-  - [x] Issues Template
-  - [x] PR Templates
-  - [x] Security Policy
-  - [x] Feature Request Template
-- [x] Embedded Version Info
-  - [x] Version Number
-  - [x] Git Hash
-- [x] Setup Docker Volumes in Dockerfile
-- [x] Warranty Information
-  - [x] Option for Lifetime Warranty or Warranty Period
-
-## All Todo's
-
-- [ ] Dev Container for Development
-- [ ] User Invitation Links to Join Group
-- [ ] Maintenance Logs
-  - [ ] Schedule Future Maintenance
-  - [ ] Email on Maintenance Due
-  - [ ] QR Code Stickers to Scan to enter a Maintenance Task
-- [ ] Export CSV (With IDs)
-- [ ] User Profile
-  - [ ] Adjust Theme (Daisy UI)
-  - [ ] Delete Profile
-  - [ ] Send User Invites
-  - [ ] Set Currency
-  - [ ] Change Password
-- [ ] Admin Page
-  - [ ] Instance Statistics
-  - [ ] User Management
-    - [ ] Delete User
-    - [ ] Reset Password
-- [ ] Expose Swagger API Documentation
-  - [ ] Dynamic Port / Host Settings
 
 ## Credits
 
