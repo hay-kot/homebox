@@ -55,11 +55,10 @@
   - [ ] How To
 - [ ] Repo House Keeping
   - [x] Add License
-  - [ ] Issues Template
+  - [x] Issues Template
   - [x] PR Templates
-  - [ ] Contributors Guide
   - [x] Security Policy
-  - [ ] Feature Request Template
+  - [x] Feature Request Template
 - [x] Embedded Version Info
   - [x] Version Number
   - [x] Git Hash
