@@ -22,6 +22,13 @@
 
 ## MVP Todo
 
+- [ ] Asset Attachments for Items
+- [ ] Db Migrations
+  - [ ] How To
+- [ ] Documentation
+  - [ ] Docker Compose
+  - [ ] Config File
+  - [ ] TLDR; Getting Started
 - [x] Locations
   - [x] Create
   - [x] Update
@@ -34,7 +41,6 @@
   - [x] Create
   - [x] Update
   - [x] Delete
-- [ ] Asset Attachments for Items
 - [x] Fields To Add
   - [x] Quantity
   - [x] Insured (bool)
@@ -43,17 +49,11 @@
   - [x] Add Warranty Columns
   - [x] All Fields
   - [x] Documentations
-- [ ] Documentation
-  - [ ] Docker Compose
-  - [ ] Config File
-  - [ ] TLDR; Getting Started
 - [x] Release Flow
   - [x] CI/CD Docker Builds w/ Multi-arch
   - [x] Auto Fly.io Deploy for Nightly
   - [x] Deploy Docs
-- [ ] Db Migrations
-  - [ ] How To
-- [ ] Repo House Keeping
+- [x] Repo House Keeping
   - [x] Add License
   - [x] Issues Template
   - [x] PR Templates
@@ -88,4 +88,5 @@
   - [ ] Dynamic Port / Host Settings
 
 ## Credits
+
 - Logo by [@lakotelman](https://github.com/lakotelman)
