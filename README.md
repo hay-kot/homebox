@@ -16,8 +16,6 @@
 [Configuration & Docker Compose](https://hay-kot.github.io/homebox/quick-start)
 
 ```bash
-
-```yml
 docker run --name=homebox \
     --restart=always \
     --publish=3100:7745 \
