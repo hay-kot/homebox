@@ -2,6 +2,9 @@ version: "3"
 
 tasks:
   generate:
+    desc: |
+      Generates collateral files from the backend project
+      including swagger docs and typescripts type for the frontend
     cmds:
       - |
         cd backend && ent generate ./ent/schema \
@@ -17,10 +20,21 @@ tasks:
           --output ./frontend/lib/api/types
 
         python3 ./scripts/process-types.py ./frontend/lib/api/types/data-contracts.ts
+    sources:
+      - "./backend/app/api/**/*"
+      - "./backend/app/internal/types/**/*"
+      - "./scripts/process-types.py"
+    generates:
+      - "./frontend/lib/api/types/data-contracts.ts"
+      - "./backend/app/api/docs/swagger.json"
+      - "./backend/app/api/docs/swagger.yaml"
+
   api:
+    desc: Starts the backend api server (depends on generate task)
+    deps:
+      - generate
     cmds:
-      - task: generate
-      - cd backend && go run ./app/api/ {{.CLI_ARGS}} ./config.yml
+      - cd backend && go run ./app/api/ {{ .CLI_ARGS }}
     silent: false
 
   api:build:
