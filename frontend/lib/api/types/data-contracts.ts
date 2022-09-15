@@ -45,6 +45,7 @@ export interface ItemAttachment {
   createdAt: Date;
   document: DocumentOut;
   id: string;
+  type: string;
   updatedAt: Date;
 }
 

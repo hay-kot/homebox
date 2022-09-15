@@ -101,7 +101,7 @@ func (svc *ItemService) attachmentPath(gid, itemId uuid.UUID, filename string) s
 // AddAttachment adds an attachment to an item by creating an entry in the Documents table and linking it to the Attachment
 // Table and Items table. The file provided via the reader is stored on the file system based on the provided
 // relative path during construction of the service.
-func (svc *ItemService) AddAttachment(ctx context.Context, gid, itemId uuid.UUID, filename string, file io.Reader) (*types.ItemOut, error) {
+func (svc *ItemService) AddAttachment(ctx context.Context, gid, itemId uuid.UUID, filename string, attachmentType attachment.Type, file io.Reader) (*types.ItemOut, error) {
 	// Get the Item
 	item, err := svc.repo.Items.GetOne(ctx, itemId)
 	if err != nil {
@@ -122,7 +122,7 @@ func (svc *ItemService) AddAttachment(ctx context.Context, gid, itemId uuid.UUID
 	}
 
 	// Create the attachment
-	_, err = svc.repo.Attachments.Create(ctx, itemId, doc.ID, attachment.TypeAttachment)
+	_, err = svc.repo.Attachments.Create(ctx, itemId, doc.ID, attachmentType)
 	if err != nil {
 		return nil, err
 	}

@@ -10,6 +10,7 @@ func ToItemAttachment(attachment *ent.Attachment) *types.ItemAttachment {
 		ID:        attachment.ID,
 		CreatedAt: attachment.CreatedAt,
 		UpdatedAt: attachment.UpdatedAt,
+		Type:      attachment.Type.String(),
 		Document: types.DocumentOut{
 			ID:    attachment.Edges.Document.ID,
 			Title: attachment.Edges.Document.Title,

@@ -2,8 +2,10 @@ package v1
 
 import (
 	"encoding/csv"
+	"errors"
 	"net/http"
 
+	"github.com/hay-kot/homebox/backend/ent/attachment"
 	"github.com/hay-kot/homebox/backend/internal/services"
 	"github.com/hay-kot/homebox/backend/internal/types"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
@@ -89,8 +91,8 @@ func (ctrl *V1Controller) HandleItemDelete() http.HandlerFunc {
 // @Summary   Gets a item and fields
 // @Tags      Items
 // @Produce   json
-// @Param     id   path      string  true  "Item ID"
-// @Success   200      {object}  types.ItemOut
+// @Param     id    path      string  true  "Item ID"
+// @Success   200   {object}  types.ItemOut
 // @Router    /v1/items/{id} [GET]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleItemGet() http.HandlerFunc {
@@ -187,5 +189,66 @@ func (ctrl *V1Controller) HandleItemsImport() http.HandlerFunc {
 		}
 
 		server.Respond(w, http.StatusNoContent, nil)
+	}
+}
+
+// HandleItemsImport godocs
+// @Summary   imports items into the database
+// @Tags      Items
+// @Produce   json
+// @Param     id   path      string  true  "Item ID"
+// @Param     file  formData  file    true  "File attachment"
+// @Param     type  formData  string  true  "Type of file"
+// @Param     name  formData  string  true  "name of the file including extension"
+// @Success   200      {object}  types.ItemOut
+// @Router    /v1/items/{id}/attachment [Post]
+// @Security  Bearer
+func (ctrl *V1Controller) HandleItemAttachmentCreate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Max upload size of 10 MB - TODO: Set via config
+		err := r.ParseMultipartForm(10 << 20)
+		if err != nil {
+			log.Err(err).Msg("failed to parse multipart form")
+			server.RespondServerError(w)
+			return
+		}
+		file, _, err := r.FormFile("file")
+		if err != nil {
+			log.Err(err).Msg("failed to get file from form")
+			server.RespondServerError(w)
+			return
+		}
+		attachmentName := r.FormValue("name")
+		if attachmentName == "" {
+			log.Err(err).Msg("failed to get name from form")
+			server.RespondError(w, http.StatusBadRequest, errors.New("name is required"))
+		}
+
+		attachmentType := r.FormValue("type")
+		if attachmentType == "" {
+			attachmentName = "attachment"
+		}
+
+		uid, user, err := ctrl.partialParseIdAndUser(w, r)
+		if err != nil {
+			return
+		}
+
+		item, err := ctrl.svc.Items.AddAttachment(
+			r.Context(),
+			user.GroupID,
+			uid,
+			attachmentName,
+			attachment.Type(attachmentType),
+			file,
+		)
+
+		if err != nil {
+			log.Err(err).Msg("failed to add attachment")
+			server.RespondServerError(w)
+			return
+		}
+
+		server.Respond(w, http.StatusOK, item)
 	}
 }

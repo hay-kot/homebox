@@ -224,6 +224,60 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/items/{id}/attachment": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Items"
+                ],
+                "summary": "imports items into the database",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "File attachment",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Type of file",
+                        "name": "type",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name of the file including extension",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.ItemOut"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/labels": {
             "get": {
                 "security": [
@@ -879,6 +933,9 @@ const docTemplate = `{
                     "$ref": "#/definitions/types.DocumentOut"
                 },
                 "id": {
+                    "type": "string"
+                },
+                "type": {
                     "type": "string"
                 },
                 "updatedAt": {
