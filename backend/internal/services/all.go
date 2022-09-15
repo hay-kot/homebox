@@ -10,7 +10,7 @@ type AllServices struct {
 	Items    *ItemService
 }
 
-func NewServices(repos *repo.AllRepos) *AllServices {
+func NewServices(repos *repo.AllRepos, root string) *AllServices {
 	return &AllServices{
 		User:     &UserService{repos},
 		Admin:    &AdminService{repos},
@@ -18,7 +18,7 @@ func NewServices(repos *repo.AllRepos) *AllServices {
 		Labels:   &LabelService{repos},
 		Items: &ItemService{
 			repo:     repos,
-			filepath: "/tmp/content",
+			filepath: root,
 		},
 	}
 }

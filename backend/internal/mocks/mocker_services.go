@@ -6,5 +6,5 @@ import (
 )
 
 func GetMockServices(repos *repo.AllRepos) *services.AllServices {
-	return services.NewServices(repos)
+	return services.NewServices(repos, "/tmp/homebox")
 }

@@ -17,12 +17,12 @@ const (
 )
 
 type Config struct {
-	Mode     string      `yaml:"mode" conf:"default:development"` // development or production
-	Web      WebConfig   `yaml:"web"`
-	Database Database    `yaml:"database"`
-	Log      LoggerConf  `yaml:"logger"`
-	Mailer   MailerConf  `yaml:"mailer"`
-	Swagger  SwaggerConf `yaml:"swagger"`
+	Mode    string      `yaml:"mode" conf:"default:development"` // development or production
+	Web     WebConfig   `yaml:"web"`
+	Storage Storage     `yaml:"storage"`
+	Log     LoggerConf  `yaml:"logger"`
+	Mailer  MailerConf  `yaml:"mailer"`
+	Swagger SwaggerConf `yaml:"swagger"`
 }
 
 type SwaggerConf struct {

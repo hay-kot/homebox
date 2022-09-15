@@ -37,10 +37,6 @@ func main() {
 		path = os.Args[1]
 	}
 
-	if path == "" {
-		log.Warn().Msg("No configuration detected, using defaults")
-	}
-
 	cfg, err := config.NewConfig(path)
 	if err != nil {
 		panic(err)
@@ -55,17 +51,22 @@ func main() {
 
 func run(cfg *config.Config) error {
 	app := new(cfg)
-
 	app.setupLogger()
+
 	// =========================================================================
 	// Initialize Database & Repos
 
-	c, err := ent.Open(cfg.Database.GetDriver(), cfg.Database.GetUrl())
+	err := os.MkdirAll(cfg.Storage.Data, 0755)
+	if err != nil {
+		log.Fatal().Err(err).Msg("failed to create data directory")
+	}
+
+	c, err := ent.Open("sqlite3", cfg.Storage.SqliteUrl)
 	if err != nil {
 		log.Fatal().
 			Err(err).
-			Str("driver", cfg.Database.GetDriver()).
-			Str("url", cfg.Database.GetUrl()).
+			Str("driver", "sqlite").
+			Str("url", cfg.Storage.SqliteUrl).
 			Msg("failed opening connection to sqlite")
 	}
 	defer func(c *ent.Client) {
@@ -74,12 +75,14 @@ func run(cfg *config.Config) error {
 	if err := c.Schema.Create(context.Background()); err != nil {
 		log.Fatal().
 			Err(err).
+			Str("driver", "sqlite").
+			Str("url", cfg.Storage.SqliteUrl).
 			Msg("failed creating schema resources")
 	}
 
 	app.db = c
 	app.repos = repo.EntAllRepos(c)
-	app.services = services.NewServices(app.repos)
+	app.services = services.NewServices(app.repos, cfg.Storage.Data)
 
 	// =========================================================================
 	// Start Server
