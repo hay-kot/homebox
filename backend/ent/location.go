@@ -9,8 +9,8 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
-	"github.com/hay-kot/content/backend/ent/group"
-	"github.com/hay-kot/content/backend/ent/location"
+	"github.com/hay-kot/homebox/backend/ent/group"
+	"github.com/hay-kot/homebox/backend/ent/location"
 )
 
 // Location is the model entity for the Location schema.

@@ -9,8 +9,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/hay-kot/content/backend/ent/item"
-	"github.com/hay-kot/content/backend/ent/predicate"
+	"github.com/hay-kot/homebox/backend/ent/item"
+	"github.com/hay-kot/homebox/backend/ent/predicate"
 )
 
 // ItemDelete is the builder for deleting a Item entity.

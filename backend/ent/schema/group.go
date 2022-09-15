@@ -5,7 +5,7 @@ import (
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"github.com/hay-kot/content/backend/ent/schema/mixins"
+	"github.com/hay-kot/homebox/backend/ent/schema/mixins"
 )
 
 // Group holds the schema definition for the Group entity.

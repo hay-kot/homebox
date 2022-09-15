@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/hay-kot/content/backend/ent"
-	"github.com/hay-kot/content/backend/ent/attachment"
+	"github.com/hay-kot/homebox/backend/ent"
+	"github.com/hay-kot/homebox/backend/ent/attachment"
 )
 
 // AttachmentRepo is a repository for Attachments table that links Items to Documents

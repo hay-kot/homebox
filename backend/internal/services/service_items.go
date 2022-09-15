@@ -8,10 +8,10 @@ import (
 	"path/filepath"
 
 	"github.com/google/uuid"
-	"github.com/hay-kot/content/backend/ent/attachment"
-	"github.com/hay-kot/content/backend/internal/repo"
-	"github.com/hay-kot/content/backend/internal/services/mappers"
-	"github.com/hay-kot/content/backend/internal/types"
+	"github.com/hay-kot/homebox/backend/ent/attachment"
+	"github.com/hay-kot/homebox/backend/internal/repo"
+	"github.com/hay-kot/homebox/backend/internal/services/mappers"
+	"github.com/hay-kot/homebox/backend/internal/types"
 	"github.com/rs/zerolog/log"
 )
 

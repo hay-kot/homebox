@@ -6,17 +6,17 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/hay-kot/content/backend/ent/attachment"
-	"github.com/hay-kot/content/backend/ent/authtokens"
-	"github.com/hay-kot/content/backend/ent/document"
-	"github.com/hay-kot/content/backend/ent/documenttoken"
-	"github.com/hay-kot/content/backend/ent/group"
-	"github.com/hay-kot/content/backend/ent/item"
-	"github.com/hay-kot/content/backend/ent/itemfield"
-	"github.com/hay-kot/content/backend/ent/label"
-	"github.com/hay-kot/content/backend/ent/location"
-	"github.com/hay-kot/content/backend/ent/schema"
-	"github.com/hay-kot/content/backend/ent/user"
+	"github.com/hay-kot/homebox/backend/ent/attachment"
+	"github.com/hay-kot/homebox/backend/ent/authtokens"
+	"github.com/hay-kot/homebox/backend/ent/document"
+	"github.com/hay-kot/homebox/backend/ent/documenttoken"
+	"github.com/hay-kot/homebox/backend/ent/group"
+	"github.com/hay-kot/homebox/backend/ent/item"
+	"github.com/hay-kot/homebox/backend/ent/itemfield"
+	"github.com/hay-kot/homebox/backend/ent/label"
+	"github.com/hay-kot/homebox/backend/ent/location"
+	"github.com/hay-kot/homebox/backend/ent/schema"
+	"github.com/hay-kot/homebox/backend/ent/user"
 )
 
 // The init function reads all schema descriptors with runtime code

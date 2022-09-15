@@ -3,12 +3,12 @@ package main
 import (
 	"time"
 
-	"github.com/hay-kot/content/backend/ent"
-	"github.com/hay-kot/content/backend/internal/config"
-	"github.com/hay-kot/content/backend/internal/repo"
-	"github.com/hay-kot/content/backend/internal/services"
-	"github.com/hay-kot/content/backend/pkgs/mailer"
-	"github.com/hay-kot/content/backend/pkgs/server"
+	"github.com/hay-kot/homebox/backend/ent"
+	"github.com/hay-kot/homebox/backend/internal/config"
+	"github.com/hay-kot/homebox/backend/internal/repo"
+	"github.com/hay-kot/homebox/backend/internal/services"
+	"github.com/hay-kot/homebox/backend/pkgs/mailer"
+	"github.com/hay-kot/homebox/backend/pkgs/server"
 )
 
 type app struct {

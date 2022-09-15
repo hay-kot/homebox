@@ -6,7 +6,7 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
-	"github.com/hay-kot/content/backend/ent/schema/mixins"
+	"github.com/hay-kot/homebox/backend/ent/schema/mixins"
 )
 
 // Item holds the schema definition for the Item entity.

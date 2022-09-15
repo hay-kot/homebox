@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/hay-kot/content/backend/internal/types"
+	"github.com/hay-kot/homebox/backend/internal/types"
 	"github.com/stretchr/testify/assert"
 )
 

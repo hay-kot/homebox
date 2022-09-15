@@ -4,7 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"github.com/hay-kot/content/backend/ent/schema/mixins"
+	"github.com/hay-kot/homebox/backend/ent/schema/mixins"
 )
 
 // Attachment holds the schema definition for the Attachment entity.

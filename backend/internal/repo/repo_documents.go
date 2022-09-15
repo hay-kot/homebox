@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/hay-kot/content/backend/ent"
-	"github.com/hay-kot/content/backend/ent/document"
-	"github.com/hay-kot/content/backend/ent/group"
-	"github.com/hay-kot/content/backend/internal/types"
+	"github.com/hay-kot/homebox/backend/ent"
+	"github.com/hay-kot/homebox/backend/ent/document"
+	"github.com/hay-kot/homebox/backend/ent/group"
+	"github.com/hay-kot/homebox/backend/internal/types"
 )
 
 // DocumentRepository is a repository for Document entity

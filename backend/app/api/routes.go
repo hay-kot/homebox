@@ -11,10 +11,10 @@ import (
 	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
-	_ "github.com/hay-kot/content/backend/app/api/docs"
-	v1 "github.com/hay-kot/content/backend/app/api/v1"
-	"github.com/hay-kot/content/backend/internal/repo"
-	"github.com/hay-kot/content/backend/internal/types"
+	_ "github.com/hay-kot/homebox/backend/app/api/docs"
+	v1 "github.com/hay-kot/homebox/backend/app/api/v1"
+	"github.com/hay-kot/homebox/backend/internal/repo"
+	"github.com/hay-kot/homebox/backend/internal/types"
 	"github.com/rs/zerolog/log"
 	httpSwagger "github.com/swaggo/http-swagger" // http-swagger middleware
 )

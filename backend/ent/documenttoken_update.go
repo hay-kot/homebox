@@ -12,9 +12,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
-	"github.com/hay-kot/content/backend/ent/document"
-	"github.com/hay-kot/content/backend/ent/documenttoken"
-	"github.com/hay-kot/content/backend/ent/predicate"
+	"github.com/hay-kot/homebox/backend/ent/document"
+	"github.com/hay-kot/homebox/backend/ent/documenttoken"
+	"github.com/hay-kot/homebox/backend/ent/predicate"
 )
 
 // DocumentTokenUpdate is the builder for updating DocumentToken entities.

@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/hay-kot/content/backend/ent"
-	"github.com/hay-kot/content/backend/ent/authtokens"
-	"github.com/hay-kot/content/backend/internal/types"
+	"github.com/hay-kot/homebox/backend/ent"
+	"github.com/hay-kot/homebox/backend/ent/authtokens"
+	"github.com/hay-kot/homebox/backend/internal/types"
 )
 
 type TokenRepository struct {

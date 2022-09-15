@@ -1,9 +1,9 @@
 package mappers
 
 import (
-	"github.com/hay-kot/content/backend/ent"
-	"github.com/hay-kot/content/backend/internal/repo"
-	"github.com/hay-kot/content/backend/internal/types"
+	"github.com/hay-kot/homebox/backend/ent"
+	"github.com/hay-kot/homebox/backend/internal/repo"
+	"github.com/hay-kot/homebox/backend/internal/types"
 )
 
 func ToLocationCount(location *repo.LocationWithCount) *types.LocationCount {

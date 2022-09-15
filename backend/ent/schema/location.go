@@ -4,7 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
-	"github.com/hay-kot/content/backend/ent/schema/mixins"
+	"github.com/hay-kot/homebox/backend/ent/schema/mixins"
 )
 
 // Location holds the schema definition for the Location entity.

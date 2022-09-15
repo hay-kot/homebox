@@ -3,9 +3,9 @@ package v1
 import (
 	"net/http"
 
-	"github.com/hay-kot/content/backend/internal/services"
-	"github.com/hay-kot/content/backend/internal/types"
-	"github.com/hay-kot/content/backend/pkgs/server"
+	"github.com/hay-kot/homebox/backend/internal/services"
+	"github.com/hay-kot/homebox/backend/internal/types"
+	"github.com/hay-kot/homebox/backend/pkgs/server"
 )
 
 type V1Controller struct {

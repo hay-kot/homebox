@@ -9,8 +9,8 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
-	"github.com/hay-kot/content/backend/ent/document"
-	"github.com/hay-kot/content/backend/ent/documenttoken"
+	"github.com/hay-kot/homebox/backend/ent/document"
+	"github.com/hay-kot/homebox/backend/ent/documenttoken"
 )
 
 // DocumentToken is the model entity for the DocumentToken schema.

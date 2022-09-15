@@ -3,7 +3,7 @@ package services
 import (
 	"context"
 
-	"github.com/hay-kot/content/backend/internal/types"
+	"github.com/hay-kot/homebox/backend/internal/types"
 )
 
 type contextKeys struct {

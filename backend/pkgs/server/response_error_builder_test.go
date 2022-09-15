@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/hay-kot/content/backend/pkgs/faker"
+	"github.com/hay-kot/homebox/backend/pkgs/faker"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/hay-kot/content/backend/ent"
-	"github.com/hay-kot/content/backend/ent/documenttoken"
-	"github.com/hay-kot/content/backend/internal/types"
+	"github.com/hay-kot/homebox/backend/ent"
+	"github.com/hay-kot/homebox/backend/ent/documenttoken"
+	"github.com/hay-kot/homebox/backend/internal/types"
 	"github.com/stretchr/testify/assert"
 )
 

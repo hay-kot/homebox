@@ -11,9 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
-	"github.com/hay-kot/content/backend/ent/attachment"
-	"github.com/hay-kot/content/backend/ent/document"
-	"github.com/hay-kot/content/backend/ent/item"
+	"github.com/hay-kot/homebox/backend/ent/attachment"
+	"github.com/hay-kot/homebox/backend/ent/document"
+	"github.com/hay-kot/homebox/backend/ent/item"
 )
 
 // AttachmentCreate is the builder for creating a Attachment entity.
