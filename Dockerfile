@@ -29,8 +29,11 @@ RUN CGO_ENABLED=1 GOOS=linux go build \
 # Production Stage
 FROM alpine:latest
 
+ENV HBOX_MODE=production
+ENV HBOX_STORAGE_DATA=/data/
+ENV HBOX_STORAGE_SQLITE_URL=/data/homebox.db?_fk=1
+
 RUN apk --no-cache add ca-certificates
-COPY ./backend/config.template.yml /data/config.yml
 RUN mkdir /app
 COPY --from=builder /go/bin/api /app
 
