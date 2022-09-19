@@ -205,7 +205,7 @@ func (ctrl *V1Controller) HandleItemsImport() http.HandlerFunc {
 // @Param     type  formData  string  true  "Type of file"
 // @Param     name  formData  string  true  "name of the file including extension"
 // @Success   200   {object}  types.ItemOut
-// @Router    /v1/items/{id}/attachment [POST]
+// @Router    /v1/items/{id}/attachments [POST]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleItemAttachmentCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -261,12 +261,39 @@ func (ctrl *V1Controller) HandleItemAttachmentCreate() http.HandlerFunc {
 // @Summary   retrieves an attachment for an item
 // @Tags      Items
 // @Produce   application/octet-stream
-// @Param     id             path  string  true  "Item ID"
-// @Param     attachment_id  path  string  true  "Attachment ID"
+// @Param     id     path   string  true  "Item ID"
+// @Param     token  query  string  true  "Attachment token"
 // @Success   200
-// @Router    /v1/items/{id}/attachment/{attachment_id} [GET]
+// @Router    /v1/items/{id}/attachments/download [GET]
 // @Security  Bearer
-func (ctrl *V1Controller) HandleItemAttachmentGet() http.HandlerFunc {
+func (ctrl *V1Controller) HandleItemAttachmentDownload() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		token := server.GetParam(r, "token", "")
+
+		path, err := ctrl.svc.Items.GetAttachment(r.Context(), token)
+
+		if err != nil {
+			log.Err(err).Msg("failed to get attachment")
+			server.RespondServerError(w)
+			return
+		}
+
+		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filepath.Base(path)))
+		w.Header().Set("Content-Type", "application/octet-stream")
+		http.ServeFile(w, r, path)
+	}
+}
+
+// HandleItemAttachmentToken godocs
+// @Summary   retrieves an attachment for an item
+// @Tags      Items
+// @Produce   application/octet-stream
+// @Param     id             path      string  true  "Item ID"
+// @Param     attachment_id  path      string  true  "Attachment ID"
+// @Success   200            {object}  types.ItemAttachmentToken
+// @Router    /v1/items/{id}/attachments/{attachment_id} [GET]
+// @Security  Bearer
+func (ctrl *V1Controller) HandleItemAttachmentToken() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		uid, user, err := ctrl.partialParseIdAndUser(w, r)
 		if err != nil {
@@ -280,7 +307,7 @@ func (ctrl *V1Controller) HandleItemAttachmentGet() http.HandlerFunc {
 			return
 		}
 
-		path, err := ctrl.svc.Items.GetAttachment(r.Context(), user.GroupID, uid, attachmentId)
+		token, err := ctrl.svc.Items.NewAttachmentToken(r.Context(), user.GroupID, uid, attachmentId)
 
 		if err != nil {
 			log.Err(err).Msg("failed to get attachment")
@@ -288,8 +315,9 @@ func (ctrl *V1Controller) HandleItemAttachmentGet() http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filepath.Base(path)))
-		w.Header().Set("Content-Type", "application/octet-stream")
-		http.ServeFile(w, r, path)
+		server.Respond(w, http.StatusOK, types.ItemAttachmentToken{
+			Token: token,
+		})
+
 	}
 }

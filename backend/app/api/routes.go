@@ -54,6 +54,10 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 		r.Post(v1Base("/users/register"), v1Ctrl.HandleUserRegistration())
 		r.Post(v1Base("/users/login"), v1Ctrl.HandleAuthLogin())
 
+		// Attachment download URl needs a `token` query param to be passed in the request.
+		// and also needs to be outside of the `auth` middleware.
+		r.Get(v1Base("/items/{id}/attachments/download"), v1Ctrl.HandleItemAttachmentDownload())
+
 		r.Group(func(r chi.Router) {
 			r.Use(a.mwAuthToken)
 			r.Get(v1Base("/users/self"), v1Ctrl.HandleUserSelf())
@@ -82,8 +86,8 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 			r.Put(v1Base("/items/{id}"), v1Ctrl.HandleItemUpdate())
 			r.Delete(v1Base("/items/{id}"), v1Ctrl.HandleItemDelete())
 
-			r.Post(v1Base("/items/{id}/attachment"), v1Ctrl.HandleItemAttachmentCreate())
-			r.Get(v1Base("/items/{id}/attachment/{attachment_id}"), v1Ctrl.HandleItemAttachmentGet())
+			r.Post(v1Base("/items/{id}/attachments"), v1Ctrl.HandleItemAttachmentCreate())
+			r.Get(v1Base("/items/{id}/attachments/{attachment_id}"), v1Ctrl.HandleItemAttachmentToken())
 		})
 	}
 

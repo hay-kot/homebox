@@ -19,6 +19,7 @@ func NewServices(repos *repo.AllRepos, root string) *AllServices {
 		Items: &ItemService{
 			repo:     repos,
 			filepath: root,
+			at:       attachmentTokens{},
 		},
 	}
 }

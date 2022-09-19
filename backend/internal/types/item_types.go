@@ -106,3 +106,7 @@ type ItemAttachment struct {
 	Type      string      `json:"type"`
 	Document  DocumentOut `json:"document"`
 }
+
+type ItemAttachmentToken struct {
+	Token string `json:"token"`
+}

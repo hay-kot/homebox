@@ -224,7 +224,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/items/{id}/attachment": {
+        "/v1/items/{id}/attachments": {
             "post": {
                 "security": [
                     {
@@ -278,7 +278,44 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/items/{id}/attachment/{attachment_id}": {
+        "/v1/items/{id}/attachments/download": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/octet-stream"
+                ],
+                "tags": [
+                    "Items"
+                ],
+                "summary": "retrieves an attachment for an item",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Attachment token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/v1/items/{id}/attachments/{attachment_id}": {
             "get": {
                 "security": [
                     {
@@ -310,7 +347,10 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.ItemAttachmentToken"
+                        }
                     }
                 }
             }
@@ -976,6 +1016,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.ItemAttachmentToken": {
+            "type": "object",
+            "properties": {
+                "token": {
                     "type": "string"
                 }
             }

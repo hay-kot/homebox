@@ -60,6 +60,11 @@ definitions:
       updatedAt:
         type: string
     type: object
+  types.ItemAttachmentToken:
+    properties:
+      token:
+        type: string
+    type: object
   types.ItemCreate:
     properties:
       description:
@@ -501,7 +506,7 @@ paths:
       summary: updates a item
       tags:
       - Items
-  /v1/items/{id}/attachment:
+  /v1/items/{id}/attachments:
     post:
       parameters:
       - description: Item ID
@@ -536,7 +541,7 @@ paths:
       summary: imports items into the database
       tags:
       - Items
-  /v1/items/{id}/attachment/{attachment_id}:
+  /v1/items/{id}/attachments/{attachment_id}:
     get:
       parameters:
       - description: Item ID
@@ -547,6 +552,31 @@ paths:
       - description: Attachment ID
         in: path
         name: attachment_id
+        required: true
+        type: string
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ItemAttachmentToken'
+      security:
+      - Bearer: []
+      summary: retrieves an attachment for an item
+      tags:
+      - Items
+  /v1/items/{id}/attachments/download:
+    get:
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Attachment token
+        in: query
+        name: token
         required: true
         type: string
       produces:

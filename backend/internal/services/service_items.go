@@ -2,25 +2,61 @@ package services
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/ent/attachment"
 	"github.com/hay-kot/homebox/backend/internal/repo"
 	"github.com/hay-kot/homebox/backend/internal/services/mappers"
 	"github.com/hay-kot/homebox/backend/internal/types"
+	"github.com/hay-kot/homebox/backend/pkgs/hasher"
 	"github.com/hay-kot/homebox/backend/pkgs/pathlib"
 	"github.com/rs/zerolog/log"
 )
+
+var (
+	ErrNotFound = errors.New("not found")
+)
+
+// TODO: this isn't a scalable solution, tokens should be stored in the database
+type attachmentTokens map[string]uuid.UUID
+
+func (at attachmentTokens) Add(token string, id uuid.UUID) {
+	at[token] = id
+
+	log.Debug().Str("token", token).Str("uuid", id.String()).Msg("added token")
+
+	go func() {
+		ch := time.After(1 * time.Minute)
+		<-ch
+		at.Delete(token)
+		log.Debug().Str("token", token).Msg("deleted token")
+	}()
+}
+
+func (at attachmentTokens) Get(token string) (uuid.UUID, bool) {
+	id, ok := at[token]
+	return id, ok
+}
+
+func (at attachmentTokens) Delete(token string) {
+	delete(at, token)
+}
 
 type ItemService struct {
 	repo *repo.AllRepos
 
 	// filepath is the root of the storage location that will be used to store all files from.
 	filepath string
+
+	// at is a map of tokens to attachment IDs. This is used to store the attachment ID
+	// for issued URLs
+	at attachmentTokens
 }
 
 func (svc *ItemService) GetOne(ctx context.Context, gid uuid.UUID, id uuid.UUID) (*types.ItemOut, error) {
@@ -100,18 +136,28 @@ func (svc *ItemService) attachmentPath(gid, itemId uuid.UUID, filename string) s
 	return pathlib.Safe(path)
 }
 
-func (svc *ItemService) GetAttachment(ctx context.Context, gid, itemId, attachmentId uuid.UUID) (string, error) {
-	// Get the Item
+func (svc *ItemService) NewAttachmentToken(ctx context.Context, gid, itemId, attachmentId uuid.UUID) (string, error) {
 	item, err := svc.repo.Items.GetOne(ctx, itemId)
 	if err != nil {
 		return "", err
 	}
-
 	if item.Edges.Group.ID != gid {
 		return "", ErrNotOwner
 	}
 
-	// Get the attachment
+	token := hasher.GenerateToken()
+
+	svc.at.Add(token.Raw, attachmentId)
+
+	return token.Raw, nil
+}
+
+func (svc *ItemService) GetAttachment(ctx context.Context, token string) (string, error) {
+	attachmentId, ok := svc.at.Get(token)
+	if !ok {
+		return "", ErrNotFound
+	}
+
 	attachment, err := svc.repo.Attachments.Get(ctx, attachmentId)
 	if err != nil {
 		return "", err

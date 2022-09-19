@@ -49,6 +49,10 @@ export interface ItemAttachment {
   updatedAt: Date;
 }
 
+export interface ItemAttachmentToken {
+  token: string;
+}
+
 export interface ItemCreate {
   description: string;
   labelIds: string[];
