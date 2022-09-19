@@ -12,6 +12,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/repo"
 	"github.com/hay-kot/homebox/backend/internal/services/mappers"
 	"github.com/hay-kot/homebox/backend/internal/types"
+	"github.com/hay-kot/homebox/backend/pkgs/pathlib"
 	"github.com/rs/zerolog/log"
 )
 
@@ -95,7 +96,28 @@ func (svc *ItemService) Update(ctx context.Context, gid uuid.UUID, data types.It
 }
 
 func (svc *ItemService) attachmentPath(gid, itemId uuid.UUID, filename string) string {
-	return filepath.Join(svc.filepath, gid.String(), itemId.String(), filename)
+	path := filepath.Join(svc.filepath, gid.String(), itemId.String(), filename)
+	return pathlib.Safe(path)
+}
+
+func (svc *ItemService) GetAttachment(ctx context.Context, gid, itemId, attachmentId uuid.UUID) (string, error) {
+	// Get the Item
+	item, err := svc.repo.Items.GetOne(ctx, itemId)
+	if err != nil {
+		return "", err
+	}
+
+	if item.Edges.Group.ID != gid {
+		return "", ErrNotOwner
+	}
+
+	// Get the attachment
+	attachment, err := svc.repo.Attachments.Get(ctx, attachmentId)
+	if err != nil {
+		return "", err
+	}
+
+	return attachment.Edges.Document.Path, nil
 }
 
 // AddAttachment adds an attachment to an item by creating an entry in the Documents table and linking it to the Attachment

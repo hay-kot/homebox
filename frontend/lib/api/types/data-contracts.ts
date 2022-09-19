@@ -192,7 +192,6 @@ export interface LabelCreate {
 export interface LabelOut {
   createdAt: Date;
   description: string;
-  groupId: string;
   id: string;
   items: ItemSummary[];
   name: string;
@@ -202,7 +201,6 @@ export interface LabelOut {
 export interface LabelSummary {
   createdAt: Date;
   description: string;
-  groupId: string;
   id: string;
   name: string;
   updatedAt: Date;

@@ -278,6 +278,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/items/{id}/attachment/{attachment_id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/octet-stream"
+                ],
+                "tags": [
+                    "Items"
+                ],
+                "summary": "retrieves an attachment for an item",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Attachment ID",
+                        "name": "attachment_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/v1/labels": {
             "get": {
                 "security": [
@@ -1242,9 +1279,6 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
-                "groupId": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "string"
                 },
@@ -1269,9 +1303,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "description": {
-                    "type": "string"
-                },
-                "groupId": {
                     "type": "string"
                 },
                 "id": {

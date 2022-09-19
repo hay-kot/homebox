@@ -3,8 +3,12 @@ package v1
 import (
 	"encoding/csv"
 	"errors"
+	"fmt"
 	"net/http"
+	"path/filepath"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/ent/attachment"
 	"github.com/hay-kot/homebox/backend/internal/services"
 	"github.com/hay-kot/homebox/backend/internal/types"
@@ -91,8 +95,8 @@ func (ctrl *V1Controller) HandleItemDelete() http.HandlerFunc {
 // @Summary   Gets a item and fields
 // @Tags      Items
 // @Produce   json
-// @Param     id    path      string  true  "Item ID"
-// @Success   200   {object}  types.ItemOut
+// @Param     id   path      string  true  "Item ID"
+// @Success   200      {object}  types.ItemOut
 // @Router    /v1/items/{id} [GET]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleItemGet() http.HandlerFunc {
@@ -196,12 +200,12 @@ func (ctrl *V1Controller) HandleItemsImport() http.HandlerFunc {
 // @Summary   imports items into the database
 // @Tags      Items
 // @Produce   json
-// @Param     id   path      string  true  "Item ID"
+// @Param     id    path      string  true  "Item ID"
 // @Param     file  formData  file    true  "File attachment"
 // @Param     type  formData  string  true  "Type of file"
 // @Param     name  formData  string  true  "name of the file including extension"
-// @Success   200      {object}  types.ItemOut
-// @Router    /v1/items/{id}/attachment [Post]
+// @Success   200   {object}  types.ItemOut
+// @Router    /v1/items/{id}/attachment [POST]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleItemAttachmentCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -250,5 +254,42 @@ func (ctrl *V1Controller) HandleItemAttachmentCreate() http.HandlerFunc {
 		}
 
 		server.Respond(w, http.StatusOK, item)
+	}
+}
+
+// HandleItemAttachmentGet godocs
+// @Summary   retrieves an attachment for an item
+// @Tags      Items
+// @Produce   application/octet-stream
+// @Param     id             path  string  true  "Item ID"
+// @Param     attachment_id  path  string  true  "Attachment ID"
+// @Success   200
+// @Router    /v1/items/{id}/attachment/{attachment_id} [GET]
+// @Security  Bearer
+func (ctrl *V1Controller) HandleItemAttachmentGet() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		uid, user, err := ctrl.partialParseIdAndUser(w, r)
+		if err != nil {
+			return
+		}
+
+		attachmentId, err := uuid.Parse(chi.URLParam(r, "attachment_id"))
+		if err != nil {
+			log.Err(err).Msg("failed to parse attachment_id param")
+			server.RespondError(w, http.StatusBadRequest, err)
+			return
+		}
+
+		path, err := ctrl.svc.Items.GetAttachment(r.Context(), user.GroupID, uid, attachmentId)
+
+		if err != nil {
+			log.Err(err).Msg("failed to get attachment")
+			server.RespondServerError(w)
+			return
+		}
+
+		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filepath.Base(path)))
+		w.Header().Set("Content-Type", "application/octet-stream")
+		http.ServeFile(w, r, path)
 	}
 }
