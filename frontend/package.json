@@ -24,7 +24,7 @@
     "prettier": "^2.7.1",
     "typescript": "^4.8.3",
     "vite-plugin-eslint": "^1.8.1",
-    "vitest": "^0.22.1"
+    "vitest": "^0.23.4"
   },
   "dependencies": {
     "@iconify/vue": "^3.2.1",
