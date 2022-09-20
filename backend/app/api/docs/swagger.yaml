@@ -542,6 +542,26 @@ paths:
       tags:
       - Items
   /v1/items/{id}/attachments/{attachment_id}:
+    delete:
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Attachment ID
+        in: path
+        name: attachment_id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: ""
+      security:
+      - Bearer: []
+      summary: retrieves an attachment for an item
+      tags:
+      - Items
     get:
       parameters:
       - description: Item ID

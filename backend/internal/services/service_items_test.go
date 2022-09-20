@@ -97,8 +97,7 @@ func TestItemService_AddAttachment(t *testing.T) {
 	temp := os.TempDir()
 
 	svc := &ItemService{
-		repo:     tRepos,
-		filepath: temp,
+		repo: tRepos,
 	}
 
 	loc, err := tSvc.Location.Create(context.Background(), tGroup.ID, types.LocationCreate{
@@ -126,7 +125,7 @@ func TestItemService_AddAttachment(t *testing.T) {
 	reader := strings.NewReader(contents)
 
 	// Setup
-	afterAttachment, err := svc.AddAttachment(context.Background(), tGroup.ID, itm.ID, "testfile.txt", "attachment", reader)
+	afterAttachment, err := svc.AttachmentAdd(context.Background(), tGroup.ID, itm.ID, "testfile.txt", "attachment", reader)
 	assert.NoError(t, err)
 	assert.NotNil(t, afterAttachment)
 

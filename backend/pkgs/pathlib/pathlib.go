@@ -24,10 +24,10 @@ var dirReader dirReaderFunc = func(directory string) []string {
 }
 
 func hasConflict(path string, neighbors []string) bool {
-	path = strings.ToLower(path)
+	filename := strings.ToLower(filepath.Base(path))
 
 	for _, n := range neighbors {
-		if strings.ToLower(n) == path {
+		if strings.ToLower(n) == filename {
 			return true
 		}
 	}
