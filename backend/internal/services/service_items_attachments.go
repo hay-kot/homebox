@@ -40,12 +40,12 @@ func (at attachmentTokens) Delete(token string) {
 	delete(at, token)
 }
 
-func (svc *ItemService) AttachmentToken(ctx context.Context, gid, itemId, attachmentId uuid.UUID) (string, error) {
+func (svc *ItemService) AttachmentToken(ctx ServiceContext, itemId, attachmentId uuid.UUID) (string, error) {
 	item, err := svc.repo.Items.GetOne(ctx, itemId)
 	if err != nil {
 		return "", err
 	}
-	if item.Edges.Group.ID != gid {
+	if item.Edges.Group.ID != ctx.GID {
 		return "", ErrNotOwner
 	}
 
@@ -77,25 +77,55 @@ func (svc *ItemService) AttachmentPath(ctx context.Context, token string) (strin
 	return attachment.Edges.Document.Path, nil
 }
 
+func (svc *ItemService) AttachmentUpdate(ctx ServiceContext, itemId uuid.UUID, data *types.ItemAttachmentUpdate) (*types.ItemOut, error) {
+	// Update Properties
+	attachment, err := svc.repo.Attachments.Update(ctx, data.ID, attachment.Type(data.Type))
+	if err != nil {
+		return nil, err
+	}
+
+	attDoc := attachment.Edges.Document
+
+	if data.Title != attachment.Edges.Document.Title {
+		newPath := pathlib.Safe(svc.attachmentPath(ctx.GID, itemId, data.Title))
+
+		// Move File
+		err = os.Rename(attachment.Edges.Document.Path, newPath)
+		if err != nil {
+			return nil, err
+		}
+
+		_, err = svc.repo.Docs.Update(ctx, attDoc.ID, types.DocumentUpdate{
+			Title: data.Title,
+			Path:  newPath,
+		})
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return svc.GetOne(ctx, ctx.GID, itemId)
+}
+
 // AttachmentAdd adds an attachment to an item by creating an entry in the Documents table and linking it to the Attachment
 // Table and Items table. The file provided via the reader is stored on the file system based on the provided
 // relative path during construction of the service.
-func (svc *ItemService) AttachmentAdd(ctx context.Context, gid, itemId uuid.UUID, filename string, attachmentType attachment.Type, file io.Reader) (*types.ItemOut, error) {
+func (svc *ItemService) AttachmentAdd(ctx ServiceContext, itemId uuid.UUID, filename string, attachmentType attachment.Type, file io.Reader) (*types.ItemOut, error) {
 	// Get the Item
 	item, err := svc.repo.Items.GetOne(ctx, itemId)
 	if err != nil {
 		return nil, err
 	}
 
-	if item.Edges.Group.ID != gid {
+	if item.Edges.Group.ID != ctx.GID {
 		return nil, ErrNotOwner
 	}
 
-	fp := svc.attachmentPath(gid, itemId, filename)
+	fp := svc.attachmentPath(ctx.GID, itemId, filename)
 	filename = filepath.Base(fp)
 
 	// Create the document
-	doc, err := svc.repo.Docs.Create(ctx, gid, types.DocumentCreate{
+	doc, err := svc.repo.Docs.Create(ctx, ctx.GID, types.DocumentCreate{
 		Title: filename,
 		Path:  fp,
 	})
@@ -126,7 +156,7 @@ func (svc *ItemService) AttachmentAdd(ctx context.Context, gid, itemId uuid.UUID
 		return nil, err
 	}
 
-	return svc.GetOne(ctx, gid, itemId)
+	return svc.GetOne(ctx, ctx.GID, itemId)
 }
 
 func (svc *ItemService) AttachmentDelete(ctx context.Context, gid, itemId, attachmentId uuid.UUID) error {

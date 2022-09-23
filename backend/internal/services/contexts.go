@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/types"
 )
 
@@ -14,6 +15,31 @@ var (
 	ContextUser      = &contextKeys{name: "User"}
 	ContextUserToken = &contextKeys{name: "UserToken"}
 )
+
+type ServiceContext struct {
+	context.Context
+
+	// UID is a unique identifier for the acting user.
+	UID uuid.UUID
+
+	// GID is a unique identifier for the acting users group.
+	GID uuid.UUID
+
+	// User is the acting user.
+	User *types.UserOut
+}
+
+// UseServiceCtx is a helper function that returns the service context from the context.
+// This extracts the users from the context and embeds it into the ServiceContext struct
+func NewServiceContext(ctx context.Context) ServiceContext {
+	user := UseUserCtx(ctx)
+	return ServiceContext{
+		Context: ctx,
+		UID:     user.ID,
+		GID:     user.GroupID,
+		User:    user,
+	}
+}
 
 // SetUserCtx is a helper function that sets the ContextUser and ContextUserToken
 // values within the context of a web request (or any context).

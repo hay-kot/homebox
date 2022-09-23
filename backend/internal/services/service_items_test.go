@@ -125,7 +125,7 @@ func TestItemService_AddAttachment(t *testing.T) {
 	reader := strings.NewReader(contents)
 
 	// Setup
-	afterAttachment, err := svc.AttachmentAdd(context.Background(), tGroup.ID, itm.ID, "testfile.txt", "attachment", reader)
+	afterAttachment, err := svc.AttachmentAdd(ServiceContext{Context: context.Background(), GID: tGroup.ID}, itm.ID, "testfile.txt", "attachment", reader)
 	assert.NoError(t, err)
 	assert.NotNil(t, afterAttachment)
 
