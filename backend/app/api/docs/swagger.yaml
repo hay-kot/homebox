@@ -65,6 +65,13 @@ definitions:
       token:
         type: string
     type: object
+  types.ItemAttachmentUpdate:
+    properties:
+      title:
+        type: string
+      type:
+        type: string
+    type: object
   types.ItemCreate:
     properties:
       description:
@@ -581,6 +588,34 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/types.ItemAttachmentToken'
+      security:
+      - Bearer: []
+      summary: retrieves an attachment for an item
+      tags:
+      - Items
+    put:
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Attachment ID
+        in: path
+        name: attachment_id
+        required: true
+        type: string
+      - description: Attachment Update
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.ItemAttachmentUpdate'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ItemOut'
       security:
       - Bearer: []
       summary: retrieves an attachment for an item

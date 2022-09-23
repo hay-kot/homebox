@@ -34,9 +34,15 @@ func (r *AttachmentRepo) Get(ctx context.Context, id uuid.UUID) (*ent.Attachment
 }
 
 func (r *AttachmentRepo) Update(ctx context.Context, itemId uuid.UUID, typ attachment.Type) (*ent.Attachment, error) {
-	return r.db.Attachment.UpdateOneID(itemId).
+	itm, err := r.db.Attachment.UpdateOneID(itemId).
 		SetType(typ).
 		Save(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return r.Get(ctx, itm.ID)
 }
 
 func (r *AttachmentRepo) Delete(ctx context.Context, id uuid.UUID) error {

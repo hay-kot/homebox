@@ -110,3 +110,9 @@ type ItemAttachment struct {
 type ItemAttachmentToken struct {
 	Token string `json:"token"`
 }
+
+type ItemAttachmentUpdate struct {
+	ID    uuid.UUID `json:"-"`
+	Type  string    `json:"type"`
+	Title string    `json:"title"`
+}

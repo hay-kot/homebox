@@ -88,6 +88,7 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 
 			r.Post(v1Base("/items/{id}/attachments"), v1Ctrl.HandleItemAttachmentCreate())
 			r.Get(v1Base("/items/{id}/attachments/{attachment_id}"), v1Ctrl.HandleItemAttachmentToken())
+			r.Put(v1Base("/items/{id}/attachments/{attachment_id}"), v1Ctrl.HandleItemAttachmentUpdate())
 			r.Delete(v1Base("/items/{id}/attachments/{attachment_id}"), v1Ctrl.HandleItemAttachmentDelete())
 		})
 	}
