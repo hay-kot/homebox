@@ -121,7 +121,7 @@
             <div class="sm:flex sm:space-x-5">
               <div class="mt-4 text-center sm:mt-0 sm:pt-1 sm:text-left">
                 <p class="text-sm font-medium text-gray-600">Welcome back,</p>
-                <p class="text-xl font-bold text-gray-900 sm:text-2xl">Hayden Kotelman</p>
+                <p class="text-xl font-bold text-gray-900 sm:text-2xl">Username</p>
                 <p class="text-sm font-medium text-gray-600">User</p>
               </div>
             </div>

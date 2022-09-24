@@ -13,7 +13,8 @@ import (
 )
 
 var (
-	ErrNotFound = errors.New("not found")
+	ErrNotFound     = errors.New("not found")
+	ErrFileNotFound = errors.New("file not found")
 )
 
 type ItemService struct {

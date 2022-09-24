@@ -91,7 +91,7 @@ func (ctrl *V1Controller) handleItemAttachmentsHandler(w http.ResponseWriter, r 
 		return
 	}
 
-	ctx := services.NewServiceContext(r.Context())
+	ctx := services.NewContext(r.Context())
 
 	switch r.Method {
 
@@ -99,9 +99,27 @@ func (ctrl *V1Controller) handleItemAttachmentsHandler(w http.ResponseWriter, r 
 	case http.MethodGet:
 		token, err := ctrl.svc.Items.AttachmentToken(ctx, uid, attachmentId)
 		if err != nil {
-			log.Err(err).Msg("failed to get attachment")
-			server.RespondServerError(w)
-			return
+			switch err {
+			case services.ErrNotFound:
+				log.Err(err).
+					Str("id", attachmentId.String()).
+					Msg("failed to find attachment with id")
+
+				server.RespondError(w, http.StatusNotFound, err)
+
+			case services.ErrFileNotFound:
+				log.Err(err).
+					Str("id", attachmentId.String()).
+					Msg("failed to find file path for attachment with id")
+				log.Warn().Msg("attachment with no file path removed from database")
+
+				server.RespondError(w, http.StatusNotFound, err)
+
+			default:
+				log.Err(err).Msg("failed to get attachment")
+				server.RespondServerError(w)
+				return
+			}
 		}
 
 		server.Respond(w, http.StatusOK, types.ItemAttachmentToken{Token: token})

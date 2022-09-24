@@ -40,7 +40,7 @@ func (at attachmentTokens) Delete(token string) {
 	delete(at, token)
 }
 
-func (svc *ItemService) AttachmentToken(ctx ServiceContext, itemId, attachmentId uuid.UUID) (string, error) {
+func (svc *ItemService) AttachmentToken(ctx Context, itemId, attachmentId uuid.UUID) (string, error) {
 	item, err := svc.repo.Items.GetOne(ctx, itemId)
 	if err != nil {
 		return "", err
@@ -50,6 +50,17 @@ func (svc *ItemService) AttachmentToken(ctx ServiceContext, itemId, attachmentId
 	}
 
 	token := hasher.GenerateToken()
+
+	// Ensure that the file exists
+	attachment, err := svc.repo.Attachments.Get(ctx, attachmentId)
+	if err != nil {
+		return "", err
+	}
+
+	if _, err := os.Stat(attachment.Edges.Document.Path); os.IsNotExist(err) {
+		svc.AttachmentDelete(ctx, ctx.GID, itemId, attachmentId)
+		return "", ErrNotFound
+	}
 
 	svc.at.Add(token.Raw, attachmentId)
 
@@ -77,7 +88,7 @@ func (svc *ItemService) AttachmentPath(ctx context.Context, token string) (strin
 	return attachment.Edges.Document.Path, nil
 }
 
-func (svc *ItemService) AttachmentUpdate(ctx ServiceContext, itemId uuid.UUID, data *types.ItemAttachmentUpdate) (*types.ItemOut, error) {
+func (svc *ItemService) AttachmentUpdate(ctx Context, itemId uuid.UUID, data *types.ItemAttachmentUpdate) (*types.ItemOut, error) {
 	// Update Properties
 	attachment, err := svc.repo.Attachments.Update(ctx, data.ID, attachment.Type(data.Type))
 	if err != nil {
@@ -110,7 +121,7 @@ func (svc *ItemService) AttachmentUpdate(ctx ServiceContext, itemId uuid.UUID, d
 // AttachmentAdd adds an attachment to an item by creating an entry in the Documents table and linking it to the Attachment
 // Table and Items table. The file provided via the reader is stored on the file system based on the provided
 // relative path during construction of the service.
-func (svc *ItemService) AttachmentAdd(ctx ServiceContext, itemId uuid.UUID, filename string, attachmentType attachment.Type, file io.Reader) (*types.ItemOut, error) {
+func (svc *ItemService) AttachmentAdd(ctx Context, itemId uuid.UUID, filename string, attachmentType attachment.Type, file io.Reader) (*types.ItemOut, error) {
 	// Get the Item
 	item, err := svc.repo.Items.GetOne(ctx, itemId)
 	if err != nil {

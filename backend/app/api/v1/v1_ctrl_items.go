@@ -234,7 +234,7 @@ func (ctrl *V1Controller) HandleItemAttachmentCreate() http.HandlerFunc {
 			return
 		}
 
-		ctx := services.NewServiceContext(r.Context())
+		ctx := services.NewContext(r.Context())
 
 		item, err := ctrl.svc.Items.AttachmentAdd(
 			ctx,

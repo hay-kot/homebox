@@ -25,7 +25,7 @@
     },
     modelValue: {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      type: Object as any,
+      type: [Object, String, Boolean] as any,
       default: null,
     },
     items: {
@@ -37,18 +37,47 @@
       type: String,
       default: "name",
     },
+    value: {
+      type: String,
+      default: null,
+      required: false,
+    },
     selectFirst: {
       type: Boolean,
       default: false,
     },
   });
 
-  watchOnce(
-    () => props.items,
-    () => {
-      if (props.selectFirst && props.items.length > 0) {
+  function syncSelect() {
+    if (!props.modelValue) {
+      if (props.selectFirst) {
         selectedIdx.value = 0;
       }
+      return;
+    }
+    // Check if we're already synced
+    if (props.value) {
+      if (props.modelValue[props.value] === props.items[selectedIdx.value][props.value]) {
+        return;
+      }
+    } else if (props.modelValue === props.items[selectedIdx.value]) {
+      return;
+    }
+
+    const idx = props.items.findIndex(item => {
+      if (props.value) {
+        return item[props.value] === props.modelValue;
+      }
+      return item === props.modelValue;
+    });
+
+    selectedIdx.value = idx;
+  }
+
+  watch(
+    () => props.modelValue,
+    () => {
+      syncSelect();
     }
   );
 
@@ -56,6 +85,10 @@
   watch(
     () => selectedIdx.value,
     () => {
+      if (props.value) {
+        emit("update:modelValue", props.items[selectedIdx.value][props.value]);
+        return;
+      }
       emit("update:modelValue", props.items[selectedIdx.value]);
     }
   );

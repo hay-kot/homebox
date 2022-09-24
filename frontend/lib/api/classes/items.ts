@@ -1,6 +1,13 @@
 import { BaseAPI, route } from "../base";
 import { parseDate } from "../base/base-api";
-import { ItemAttachmentToken, ItemCreate, ItemOut, ItemSummary, ItemUpdate } from "../types/data-contracts";
+import {
+  ItemAttachmentToken,
+  ItemAttachmentUpdate,
+  ItemCreate,
+  ItemOut,
+  ItemSummary,
+  ItemUpdate,
+} from "../types/data-contracts";
 import { AttachmentTypes } from "../types/non-generated";
 import { Results } from "./types";
 
@@ -76,7 +83,14 @@ export class ItemsApi extends BaseAPI {
     return route(`/items/${id}/attachments/download`, { token: payload.data.token });
   }
 
-  deleteAttachment(id: string, attachmentId: string) {
-    return this.http.delete<void>({ url: route(`/items/${id}/attachments/${attachmentId}`) });
+  async deleteAttachment(id: string, attachmentId: string) {
+    return await this.http.delete<void>({ url: route(`/items/${id}/attachments/${attachmentId}`) });
+  }
+
+  async updateAttachment(id: string, attachmentId: string, data: ItemAttachmentUpdate) {
+    return await this.http.put<ItemAttachmentUpdate, ItemOut>({
+      url: route(`/items/${id}/attachments/${attachmentId}`),
+      body: data,
+    });
   }
 }

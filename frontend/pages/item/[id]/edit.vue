@@ -1,7 +1,9 @@
 <script setup lang="ts">
-  import { ItemUpdate } from "~~/lib/api/types/data-contracts";
+  import { ItemAttachment, ItemUpdate } from "~~/lib/api/types/data-contracts";
+  import { AttachmentTypes } from "~~/lib/api/types/non-generated";
   import { useLabelStore } from "~~/stores/labels";
   import { useLocationStore } from "~~/stores/locations";
+  import { capitalize } from "~~/lib/strings";
 
   definePageMeta({
     layout: "home",
@@ -154,10 +156,131 @@
       ref: "soldTime",
     },
   ];
+
+  // - Attachments
+  const attDropZone = ref<HTMLDivElement>();
+  const { isOverDropZone: attDropZoneActive } = useDropZone(attDropZone);
+
+  const refAttachmentInput = ref<HTMLInputElement>();
+
+  function clickUpload() {
+    if (!refAttachmentInput.value) {
+      return;
+    }
+    refAttachmentInput.value.click();
+  }
+
+  function uploadImage(e: InputEvent) {
+    const files = (e.target as HTMLInputElement).files;
+    if (!files) {
+      return;
+    }
+
+    uploadAttachment([files.item(0)], AttachmentTypes.Attachment);
+  }
+
+  const dropPhoto = (files: File[] | null) => uploadAttachment(files, AttachmentTypes.Photo);
+  const dropAttachment = (files: File[] | null) => uploadAttachment(files, AttachmentTypes.Attachment);
+  const dropWarranty = (files: File[] | null) => uploadAttachment(files, AttachmentTypes.Warranty);
+  const dropManual = (files: File[] | null) => uploadAttachment(files, AttachmentTypes.Manual);
+
+  async function uploadAttachment(files: File[] | null, type: AttachmentTypes) {
+    if (!files && files.length === 0) {
+      return;
+    }
+
+    const { data, error } = await api.items.addAttachment(itemId.value, files[0], files[0].name, type);
+
+    if (error) {
+      toast.error("Failed to upload attachment");
+      return;
+    }
+
+    toast.success("Attachment uploaded");
+
+    item.value.attachments = data.attachments;
+  }
+
+  const confirm = useConfirm();
+
+  async function deleteAttachment(attachmentId: string) {
+    const confirmed = await confirm.reveal("Are you sure you want to delete this attachment?");
+
+    if (confirmed.isCanceled) {
+      return;
+    }
+
+    const { error } = await api.items.deleteAttachment(itemId.value, attachmentId);
+
+    if (error) {
+      toast.error("Failed to delete attachment");
+      return;
+    }
+
+    toast.success("Attachment deleted");
+    item.value.attachments = item.value.attachments.filter(a => a.id !== attachmentId);
+  }
+
+  const editState = reactive({
+    modal: false,
+    loading: false,
+
+    // Values
+    id: "",
+    title: "",
+    type: "",
+  });
+
+  const attachmentOpts = Object.entries(AttachmentTypes).map(([key, value]) => ({
+    text: capitalize(key),
+    value,
+  }));
+
+  function openAttachmentEditDialog(attachment: ItemAttachment) {
+    editState.id = attachment.id;
+    editState.title = attachment.document.title;
+    editState.type = attachment.type;
+    editState.modal = true;
+  }
+
+  async function updateAttachment() {
+    editState.loading = true;
+
+    const { error, data } = await api.items.updateAttachment(itemId.value, editState.id, {
+      title: editState.title,
+      type: editState.type,
+    });
+
+    if (error) {
+      toast.error("Failed to update attachment");
+      return;
+    }
+
+    item.value.attachments = data.attachments;
+
+    editState.loading = false;
+    editState.modal = false;
+
+    editState.id = "";
+    editState.title = "";
+    editState.type = "";
+
+    toast.success("Attachment updated");
+  }
 </script>
 
 <template>
   <BaseContainer v-if="item" class="pb-8">
+    <BaseModal v-model="editState.modal">
+      <template #title> Attachment Edit </template>
+
+      <FormTextField v-model="editState.title" label="Attachment Title" />
+      <FormSelect v-model="editState.type" label="Attachment Type" value="value" name="text" :items="attachmentOpts" />
+      <div class="modal-action">
+        <BaseButton :loading="editState.loading" @click="updateAttachment"> Update </BaseButton>
+      </div>
+    </BaseModal>
+
     <section class="px-3">
       <div class="space-y-4">
         <div class="overflow-hidden card bg-base-100 shadow-xl sm:rounded-lg">
@@ -220,6 +343,62 @@
                 />
               </div>
             </div>
+          </div>
+        </div>
+
+        <div
+          v-if="!preferences.editorSimpleView"
+          ref="attDropZone"
+          class="overflow-visible card bg-base-100 shadow-xl sm:rounded-lg"
+        >
+          <div class="px-4 py-5 sm:px-6">
+            <h3 class="text-lg font-medium leading-6">Attachments</h3>
+            <p class="text-xs">Changes to attachments will be saved immediately</p>
+          </div>
+          <div class="border-t border-gray-300 p-4">
+            <div v-if="attDropZoneActive" class="grid grid-cols-4 gap-4">
+              <DropZone @drop="dropPhoto"> Photo </DropZone>
+              <DropZone @drop="dropWarranty"> Warranty </DropZone>
+              <DropZone @drop="dropManual"> Manual </DropZone>
+              <DropZone @drop="dropAttachment"> Attachment </DropZone>
+            </div>
+            <button
+              v-else
+              class="h-24 w-full border-2 border-primary border-dashed grid place-content-center"
+              @click="clickUpload"
+            >
+              <input ref="refAttachmentInput" hidden type="file" @change="uploadImage" />
+              <p>Drag and drop files here or click to select files</p>
+            </button>
+          </div>
+
+          <div class="border-t border-gray-300 p-4">
+            <ul role="list" class="divide-y divide-gray-400 rounded-md border border-gray-400">
+              <li
+                v-for="attachment in item.attachments"
+                :key="attachment.id"
+                class="grid grid-cols-6 justify-between py-3 pl-3 pr-4 text-sm"
+              >
+                <p class="my-auto col-span-4">
+                  {{ attachment.document.title }}
+                </p>
+                <p class="my-auto">
+                  {{ capitalize(attachment.type) }}
+                </p>
+                <div class="flex gap-2 justify-end">
+                  <div class="tooltip" data-tip="Delete">
+                    <button class="btn btn-sm btn-square" @click="deleteAttachment(attachment.id)">
+                      <Icon name="mdi-delete" />
+                    </button>
+                  </div>
+                  <div class="tooltip" data-tip="Edit">
+                    <button class="btn btn-sm btn-square" @click="openAttachmentEditDialog(attachment)">
+                      <Icon name="mdi-pencil" />
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </ul>
           </div>
         </div>
 

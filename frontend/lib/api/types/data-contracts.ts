@@ -53,6 +53,11 @@ export interface ItemAttachmentToken {
   token: string;
 }
 
+export interface ItemAttachmentUpdate {
+  title: string;
+  type: string;
+}
+
 export interface ItemCreate {
   description: string;
   labelIds: string[];

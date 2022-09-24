@@ -16,7 +16,7 @@ var (
 	ContextUserToken = &contextKeys{name: "UserToken"}
 )
 
-type ServiceContext struct {
+type Context struct {
 	context.Context
 
 	// UID is a unique identifier for the acting user.
@@ -29,11 +29,11 @@ type ServiceContext struct {
 	User *types.UserOut
 }
 
-// UseServiceCtx is a helper function that returns the service context from the context.
+// NewContext is a helper function that returns the service context from the context.
 // This extracts the users from the context and embeds it into the ServiceContext struct
-func NewServiceContext(ctx context.Context) ServiceContext {
+func NewContext(ctx context.Context) Context {
 	user := UseUserCtx(ctx)
-	return ServiceContext{
+	return Context{
 		Context: ctx,
 		UID:     user.ID,
 		GID:     user.GroupID,
