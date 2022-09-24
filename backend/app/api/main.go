@@ -3,12 +3,15 @@ package main
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"time"
 
+	atlas "ariga.io/atlas/sql/migrate"
 	"entgo.io/ent/dialect/sql/schema"
 	"github.com/hay-kot/homebox/backend/app/api/docs"
 	"github.com/hay-kot/homebox/backend/ent"
 	"github.com/hay-kot/homebox/backend/internal/config"
+	"github.com/hay-kot/homebox/backend/internal/migrations"
 	"github.com/hay-kot/homebox/backend/internal/repo"
 	"github.com/hay-kot/homebox/backend/internal/services"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
@@ -71,9 +74,63 @@ func run(cfg *config.Config) error {
 			Msg("failed opening connection to sqlite")
 	}
 	defer func(c *ent.Client) {
-		_ = c.Close()
+		err := c.Close()
+		if err != nil {
+			log.Fatal().Err(err).Msg("failed to close database connection")
+		}
 	}(c)
-	if err := c.Schema.Create(context.Background(), schema.WithAtlas(true)); err != nil {
+
+	err = func() error {
+		temp := filepath.Join(os.TempDir(), "migrations")
+		defer func() {
+			err := os.RemoveAll(temp)
+			if err != nil {
+				log.Err(err).Msg("failed to remove temp directory")
+			}
+		}()
+
+		err := os.MkdirAll(temp, 0755)
+		if err != nil {
+			return err
+		}
+
+		// Write the embed migrations to the temp directory.
+		fsDir, err := migrations.Files.ReadDir(".")
+		if err != nil {
+		}
+
+		for _, f := range fsDir {
+			if f.IsDir() {
+				continue
+			}
+
+			b, err := migrations.Files.ReadFile(filepath.Join("migrations", f.Name()))
+			if err != nil {
+				return err
+			}
+
+			err = os.WriteFile(filepath.Join(temp, f.Name()), b, 0644)
+			if err != nil {
+				return err
+			}
+		}
+
+		dir, err := atlas.NewLocalDir(temp)
+		if err != nil {
+			return err
+		}
+
+		options := []schema.MigrateOption{
+			schema.WithAtlas(true),
+			schema.WithDir(dir),
+			schema.WithDropColumn(true),
+			schema.WithDropIndex(true),
+		}
+
+		return c.Schema.Create(context.Background(), options...)
+	}()
+
+	if err != nil {
 		log.Fatal().
 			Err(err).
 			Str("driver", "sqlite").
