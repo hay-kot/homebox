@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"entgo.io/ent/dialect/sql/schema"
 	"github.com/hay-kot/homebox/backend/app/api/docs"
 	"github.com/hay-kot/homebox/backend/ent"
 	"github.com/hay-kot/homebox/backend/internal/config"
@@ -72,7 +73,7 @@ func run(cfg *config.Config) error {
 	defer func(c *ent.Client) {
 		_ = c.Close()
 	}(c)
-	if err := c.Schema.Create(context.Background()); err != nil {
+	if err := c.Schema.Create(context.Background(), schema.WithAtlas(true)); err != nil {
 		log.Fatal().
 			Err(err).
 			Str("driver", "sqlite").
