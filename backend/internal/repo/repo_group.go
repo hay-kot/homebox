@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/hay-kot/content/backend/ent"
+	"github.com/hay-kot/homebox/backend/ent"
 )
 
 type GroupRepository struct {

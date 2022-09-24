@@ -8,16 +8,17 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hay-kot/content/backend/ent"
-	"github.com/hay-kot/content/backend/internal/repo"
-	"github.com/hay-kot/content/backend/internal/types"
-	"github.com/hay-kot/content/backend/pkgs/faker"
+	"github.com/hay-kot/homebox/backend/ent"
+	"github.com/hay-kot/homebox/backend/internal/repo"
+	"github.com/hay-kot/homebox/backend/internal/types"
+	"github.com/hay-kot/homebox/backend/pkgs/faker"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 var (
 	fk = faker.NewFaker()
 
+	tCtx    = Context{}
 	tClient *ent.Client
 	tRepos  *repo.AllRepos
 	tUser   *ent.User
@@ -63,10 +64,16 @@ func TestMain(m *testing.M) {
 
 	tClient = client
 	tRepos = repo.EntAllRepos(tClient)
-	tSvc = NewServices(tRepos)
+	tSvc = NewServices(tRepos, "/tmp/homebox")
 	defer client.Close()
 
+
 	bootstrap()
+	tCtx = Context{
+		Context: context.Background(),
+		GID:     tGroup.ID,
+		UID:     tUser.ID,
+	}
 
 	os.Exit(m.Run())
 }

@@ -4,7 +4,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/hay-kot/content/backend/internal/config"
+	"github.com/hay-kot/homebox/backend/internal/config"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )

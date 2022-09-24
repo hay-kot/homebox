@@ -4,22 +4,47 @@ import (
 	"net/http"
 )
 
+type ValidationError struct {
+	Field  string `json:"field"`
+	Reason string `json:"reason"`
+}
+
+type ValidationErrors []ValidationError
+
+func (ve *ValidationErrors) HasErrors() bool {
+	if (ve == nil) || (len(*ve) == 0) {
+		return false
+	}
+
+	for _, err := range *ve {
+		if err.Field != "" {
+			return true
+		}
+	}
+	return false
+}
+
+func (ve ValidationErrors) Append(field, reasons string) ValidationErrors {
+	return append(ve, ValidationError{
+		Field:  field,
+		Reason: reasons,
+	})
+}
+
 // ErrorBuilder is a helper type to build a response that contains an array of errors.
 // Typical use cases are for returning an array of validation errors back to the user.
 //
 // Example:
 //
-//
-// {
-//  "errors": [
-//    "invalid id",
-//    "invalid name",
-//    "invalid description"
-//  ],
-//  "message": "Unprocessable Entity",
-//  "status": 422
-// }
-//
+//	{
+//	 "errors": [
+//	   "invalid id",
+//	   "invalid name",
+//	   "invalid description"
+//	 ],
+//	 "message": "Unprocessable Entity",
+//	 "status": 422
+//	}
 type ErrorBuilder struct {
 	errs []string
 }

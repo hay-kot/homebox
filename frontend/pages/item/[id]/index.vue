@@ -1,4 +1,6 @@
 <script setup lang="ts">
+  import { ItemAttachment } from "~~/lib/api/types/data-contracts";
+
   definePageMeta({
     layout: "home",
   });
@@ -23,6 +25,45 @@
     refresh();
   });
 
+  type FilteredAttachments = {
+    photos: ItemAttachment[];
+    attachments: ItemAttachment[];
+    warranty: ItemAttachment[];
+    manuals: ItemAttachment[];
+  };
+
+  const attachments = computed<FilteredAttachments>(() => {
+    if (!item.value) {
+      return {
+        photos: [],
+        attachments: [],
+        manuals: [],
+        warranty: [],
+      };
+    }
+
+    return item.value.attachments.reduce(
+      (acc, attachment) => {
+        if (attachment.type === "photo") {
+          acc.photos.push(attachment);
+        } else if (attachment.type === "warranty") {
+          acc.warranty.push(attachment);
+        } else if (attachment.type === "manual") {
+          acc.manuals.push(attachment);
+        } else {
+          acc.attachments.push(attachment);
+        }
+        return acc;
+      },
+      {
+        photos: [] as ItemAttachment[],
+        attachments: [] as ItemAttachment[],
+        warranty: [] as ItemAttachment[],
+        manuals: [] as ItemAttachment[],
+      }
+    );
+  });
+
   const itemSummary = computed(() => {
     return {
       Description: item.value?.description || "",
@@ -31,8 +72,51 @@
       Manufacturer: item.value?.manufacturer || "",
       Notes: item.value?.notes || "",
       Insured: item.value?.insured ? "Yes" : "No",
-      Attachments: "", // TODO: Attachments
     };
+  });
+
+  const showAttachments = computed(() => {
+    if (preferences.value?.showEmpty) {
+      return true;
+    }
+
+    return (
+      attachments.value.photos.length > 0 ||
+      attachments.value.attachments.length > 0 ||
+      attachments.value.warranty.length > 0 ||
+      attachments.value.manuals.length > 0
+    );
+  });
+
+  const itemAttachments = computed(() => {
+    const val: Record<string, string> = {};
+
+    if (preferences.value.showEmpty) {
+      return {
+        Photos: "",
+        Manuals: "",
+        Warranty: "",
+        Attachments: "",
+      };
+    }
+
+    if (attachments.value.photos.length > 0) {
+      val.Photos = "";
+    }
+
+    if (attachments.value.manuals.length > 0) {
+      val.Manuals = "";
+    }
+
+    if (attachments.value.warranty.length > 0) {
+      val.Warranty = "";
+    }
+
+    if (attachments.value.attachments.length > 0) {
+      val.Attachments = "";
+    }
+
+    return val;
   });
 
   const showWarranty = computed(() => {
@@ -148,27 +232,36 @@
               </template>
             </BaseSectionHeader>
           </template>
+        </BaseDetails>
+        <BaseDetails v-if="showAttachments" :details="itemAttachments">
+          <template #title> Attachments </template>
+          <template #Manuals>
+            <ItemAttachmentsList
+              v-if="attachments.manuals.length > 0"
+              :attachments="attachments.manuals"
+              :item-id="item.id"
+            />
+          </template>
           <template #Attachments>
-            <ul role="list" class="divide-y divide-gray-400 rounded-md border border-gray-400">
-              <li class="flex items-center justify-between py-3 pl-3 pr-4 text-sm">
-                <div class="flex w-0 flex-1 items-center">
-                  <Icon name="mdi-paperclip" class="h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-                  <span class="ml-2 w-0 flex-1 truncate">User Guide.pdf</span>
-                </div>
-                <div class="ml-4 flex-shrink-0">
-                  <a href="#" class="font-medium">Download</a>
-                </div>
-              </li>
-              <li class="flex items-center justify-between py-3 pl-3 pr-4 text-sm">
-                <div class="flex w-0 flex-1 items-center">
-                  <Icon name="mdi-paperclip" class="h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-                  <span class="ml-2 w-0 flex-1 truncate">Purchase Receipts.pdf</span>
-                </div>
-                <div class="ml-4 flex-shrink-0">
-                  <a href="#" class="font-medium">Download</a>
-                </div>
-              </li>
-            </ul>
+            <ItemAttachmentsList
+              v-if="attachments.attachments.length > 0"
+              :attachments="attachments.attachments"
+              :item-id="item.id"
+            />
+          </template>
+          <template #Warranty>
+            <ItemAttachmentsList
+              v-if="attachments.warranty.length > 0"
+              :attachments="attachments.warranty"
+              :item-id="item.id"
+            />
+          </template>
+          <template #Photos>
+            <ItemAttachmentsList
+              v-if="attachments.photos.length > 0"
+              :attachments="attachments.photos"
+              :item-id="item.id"
+            />
           </template>
         </BaseDetails>
         <BaseDetails v-if="showPurchase" :details="purchaseDetails">

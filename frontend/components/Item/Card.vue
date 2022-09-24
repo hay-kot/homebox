@@ -23,6 +23,7 @@
 
 <script setup lang="ts">
   import { ItemOut, ItemSummary } from "~~/lib/api/types/data-contracts";
+  import { truncate } from "~~/lib/strings";
 
   const props = defineProps({
     item: {

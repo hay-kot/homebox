@@ -9,8 +9,8 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
-	"github.com/hay-kot/content/backend/ent/item"
-	"github.com/hay-kot/content/backend/ent/itemfield"
+	"github.com/hay-kot/homebox/backend/ent/item"
+	"github.com/hay-kot/homebox/backend/ent/itemfield"
 )
 
 // ItemField is the model entity for the ItemField schema.

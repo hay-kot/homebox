@@ -17,12 +17,12 @@ const (
 )
 
 type Config struct {
-	Mode     string      `yaml:"mode" conf:"default:development"` // development or production
-	Web      WebConfig   `yaml:"web"`
-	Database Database    `yaml:"database"`
-	Log      LoggerConf  `yaml:"logger"`
-	Mailer   MailerConf  `yaml:"mailer"`
-	Swagger  SwaggerConf `yaml:"swagger"`
+	Mode    string      `yaml:"mode" conf:"default:development"` // development or production
+	Web     WebConfig   `yaml:"web"`
+	Storage Storage     `yaml:"storage"`
+	Log     LoggerConf  `yaml:"logger"`
+	Mailer  MailerConf  `yaml:"mailer"`
+	Swagger SwaggerConf `yaml:"swagger"`
 }
 
 type SwaggerConf struct {
@@ -31,8 +31,9 @@ type SwaggerConf struct {
 }
 
 type WebConfig struct {
-	Port string `yaml:"port" conf:"default:7745"`
-	Host string `yaml:"host"`
+	Port          string `yaml:"port" conf:"default:7745"`
+	Host          string `yaml:"host"`
+	MaxUploadSize int64  `yaml:"max_file_upload" conf:"default:10"`
 }
 
 // NewConfig parses the CLI/Config file and returns a Config struct. If the file argument is an empty string, the

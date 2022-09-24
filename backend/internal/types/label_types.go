@@ -21,7 +21,6 @@ type LabelUpdate struct {
 
 type LabelSummary struct {
 	ID          uuid.UUID `json:"id"`
-	GroupID     uuid.UUID `json:"groupId"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"createdAt"`

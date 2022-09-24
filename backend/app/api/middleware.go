@@ -8,9 +8,9 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/hay-kot/content/backend/internal/config"
-	"github.com/hay-kot/content/backend/internal/services"
-	"github.com/hay-kot/content/backend/pkgs/server"
+	"github.com/hay-kot/homebox/backend/internal/config"
+	"github.com/hay-kot/homebox/backend/internal/services"
+	"github.com/hay-kot/homebox/backend/pkgs/server"
 	"github.com/rs/zerolog/log"
 )
 

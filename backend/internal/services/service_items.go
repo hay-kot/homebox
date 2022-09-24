@@ -2,24 +2,28 @@ package services
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"io"
-	"os"
-	"path/filepath"
 
 	"github.com/google/uuid"
-	"github.com/hay-kot/content/backend/ent/attachment"
-	"github.com/hay-kot/content/backend/internal/repo"
-	"github.com/hay-kot/content/backend/internal/services/mappers"
-	"github.com/hay-kot/content/backend/internal/types"
+	"github.com/hay-kot/homebox/backend/internal/repo"
+	"github.com/hay-kot/homebox/backend/internal/services/mappers"
+	"github.com/hay-kot/homebox/backend/internal/types"
 	"github.com/rs/zerolog/log"
+)
+
+var (
+	ErrNotFound     = errors.New("not found")
+	ErrFileNotFound = errors.New("file not found")
 )
 
 type ItemService struct {
 	repo *repo.AllRepos
 
-	// filepath is the root of the storage location that will be used to store all files from.
 	filepath string
+	// at is a map of tokens to attachment IDs. This is used to store the attachment ID
+	// for issued URLs
+	at attachmentTokens
 }
 
 func (svc *ItemService) GetOne(ctx context.Context, gid uuid.UUID, id uuid.UUID) (*types.ItemOut, error) {
@@ -92,59 +96,6 @@ func (svc *ItemService) Update(ctx context.Context, gid uuid.UUID, data types.It
 	}
 
 	return mappers.ToItemOut(item), nil
-}
-
-func (svc *ItemService) attachmentPath(gid, itemId uuid.UUID, filename string) string {
-	return filepath.Join(svc.filepath, gid.String(), itemId.String(), filename)
-}
-
-// AddAttachment adds an attachment to an item by creating an entry in the Documents table and linking it to the Attachment
-// Table and Items table. The file provided via the reader is stored on the file system based on the provided
-// relative path during construction of the service.
-func (svc *ItemService) AddAttachment(ctx context.Context, gid, itemId uuid.UUID, filename string, file io.Reader) (*types.ItemOut, error) {
-	// Get the Item
-	item, err := svc.repo.Items.GetOne(ctx, itemId)
-	if err != nil {
-		return nil, err
-	}
-
-	if item.Edges.Group.ID != gid {
-		return nil, ErrNotOwner
-	}
-
-	// Create the document
-	doc, err := svc.repo.Docs.Create(ctx, gid, types.DocumentCreate{
-		Title: filename,
-		Path:  svc.attachmentPath(gid, itemId, filename),
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	// Create the attachment
-	_, err = svc.repo.Attachments.Create(ctx, itemId, doc.ID, attachment.TypeAttachment)
-	if err != nil {
-		return nil, err
-	}
-
-	// Read the contents and write them to a file on the file system
-	err = os.MkdirAll(filepath.Dir(doc.Path), os.ModePerm)
-	if err != nil {
-		return nil, err
-	}
-
-	f, err := os.Create(doc.Path)
-	if err != nil {
-		log.Err(err).Msg("failed to create file")
-		return nil, err
-	}
-
-	_, err = io.Copy(f, file)
-	if err != nil {
-		return nil, err
-	}
-
-	return svc.GetOne(ctx, gid, itemId)
 }
 
 func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]string) error {

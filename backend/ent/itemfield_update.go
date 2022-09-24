@@ -12,9 +12,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
-	"github.com/hay-kot/content/backend/ent/item"
-	"github.com/hay-kot/content/backend/ent/itemfield"
-	"github.com/hay-kot/content/backend/ent/predicate"
+	"github.com/hay-kot/homebox/backend/ent/item"
+	"github.com/hay-kot/homebox/backend/ent/itemfield"
+	"github.com/hay-kot/homebox/backend/ent/predicate"
 )
 
 // ItemFieldUpdate is the builder for updating ItemField entities.

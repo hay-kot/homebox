@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hay-kot/content/backend/internal/types"
+	"github.com/hay-kot/homebox/backend/internal/types"
 )
 
 var ErrInvalidCsv = errors.New("invalid csv")

@@ -11,10 +11,10 @@ import (
 	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
-	_ "github.com/hay-kot/content/backend/app/api/docs"
-	v1 "github.com/hay-kot/content/backend/app/api/v1"
-	"github.com/hay-kot/content/backend/internal/repo"
-	"github.com/hay-kot/content/backend/internal/types"
+	_ "github.com/hay-kot/homebox/backend/app/api/docs"
+	v1 "github.com/hay-kot/homebox/backend/app/api/v1"
+	"github.com/hay-kot/homebox/backend/internal/repo"
+	"github.com/hay-kot/homebox/backend/internal/types"
 	"github.com/rs/zerolog/log"
 	httpSwagger "github.com/swaggo/http-swagger" // http-swagger middleware
 )
@@ -43,7 +43,7 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 	// API Version 1
 
 	v1Base := v1.BaseUrlFunc(prefix)
-	v1Ctrl := v1.NewControllerV1(a.services)
+	v1Ctrl := v1.NewControllerV1(a.services, v1.WithMaxUploadSize(a.conf.Web.MaxUploadSize))
 	{
 		r.Get(v1Base("/status"), v1Ctrl.HandleBase(func() bool { return true }, types.Build{
 			Version:   Version,
@@ -53,6 +53,10 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 
 		r.Post(v1Base("/users/register"), v1Ctrl.HandleUserRegistration())
 		r.Post(v1Base("/users/login"), v1Ctrl.HandleAuthLogin())
+
+		// Attachment download URl needs a `token` query param to be passed in the request.
+		// and also needs to be outside of the `auth` middleware.
+		r.Get(v1Base("/items/{id}/attachments/download"), v1Ctrl.HandleItemAttachmentDownload())
 
 		r.Group(func(r chi.Router) {
 			r.Use(a.mwAuthToken)
@@ -81,6 +85,11 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 			r.Get(v1Base("/items/{id}"), v1Ctrl.HandleItemGet())
 			r.Put(v1Base("/items/{id}"), v1Ctrl.HandleItemUpdate())
 			r.Delete(v1Base("/items/{id}"), v1Ctrl.HandleItemDelete())
+
+			r.Post(v1Base("/items/{id}/attachments"), v1Ctrl.HandleItemAttachmentCreate())
+			r.Get(v1Base("/items/{id}/attachments/{attachment_id}"), v1Ctrl.HandleItemAttachmentToken())
+			r.Put(v1Base("/items/{id}/attachments/{attachment_id}"), v1Ctrl.HandleItemAttachmentUpdate())
+			r.Delete(v1Base("/items/{id}/attachments/{attachment_id}"), v1Ctrl.HandleItemAttachmentDelete())
 		})
 	}
 

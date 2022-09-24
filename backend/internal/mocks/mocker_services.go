@@ -1,10 +1,10 @@
 package mocks
 
 import (
-	"github.com/hay-kot/content/backend/internal/repo"
-	"github.com/hay-kot/content/backend/internal/services"
+	"github.com/hay-kot/homebox/backend/internal/repo"
+	"github.com/hay-kot/homebox/backend/internal/services"
 )
 
 func GetMockServices(repos *repo.AllRepos) *services.AllServices {
-	return services.NewServices(repos)
+	return services.NewServices(repos, "/tmp/homebox")
 }

@@ -12,10 +12,10 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
-	"github.com/hay-kot/content/backend/ent/group"
-	"github.com/hay-kot/content/backend/ent/item"
-	"github.com/hay-kot/content/backend/ent/label"
-	"github.com/hay-kot/content/backend/ent/predicate"
+	"github.com/hay-kot/homebox/backend/ent/group"
+	"github.com/hay-kot/homebox/backend/ent/item"
+	"github.com/hay-kot/homebox/backend/ent/label"
+	"github.com/hay-kot/homebox/backend/ent/predicate"
 )
 
 // LabelQuery is the builder for querying Label entities.

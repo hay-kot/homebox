@@ -3,8 +3,8 @@ package mocks
 import (
 	"context"
 
-	"github.com/hay-kot/content/backend/ent"
-	"github.com/hay-kot/content/backend/internal/repo"
+	"github.com/hay-kot/homebox/backend/ent"
+	"github.com/hay-kot/homebox/backend/internal/repo"
 	_ "github.com/mattn/go-sqlite3"
 )
 

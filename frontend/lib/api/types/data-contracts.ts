@@ -21,6 +21,11 @@ export interface ServerResults {
   items: any;
 }
 
+export interface ServerValidationError {
+  field: string;
+  reason: string;
+}
+
 export interface ApiSummary {
   build: Build;
   health: boolean;
@@ -45,7 +50,17 @@ export interface ItemAttachment {
   createdAt: Date;
   document: DocumentOut;
   id: string;
+  type: string;
   updatedAt: Date;
+}
+
+export interface ItemAttachmentToken {
+  token: string;
+}
+
+export interface ItemAttachmentUpdate {
+  title: string;
+  type: string;
 }
 
 export interface ItemCreate {
@@ -191,7 +206,6 @@ export interface LabelCreate {
 export interface LabelOut {
   createdAt: Date;
   description: string;
-  groupId: string;
   id: string;
   items: ItemSummary[];
   name: string;
@@ -201,7 +215,6 @@ export interface LabelOut {
 export interface LabelSummary {
   createdAt: Date;
   description: string;
-  groupId: string;
   id: string;
   name: string;
   updatedAt: Date;

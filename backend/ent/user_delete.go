@@ -9,8 +9,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/hay-kot/content/backend/ent/predicate"
-	"github.com/hay-kot/content/backend/ent/user"
+	"github.com/hay-kot/homebox/backend/ent/predicate"
+	"github.com/hay-kot/homebox/backend/ent/user"
 )
 
 // UserDelete is the builder for deleting a User entity.

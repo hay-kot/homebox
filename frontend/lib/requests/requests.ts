@@ -97,11 +97,15 @@ export class Requests {
         return {} as T;
       }
 
-      try {
-        return await response.json();
-      } catch (e) {
-        return {} as T;
+      if (response.headers.get("Content-Type")?.startsWith("application/json")) {
+        try {
+          return await response.json();
+        } catch (e) {
+          return {} as T;
+        }
       }
+
+      return response.body as unknown as T;
     })();
 
     return {

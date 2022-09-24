@@ -9,8 +9,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/hay-kot/content/backend/ent/location"
-	"github.com/hay-kot/content/backend/ent/predicate"
+	"github.com/hay-kot/homebox/backend/ent/location"
+	"github.com/hay-kot/homebox/backend/ent/predicate"
 )
 
 // LocationDelete is the builder for deleting a Location entity.

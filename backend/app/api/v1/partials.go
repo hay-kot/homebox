@@ -5,9 +5,9 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
-	"github.com/hay-kot/content/backend/internal/services"
-	"github.com/hay-kot/content/backend/internal/types"
-	"github.com/hay-kot/content/backend/pkgs/server"
+	"github.com/hay-kot/homebox/backend/internal/services"
+	"github.com/hay-kot/homebox/backend/internal/types"
+	"github.com/hay-kot/homebox/backend/pkgs/server"
 	"github.com/rs/zerolog/log"
 )
 

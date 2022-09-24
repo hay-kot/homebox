@@ -103,5 +103,16 @@ type ItemAttachment struct {
 	ID        uuid.UUID   `json:"id"`
 	CreatedAt time.Time   `json:"createdAt"`
 	UpdatedAt time.Time   `json:"updatedAt"`
+	Type      string      `json:"type"`
 	Document  DocumentOut `json:"document"`
+}
+
+type ItemAttachmentToken struct {
+	Token string `json:"token"`
+}
+
+type ItemAttachmentUpdate struct {
+	ID    uuid.UUID `json:"-"`
+	Type  string    `json:"type"`
+	Title string    `json:"title"`
 }

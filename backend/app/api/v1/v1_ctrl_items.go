@@ -4,9 +4,9 @@ import (
 	"encoding/csv"
 	"net/http"
 
-	"github.com/hay-kot/content/backend/internal/services"
-	"github.com/hay-kot/content/backend/internal/types"
-	"github.com/hay-kot/content/backend/pkgs/server"
+	"github.com/hay-kot/homebox/backend/internal/services"
+	"github.com/hay-kot/homebox/backend/internal/types"
+	"github.com/hay-kot/homebox/backend/pkgs/server"
 	"github.com/rs/zerolog/log"
 )
 
@@ -64,7 +64,7 @@ func (ctrl *V1Controller) HandleItemsCreate() http.HandlerFunc {
 // @Summary   deletes a item
 // @Tags      Items
 // @Produce   json
-// @Param     id       path      string            true  "Item ID"
+// @Param     id  path  string  true  "Item ID"
 // @Success   204
 // @Router    /v1/items/{id} [DELETE]
 // @Security  Bearer
@@ -114,7 +114,7 @@ func (ctrl *V1Controller) HandleItemGet() http.HandlerFunc {
 // @Summary   updates a item
 // @Tags      Items
 // @Produce   json
-// @Param     id  path  string  true  "Item ID"
+// @Param     id       path      string            true  "Item ID"
 // @Param     payload  body      types.ItemUpdate  true  "Item Data"
 // @Success   200  {object}  types.ItemOut
 // @Router    /v1/items/{id} [PUT]

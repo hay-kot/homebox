@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	"github.com/hay-kot/content/backend/ent"
-	"github.com/hay-kot/content/backend/ent/attachment"
+	"github.com/hay-kot/homebox/backend/ent"
+	"github.com/hay-kot/homebox/backend/ent/attachment"
 	"github.com/stretchr/testify/assert"
 )
 

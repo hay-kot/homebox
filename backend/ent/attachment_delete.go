@@ -9,8 +9,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/hay-kot/content/backend/ent/attachment"
-	"github.com/hay-kot/content/backend/ent/predicate"
+	"github.com/hay-kot/homebox/backend/ent/attachment"
+	"github.com/hay-kot/homebox/backend/ent/predicate"
 )
 
 // AttachmentDelete is the builder for deleting a Attachment entity.

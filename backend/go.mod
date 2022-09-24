@@ -1,4 +1,4 @@
-module github.com/hay-kot/content/backend
+module github.com/hay-kot/homebox/backend
 
 go 1.19
 

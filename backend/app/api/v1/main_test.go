@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/hay-kot/content/backend/ent"
-	"github.com/hay-kot/content/backend/internal/mocks"
-	"github.com/hay-kot/content/backend/internal/mocks/factories"
-	"github.com/hay-kot/content/backend/internal/types"
+	"github.com/hay-kot/homebox/backend/ent"
+	"github.com/hay-kot/homebox/backend/internal/mocks"
+	"github.com/hay-kot/homebox/backend/internal/mocks/factories"
+	"github.com/hay-kot/homebox/backend/internal/types"
 )
 
 var mockHandler = &V1Controller{}

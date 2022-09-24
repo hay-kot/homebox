@@ -9,8 +9,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/hay-kot/content/backend/ent/document"
-	"github.com/hay-kot/content/backend/ent/predicate"
+	"github.com/hay-kot/homebox/backend/ent/document"
+	"github.com/hay-kot/homebox/backend/ent/predicate"
 )
 
 // DocumentDelete is the builder for deleting a Document entity.

@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hay-kot/content/backend/ent"
-	"github.com/hay-kot/content/backend/pkgs/faker"
+	"github.com/hay-kot/homebox/backend/ent"
+	"github.com/hay-kot/homebox/backend/pkgs/faker"
 	_ "github.com/mattn/go-sqlite3"
 )
 

@@ -14,6 +14,13 @@ definitions:
       items:
         type: any
     type: object
+  server.ValidationError:
+    properties:
+      field:
+        type: string
+      reason:
+        type: string
+    type: object
   types.ApiSummary:
     properties:
       build:
@@ -55,7 +62,21 @@ definitions:
         $ref: '#/definitions/types.DocumentOut'
       id:
         type: string
+      type:
+        type: string
       updatedAt:
+        type: string
+    type: object
+  types.ItemAttachmentToken:
+    properties:
+      token:
+        type: string
+    type: object
+  types.ItemAttachmentUpdate:
+    properties:
+      title:
+        type: string
+      type:
         type: string
     type: object
   types.ItemCreate:
@@ -264,8 +285,6 @@ definitions:
         type: string
       description:
         type: string
-      groupId:
-        type: string
       id:
         type: string
       items:
@@ -282,8 +301,6 @@ definitions:
       createdAt:
         type: string
       description:
-        type: string
-      groupId:
         type: string
       id:
         type: string
@@ -501,6 +518,143 @@ paths:
       security:
       - Bearer: []
       summary: updates a item
+      tags:
+      - Items
+  /v1/items/{id}/attachments:
+    post:
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: File attachment
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: Type of file
+        in: formData
+        name: type
+        required: true
+        type: string
+      - description: name of the file including extension
+        in: formData
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ItemOut'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            items:
+              $ref: '#/definitions/server.ValidationError'
+            type: array
+      security:
+      - Bearer: []
+      summary: imports items into the database
+      tags:
+      - Items
+  /v1/items/{id}/attachments/{attachment_id}:
+    delete:
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Attachment ID
+        in: path
+        name: attachment_id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: ""
+      security:
+      - Bearer: []
+      summary: retrieves an attachment for an item
+      tags:
+      - Items
+    get:
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Attachment ID
+        in: path
+        name: attachment_id
+        required: true
+        type: string
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ItemAttachmentToken'
+      security:
+      - Bearer: []
+      summary: retrieves an attachment for an item
+      tags:
+      - Items
+    put:
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Attachment ID
+        in: path
+        name: attachment_id
+        required: true
+        type: string
+      - description: Attachment Update
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.ItemAttachmentUpdate'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.ItemOut'
+      security:
+      - Bearer: []
+      summary: retrieves an attachment for an item
+      tags:
+      - Items
+  /v1/items/{id}/attachments/download:
+    get:
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Attachment token
+        in: query
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: ""
+      security:
+      - Bearer: []
+      summary: retrieves an attachment for an item
       tags:
       - Items
   /v1/items/import:

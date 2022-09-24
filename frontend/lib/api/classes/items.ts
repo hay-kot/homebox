@@ -1,15 +1,23 @@
 import { BaseAPI, route } from "../base";
 import { parseDate } from "../base/base-api";
-import { ItemCreate, ItemOut, ItemSummary, ItemUpdate } from "../types/data-contracts";
+import {
+  ItemAttachmentToken,
+  ItemAttachmentUpdate,
+  ItemCreate,
+  ItemOut,
+  ItemSummary,
+  ItemUpdate,
+} from "../types/data-contracts";
+import { AttachmentTypes } from "../types/non-generated";
 import { Results } from "./types";
 
 export class ItemsApi extends BaseAPI {
   getAll() {
-    return this.http.get<Results<ItemOut>>({ url: route("/items") });
+    return this.http.get<Results<ItemSummary>>({ url: route("/items") });
   }
 
   create(item: ItemCreate) {
-    return this.http.post<ItemCreate, ItemSummary>({ url: route("/items"), body: item });
+    return this.http.post<ItemCreate, ItemOut>({ url: route("/items"), body: item });
   }
 
   async get(id: string) {
@@ -45,6 +53,44 @@ export class ItemsApi extends BaseAPI {
     const formData = new FormData();
     formData.append("csv", file);
 
-    return this.http.post<FormData, void>({ url: route("/items/import"), data: formData });
+    return this.http.post<FormData, void>({
+      url: route("/items/import"),
+      data: formData,
+    });
+  }
+
+  addAttachment(id: string, file: File | Blob, filename: string, type: AttachmentTypes) {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("type", type);
+    formData.append("name", filename);
+
+    return this.http.post<FormData, ItemOut>({
+      url: route(`/items/${id}/attachments`),
+      data: formData,
+    });
+  }
+
+  async getAttachmentUrl(id: string, attachmentId: string): Promise<string> {
+    const payload = await this.http.get<ItemAttachmentToken>({
+      url: route(`/items/${id}/attachments/${attachmentId}`),
+    });
+
+    if (!payload.data) {
+      return "";
+    }
+
+    return route(`/items/${id}/attachments/download`, { token: payload.data.token });
+  }
+
+  async deleteAttachment(id: string, attachmentId: string) {
+    return await this.http.delete<void>({ url: route(`/items/${id}/attachments/${attachmentId}`) });
+  }
+
+  async updateAttachment(id: string, attachmentId: string, data: ItemAttachmentUpdate) {
+    return await this.http.put<ItemAttachmentUpdate, ItemOut>({
+      url: route(`/items/${id}/attachments/${attachmentId}`),
+      body: data,
+    });
   }
 }

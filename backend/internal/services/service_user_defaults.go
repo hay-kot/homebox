@@ -1,6 +1,6 @@
 package services
 
-import "github.com/hay-kot/content/backend/internal/types"
+import "github.com/hay-kot/homebox/backend/internal/types"
 
 func defaultLocations() []types.LocationCreate {
 	return []types.LocationCreate{

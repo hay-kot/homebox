@@ -5,12 +5,12 @@ package enttest
 import (
 	"context"
 
-	"github.com/hay-kot/content/backend/ent"
+	"github.com/hay-kot/homebox/backend/ent"
 	// required by schema hooks.
-	_ "github.com/hay-kot/content/backend/ent/runtime"
+	_ "github.com/hay-kot/homebox/backend/ent/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
-	"github.com/hay-kot/content/backend/ent/migrate"
+	"github.com/hay-kot/homebox/backend/ent/migrate"
 )
 
 type (

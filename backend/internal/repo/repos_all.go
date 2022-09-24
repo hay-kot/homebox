@@ -1,6 +1,6 @@
 package repo
 
-import "github.com/hay-kot/content/backend/ent"
+import "github.com/hay-kot/homebox/backend/ent"
 
 // AllRepos is a container for all the repository interfaces
 type AllRepos struct {

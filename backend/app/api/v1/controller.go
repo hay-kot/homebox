@@ -3,13 +3,20 @@ package v1
 import (
 	"net/http"
 
-	"github.com/hay-kot/content/backend/internal/services"
-	"github.com/hay-kot/content/backend/internal/types"
-	"github.com/hay-kot/content/backend/pkgs/server"
+	"github.com/hay-kot/homebox/backend/internal/services"
+	"github.com/hay-kot/homebox/backend/internal/types"
+	"github.com/hay-kot/homebox/backend/pkgs/server"
 )
 
+func WithMaxUploadSize(maxUploadSize int64) func(*V1Controller) {
+	return func(ctrl *V1Controller) {
+		ctrl.maxUploadSize = maxUploadSize
+	}
+}
+
 type V1Controller struct {
-	svc *services.AllServices
+	svc           *services.AllServices
+	maxUploadSize int64
 }
 
 func BaseUrlFunc(prefix string) func(s string) string {
@@ -21,7 +28,7 @@ func BaseUrlFunc(prefix string) func(s string) string {
 	return prefixFunc
 }
 
-func NewControllerV1(svc *services.AllServices) *V1Controller {
+func NewControllerV1(svc *services.AllServices, options ...func(*V1Controller)) *V1Controller {
 	ctrl := &V1Controller{
 		svc: svc,
 	}
