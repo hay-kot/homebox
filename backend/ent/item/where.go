@@ -229,6 +229,13 @@ func SoldNotes(v string) predicate.Item {
 	})
 }
 
+// TestMigrationField applies equality check predicate on the "test_migration_field" field. It's identical to TestMigrationFieldEQ.
+func TestMigrationField(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTestMigrationField), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
@@ -2037,6 +2044,105 @@ func SoldNotesEqualFold(v string) predicate.Item {
 func SoldNotesContainsFold(v string) predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldSoldNotes), v))
+	})
+}
+
+// TestMigrationFieldEQ applies the EQ predicate on the "test_migration_field" field.
+func TestMigrationFieldEQ(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTestMigrationField), v))
+	})
+}
+
+// TestMigrationFieldNEQ applies the NEQ predicate on the "test_migration_field" field.
+func TestMigrationFieldNEQ(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldTestMigrationField), v))
+	})
+}
+
+// TestMigrationFieldIn applies the In predicate on the "test_migration_field" field.
+func TestMigrationFieldIn(vs ...string) predicate.Item {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldTestMigrationField), v...))
+	})
+}
+
+// TestMigrationFieldNotIn applies the NotIn predicate on the "test_migration_field" field.
+func TestMigrationFieldNotIn(vs ...string) predicate.Item {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldTestMigrationField), v...))
+	})
+}
+
+// TestMigrationFieldGT applies the GT predicate on the "test_migration_field" field.
+func TestMigrationFieldGT(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldTestMigrationField), v))
+	})
+}
+
+// TestMigrationFieldGTE applies the GTE predicate on the "test_migration_field" field.
+func TestMigrationFieldGTE(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldTestMigrationField), v))
+	})
+}
+
+// TestMigrationFieldLT applies the LT predicate on the "test_migration_field" field.
+func TestMigrationFieldLT(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldTestMigrationField), v))
+	})
+}
+
+// TestMigrationFieldLTE applies the LTE predicate on the "test_migration_field" field.
+func TestMigrationFieldLTE(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldTestMigrationField), v))
+	})
+}
+
+// TestMigrationFieldContains applies the Contains predicate on the "test_migration_field" field.
+func TestMigrationFieldContains(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldTestMigrationField), v))
+	})
+}
+
+// TestMigrationFieldHasPrefix applies the HasPrefix predicate on the "test_migration_field" field.
+func TestMigrationFieldHasPrefix(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldTestMigrationField), v))
+	})
+}
+
+// TestMigrationFieldHasSuffix applies the HasSuffix predicate on the "test_migration_field" field.
+func TestMigrationFieldHasSuffix(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldTestMigrationField), v))
+	})
+}
+
+// TestMigrationFieldEqualFold applies the EqualFold predicate on the "test_migration_field" field.
+func TestMigrationFieldEqualFold(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldTestMigrationField), v))
+	})
+}
+
+// TestMigrationFieldContainsFold applies the ContainsFold predicate on the "test_migration_field" field.
+func TestMigrationFieldContainsFold(v string) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldTestMigrationField), v))
 	})
 }
 

@@ -55,6 +55,8 @@ const (
 	FieldSoldPrice = "sold_price"
 	// FieldSoldNotes holds the string denoting the sold_notes field in the database.
 	FieldSoldNotes = "sold_notes"
+	// FieldTestMigrationField holds the string denoting the test_migration_field field in the database.
+	FieldTestMigrationField = "test_migration_field"
 	// EdgeGroup holds the string denoting the group edge name in mutations.
 	EdgeGroup = "group"
 	// EdgeLocation holds the string denoting the location edge name in mutations.
@@ -126,6 +128,7 @@ var Columns = []string{
 	FieldSoldTo,
 	FieldSoldPrice,
 	FieldSoldNotes,
+	FieldTestMigrationField,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "items"
@@ -191,6 +194,8 @@ var (
 	DefaultSoldPrice float64
 	// SoldNotesValidator is a validator for the "sold_notes" field. It is called by the builders before save.
 	SoldNotesValidator func(string) error
+	// DefaultTestMigrationField holds the default value on creation for the "test_migration_field" field.
+	DefaultTestMigrationField string
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )

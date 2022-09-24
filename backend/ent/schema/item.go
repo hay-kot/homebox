@@ -88,6 +88,9 @@ func (Item) Fields() []ent.Field {
 		field.String("sold_notes").
 			MaxLen(1000).
 			Optional(),
+
+		field.String("test_migration_field").
+			Default("test-migration-value"),
 	}
 }
 

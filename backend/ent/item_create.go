@@ -312,6 +312,20 @@ func (ic *ItemCreate) SetNillableSoldNotes(s *string) *ItemCreate {
 	return ic
 }
 
+// SetTestMigrationField sets the "test_migration_field" field.
+func (ic *ItemCreate) SetTestMigrationField(s string) *ItemCreate {
+	ic.mutation.SetTestMigrationField(s)
+	return ic
+}
+
+// SetNillableTestMigrationField sets the "test_migration_field" field if the given value is not nil.
+func (ic *ItemCreate) SetNillableTestMigrationField(s *string) *ItemCreate {
+	if s != nil {
+		ic.SetTestMigrationField(*s)
+	}
+	return ic
+}
+
 // SetID sets the "id" field.
 func (ic *ItemCreate) SetID(u uuid.UUID) *ItemCreate {
 	ic.mutation.SetID(u)
@@ -506,6 +520,10 @@ func (ic *ItemCreate) defaults() {
 		v := item.DefaultSoldPrice
 		ic.mutation.SetSoldPrice(v)
 	}
+	if _, ok := ic.mutation.TestMigrationField(); !ok {
+		v := item.DefaultTestMigrationField
+		ic.mutation.SetTestMigrationField(v)
+	}
 	if _, ok := ic.mutation.ID(); !ok {
 		v := item.DefaultID()
 		ic.mutation.SetID(v)
@@ -582,6 +600,9 @@ func (ic *ItemCreate) check() error {
 		if err := item.SoldNotesValidator(v); err != nil {
 			return &ValidationError{Name: "sold_notes", err: fmt.Errorf(`ent: validator failed for field "Item.sold_notes": %w`, err)}
 		}
+	}
+	if _, ok := ic.mutation.TestMigrationField(); !ok {
+		return &ValidationError{Name: "test_migration_field", err: errors.New(`ent: missing required field "Item.test_migration_field"`)}
 	}
 	if _, ok := ic.mutation.GroupID(); !ok {
 		return &ValidationError{Name: "group", err: errors.New(`ent: missing required edge "Item.group"`)}
@@ -789,6 +810,14 @@ func (ic *ItemCreate) createSpec() (*Item, *sqlgraph.CreateSpec) {
 			Column: item.FieldSoldNotes,
 		})
 		_node.SoldNotes = value
+	}
+	if value, ok := ic.mutation.TestMigrationField(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: item.FieldTestMigrationField,
+		})
+		_node.TestMigrationField = value
 	}
 	if nodes := ic.mutation.GroupIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

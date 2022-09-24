@@ -3406,50 +3406,51 @@ func (m *GroupMutation) ResetEdge(name string) error {
 // ItemMutation represents an operation that mutates the Item nodes in the graph.
 type ItemMutation struct {
 	config
-	op                 Op
-	typ                string
-	id                 *uuid.UUID
-	created_at         *time.Time
-	updated_at         *time.Time
-	name               *string
-	description        *string
-	import_ref         *string
-	notes              *string
-	quantity           *int
-	addquantity        *int
-	insured            *bool
-	serial_number      *string
-	model_number       *string
-	manufacturer       *string
-	lifetime_warranty  *bool
-	warranty_expires   *time.Time
-	warranty_details   *string
-	purchase_time      *time.Time
-	purchase_from      *string
-	purchase_price     *float64
-	addpurchase_price  *float64
-	sold_time          *time.Time
-	sold_to            *string
-	sold_price         *float64
-	addsold_price      *float64
-	sold_notes         *string
-	clearedFields      map[string]struct{}
-	group              *uuid.UUID
-	clearedgroup       bool
-	location           *uuid.UUID
-	clearedlocation    bool
-	fields             map[uuid.UUID]struct{}
-	removedfields      map[uuid.UUID]struct{}
-	clearedfields      bool
-	label              map[uuid.UUID]struct{}
-	removedlabel       map[uuid.UUID]struct{}
-	clearedlabel       bool
-	attachments        map[uuid.UUID]struct{}
-	removedattachments map[uuid.UUID]struct{}
-	clearedattachments bool
-	done               bool
-	oldValue           func(context.Context) (*Item, error)
-	predicates         []predicate.Item
+	op                   Op
+	typ                  string
+	id                   *uuid.UUID
+	created_at           *time.Time
+	updated_at           *time.Time
+	name                 *string
+	description          *string
+	import_ref           *string
+	notes                *string
+	quantity             *int
+	addquantity          *int
+	insured              *bool
+	serial_number        *string
+	model_number         *string
+	manufacturer         *string
+	lifetime_warranty    *bool
+	warranty_expires     *time.Time
+	warranty_details     *string
+	purchase_time        *time.Time
+	purchase_from        *string
+	purchase_price       *float64
+	addpurchase_price    *float64
+	sold_time            *time.Time
+	sold_to              *string
+	sold_price           *float64
+	addsold_price        *float64
+	sold_notes           *string
+	test_migration_field *string
+	clearedFields        map[string]struct{}
+	group                *uuid.UUID
+	clearedgroup         bool
+	location             *uuid.UUID
+	clearedlocation      bool
+	fields               map[uuid.UUID]struct{}
+	removedfields        map[uuid.UUID]struct{}
+	clearedfields        bool
+	label                map[uuid.UUID]struct{}
+	removedlabel         map[uuid.UUID]struct{}
+	clearedlabel         bool
+	attachments          map[uuid.UUID]struct{}
+	removedattachments   map[uuid.UUID]struct{}
+	clearedattachments   bool
+	done                 bool
+	oldValue             func(context.Context) (*Item, error)
+	predicates           []predicate.Item
 }
 
 var _ ent.Mutation = (*ItemMutation)(nil)
@@ -4541,6 +4542,42 @@ func (m *ItemMutation) ResetSoldNotes() {
 	delete(m.clearedFields, item.FieldSoldNotes)
 }
 
+// SetTestMigrationField sets the "test_migration_field" field.
+func (m *ItemMutation) SetTestMigrationField(s string) {
+	m.test_migration_field = &s
+}
+
+// TestMigrationField returns the value of the "test_migration_field" field in the mutation.
+func (m *ItemMutation) TestMigrationField() (r string, exists bool) {
+	v := m.test_migration_field
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTestMigrationField returns the old "test_migration_field" field's value of the Item entity.
+// If the Item object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ItemMutation) OldTestMigrationField(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTestMigrationField is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTestMigrationField requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTestMigrationField: %w", err)
+	}
+	return oldValue.TestMigrationField, nil
+}
+
+// ResetTestMigrationField resets all changes to the "test_migration_field" field.
+func (m *ItemMutation) ResetTestMigrationField() {
+	m.test_migration_field = nil
+}
+
 // SetGroupID sets the "group" edge to the Group entity by id.
 func (m *ItemMutation) SetGroupID(id uuid.UUID) {
 	m.group = &id
@@ -4800,7 +4837,7 @@ func (m *ItemMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ItemMutation) Fields() []string {
-	fields := make([]string, 0, 21)
+	fields := make([]string, 0, 22)
 	if m.created_at != nil {
 		fields = append(fields, item.FieldCreatedAt)
 	}
@@ -4864,6 +4901,9 @@ func (m *ItemMutation) Fields() []string {
 	if m.sold_notes != nil {
 		fields = append(fields, item.FieldSoldNotes)
 	}
+	if m.test_migration_field != nil {
+		fields = append(fields, item.FieldTestMigrationField)
+	}
 	return fields
 }
 
@@ -4914,6 +4954,8 @@ func (m *ItemMutation) Field(name string) (ent.Value, bool) {
 		return m.SoldPrice()
 	case item.FieldSoldNotes:
 		return m.SoldNotes()
+	case item.FieldTestMigrationField:
+		return m.TestMigrationField()
 	}
 	return nil, false
 }
@@ -4965,6 +5007,8 @@ func (m *ItemMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldSoldPrice(ctx)
 	case item.FieldSoldNotes:
 		return m.OldSoldNotes(ctx)
+	case item.FieldTestMigrationField:
+		return m.OldTestMigrationField(ctx)
 	}
 	return nil, fmt.Errorf("unknown Item field %s", name)
 }
@@ -5120,6 +5164,13 @@ func (m *ItemMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSoldNotes(v)
+		return nil
+	case item.FieldTestMigrationField:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTestMigrationField(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Item field %s", name)
@@ -5352,6 +5403,9 @@ func (m *ItemMutation) ResetField(name string) error {
 		return nil
 	case item.FieldSoldNotes:
 		m.ResetSoldNotes()
+		return nil
+	case item.FieldTestMigrationField:
+		m.ResetTestMigrationField()
 		return nil
 	}
 	return fmt.Errorf("unknown Item field %s", name)

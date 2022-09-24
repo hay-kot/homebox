@@ -275,6 +275,10 @@ func init() {
 	itemDescSoldNotes := itemFields[16].Descriptor()
 	// item.SoldNotesValidator is a validator for the "sold_notes" field. It is called by the builders before save.
 	item.SoldNotesValidator = itemDescSoldNotes.Validators[0].(func(string) error)
+	// itemDescTestMigrationField is the schema descriptor for test_migration_field field.
+	itemDescTestMigrationField := itemFields[17].Descriptor()
+	// item.DefaultTestMigrationField holds the default value on creation for the test_migration_field field.
+	item.DefaultTestMigrationField = itemDescTestMigrationField.Default.(string)
 	// itemDescID is the schema descriptor for id field.
 	itemDescID := itemMixinFields0[0].Descriptor()
 	// item.DefaultID holds the default value on creation for the id field.
