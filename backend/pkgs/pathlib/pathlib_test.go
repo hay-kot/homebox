@@ -50,9 +50,8 @@ func Test_hasConflict(t *testing.T) {
 
 func TestSafePath(t *testing.T) {
 	// override dirReader
-
 	dirReader = func(name string) []string {
-		return []string{"/foo/bar.pdf", "/foo/bar (1).pdf", "/foo/bar (2).pdf"}
+		return []string{"bar.pdf", "bar (1).pdf", "bar (2).pdf"}
 	}
 
 	type args struct {

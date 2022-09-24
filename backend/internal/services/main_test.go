@@ -18,6 +18,7 @@ import (
 var (
 	fk = faker.NewFaker()
 
+	tCtx    = Context{}
 	tClient *ent.Client
 	tRepos  *repo.AllRepos
 	tUser   *ent.User
@@ -66,7 +67,13 @@ func TestMain(m *testing.M) {
 	tSvc = NewServices(tRepos, "/tmp/homebox")
 	defer client.Close()
 
+
 	bootstrap()
+	tCtx = Context{
+		Context: context.Background(),
+		GID:     tGroup.ID,
+		UID:     tUser.ID,
+	}
 
 	os.Exit(m.Run())
 }

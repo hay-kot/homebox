@@ -11,6 +11,13 @@ type AllServices struct {
 }
 
 func NewServices(repos *repo.AllRepos, root string) *AllServices {
+	if repos == nil {
+		panic("repos cannot be nil")
+	}
+	if root == "" {
+		panic("root cannot be empty")
+	}
+
 	return &AllServices{
 		User:     &UserService{repos},
 		Admin:    &AdminService{repos},
