@@ -266,6 +266,15 @@
                         "schema": {
                             "$ref": "#/definitions/types.ItemOut"
                         }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/server.ValidationError"
+                            }
+                        }
                     }
                 }
             }
@@ -1014,6 +1023,17 @@
             "properties": {
                 "items": {
                     "type": "any"
+                }
+            }
+        },
+        "server.ValidationError": {
+            "type": "object",
+            "properties": {
+                "field": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string"
                 }
             }
         },

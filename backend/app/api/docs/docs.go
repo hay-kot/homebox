@@ -274,6 +274,15 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/types.ItemOut"
                         }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/server.ValidationError"
+                            }
+                        }
                     }
                 }
             }
@@ -1022,6 +1031,17 @@ const docTemplate = `{
             "properties": {
                 "items": {
                     "type": "any"
+                }
+            }
+        },
+        "server.ValidationError": {
+            "type": "object",
+            "properties": {
+                "field": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string"
                 }
             }
         },

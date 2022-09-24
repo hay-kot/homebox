@@ -1,17 +1,96 @@
 package v1
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
+	"github.com/hay-kot/homebox/backend/ent/attachment"
 	"github.com/hay-kot/homebox/backend/internal/services"
 	"github.com/hay-kot/homebox/backend/internal/types"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 	"github.com/rs/zerolog/log"
 )
+
+// HandleItemsImport godocs
+// @Summary   imports items into the database
+// @Tags      Items
+// @Produce   json
+// @Param     id    path      string  true  "Item ID"
+// @Param     file  formData  file    true  "File attachment"
+// @Param     type  formData  string  true  "Type of file"
+// @Param     name  formData  string  true  "name of the file including extension"
+// @Success   200   {object}  types.ItemOut
+// @Failure   422   {object}  []server.ValidationError
+// @Router    /v1/items/{id}/attachments [POST]
+// @Security  Bearer
+func (ctrl *V1Controller) HandleItemAttachmentCreate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := r.ParseMultipartForm(ctrl.maxUploadSize << 20)
+		if err != nil {
+			log.Err(err).Msg("failed to parse multipart form")
+			server.RespondError(w, http.StatusBadRequest, errors.New("failed to parse multipart form"))
+			return
+		}
+
+		errs := make(server.ValidationErrors, 0)
+
+		file, _, err := r.FormFile("file")
+		if err != nil {
+			switch {
+			case errors.Is(err, http.ErrMissingFile):
+				log.Debug().Msg("file for attachment is missing")
+				errs = errs.Append("file", "file is required")
+			default:
+				log.Err(err).Msg("failed to get file from form")
+				server.RespondServerError(w)
+				return
+			}
+		}
+
+		attachmentName := r.FormValue("name")
+		if attachmentName == "" {
+			log.Debug().Msg("failed to get name from form")
+			errs = errs.Append("name", "name is required")
+		}
+
+		if errs.HasErrors() {
+			server.Respond(w, http.StatusUnprocessableEntity, errs)
+			return
+		}
+
+		attachmentType := r.FormValue("type")
+		if attachmentType == "" {
+			attachmentType = attachment.TypeAttachment.String()
+		}
+
+		id, _, err := ctrl.partialParseIdAndUser(w, r)
+		if err != nil {
+			return
+		}
+
+		ctx := services.NewContext(r.Context())
+
+		item, err := ctrl.svc.Items.AttachmentAdd(
+			ctx,
+			id,
+			attachmentName,
+			attachment.Type(attachmentType),
+			file,
+		)
+
+		if err != nil {
+			log.Err(err).Msg("failed to add attachment")
+			server.RespondServerError(w)
+			return
+		}
+
+		server.Respond(w, http.StatusCreated, item)
+	}
+}
 
 // HandleItemAttachmentGet godocs
 // @Summary   retrieves an attachment for an item

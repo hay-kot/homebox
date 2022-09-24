@@ -14,6 +14,13 @@ definitions:
       items:
         type: any
     type: object
+  server.ValidationError:
+    properties:
+      field:
+        type: string
+      reason:
+        type: string
+    type: object
   types.ApiSummary:
     properties:
       build:
@@ -543,6 +550,12 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/types.ItemOut'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            items:
+              $ref: '#/definitions/server.ValidationError'
+            type: array
       security:
       - Bearer: []
       summary: imports items into the database

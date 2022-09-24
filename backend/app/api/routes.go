@@ -43,7 +43,7 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 	// API Version 1
 
 	v1Base := v1.BaseUrlFunc(prefix)
-	v1Ctrl := v1.NewControllerV1(a.services)
+	v1Ctrl := v1.NewControllerV1(a.services, v1.WithMaxUploadSize(a.conf.Web.MaxUploadSize))
 	{
 		r.Get(v1Base("/status"), v1Ctrl.HandleBase(func() bool { return true }, types.Build{
 			Version:   Version,

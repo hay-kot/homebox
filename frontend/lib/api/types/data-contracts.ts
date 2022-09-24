@@ -21,6 +21,11 @@ export interface ServerResults {
   items: any;
 }
 
+export interface ServerValidationError {
+  field: string;
+  reason: string;
+}
+
 export interface ApiSummary {
   build: Build;
   health: boolean;

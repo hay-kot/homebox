@@ -58,7 +58,7 @@ func (svc *ItemService) AttachmentToken(ctx Context, itemId, attachmentId uuid.U
 	}
 
 	if _, err := os.Stat(attachment.Edges.Document.Path); os.IsNotExist(err) {
-		svc.AttachmentDelete(ctx, ctx.GID, itemId, attachmentId)
+		_ = svc.AttachmentDelete(ctx, ctx.GID, itemId, attachmentId)
 		return "", ErrNotFound
 	}
 
