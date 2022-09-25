@@ -9,7 +9,7 @@
         :autofocus="true"
         label="Location Name"
       />
-      <FormTextField v-model="form.description" label="Location Description" />
+      <FormTextArea v-model="form.description" label="Location Description" />
       <div class="modal-action">
         <BaseButton type="submit" :loading="loading"> Create </BaseButton>
       </div>
