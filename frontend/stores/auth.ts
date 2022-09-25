@@ -1,11 +1,13 @@
 import { defineStore } from "pinia";
 import { useLocalStorage } from "@vueuse/core";
 import { UserApi } from "~~/lib/api/user";
+import { UserOut } from "~~/lib/api/types/data-contracts";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     token: useLocalStorage("pinia/auth/token", ""),
     expires: useLocalStorage("pinia/auth/expires", ""),
+    self: null as UserOut | null,
   }),
   getters: {
     isTokenExpired: state => {
@@ -30,6 +32,7 @@ export const useAuthStore = defineStore("auth", {
 
       this.token = "";
       this.expires = "";
+      this.self = null;
 
       return result;
     },

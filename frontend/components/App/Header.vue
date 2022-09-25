@@ -64,7 +64,7 @@
   <LabelCreateModal v-model="modals.label" />
   <LocationCreateModal v-model="modals.location" />
 
-  <div class="bg-neutral absolute shadow-xl top-0 h-[50vh] max-h-96 sm:h-[28vh] -z-10 w-full"></div>
+  <div class="bg-neutral absolute shadow-xl top-0 h-[20rem] max-h-96 -z-10 w-full"></div>
 
   <BaseContainer cmp="header" class="py-6 max-w-none">
     <BaseContainer>

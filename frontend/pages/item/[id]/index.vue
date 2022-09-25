@@ -174,7 +174,7 @@
   const confirm = useConfirm();
 
   async function deleteItem() {
-    const confirmed = await confirm.reveal("Are you sure you want to delete this item?");
+    const confirmed = await confirm.open("Are you sure you want to delete this item?");
 
     if (!confirmed.data) {
       return;
@@ -200,7 +200,7 @@
         <BaseDetails :details="itemSummary">
           <template #title>
             <BaseSectionHeader v-if="item" class="pb-0">
-              <Icon name="mdi-package-variant" class="-mt-1 mr-2 text-gray-600" />
+              <Icon name="mdi-package-variant" class="mr-2 text-gray-600" />
               <span class="text-gray-600">
                 {{ item.name }}
               </span>

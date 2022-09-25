@@ -2,17 +2,11 @@ import { BaseAPI, route } from "./base";
 import { ItemsApi } from "./classes/items";
 import { LabelsApi } from "./classes/labels";
 import { LocationsApi } from "./classes/locations";
+import { UserOut } from "./types/data-contracts";
 import { Requests } from "~~/lib/requests";
 
 export type Result<T> = {
   item: T;
-};
-
-export type User = {
-  name: string;
-  email: string;
-  isSuperuser: boolean;
-  id: number;
 };
 
 export class UserApi extends BaseAPI {
@@ -30,7 +24,7 @@ export class UserApi extends BaseAPI {
   }
 
   public self() {
-    return this.http.get<Result<User>>({ url: route("/users/self") });
+    return this.http.get<Result<UserOut>>({ url: route("/users/self") });
   }
 
   public logout() {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import ActionsDivider from "../../components/Base/ActionsDivider.vue";
+  import { Detail, DateDetail } from "~~/components/global/DetailsSection/types";
 
   definePageMeta({
     layout: "home",
@@ -23,47 +23,57 @@
     return data;
   });
 
-  function maybeTimeAgo(date?: string): string {
-    if (!date) {
-      return "??";
-    }
-
-    const time = new Date(date);
-
-    return `${useTimeAgo(time).value} (${useDateFormat(time, "MM-DD-YYYY").value})`;
-  }
-
-  const details = computed(() => {
-    const dt = {
-      Name: location.value?.name || "",
-      Description: location.value?.description || "",
-    };
+  const details = computed<(Detail | DateDetail)[]>(() => {
+    const details = [
+      {
+        name: "Name",
+        text: location.value?.name,
+      },
+      {
+        name: "Description",
+        text: location.value?.description,
+      },
+    ];
 
     if (preferences.value.showDetails) {
-      dt["Created At"] = maybeTimeAgo(location.value?.createdAt);
-      dt["Updated At"] = maybeTimeAgo(location.value?.updatedAt);
-      dt["Database ID"] = location.value?.id || "";
-      dt["Group Id"] = location.value?.groupId || "";
+      return [
+        ...details,
+        {
+          name: "Created",
+          text: location.value?.createdAt,
+          type: "date",
+        },
+        {
+          name: "Updated",
+          text: location.value?.updatedAt,
+          type: "date",
+        },
+        {
+          name: "Database ID",
+          text: location.value?.id,
+        },
+      ];
     }
 
-    return dt;
+    return details;
   });
 
-  const { reveal } = useConfirm();
+  const confirm = useConfirm();
 
   async function confirmDelete() {
-    const { isCanceled } = await reveal("Are you sure you want to delete this location? This action cannot be undone.");
-
+    const { isCanceled } = await confirm.open(
+      "Are you sure you want to delete this location? This action cannot be undone."
+    );
     if (isCanceled) {
       return;
     }
 
     const { error } = await api.locations.delete(locationId.value);
-
     if (error) {
       toast.error("Failed to delete location");
       return;
     }
+
     toast.success("Location deleted");
     navigateTo("/home");
   }
@@ -103,31 +113,48 @@
       <template #title> Update Location </template>
       <form v-if="location" @submit.prevent="update">
         <FormTextField v-model="updateData.name" :autofocus="true" label="Location Name" />
-        <FormTextField v-model="updateData.description" label="Location Description" />
+        <FormTextArea v-model="updateData.description" label="Location Description" />
         <div class="modal-action">
           <BaseButton type="submit" :loading="updating"> Update </BaseButton>
         </div>
       </form>
     </BaseModal>
-    <section>
-      <BaseSectionHeader class="mb-5" dark>
-        {{ location ? location.name : "" }}
-      </BaseSectionHeader>
-      <BaseDetails class="mb-2" :details="details">
-        <template #title> Location Details </template>
-      </BaseDetails>
-      <div class="form-control ml-auto mr-2 max-w-[130px]">
-        <label class="label cursor-pointer">
-          <input v-model="preferences.showDetails" type="checkbox" class="toggle" />
-          <span class="label-text"> Detailed View </span>
-        </label>
-      </div>
-      <ActionsDivider @delete="confirmDelete" @edit="openUpdate" />
-    </section>
+
+    <BaseCard class="mb-16">
+      <template #title>
+        <BaseSectionHeader>
+          <Icon name="mdi-map-marker" class="mr-2 text-gray-600" />
+          <span class="text-gray-600">
+            {{ location ? location.name : "" }}
+          </span>
+        </BaseSectionHeader>
+      </template>
+
+      <template #title-actions>
+        <div class="flex mt-2 gap-2">
+          <div class="form-control max-w-[160px]">
+            <label class="label cursor-pointer">
+              <input v-model="preferences.showDetails" type="checkbox" class="toggle toggle-primary" />
+              <span class="label-text ml-2"> Detailed View </span>
+            </label>
+          </div>
+          <BaseButton class="ml-auto" size="sm" @click="openUpdate">
+            <Icon class="mr-1" name="mdi-pencil" />
+            Edit
+          </BaseButton>
+          <BaseButton size="sm" @click="confirmDelete">
+            <Icon class="mr-1" name="mdi-delete" />
+            Delete
+          </BaseButton>
+        </div>
+      </template>
+
+      <DetailsSection :details="details" />
+    </BaseCard>
 
     <section v-if="location">
       <BaseSectionHeader class="mb-5"> Items </BaseSectionHeader>
-      <div class="grid gap-2 grid-cols-2">
+      <div class="grid gap-2 grid-cols-1 sm:grid-cols-2">
         <ItemCard v-for="item in location.items" :key="item.id" :item="item" />
       </div>
     </section>

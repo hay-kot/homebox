@@ -9,7 +9,7 @@
         :autofocus="true"
         label="Label Name"
       />
-      <FormTextField v-model="form.description" label="Label Description" />
+      <FormTextArea v-model="form.description" label="Label Description" />
       <div class="modal-action">
         <BaseButton type="submit" :loading="loading"> Create </BaseButton>
       </div>
