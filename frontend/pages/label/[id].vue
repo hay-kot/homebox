@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import ActionsDivider from "../../components/Base/ActionsDivider.vue";
+  import type { DateDetail, Detail } from "~~/components/global/DetailsSection/types";
 
   definePageMeta({
     layout: "home",
@@ -23,30 +23,39 @@
     return data;
   });
 
-  function maybeTimeAgo(date?: string): string {
-    if (!date) {
-      return "??";
-    }
-
-    const time = new Date(date);
-
-    return `${useTimeAgo(time).value} (${useDateFormat(time, "MM-DD-YYYY").value})`;
-  }
-
-  const details = computed(() => {
-    const dt = {
-      Name: label.value?.name || "",
-      Description: label.value?.description || "",
-    };
+  const details = computed<(Detail | DateDetail)[]>(() => {
+    const details = [
+      {
+        name: "Name",
+        text: label.value?.name,
+      },
+      {
+        name: "Description",
+        text: label.value?.description,
+      },
+    ];
 
     if (preferences.value.showDetails) {
-      dt["Created At"] = maybeTimeAgo(label.value?.createdAt);
-      dt["Updated At"] = maybeTimeAgo(label.value?.updatedAt);
-      dt["Database ID"] = label.value?.id || "";
-      dt["Group Id"] = label.value?.groupId || "";
+      return [
+        ...details,
+        {
+          name: "Created",
+          text: label.value?.createdAt,
+          type: "date",
+        },
+        {
+          name: "Updated",
+          text: label.value?.updatedAt,
+          type: "date",
+        },
+        {
+          name: "Database ID",
+          text: label.value?.id,
+        },
+      ];
     }
 
-    return dt;
+    return details;
   });
 
   const { reveal } = useConfirm();
@@ -110,21 +119,38 @@
         </div>
       </form>
     </BaseModal>
-    <section>
-      <BaseSectionHeader class="mb-5" dark>
-        {{ label ? label.name : "" }}
-      </BaseSectionHeader>
-      <BaseDetails class="mb-2" :details="details">
-        <template #title> Label Details </template>
-      </BaseDetails>
-      <div class="form-control ml-auto mr-2 max-w-[160px]">
-        <label class="label cursor-pointer">
-          <input v-model="preferences.showDetails" type="checkbox" class="toggle" />
-          <span class="label-text"> Detailed View </span>
-        </label>
-      </div>
-      <ActionsDivider @delete="confirmDelete" @edit="openUpdate" />
-    </section>
+
+    <BaseCard class="mb-16">
+      <template #title>
+        <BaseSectionHeader>
+          <Icon name="mdi-tag" class="mr-2 text-gray-600" />
+          <span class="text-gray-600">
+            {{ label ? label.name : "" }}
+          </span>
+        </BaseSectionHeader>
+      </template>
+
+      <template #title-actions>
+        <div class="flex mt-2 gap-2">
+          <div class="form-control max-w-[160px]">
+            <label class="label cursor-pointer">
+              <input v-model="preferences.showDetails" type="checkbox" class="toggle toggle-primary" />
+              <span class="label-text ml-2"> Detailed View </span>
+            </label>
+          </div>
+          <BaseButton class="ml-auto" size="sm" @click="openUpdate">
+            <Icon class="mr-1" name="mdi-pencil" />
+            Edit
+          </BaseButton>
+          <BaseButton size="sm" @click="confirmDelete">
+            <Icon class="mr-1" name="mdi-delete" />
+            Delete
+          </BaseButton>
+        </div>
+      </template>
+
+      <DetailsSection :details="details" />
+    </BaseCard>
 
     <section v-if="label">
       <BaseSectionHeader class="mb-5"> Items </BaseSectionHeader>
