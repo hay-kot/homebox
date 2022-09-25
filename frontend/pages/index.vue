@@ -1,7 +1,4 @@
 <script setup lang="ts">
-  import TextField from "@/components/Form/TextField.vue";
-  import { useNotifier } from "@/composables/use-notifier";
-  import { usePublicApi } from "@/composables/use-api";
   import { useAuthStore } from "~~/stores/auth";
   useHead({
     title: "Homebox | Organize and Tag Your Stuff",
@@ -11,49 +8,29 @@
     layout: "empty",
   });
 
+  const api = usePublicApi();
+  const toast = useNotifier();
+
   const authStore = useAuthStore();
   if (!authStore.isTokenExpired) {
     navigateTo("/home");
   }
 
-  const registerFields = [
-    {
-      label: "What's your name?",
-      value: "",
-    },
-    {
-      label: "What's your email?",
-      value: "",
-    },
-    {
-      label: "Name your group",
-      value: "",
-    },
-    {
-      label: "Set your password",
-      value: "",
-      type: "password",
-    },
-    {
-      label: "Confirm your password",
-      value: "",
-      type: "password",
-    },
-  ];
-
-  const api = usePublicApi();
+  const username = ref("");
+  const email = ref("");
+  const groupName = ref("");
+  const password = ref("");
+  const canRegister = ref(false);
 
   async function registerUser() {
     loading.value = true;
-    // Print Values of registerFields
-
     const { error } = await api.register({
       user: {
-        name: registerFields[0].value,
-        email: registerFields[1].value,
-        password: registerFields[3].value,
+        name: username.value,
+        email: email.value,
+        password: password.value,
       },
-      groupName: registerFields[2].value,
+      groupName: groupName.value,
     });
 
     if (error) {
@@ -64,48 +41,34 @@
     toast.success("User registered");
 
     loading.value = false;
-    loginFields[0].value = registerFields[1].value;
     registerForm.value = false;
   }
 
-  const loginFields = [
-    {
-      label: "Email",
-      value: "",
-    },
-    {
-      label: "Password",
-      value: "",
-      type: "password",
-    },
-  ];
-
-  const toast = useNotifier();
   const loading = ref(false);
+  const loginPassword = ref("");
 
   async function login() {
     loading.value = true;
-    const { data, error } = await api.login(loginFields[0].value, loginFields[1].value);
+    const { data, error } = await api.login(email.value, loginPassword.value);
 
     if (error) {
       toast.error("Invalid email or password");
-    } else {
-      toast.success("Logged in successfully");
-
-      authStore.$patch({
-        token: data.token,
-        expires: data.expiresAt,
-      });
-
-      navigateTo("/home");
+      loading.value = false;
+      return;
     }
+
+    toast.success("Logged in successfully");
+
+    authStore.$patch({
+      token: data.token,
+      expires: data.expiresAt,
+    });
+
+    navigateTo("/home");
     loading.value = false;
   }
 
-  const registerForm = ref(false);
-  function toggleLogin() {
-    registerForm.value = !registerForm.value;
-  }
+  const [registerForm, toggleLogin] = useToggle();
 </script>
 
 <template>
@@ -159,19 +122,17 @@
                     <Icon name="heroicons-user" class="mr-1 w-7 h-7" />
                     Register
                   </h2>
-                  <TextField
-                    v-for="field in registerFields"
-                    :key="field.label"
-                    v-model="field.value"
-                    :label="field.label"
-                    :type="field.type"
-                  />
+                  <FormTextField v-model="email" label="Set your email?" />
+                  <FormTextField v-model="username" label="What's your name?" />
+                  <FormTextField v-model="groupName" label="Name your group" />
+                  <FormTextField v-model="password" label="Set your password" type="password" />
+                  <PasswordScore v-model:valid="canRegister" :password="password" />
                   <div class="card-actions justify-end">
                     <button
                       type="submit"
                       class="btn btn-primary mt-2"
                       :class="loading ? 'loading' : ''"
-                      :disabled="loading"
+                      :disabled="loading || !canRegister"
                     >
                       Register
                     </button>
@@ -186,13 +147,8 @@
                     <Icon name="heroicons-user" class="mr-1 w-7 h-7" />
                     Login
                   </h2>
-                  <TextField
-                    v-for="field in loginFields"
-                    :key="field.label"
-                    v-model="field.value"
-                    :label="field.label"
-                    :type="field.type"
-                  />
+                  <FormTextField v-model="email" label="Email" />
+                  <FormTextField v-model="loginPassword" label="Password" type="password" />
                   <div class="card-actions justify-end mt-2">
                     <button type="submit" class="btn btn-primary" :class="loading ? 'loading' : ''" :disabled="loading">
                       Login
@@ -205,7 +161,7 @@
           <div class="text-center mt-6">
             <button
               class="text-base-content text-lg hover:bg-primary hover:text-primary-content px-3 py-1 rounded-xl transition-colors duration-200"
-              @click="toggleLogin"
+              @click="() => toggleLogin()"
             >
               {{ registerForm ? "Already a User? Login" : "Not a User? Register" }}
             </button>
@@ -226,5 +182,9 @@
     position: absolute;
     transform: translateX(20px);
     opacity: 0;
+  }
+
+  progress[value]::-webkit-progress-value {
+    transition: width 0.5s;
   }
 </style>
