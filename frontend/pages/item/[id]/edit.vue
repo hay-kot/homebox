@@ -204,7 +204,7 @@
   const confirm = useConfirm();
 
   async function deleteAttachment(attachmentId: string) {
-    const confirmed = await confirm.reveal("Are you sure you want to delete this attachment?");
+    const confirmed = await confirm.open("Are you sure you want to delete this attachment?");
 
     if (confirmed.isCanceled) {
       return;

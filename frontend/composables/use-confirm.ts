@@ -1,10 +1,11 @@
-import { UseConfirmDialogReturn } from "@vueuse/core";
+import { UseConfirmDialogRevealResult, UseConfirmDialogReturn } from "@vueuse/core";
 import { Ref } from "vue";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Store = UseConfirmDialogReturn<any, boolean, boolean> & {
   text: Ref<string>;
   setup: boolean;
+  open: (text: string) => Promise<UseConfirmDialogRevealResult<boolean,  boolean>>;
 };
 
 const store: Partial<Store> = {
@@ -30,13 +31,13 @@ export function useConfirm(): Store {
     store.cancel = cancel;
   }
 
-  async function openDialog(msg: string) {
+  async function openDialog(msg: string): Promise<UseConfirmDialogRevealResult<boolean,  boolean>> {
     store.text.value = msg;
     return await store.reveal();
   }
 
   return {
     ...(store as Store),
-    reveal: openDialog,
+    open: openDialog,
   };
 }

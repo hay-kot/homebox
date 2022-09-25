@@ -174,7 +174,7 @@
   const confirm = useConfirm();
 
   async function deleteItem() {
-    const confirmed = await confirm.reveal("Are you sure you want to delete this item?");
+    const confirmed = await confirm.open("Are you sure you want to delete this item?");
 
     if (!confirmed.data) {
       return;

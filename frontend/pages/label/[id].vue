@@ -58,10 +58,12 @@
     return details;
   });
 
-  const { reveal } = useConfirm();
+  const confirm = useConfirm();
 
   async function confirmDelete() {
-    const { isCanceled } = await reveal("Are you sure you want to delete this label? This action cannot be undone.");
+    const { isCanceled } = await confirm.open(
+      "Are you sure you want to delete this label? This action cannot be undone."
+    );
 
     if (isCanceled) {
       return;
@@ -154,7 +156,7 @@
 
     <section v-if="label">
       <BaseSectionHeader class="mb-5"> Items </BaseSectionHeader>
-      <div class="grid gap-2 grid-cols-2">
+      <div class="grid gap-2 grid-cols-1 sm:grid-cols-2">
         <ItemCard v-for="item in label.items" :key="item.id" :item="item" />
       </div>
     </section>
