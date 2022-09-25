@@ -1,4 +1,5 @@
 <script setup lang="ts">
+  import { useAuthStore } from "~~/stores/auth";
   import { useItemStore } from "~~/stores/items";
   import { useLabelStore } from "~~/stores/labels";
   import { useLocationStore } from "~~/stores/locations";
@@ -11,6 +12,19 @@
   });
 
   const api = useUserApi();
+
+  const auth = useAuthStore();
+
+  if (auth.self === null) {
+    const { data, error } = await api.self();
+    if (error) {
+      navigateTo("/login");
+    }
+
+    auth.$patch({ self: data.item });
+
+    console.log(auth.self);
+  }
 
   const itemsStore = useItemStore();
   const items = computed(() => itemsStore.items);
@@ -121,8 +135,8 @@
             <div class="sm:flex sm:space-x-5">
               <div class="mt-4 text-center sm:mt-0 sm:pt-1 sm:text-left">
                 <p class="text-sm font-medium text-gray-600">Welcome back,</p>
-                <p class="text-xl font-bold text-gray-900 sm:text-2xl">Username</p>
-                <p class="text-sm font-medium text-gray-600">User</p>
+                <p class="text-xl font-bold text-gray-900 sm:text-2xl">{{ auth.self.name }}</p>
+                <p class="text-sm font-medium text-gray-600">{{ auth.self.isSuperuser ? "Admin" : "User" }}</p>
               </div>
             </div>
             <div class="mt-5 flex justify-center sm:mt-0">
