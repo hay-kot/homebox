@@ -116,7 +116,7 @@
       <BaseDetails class="mb-2" :details="details">
         <template #title> Location Details </template>
       </BaseDetails>
-      <div class="form-control ml-auto mr-2 max-w-[130px]">
+      <div class="form-control ml-auto mr-2 max-w-[160px]">
         <label class="label cursor-pointer">
           <input v-model="preferences.showDetails" type="checkbox" class="toggle" />
           <span class="label-text"> Detailed View </span>
