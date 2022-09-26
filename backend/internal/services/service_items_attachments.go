@@ -4,7 +4,6 @@ import (
 	"context"
 	"io"
 	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/google/uuid"
@@ -13,7 +12,6 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/repo"
 	"github.com/hay-kot/homebox/backend/internal/types"
 	"github.com/hay-kot/homebox/backend/pkgs/hasher"
-	"github.com/hay-kot/homebox/backend/pkgs/pathlib"
 	"github.com/rs/zerolog/log"
 )
 
@@ -67,13 +65,6 @@ func (svc *ItemService) AttachmentToken(ctx Context, itemId, attachmentId uuid.U
 	svc.at.Add(token.Raw, attachmentId)
 
 	return token.Raw, nil
-}
-
-func (svc *ItemService) attachmentPath(gid, itemId uuid.UUID, filename string) string {
-	path := filepath.Join(svc.filepath, gid.String(), itemId.String(), filename)
-	path = pathlib.Safe(path)
-	log.Debug().Str("path", path).Msg("attachment path")
-	return path
 }
 
 func (svc *ItemService) AttachmentPath(ctx context.Context, token string) (*ent.Document, error) {
