@@ -13,10 +13,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func useDocs(t *testing.T, num int) []*ent.Document {
+func useDocs(t *testing.T, num int) []DocumentOut {
 	t.Helper()
 
-	results := make([]*ent.Document, 0, num)
+	results := make([]DocumentOut, 0, num)
 	ids := make([]uuid.UUID, 0, num)
 
 	for i := 0; i < num; i++ {

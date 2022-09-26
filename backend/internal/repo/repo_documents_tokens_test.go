@@ -39,7 +39,9 @@ func TestDocumentTokensRepository_Create(t *testing.T) {
 			},
 			want: &ent.DocumentToken{
 				Edges: ent.DocumentTokenEdges{
-					Document: doc,
+					Document: &ent.Document{
+						ID: doc.ID,
+					},
 				},
 				Token:     []byte("token"),
 				ExpiresAt: expires,
