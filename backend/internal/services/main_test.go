@@ -63,10 +63,9 @@ func TestMain(m *testing.M) {
 	}
 
 	tClient = client
-	tRepos = repo.EntAllRepos(tClient)
-	tSvc = NewServices(tRepos, "/tmp/homebox")
+	tRepos = repo.EntAllRepos(tClient, os.TempDir()+"/homebox")
+	tSvc = NewServices(tRepos)
 	defer client.Close()
-
 
 	bootstrap()
 	tCtx = Context{

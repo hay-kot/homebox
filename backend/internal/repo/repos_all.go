@@ -15,7 +15,7 @@ type AllRepos struct {
 	Attachments *AttachmentRepo
 }
 
-func EntAllRepos(db *ent.Client) *AllRepos {
+func EntAllRepos(db *ent.Client, root string) *AllRepos {
 	return &AllRepos{
 		Users:       &UserRepository{db},
 		AuthTokens:  &TokenRepository{db},
@@ -23,7 +23,7 @@ func EntAllRepos(db *ent.Client) *AllRepos {
 		Locations:   &LocationRepository{db},
 		Labels:      &LabelRepository{db},
 		Items:       &ItemsRepository{db},
-		Docs:        &DocumentRepository{db},
+		Docs:        &DocumentRepository{db, root},
 		DocTokens:   &DocumentTokensRepository{db},
 		Attachments: &AttachmentRepo{db},
 	}

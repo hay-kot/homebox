@@ -53,7 +53,7 @@ func TestMain(m *testing.M) {
 	}
 
 	tClient = client
-	tRepos = EntAllRepos(tClient)
+	tRepos = EntAllRepos(tClient, os.TempDir())
 	defer client.Close()
 
 	bootstrap()

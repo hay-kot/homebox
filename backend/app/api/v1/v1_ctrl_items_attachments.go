@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -105,7 +104,7 @@ func (ctrl *V1Controller) HandleItemAttachmentDownload() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		token := server.GetParam(r, "token", "")
 
-		path, err := ctrl.svc.Items.AttachmentPath(r.Context(), token)
+		doc, err := ctrl.svc.Items.AttachmentPath(r.Context(), token)
 
 		if err != nil {
 			log.Err(err).Msg("failed to get attachment")
@@ -113,9 +112,9 @@ func (ctrl *V1Controller) HandleItemAttachmentDownload() http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filepath.Base(path)))
+		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", doc.Title))
 		w.Header().Set("Content-Type", "application/octet-stream")
-		http.ServeFile(w, r, path)
+		http.ServeFile(w, r, doc.Path)
 	}
 }
 
