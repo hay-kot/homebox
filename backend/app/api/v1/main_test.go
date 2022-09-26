@@ -5,8 +5,9 @@ import (
 	"testing"
 
 	"github.com/hay-kot/homebox/backend/ent"
-	"github.com/hay-kot/homebox/backend/internal/mocks"
 	"github.com/hay-kot/homebox/backend/internal/mocks/factories"
+	"github.com/hay-kot/homebox/backend/internal/repo"
+	"github.com/hay-kot/homebox/backend/internal/services"
 	"github.com/hay-kot/homebox/backend/internal/types"
 )
 
@@ -39,12 +40,17 @@ func userPool() func() {
 
 func TestMain(m *testing.M) {
 	// Set Handler Vars
-	repos, closeDb := mocks.GetEntRepos()
-	mockHandler.svc = mocks.GetMockServices(repos)
+	c, err := ent.Open("sqlite3", "file:ent?mode=memory&cache=shared&_fk=1")
+	if err != nil {
+		panic(err)
+	}
 
-	defer func() {
-		_ = closeDb()
-	}()
+	if err := c.Schema.Create(context.Background()); err != nil {
+		panic(err)
+	}
+
+	repos := repo.EntAllRepos(c, "/tmp/homebox")
+	mockHandler.svc = services.NewServices(repos)
 
 	purge := userPool()
 	defer purge()
