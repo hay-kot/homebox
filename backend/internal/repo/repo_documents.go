@@ -25,14 +25,14 @@ type DocumentRepository struct {
 
 type (
 	DocumentCreate struct {
-		Title   string
-		Content io.Reader
+		Title   string    `json:"title"`
+		Content io.Reader `json:"content"`
 	}
 
 	DocumentOut struct {
-		ID    uuid.UUID
-		Title string
-		Path  string
+		ID    uuid.UUID `json:"id"`
+		Title string    `json:"title"`
+		Path  string    `json:"path"`
 	}
 )
 
@@ -45,8 +45,8 @@ func mapDocumentOut(doc *ent.Document) DocumentOut {
 }
 
 var (
-	mapDocumentOutErr     = errMapperFunc(mapDocumentOut)
-	mapDocumentOutEachErr = mapEachFuncErr(mapDocumentOut)
+	mapDocumentOutErr     = mapTErrFunc(mapDocumentOut)
+	mapDocumentOutEachErr = mapTEachErrFunc(mapDocumentOut)
 )
 
 func (r *DocumentRepository) path(gid uuid.UUID, ext string) string {

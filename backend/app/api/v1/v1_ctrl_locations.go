@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/hay-kot/homebox/backend/ent"
+	"github.com/hay-kot/homebox/backend/internal/repo"
 	"github.com/hay-kot/homebox/backend/internal/services"
-	"github.com/hay-kot/homebox/backend/internal/types"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 	"github.com/rs/zerolog/log"
 )
@@ -14,7 +14,7 @@ import (
 // @Summary   Get All Locations
 // @Tags      Locations
 // @Produce   json
-// @Success   200  {object}  server.Results{items=[]types.LocationCount}
+// @Success   200  {object}  server.Results{items=[]repo.LocationOutCount}
 // @Router    /v1/locations [GET]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleLocationGetAll() http.HandlerFunc {
@@ -35,13 +35,13 @@ func (ctrl *V1Controller) HandleLocationGetAll() http.HandlerFunc {
 // @Summary   Create a new location
 // @Tags      Locations
 // @Produce   json
-// @Param     payload  body      types.LocationCreate  true  "Location Data"
-// @Success   200      {object}  types.LocationSummary
+// @Param     payload  body      repo.LocationCreate  true  "Location Data"
+// @Success   200      {object}  repo.LocationSummary
 // @Router    /v1/locations [POST]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleLocationCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		createData := types.LocationCreate{}
+		createData := repo.LocationCreate{}
 		if err := server.Decode(r, &createData); err != nil {
 			log.Err(err).Msg("failed to decode location create data")
 			server.RespondError(w, http.StatusInternalServerError, err)
@@ -90,7 +90,7 @@ func (ctrl *V1Controller) HandleLocationDelete() http.HandlerFunc {
 // @Tags      Locations
 // @Produce   json
 // @Param     id   path      string  true  "Location ID"
-// @Success   200  {object}  types.LocationOut
+// @Success   200  {object}  repo.LocationOut
 // @Router    /v1/locations/{id} [GET]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleLocationGet() http.HandlerFunc {
@@ -105,12 +105,16 @@ func (ctrl *V1Controller) HandleLocationGet() http.HandlerFunc {
 			if ent.IsNotFound(err) {
 				log.Err(err).
 					Str("id", uid.String()).
+					Str("gid", user.GroupID.String()).
 					Msg("location not found")
 				server.RespondError(w, http.StatusNotFound, err)
 				return
 			}
 
-			log.Err(err).Msg("failed to get location")
+			log.Err(err).
+				Str("id", uid.String()).
+				Str("gid", user.GroupID.String()).
+				Msg("failed to get location")
 			server.RespondServerError(w)
 			return
 		}
@@ -123,12 +127,12 @@ func (ctrl *V1Controller) HandleLocationGet() http.HandlerFunc {
 // @Tags      Locations
 // @Produce   json
 // @Param     id  path  string  true  "Location ID"
-// @Success   200  {object}  types.LocationOut
+// @Success   200  {object}  repo.LocationOut
 // @Router    /v1/locations/{id} [PUT]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleLocationUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		body := types.LocationUpdate{}
+		body := repo.LocationUpdate{}
 		if err := server.Decode(r, &body); err != nil {
 			log.Err(err).Msg("failed to decode location update data")
 			server.RespondError(w, http.StatusInternalServerError, err)

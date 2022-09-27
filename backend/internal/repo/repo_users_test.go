@@ -5,14 +5,11 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hay-kot/homebox/backend/ent"
-	"github.com/hay-kot/homebox/backend/internal/types"
 	"github.com/stretchr/testify/assert"
 )
 
-func userFactory() types.UserCreate {
-
-	return types.UserCreate{
+func userFactory() UserCreate {
+	return UserCreate{
 		Name:        fk.Str(10),
 		Email:       fk.Email(),
 		Password:    fk.Str(10),
@@ -61,7 +58,7 @@ func TestUserRepo_GetOneId(t *testing.T) {
 
 func TestUserRepo_GetAll(t *testing.T) {
 	// Setup
-	toCreate := []types.UserCreate{
+	toCreate := []UserCreate{
 		userFactory(),
 		userFactory(),
 		userFactory(),
@@ -70,7 +67,7 @@ func TestUserRepo_GetAll(t *testing.T) {
 
 	ctx := context.Background()
 
-	created := []*ent.User{}
+	created := []UserOut{}
 
 	for _, usr := range toCreate {
 		usrOut, _ := tRepos.Users.Create(ctx, usr)
@@ -90,7 +87,7 @@ func TestUserRepo_GetAll(t *testing.T) {
 				assert.Equal(t, usr.Email, usr2.Email)
 
 				// Check groups are loaded
-				assert.NotNil(t, usr2.Edges.Group)
+				assert.NotNil(t, usr2.GroupID)
 			}
 		}
 	}
@@ -108,7 +105,7 @@ func TestUserRepo_Update(t *testing.T) {
 	user, err := tRepos.Users.Create(context.Background(), userFactory())
 	assert.NoError(t, err)
 
-	updateData := types.UserUpdate{
+	updateData := UserUpdate{
 		Name:  fk.Str(10),
 		Email: fk.Email(),
 	}

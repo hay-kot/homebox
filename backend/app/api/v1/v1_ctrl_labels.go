@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/hay-kot/homebox/backend/ent"
+	"github.com/hay-kot/homebox/backend/internal/repo"
 	"github.com/hay-kot/homebox/backend/internal/services"
-	"github.com/hay-kot/homebox/backend/internal/types"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 	"github.com/rs/zerolog/log"
 )
@@ -14,7 +14,7 @@ import (
 // @Summary   Get All Labels
 // @Tags      Labels
 // @Produce   json
-// @Success   200  {object}  server.Results{items=[]types.LabelOut}
+// @Success   200  {object}  server.Results{items=[]repo.LabelOut}
 // @Router    /v1/labels [GET]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleLabelsGetAll() http.HandlerFunc {
@@ -34,13 +34,13 @@ func (ctrl *V1Controller) HandleLabelsGetAll() http.HandlerFunc {
 // @Summary   Create a new label
 // @Tags      Labels
 // @Produce   json
-// @Param     payload  body      types.LabelCreate  true  "Label Data"
-// @Success   200      {object}  types.LabelSummary
+// @Param     payload  body      repo.LabelCreate  true  "Label Data"
+// @Success   200      {object}  repo.LabelSummary
 // @Router    /v1/labels [POST]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleLabelsCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		createData := types.LabelCreate{}
+		createData := repo.LabelCreate{}
 		if err := server.Decode(r, &createData); err != nil {
 			log.Err(err).Msg("error decoding label create data")
 			server.RespondError(w, http.StatusInternalServerError, err)
@@ -90,7 +90,7 @@ func (ctrl *V1Controller) HandleLabelDelete() http.HandlerFunc {
 // @Tags      Labels
 // @Produce   json
 // @Param     id   path      string  true  "Label ID"
-// @Success   200  {object}  types.LabelOut
+// @Success   200  {object}  repo.LabelOut
 // @Router    /v1/labels/{id} [GET]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleLabelGet() http.HandlerFunc {
@@ -122,12 +122,12 @@ func (ctrl *V1Controller) HandleLabelGet() http.HandlerFunc {
 // @Tags      Labels
 // @Produce   json
 // @Param     id  path  string  true  "Label ID"
-// @Success   200  {object}  types.LabelOut
+// @Success   200  {object}  repo.LabelOut
 // @Router    /v1/labels/{id} [PUT]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleLabelUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		body := types.LabelUpdate{}
+		body := repo.LabelUpdate{}
 		if err := server.Decode(r, &body); err != nil {
 			log.Err(err).Msg("error decoding label update data")
 			server.RespondError(w, http.StatusInternalServerError, err)

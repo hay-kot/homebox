@@ -1,9 +1,9 @@
 import { defineStore } from "pinia";
-import { LocationCount } from "~~/lib/api/types/data-contracts";
+import { LocationOutCount } from "~~/lib/api/types/data-contracts";
 
 export const useLocationStore = defineStore("locations", {
   state: () => ({
-    allLocations: null as LocationCount[] | null,
+    allLocations: null as LocationOutCount[] | null,
     client: useUserApi(),
   }),
   getters: {
@@ -12,7 +12,7 @@ export const useLocationStore = defineStore("locations", {
      * synched with the server by intercepting the API calls and updating on the
      * response
      */
-    locations(state): LocationCount[] {
+    locations(state): LocationOutCount[] {
       if (state.allLocations === null) {
         Promise.resolve(this.refresh());
       }
@@ -20,7 +20,7 @@ export const useLocationStore = defineStore("locations", {
     },
   },
   actions: {
-    async refresh(): Promise<LocationCount[]> {
+    async refresh(): Promise<LocationOutCount[]> {
       const result = await this.client.locations.getAll();
       if (result.error) {
         return result;

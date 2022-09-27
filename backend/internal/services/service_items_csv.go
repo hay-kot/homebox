@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hay-kot/homebox/backend/internal/types"
+	"github.com/hay-kot/homebox/backend/internal/repo"
 )
 
 var ErrInvalidCsv = errors.New("invalid csv")
@@ -45,7 +45,7 @@ func parseInt(s string) int {
 }
 
 type csvRow struct {
-	Item     types.ItemSummary
+	Item     repo.ItemOut
 	Location string
 	LabelStr string
 }
@@ -54,12 +54,14 @@ func newCsvRow(row []string) csvRow {
 	return csvRow{
 		Location: row[1],
 		LabelStr: row[2],
-		Item: types.ItemSummary{
-			ImportRef:        row[0],
-			Quantity:         parseInt(row[3]),
-			Name:             row[4],
-			Description:      row[5],
-			Insured:          parseBool(row[6]),
+		Item: repo.ItemOut{
+			ItemSummary: repo.ItemSummary{
+				ImportRef:   row[0],
+				Quantity:    parseInt(row[3]),
+				Name:        row[4],
+				Description: row[5],
+				Insured:     parseBool(row[6]),
+			},
 			SerialNumber:     row[7],
 			ModelNumber:      row[8],
 			Manufacturer:     row[9],

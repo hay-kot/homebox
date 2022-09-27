@@ -14,11 +14,9 @@ describe("first time user workflow (register, login)", () => {
   const api = client();
   const userData = {
     groupName: "test-group",
-    user: {
-      email: "test-user@email.com",
-      name: "test-user",
-      password: "test-password",
-    },
+    email: "test-user@email.com",
+    name: "test-user",
+    password: "test-password",
   };
 
   test("user should be able to register", async () => {
@@ -27,7 +25,7 @@ describe("first time user workflow (register, login)", () => {
   });
 
   test("user should be able to login", async () => {
-    const { response, data } = await api.login(userData.user.email, userData.user.password);
+    const { response, data } = await api.login(userData.email, userData.password);
     expect(response.status).toBe(200);
     expect(data.token).toBeTruthy();
 

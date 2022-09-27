@@ -4,8 +4,8 @@ import (
 	"encoding/csv"
 	"net/http"
 
+	"github.com/hay-kot/homebox/backend/internal/repo"
 	"github.com/hay-kot/homebox/backend/internal/services"
-	"github.com/hay-kot/homebox/backend/internal/types"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 	"github.com/rs/zerolog/log"
 )
@@ -14,7 +14,7 @@ import (
 // @Summary   Get All Items
 // @Tags      Items
 // @Produce   json
-// @Success   200  {object}  server.Results{items=[]types.ItemSummary}
+// @Success   200  {object}  server.Results{items=[]repo.ItemSummary}
 // @Router    /v1/items [GET]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleItemsGetAll() http.HandlerFunc {
@@ -34,13 +34,13 @@ func (ctrl *V1Controller) HandleItemsGetAll() http.HandlerFunc {
 // @Summary   Create a new item
 // @Tags      Items
 // @Produce   json
-// @Param     payload  body      types.ItemCreate  true  "Item Data"
-// @Success   200      {object}  types.ItemSummary
+// @Param     payload  body      repo.ItemCreate  true  "Item Data"
+// @Success   200      {object}  repo.ItemSummary
 // @Router    /v1/items [POST]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleItemsCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		createData := types.ItemCreate{}
+		createData := repo.ItemCreate{}
 		if err := server.Decode(r, &createData); err != nil {
 			log.Err(err).Msg("failed to decode request body")
 			server.RespondError(w, http.StatusInternalServerError, err)
@@ -90,7 +90,7 @@ func (ctrl *V1Controller) HandleItemDelete() http.HandlerFunc {
 // @Tags      Items
 // @Produce   json
 // @Param     id   path      string  true  "Item ID"
-// @Success   200      {object}  types.ItemOut
+// @Success   200      {object}  repo.ItemOut
 // @Router    /v1/items/{id} [GET]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleItemGet() http.HandlerFunc {
@@ -114,14 +114,14 @@ func (ctrl *V1Controller) HandleItemGet() http.HandlerFunc {
 // @Summary   updates a item
 // @Tags      Items
 // @Produce   json
-// @Param     id       path      string            true  "Item ID"
-// @Param     payload  body      types.ItemUpdate  true  "Item Data"
-// @Success   200  {object}  types.ItemOut
+// @Param     id       path      string           true  "Item ID"
+// @Param     payload  body      repo.ItemUpdate  true  "Item Data"
+// @Success   200  {object}  repo.ItemOut
 // @Router    /v1/items/{id} [PUT]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleItemUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		body := types.ItemUpdate{}
+		body := repo.ItemUpdate{}
 		if err := server.Decode(r, &body); err != nil {
 			log.Err(err).Msg("failed to decode request body")
 			server.RespondError(w, http.StatusInternalServerError, err)

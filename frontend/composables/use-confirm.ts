@@ -5,7 +5,7 @@ import { Ref } from "vue";
 type Store = UseConfirmDialogReturn<any, boolean, boolean> & {
   text: Ref<string>;
   setup: boolean;
-  open: (text: string) => Promise<UseConfirmDialogRevealResult<boolean,  boolean>>;
+  open: (text: string) => Promise<UseConfirmDialogRevealResult<boolean, boolean>>;
 };
 
 const store: Partial<Store> = {
@@ -31,7 +31,7 @@ export function useConfirm(): Store {
     store.cancel = cancel;
   }
 
-  async function openDialog(msg: string): Promise<UseConfirmDialogRevealResult<boolean,  boolean>> {
+  async function openDialog(msg: string): Promise<UseConfirmDialogRevealResult<boolean, boolean>> {
     store.text.value = msg;
     return await store.reveal();
   }

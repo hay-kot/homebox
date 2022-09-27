@@ -26,11 +26,11 @@
 </template>
 
 <script lang="ts" setup>
-  import { LocationCount } from "~~/lib/api/types/data-contracts";
+  import { LocationOutCount } from "~~/lib/api/types/data-contracts";
 
   defineProps({
     location: {
-      type: Object as () => LocationCount,
+      type: Object as () => LocationOutCount,
       required: true,
     },
     dense: {

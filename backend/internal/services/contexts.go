@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/hay-kot/homebox/backend/internal/types"
+	"github.com/hay-kot/homebox/backend/internal/repo"
 )
 
 type contextKeys struct {
@@ -26,7 +26,7 @@ type Context struct {
 	GID uuid.UUID
 
 	// User is the acting user.
-	User *types.UserOut
+	User *repo.UserOut
 }
 
 // NewContext is a helper function that returns the service context from the context.
@@ -43,16 +43,16 @@ func NewContext(ctx context.Context) Context {
 
 // SetUserCtx is a helper function that sets the ContextUser and ContextUserToken
 // values within the context of a web request (or any context).
-func SetUserCtx(ctx context.Context, user *types.UserOut, token string) context.Context {
+func SetUserCtx(ctx context.Context, user *repo.UserOut, token string) context.Context {
 	ctx = context.WithValue(ctx, ContextUser, user)
 	ctx = context.WithValue(ctx, ContextUserToken, token)
 	return ctx
 }
 
 // UseUserCtx is a helper function that returns the user from the context.
-func UseUserCtx(ctx context.Context) *types.UserOut {
+func UseUserCtx(ctx context.Context) *repo.UserOut {
 	if val := ctx.Value(ContextUser); val != nil {
-		return val.(*types.UserOut)
+		return val.(*repo.UserOut)
 	}
 	return nil
 }

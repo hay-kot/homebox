@@ -1,22 +1,9 @@
 import { BaseAPI, route } from "./base";
-
-export type LoginResult = {
-  token: string;
-  expiresAt: string;
-};
+import { ApiSummary, TokenResponse, UserRegistration } from "./types/data-contracts";
 
 export type LoginPayload = {
   username: string;
   password: string;
-};
-
-export type RegisterPayload = {
-  user: {
-    email: string;
-    password: string;
-    name: string;
-  };
-  groupName: string;
 };
 
 export type StatusResult = {
@@ -28,11 +15,11 @@ export type StatusResult = {
 
 export class PublicApi extends BaseAPI {
   public status() {
-    return this.http.get<StatusResult>({ url: route("/status") });
+    return this.http.get<ApiSummary>({ url: route("/status") });
   }
 
   public login(username: string, password: string) {
-    return this.http.post<LoginPayload, LoginResult>({
+    return this.http.post<LoginPayload, TokenResponse>({
       url: route("/users/login"),
       body: {
         username,
@@ -41,7 +28,7 @@ export class PublicApi extends BaseAPI {
     });
   }
 
-  public register(body: RegisterPayload) {
-    return this.http.post<RegisterPayload, LoginResult>({ url: route("/users/register"), body });
+  public register(body: UserRegistration) {
+    return this.http.post<UserRegistration, TokenResponse>({ url: route("/users/register"), body });
   }
 }

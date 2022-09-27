@@ -6,25 +6,23 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/hay-kot/homebox/backend/ent"
-	"github.com/hay-kot/homebox/backend/internal/types"
 	"github.com/stretchr/testify/assert"
 )
 
-func itemFactory() types.ItemCreate {
-	return types.ItemCreate{
+func itemFactory() ItemCreate {
+	return ItemCreate{
 		Name:        fk.Str(10),
 		Description: fk.Str(100),
 	}
 }
 
-func useItems(t *testing.T, len int) []*ent.Item {
+func useItems(t *testing.T, len int) []ItemOut {
 	t.Helper()
 
 	location, err := tRepos.Locations.Create(context.Background(), tGroup.ID, locationFactory())
 	assert.NoError(t, err)
 
-	items := make([]*ent.Item, len)
+	items := make([]ItemOut, len)
 	for i := 0; i < len; i++ {
 		itm := itemFactory()
 		itm.LocationID = location.ID
@@ -107,7 +105,7 @@ func TestItemsRepository_Create_Location(t *testing.T) {
 	foundItem, err := tRepos.Items.GetOne(context.Background(), result.ID)
 	assert.NoError(t, err)
 	assert.Equal(t, result.ID, foundItem.ID)
-	assert.Equal(t, location.ID, foundItem.Edges.Location.ID)
+	assert.Equal(t, location.ID, foundItem.Location.ID)
 
 	// Cleanup - Also deletes item
 	err = tRepos.Locations.Delete(context.Background(), location.ID)
@@ -168,18 +166,18 @@ func TestItemsRepository_Update_Labels(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Apply all labels to entity
-			updateData := types.ItemUpdate{
+			updateData := ItemUpdate{
 				ID:         entity.ID,
 				Name:       entity.Name,
-				LocationID: entity.Edges.Location.ID,
+				LocationID: entity.Location.ID,
 				LabelIDs:   tt.args.labelIds,
 			}
 
-			updated, err := tRepos.Items.Update(context.Background(), updateData)
+			updated, err := tRepos.Items.UpdateByGroup(context.Background(), tGroup.ID, updateData)
 			assert.NoError(t, err)
-			assert.Len(t, tt.want, len(updated.Edges.Label))
+			assert.Len(t, tt.want, len(updated.Labels))
 
-			for _, label := range updated.Edges.Label {
+			for _, label := range updated.Labels {
 				assert.Contains(t, tt.want, label.ID)
 			}
 		})
@@ -192,10 +190,10 @@ func TestItemsRepository_Update(t *testing.T) {
 
 	entity := entities[0]
 
-	updateData := types.ItemUpdate{
+	updateData := ItemUpdate{
 		ID:               entity.ID,
 		Name:             entity.Name,
-		LocationID:       entity.Edges.Location.ID,
+		LocationID:       entity.Location.ID,
 		SerialNumber:     fk.Str(10),
 		LabelIDs:         nil,
 		ModelNumber:      fk.Str(10),
@@ -213,7 +211,7 @@ func TestItemsRepository_Update(t *testing.T) {
 		LifetimeWarranty: true,
 	}
 
-	updatedEntity, err := tRepos.Items.Update(context.Background(), updateData)
+	updatedEntity, err := tRepos.Items.UpdateByGroup(context.Background(), tGroup.ID, updateData)
 	assert.NoError(t, err)
 
 	got, err := tRepos.Items.GetOne(context.Background(), updatedEntity.ID)
@@ -221,7 +219,7 @@ func TestItemsRepository_Update(t *testing.T) {
 
 	assert.Equal(t, updateData.ID, got.ID)
 	assert.Equal(t, updateData.Name, got.Name)
-	assert.Equal(t, updateData.LocationID, got.Edges.Location.ID)
+	assert.Equal(t, updateData.LocationID, got.Location.ID)
 	assert.Equal(t, updateData.SerialNumber, got.SerialNumber)
 	assert.Equal(t, updateData.ModelNumber, got.ModelNumber)
 	assert.Equal(t, updateData.Manufacturer, got.Manufacturer)

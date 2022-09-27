@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/ent"
@@ -14,6 +15,36 @@ import (
 // provides the attachments with the documents.
 type AttachmentRepo struct {
 	db *ent.Client
+}
+
+type (
+	ItemAttachment struct {
+		ID        uuid.UUID   `json:"id"`
+		CreatedAt time.Time   `json:"createdAt"`
+		UpdatedAt time.Time   `json:"updatedAt"`
+		Type      string      `json:"type"`
+		Document  DocumentOut `json:"document"`
+	}
+
+	ItemAttachmentUpdate struct {
+		ID    uuid.UUID `json:"-"`
+		Type  string    `json:"type"`
+		Title string    `json:"title"`
+	}
+)
+
+func ToItemAttachment(attachment *ent.Attachment) ItemAttachment {
+	return ItemAttachment{
+		ID:        attachment.ID,
+		CreatedAt: attachment.CreatedAt,
+		UpdatedAt: attachment.UpdatedAt,
+		Type:      attachment.Type.String(),
+		Document: DocumentOut{
+			ID:    attachment.Edges.Document.ID,
+			Title: attachment.Edges.Document.Title,
+			Path:  attachment.Edges.Document.Path,
+		},
+	}
 }
 
 func (r *AttachmentRepo) Create(ctx context.Context, itemId, docId uuid.UUID, typ attachment.Type) (*ent.Attachment, error) {

@@ -4,12 +4,11 @@ import (
 	"context"
 	"testing"
 
-	"github.com/hay-kot/homebox/backend/internal/types"
 	"github.com/stretchr/testify/assert"
 )
 
-func locationFactory() types.LocationCreate {
-	return types.LocationCreate{
+func locationFactory() LocationCreate {
+	return LocationCreate{
 		Name:        fk.Str(10),
 		Description: fk.Str(100),
 	}
@@ -30,13 +29,13 @@ func TestLocationRepository_Get(t *testing.T) {
 
 func TestLocationRepositoryGetAllWithCount(t *testing.T) {
 	ctx := context.Background()
-	result, err := tRepos.Locations.Create(ctx, tGroup.ID, types.LocationCreate{
+	result, err := tRepos.Locations.Create(ctx, tGroup.ID, LocationCreate{
 		Name:        fk.Str(10),
 		Description: fk.Str(100),
 	})
 	assert.NoError(t, err)
 
-	_, err = tRepos.Items.Create(ctx, tGroup.ID, types.ItemCreate{
+	_, err = tRepos.Items.Create(ctx, tGroup.ID, ItemCreate{
 		Name:        fk.Str(10),
 		Description: fk.Str(100),
 		LocationID:  result.ID,
@@ -72,7 +71,7 @@ func TestLocationRepository_Update(t *testing.T) {
 	loc, err := tRepos.Locations.Create(context.Background(), tGroup.ID, locationFactory())
 	assert.NoError(t, err)
 
-	updateData := types.LocationUpdate{
+	updateData := LocationUpdate{
 		ID:          loc.ID,
 		Name:        fk.Str(10),
 		Description: fk.Str(100),

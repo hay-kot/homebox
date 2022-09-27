@@ -18,7 +18,7 @@ var (
 
 	tClient *ent.Client
 	tRepos  *AllRepos
-	tUser   *ent.User
+	tUser   UserOut
 	tGroup  *ent.Group
 )
 

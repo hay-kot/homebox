@@ -1,9 +1,11 @@
 package services
 
-import "github.com/hay-kot/homebox/backend/internal/types"
+import (
+	"github.com/hay-kot/homebox/backend/internal/repo"
+)
 
-func defaultLocations() []types.LocationCreate {
-	return []types.LocationCreate{
+func defaultLocations() []repo.LocationCreate {
+	return []repo.LocationCreate{
 		{
 			Name: "Living Room",
 		},
@@ -31,8 +33,8 @@ func defaultLocations() []types.LocationCreate {
 	}
 }
 
-func defaultLabels() []types.LabelCreate {
-	return []types.LabelCreate{
+func defaultLabels() []repo.LabelCreate {
+	return []repo.LabelCreate{
 		{
 			Name: "Appliances",
 		},

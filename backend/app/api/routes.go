@@ -14,7 +14,6 @@ import (
 	_ "github.com/hay-kot/homebox/backend/app/api/docs"
 	v1 "github.com/hay-kot/homebox/backend/app/api/v1"
 	"github.com/hay-kot/homebox/backend/internal/repo"
-	"github.com/hay-kot/homebox/backend/internal/types"
 	"github.com/rs/zerolog/log"
 	httpSwagger "github.com/swaggo/http-swagger" // http-swagger middleware
 )
@@ -45,7 +44,7 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 	v1Base := v1.BaseUrlFunc(prefix)
 	v1Ctrl := v1.NewControllerV1(a.services, v1.WithMaxUploadSize(a.conf.Web.MaxUploadSize))
 	{
-		r.Get(v1Base("/status"), v1Ctrl.HandleBase(func() bool { return true }, types.Build{
+		r.Get(v1Base("/status"), v1Ctrl.HandleBase(func() bool { return true }, v1.Build{
 			Version:   Version,
 			Commit:    Commit,
 			BuildTime: BuildTime,

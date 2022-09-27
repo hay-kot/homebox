@@ -1,5 +1,302 @@
 basePath: /api
 definitions:
+  repo.DocumentOut:
+    properties:
+      id:
+        type: string
+      path:
+        type: string
+      title:
+        type: string
+    type: object
+  repo.ItemAttachment:
+    properties:
+      createdAt:
+        type: string
+      document:
+        $ref: '#/definitions/repo.DocumentOut'
+      id:
+        type: string
+      type:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  repo.ItemAttachmentUpdate:
+    properties:
+      title:
+        type: string
+      type:
+        type: string
+    type: object
+  repo.ItemCreate:
+    properties:
+      description:
+        type: string
+      labelIds:
+        items:
+          type: string
+        type: array
+      locationId:
+        description: Edges
+        type: string
+      name:
+        type: string
+    type: object
+  repo.ItemOut:
+    properties:
+      attachments:
+        items:
+          $ref: '#/definitions/repo.ItemAttachment'
+        type: array
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      insured:
+        type: boolean
+      labels:
+        items:
+          $ref: '#/definitions/repo.LabelSummary'
+        type: array
+      lifetimeWarranty:
+        description: Warranty
+        type: boolean
+      location:
+        $ref: '#/definitions/repo.LocationSummary'
+        description: Edges
+      manufacturer:
+        type: string
+      modelNumber:
+        type: string
+      name:
+        type: string
+      notes:
+        description: Extras
+        type: string
+      purchaseFrom:
+        type: string
+      purchasePrice:
+        example: "0"
+        type: string
+      purchaseTime:
+        description: Purchase
+        type: string
+      quantity:
+        type: integer
+      serialNumber:
+        type: string
+      soldNotes:
+        type: string
+      soldPrice:
+        example: "0"
+        type: string
+      soldTime:
+        description: Sold
+        type: string
+      soldTo:
+        type: string
+      updatedAt:
+        type: string
+      warrantyDetails:
+        type: string
+      warrantyExpires:
+        type: string
+    type: object
+  repo.ItemSummary:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      insured:
+        type: boolean
+      labels:
+        items:
+          $ref: '#/definitions/repo.LabelSummary'
+        type: array
+      location:
+        $ref: '#/definitions/repo.LocationSummary'
+        description: Edges
+      name:
+        type: string
+      quantity:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  repo.ItemUpdate:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      insured:
+        type: boolean
+      labelIds:
+        items:
+          type: string
+        type: array
+      lifetimeWarranty:
+        description: Warranty
+        type: boolean
+      locationId:
+        description: Edges
+        type: string
+      manufacturer:
+        type: string
+      modelNumber:
+        type: string
+      name:
+        type: string
+      notes:
+        description: Extras
+        type: string
+      purchaseFrom:
+        type: string
+      purchasePrice:
+        example: "0"
+        type: string
+      purchaseTime:
+        description: Purchase
+        type: string
+      quantity:
+        type: integer
+      serialNumber:
+        description: Identifications
+        type: string
+      soldNotes:
+        type: string
+      soldPrice:
+        example: "0"
+        type: string
+      soldTime:
+        description: Sold
+        type: string
+      soldTo:
+        type: string
+      warrantyDetails:
+        type: string
+      warrantyExpires:
+        type: string
+    type: object
+  repo.LabelCreate:
+    properties:
+      color:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+  repo.LabelOut:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/repo.ItemSummary'
+        type: array
+      name:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  repo.LabelSummary:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  repo.LocationCreate:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+  repo.LocationOut:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/repo.ItemSummary'
+        type: array
+      name:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  repo.LocationOutCount:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      itemCount:
+        type: integer
+      name:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  repo.LocationSummary:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  repo.UserOut:
+    properties:
+      email:
+        type: string
+      groupId:
+        type: string
+      groupName:
+        type: string
+      id:
+        type: string
+      isSuperuser:
+        type: boolean
+      name:
+        type: string
+    type: object
+  repo.UserUpdate:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+    type: object
   server.Result:
     properties:
       details: {}
@@ -21,10 +318,21 @@ definitions:
       reason:
         type: string
     type: object
-  types.ApiSummary:
+  services.UserRegistration:
+    properties:
+      email:
+        type: string
+      groupName:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  v1.ApiSummary:
     properties:
       build:
-        $ref: '#/definitions/types.Build'
+        $ref: '#/definitions/v1.Build'
       health:
         type: boolean
       message:
@@ -36,7 +344,7 @@ definitions:
           type: string
         type: array
     type: object
-  types.Build:
+  v1.Build:
     properties:
       buildTime:
         type: string
@@ -45,365 +353,16 @@ definitions:
       version:
         type: string
     type: object
-  types.DocumentOut:
-    properties:
-      id:
-        type: string
-      path:
-        type: string
-      title:
-        type: string
-    type: object
-  types.ItemAttachment:
-    properties:
-      createdAt:
-        type: string
-      document:
-        $ref: '#/definitions/types.DocumentOut'
-      id:
-        type: string
-      type:
-        type: string
-      updatedAt:
-        type: string
-    type: object
-  types.ItemAttachmentToken:
+  v1.ItemAttachmentToken:
     properties:
       token:
         type: string
     type: object
-  types.ItemAttachmentUpdate:
-    properties:
-      title:
-        type: string
-      type:
-        type: string
-    type: object
-  types.ItemCreate:
-    properties:
-      description:
-        type: string
-      labelIds:
-        items:
-          type: string
-        type: array
-      locationId:
-        description: Edges
-        type: string
-      name:
-        type: string
-    type: object
-  types.ItemOut:
-    properties:
-      attachments:
-        items:
-          $ref: '#/definitions/types.ItemAttachment'
-        type: array
-      createdAt:
-        type: string
-      description:
-        type: string
-      id:
-        type: string
-      insured:
-        type: boolean
-      labels:
-        items:
-          $ref: '#/definitions/types.LabelSummary'
-        type: array
-      lifetimeWarranty:
-        description: Warranty
-        type: boolean
-      location:
-        $ref: '#/definitions/types.LocationSummary'
-        description: Edges
-      manufacturer:
-        type: string
-      modelNumber:
-        type: string
-      name:
-        type: string
-      notes:
-        description: Extras
-        type: string
-      purchaseFrom:
-        type: string
-      purchasePrice:
-        example: "0"
-        type: string
-      purchaseTime:
-        description: Purchase
-        type: string
-      quantity:
-        type: integer
-      serialNumber:
-        description: Identifications
-        type: string
-      soldNotes:
-        type: string
-      soldPrice:
-        example: "0"
-        type: string
-      soldTime:
-        description: Sold
-        type: string
-      soldTo:
-        type: string
-      updatedAt:
-        type: string
-      warrantyDetails:
-        type: string
-      warrantyExpires:
-        type: string
-    type: object
-  types.ItemSummary:
-    properties:
-      createdAt:
-        type: string
-      description:
-        type: string
-      id:
-        type: string
-      insured:
-        type: boolean
-      labels:
-        items:
-          $ref: '#/definitions/types.LabelSummary'
-        type: array
-      lifetimeWarranty:
-        description: Warranty
-        type: boolean
-      location:
-        $ref: '#/definitions/types.LocationSummary'
-        description: Edges
-      manufacturer:
-        type: string
-      modelNumber:
-        type: string
-      name:
-        type: string
-      notes:
-        description: Extras
-        type: string
-      purchaseFrom:
-        type: string
-      purchasePrice:
-        example: "0"
-        type: string
-      purchaseTime:
-        description: Purchase
-        type: string
-      quantity:
-        type: integer
-      serialNumber:
-        description: Identifications
-        type: string
-      soldNotes:
-        type: string
-      soldPrice:
-        example: "0"
-        type: string
-      soldTime:
-        description: Sold
-        type: string
-      soldTo:
-        type: string
-      updatedAt:
-        type: string
-      warrantyDetails:
-        type: string
-      warrantyExpires:
-        type: string
-    type: object
-  types.ItemUpdate:
-    properties:
-      description:
-        type: string
-      id:
-        type: string
-      insured:
-        type: boolean
-      labelIds:
-        items:
-          type: string
-        type: array
-      lifetimeWarranty:
-        description: Warranty
-        type: boolean
-      locationId:
-        description: Edges
-        type: string
-      manufacturer:
-        type: string
-      modelNumber:
-        type: string
-      name:
-        type: string
-      notes:
-        description: Extras
-        type: string
-      purchaseFrom:
-        type: string
-      purchasePrice:
-        example: "0"
-        type: string
-      purchaseTime:
-        description: Purchase
-        type: string
-      quantity:
-        type: integer
-      serialNumber:
-        description: Identifications
-        type: string
-      soldNotes:
-        type: string
-      soldPrice:
-        example: "0"
-        type: string
-      soldTime:
-        description: Sold
-        type: string
-      soldTo:
-        type: string
-      warrantyDetails:
-        type: string
-      warrantyExpires:
-        type: string
-    type: object
-  types.LabelCreate:
-    properties:
-      color:
-        type: string
-      description:
-        type: string
-      name:
-        type: string
-    type: object
-  types.LabelOut:
-    properties:
-      createdAt:
-        type: string
-      description:
-        type: string
-      id:
-        type: string
-      items:
-        items:
-          $ref: '#/definitions/types.ItemSummary'
-        type: array
-      name:
-        type: string
-      updatedAt:
-        type: string
-    type: object
-  types.LabelSummary:
-    properties:
-      createdAt:
-        type: string
-      description:
-        type: string
-      id:
-        type: string
-      name:
-        type: string
-      updatedAt:
-        type: string
-    type: object
-  types.LocationCount:
-    properties:
-      createdAt:
-        type: string
-      description:
-        type: string
-      id:
-        type: string
-      itemCount:
-        type: integer
-      name:
-        type: string
-      updatedAt:
-        type: string
-    type: object
-  types.LocationCreate:
-    properties:
-      description:
-        type: string
-      name:
-        type: string
-    type: object
-  types.LocationOut:
-    properties:
-      createdAt:
-        type: string
-      description:
-        type: string
-      id:
-        type: string
-      items:
-        items:
-          $ref: '#/definitions/types.ItemSummary'
-        type: array
-      name:
-        type: string
-      updatedAt:
-        type: string
-    type: object
-  types.LocationSummary:
-    properties:
-      createdAt:
-        type: string
-      description:
-        type: string
-      id:
-        type: string
-      name:
-        type: string
-      updatedAt:
-        type: string
-    type: object
-  types.TokenResponse:
+  v1.TokenResponse:
     properties:
       expiresAt:
         type: string
       token:
-        type: string
-    type: object
-  types.UserIn:
-    properties:
-      email:
-        type: string
-      name:
-        type: string
-      password:
-        type: string
-    type: object
-  types.UserOut:
-    properties:
-      email:
-        type: string
-      groupId:
-        type: string
-      groupName:
-        type: string
-      id:
-        type: string
-      isSuperuser:
-        type: boolean
-      name:
-        type: string
-    type: object
-  types.UserRegistration:
-    properties:
-      groupName:
-        type: string
-      user:
-        $ref: '#/definitions/types.UserIn'
-    type: object
-  types.UserUpdate:
-    properties:
-      email:
-        type: string
-      name:
         type: string
     type: object
 info:
@@ -430,7 +389,7 @@ paths:
             - properties:
                 items:
                   items:
-                    $ref: '#/definitions/types.ItemSummary'
+                    $ref: '#/definitions/repo.ItemSummary'
                   type: array
               type: object
       security:
@@ -445,14 +404,14 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/types.ItemCreate'
+          $ref: '#/definitions/repo.ItemCreate'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.ItemSummary'
+            $ref: '#/definitions/repo.ItemSummary'
       security:
       - Bearer: []
       summary: Create a new item
@@ -489,7 +448,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.ItemOut'
+            $ref: '#/definitions/repo.ItemOut'
       security:
       - Bearer: []
       summary: Gets a item and fields
@@ -507,14 +466,14 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/types.ItemUpdate'
+          $ref: '#/definitions/repo.ItemUpdate'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.ItemOut'
+            $ref: '#/definitions/repo.ItemOut'
       security:
       - Bearer: []
       summary: updates a item
@@ -549,7 +508,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.ItemOut'
+            $ref: '#/definitions/repo.ItemOut'
         "422":
           description: Unprocessable Entity
           schema:
@@ -600,7 +559,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.ItemAttachmentToken'
+            $ref: '#/definitions/v1.ItemAttachmentToken'
       security:
       - Bearer: []
       summary: retrieves an attachment for an item
@@ -623,12 +582,12 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/types.ItemAttachmentUpdate'
+          $ref: '#/definitions/repo.ItemAttachmentUpdate'
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.ItemOut'
+            $ref: '#/definitions/repo.ItemOut'
       security:
       - Bearer: []
       summary: retrieves an attachment for an item
@@ -688,7 +647,7 @@ paths:
             - properties:
                 items:
                   items:
-                    $ref: '#/definitions/types.LabelOut'
+                    $ref: '#/definitions/repo.LabelOut'
                   type: array
               type: object
       security:
@@ -703,14 +662,14 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/types.LabelCreate'
+          $ref: '#/definitions/repo.LabelCreate'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.LabelSummary'
+            $ref: '#/definitions/repo.LabelSummary'
       security:
       - Bearer: []
       summary: Create a new label
@@ -747,7 +706,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.LabelOut'
+            $ref: '#/definitions/repo.LabelOut'
       security:
       - Bearer: []
       summary: Gets a label and fields
@@ -766,7 +725,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.LabelOut'
+            $ref: '#/definitions/repo.LabelOut'
       security:
       - Bearer: []
       summary: updates a label
@@ -785,7 +744,7 @@ paths:
             - properties:
                 items:
                   items:
-                    $ref: '#/definitions/types.LocationCount'
+                    $ref: '#/definitions/repo.LocationOutCount'
                   type: array
               type: object
       security:
@@ -800,14 +759,14 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/types.LocationCreate'
+          $ref: '#/definitions/repo.LocationCreate'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.LocationSummary'
+            $ref: '#/definitions/repo.LocationSummary'
       security:
       - Bearer: []
       summary: Create a new location
@@ -844,7 +803,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.LocationOut'
+            $ref: '#/definitions/repo.LocationOut'
       security:
       - Bearer: []
       summary: Gets a location and fields
@@ -863,7 +822,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.LocationOut'
+            $ref: '#/definitions/repo.LocationOut'
       security:
       - Bearer: []
       summary: updates a location
@@ -877,7 +836,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.ApiSummary'
+            $ref: '#/definitions/v1.ApiSummary'
       summary: Retrieves the basic information about the API
       tags:
       - Base
@@ -903,7 +862,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/types.TokenResponse'
+            $ref: '#/definitions/v1.TokenResponse'
       summary: User Login
       tags:
       - Authentication
@@ -938,7 +897,7 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/types.UserRegistration'
+          $ref: '#/definitions/services.UserRegistration'
       produces:
       - application/json
       responses:
@@ -970,7 +929,7 @@ paths:
             - $ref: '#/definitions/server.Result'
             - properties:
                 item:
-                  $ref: '#/definitions/types.UserOut'
+                  $ref: '#/definitions/repo.UserOut'
               type: object
       security:
       - Bearer: []
@@ -984,7 +943,7 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/types.UserUpdate'
+          $ref: '#/definitions/repo.UserUpdate'
       produces:
       - application/json
       responses:
@@ -995,7 +954,7 @@ paths:
             - $ref: '#/definitions/server.Result'
             - properties:
                 item:
-                  $ref: '#/definitions/types.UserUpdate'
+                  $ref: '#/definitions/repo.UserUpdate'
               type: object
       security:
       - Bearer: []

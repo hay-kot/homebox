@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hay-kot/homebox/backend/internal/types"
+	"github.com/hay-kot/homebox/backend/internal/repo"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -19,14 +19,14 @@ func TestItemService_AddAttachment(t *testing.T) {
 		filepath: temp,
 	}
 
-	loc, err := tSvc.Location.Create(context.Background(), tGroup.ID, types.LocationCreate{
+	loc, err := tSvc.Location.Create(context.Background(), tGroup.ID, repo.LocationCreate{
 		Description: "test",
 		Name:        "test",
 	})
 	assert.NoError(t, err)
 	assert.NotNil(t, loc)
 
-	itmC := types.ItemCreate{
+	itmC := repo.ItemCreate{
 		Name:        fk.Str(10),
 		Description: fk.Str(10),
 		LocationID:  loc.ID,
@@ -52,7 +52,7 @@ func TestItemService_AddAttachment(t *testing.T) {
 	storedPath := afterAttachment.Attachments[0].Document.Path
 
 	// {root}/{group}/{item}/{attachment}
-	assert.Equal(t, path.Join(temp, tGroup.ID.String(), itm.ID.String(), "testfile.txt"), storedPath)
+	assert.Equal(t, path.Join(temp, "homebox", tGroup.ID.String(), "documents"), path.Dir(storedPath))
 
 	// Check that the file contents are correct
 	bts, err := os.ReadFile(storedPath)

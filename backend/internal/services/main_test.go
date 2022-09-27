@@ -10,7 +10,6 @@ import (
 
 	"github.com/hay-kot/homebox/backend/ent"
 	"github.com/hay-kot/homebox/backend/internal/repo"
-	"github.com/hay-kot/homebox/backend/internal/types"
 	"github.com/hay-kot/homebox/backend/pkgs/faker"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -21,7 +20,7 @@ var (
 	tCtx    = Context{}
 	tClient *ent.Client
 	tRepos  *repo.AllRepos
-	tUser   *ent.User
+	tUser   repo.UserOut
 	tGroup  *ent.Group
 	tSvc    *AllServices
 )
@@ -37,7 +36,7 @@ func bootstrap() {
 		log.Fatal(err)
 	}
 
-	tUser, err = tRepos.Users.Create(ctx, types.UserCreate{
+	tUser, err = tRepos.Users.Create(ctx, repo.UserCreate{
 		Name:        fk.Str(10),
 		Email:       fk.Email(),
 		Password:    fk.Str(10),

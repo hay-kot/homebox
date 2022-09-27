@@ -26,7 +26,7 @@ func NewIDSet(l int) *IDSet {
 	}
 }
 
-func EntitiesToIDSet[T HasID](entities []T) *IDSet {
+func entToIDSet[T HasID](entities []T) *IDSet {
 	s := NewIDSet(len(entities))
 	for _, e := range entities {
 		s.Add(e.GetID())

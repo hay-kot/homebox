@@ -1,13 +1,13 @@
 package factories
 
 import (
-	"github.com/hay-kot/homebox/backend/internal/types"
+	"github.com/hay-kot/homebox/backend/internal/repo"
 	"github.com/hay-kot/homebox/backend/pkgs/faker"
 )
 
-func UserFactory() types.UserCreate {
+func UserFactory() repo.UserCreate {
 	f := faker.NewFaker()
-	return types.UserCreate{
+	return repo.UserCreate{
 		Name:        f.Str(10),
 		Email:       f.Email(),
 		Password:    f.Str(10),

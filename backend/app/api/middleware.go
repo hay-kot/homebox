@@ -57,7 +57,7 @@ func (a *app) mwAuthToken(next http.Handler) http.Handler {
 			return
 		}
 
-		r = r.WithContext(services.SetUserCtx(r.Context(), usr, requestToken))
+		r = r.WithContext(services.SetUserCtx(r.Context(), &usr, requestToken))
 
 		next.ServeHTTP(w, r)
 	})

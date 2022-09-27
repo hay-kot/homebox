@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
+	"github.com/hay-kot/homebox/backend/internal/repo"
 	"github.com/hay-kot/homebox/backend/internal/services"
-	"github.com/hay-kot/homebox/backend/internal/types"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 	"github.com/rs/zerolog/log"
 )
@@ -14,12 +14,12 @@ import (
 // @Summary  Get the current user
 // @Tags     User
 // @Produce  json
-// @Param    payload  body  types.UserRegistration  true  "User Data"
+// @Param    payload  body  services.UserRegistration  true  "User Data"
 // @Success  204
 // @Router   /v1/users/register [Post]
 func (ctrl *V1Controller) HandleUserRegistration() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		regData := types.UserRegistration{}
+		regData := services.UserRegistration{}
 
 		if err := server.Decode(r, &regData); err != nil {
 			log.Err(err).Msg("failed to decode user registration data")
@@ -29,6 +29,7 @@ func (ctrl *V1Controller) HandleUserRegistration() http.HandlerFunc {
 
 		_, err := ctrl.svc.User.RegisterUser(r.Context(), regData)
 		if err != nil {
+			log.Err(err).Msg("failed to register user")
 			server.RespondError(w, http.StatusInternalServerError, err)
 			return
 		}
@@ -41,7 +42,7 @@ func (ctrl *V1Controller) HandleUserRegistration() http.HandlerFunc {
 // @Summary   Get the current user
 // @Tags      User
 // @Produce   json
-// @Success   200  {object}  server.Result{item=types.UserOut}
+// @Success   200  {object}  server.Result{item=repo.UserOut}
 // @Router    /v1/users/self [GET]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleUserSelf() http.HandlerFunc {
@@ -62,13 +63,13 @@ func (ctrl *V1Controller) HandleUserSelf() http.HandlerFunc {
 // @Summary   Update the current user
 // @Tags      User
 // @Produce   json
-// @Param     payload  body      types.UserUpdate  true  "User Data"
-// @Success   200      {object}  server.Result{item=types.UserUpdate}
+// @Param     payload  body      repo.UserUpdate  true  "User Data"
+// @Success   200      {object}  server.Result{item=repo.UserUpdate}
 // @Router    /v1/users/self [PUT]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleUserSelfUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		updateData := types.UserUpdate{}
+		updateData := repo.UserUpdate{}
 		if err := server.Decode(r, &updateData); err != nil {
 			log.Err(err).Msg("failed to decode user update data")
 			server.RespondError(w, http.StatusBadRequest, err)
