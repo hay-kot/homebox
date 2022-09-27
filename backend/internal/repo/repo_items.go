@@ -275,10 +275,10 @@ func (e *ItemsRepository) UpdateByGroup(ctx context.Context, gid uuid.UUID, data
 		return ItemOut{}, err
 	}
 
-	set := entToIDSet(currentLabels)
+	set := newIDSet(currentLabels)
 
 	for _, l := range data.LabelIDs {
-		if set.Has(l) {
+		if set.Contains(l) {
 			set.Remove(l)
 			continue
 		}
