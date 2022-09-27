@@ -31,15 +31,13 @@ export async function sharedUserClient(): Promise<UserApi> {
   }
   const testUser = {
     groupName: "test-group",
-    user: {
-      email: "__test__@__test__.com",
-      name: "__test__",
-      password: "__test__",
-    },
+    email: "__test__@__test__.com",
+    name: "__test__",
+    password: "__test__",
   };
 
   const api = client();
-  const { response: tryLoginResp, data } = await api.login(testUser.user.email, testUser.user.password);
+  const { response: tryLoginResp, data } = await api.login(testUser.email, testUser.password);
 
   if (tryLoginResp.status === 200) {
     cache.token = data.token;
@@ -49,7 +47,7 @@ export async function sharedUserClient(): Promise<UserApi> {
   const { response: registerResp } = await api.register(testUser);
   expect(registerResp.status).toBe(204);
 
-  const { response: loginResp, data: loginData } = await api.login(testUser.user.email, testUser.user.password);
+  const { response: loginResp, data: loginData } = await api.login(testUser.email, testUser.password);
   expect(loginResp.status).toBe(200);
 
   cache.token = loginData.token;

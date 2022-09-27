@@ -81,8 +81,8 @@ func run(cfg *config.Config) error {
 	}
 
 	app.db = c
-	app.repos = repo.EntAllRepos(c)
-	app.services = services.NewServices(app.repos, cfg.Storage.Data)
+	app.repos = repo.EntAllRepos(c, cfg.Storage.Data)
+	app.services = services.NewServices(app.repos)
 
 	// =========================================================================
 	// Start Server

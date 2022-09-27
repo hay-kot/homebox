@@ -25,11 +25,9 @@
   async function registerUser() {
     loading.value = true;
     const { error } = await api.register({
-      user: {
-        name: username.value,
-        email: email.value,
-        password: password.value,
-      },
+      name: username.value,
+      email: email.value,
+      password: password.value,
       groupName: groupName.value,
     });
 

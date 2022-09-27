@@ -4,17 +4,34 @@ import (
 	"context"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/ent"
 	"github.com/hay-kot/homebox/backend/ent/authtokens"
-	"github.com/hay-kot/homebox/backend/internal/types"
 )
 
 type TokenRepository struct {
 	db *ent.Client
 }
 
+type (
+	UserAuthTokenCreate struct {
+		TokenHash []byte    `json:"token"`
+		UserID    uuid.UUID `json:"userId"`
+		ExpiresAt time.Time `json:"expiresAt"`
+	}
+
+	UserAuthToken struct {
+		UserAuthTokenCreate
+		CreatedAt time.Time `json:"createdAt"`
+	}
+)
+
+func (u UserAuthToken) IsExpired() bool {
+	return u.ExpiresAt.Before(time.Now())
+}
+
 // GetUserFromToken get's a user from a token
-func (r *TokenRepository) GetUserFromToken(ctx context.Context, token []byte) (*ent.User, error) {
+func (r *TokenRepository) GetUserFromToken(ctx context.Context, token []byte) (UserOut, error) {
 	user, err := r.db.AuthTokens.Query().
 		Where(authtokens.Token(token)).
 		Where(authtokens.ExpiresAtGTE(time.Now())).
@@ -24,15 +41,14 @@ func (r *TokenRepository) GetUserFromToken(ctx context.Context, token []byte) (*
 		Only(ctx)
 
 	if err != nil {
-		return nil, err
+		return UserOut{}, err
 	}
 
-	return user, nil
+	return mapUserOut(user), nil
 }
 
 // Creates a token for a user
-func (r *TokenRepository) CreateToken(ctx context.Context, createToken types.UserAuthTokenCreate) (types.UserAuthToken, error) {
-	tokenOut := types.UserAuthToken{}
+func (r *TokenRepository) CreateToken(ctx context.Context, createToken UserAuthTokenCreate) (UserAuthToken, error) {
 
 	dbToken, err := r.db.AuthTokens.Create().
 		SetToken(createToken.TokenHash).
@@ -41,15 +57,17 @@ func (r *TokenRepository) CreateToken(ctx context.Context, createToken types.Use
 		Save(ctx)
 
 	if err != nil {
-		return tokenOut, err
+		return UserAuthToken{}, err
 	}
 
-	tokenOut.TokenHash = dbToken.Token
-	tokenOut.UserID = createToken.UserID
-	tokenOut.CreatedAt = dbToken.CreatedAt
-	tokenOut.ExpiresAt = dbToken.ExpiresAt
-
-	return tokenOut, nil
+	return UserAuthToken{
+		UserAuthTokenCreate: UserAuthTokenCreate{
+			TokenHash: dbToken.Token,
+			UserID:    createToken.UserID,
+			ExpiresAt: dbToken.ExpiresAt,
+		},
+		CreatedAt: dbToken.CreatedAt,
+	}, nil
 }
 
 // DeleteToken remove a single token from the database - equivalent to revoke or logout

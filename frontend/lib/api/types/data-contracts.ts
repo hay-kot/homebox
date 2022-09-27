@@ -10,36 +10,6 @@
  * ---------------------------------------------------------------
  */
 
-export interface ServerResult {
-  details: any;
-  error: boolean;
-  item: any;
-  message: string;
-}
-
-export interface ServerResults {
-  items: any;
-}
-
-export interface ServerValidationError {
-  field: string;
-  reason: string;
-}
-
-export interface ApiSummary {
-  build: Build;
-  health: boolean;
-  message: string;
-  title: string;
-  versions: string[];
-}
-
-export interface Build {
-  buildTime: string;
-  commit: string;
-  version: string;
-}
-
 export interface DocumentOut {
   id: string;
   path: string;
@@ -52,10 +22,6 @@ export interface ItemAttachment {
   id: string;
   type: string;
   updatedAt: Date;
-}
-
-export interface ItemAttachmentToken {
-  token: string;
 }
 
 export interface ItemAttachmentUpdate {
@@ -99,8 +65,6 @@ export interface ItemOut {
   /** Purchase */
   purchaseTime: Date;
   quantity: number;
-
-  /** Identifications */
   serialNumber: string;
   soldNotes: string;
 
@@ -122,39 +86,11 @@ export interface ItemSummary {
   insured: boolean;
   labels: LabelSummary[];
 
-  /** Warranty */
-  lifetimeWarranty: boolean;
-
   /** Edges */
   location: LocationSummary;
-  manufacturer: string;
-  modelNumber: string;
   name: string;
-
-  /** Extras */
-  notes: string;
-  purchaseFrom: string;
-
-  /** @example 0 */
-  purchasePrice: string;
-
-  /** Purchase */
-  purchaseTime: Date;
   quantity: number;
-
-  /** Identifications */
-  serialNumber: string;
-  soldNotes: string;
-
-  /** @example 0 */
-  soldPrice: string;
-
-  /** Sold */
-  soldTime: Date;
-  soldTo: string;
   updatedAt: Date;
-  warrantyDetails: string;
-  warrantyExpires: Date;
 }
 
 export interface ItemUpdate {
@@ -220,15 +156,6 @@ export interface LabelSummary {
   updatedAt: Date;
 }
 
-export interface LocationCount {
-  createdAt: Date;
-  description: string;
-  id: string;
-  itemCount: number;
-  name: string;
-  updatedAt: Date;
-}
-
 export interface LocationCreate {
   description: string;
   name: string;
@@ -243,23 +170,21 @@ export interface LocationOut {
   updatedAt: Date;
 }
 
+export interface LocationOutCount {
+  createdAt: Date;
+  description: string;
+  id: string;
+  itemCount: number;
+  name: string;
+  updatedAt: Date;
+}
+
 export interface LocationSummary {
   createdAt: Date;
   description: string;
   id: string;
   name: string;
   updatedAt: Date;
-}
-
-export interface TokenResponse {
-  expiresAt: string;
-  token: string;
-}
-
-export interface UserIn {
-  email: string;
-  name: string;
-  password: string;
 }
 
 export interface UserOut {
@@ -271,12 +196,53 @@ export interface UserOut {
   name: string;
 }
 
-export interface UserRegistration {
-  groupName: string;
-  user: UserIn;
-}
-
 export interface UserUpdate {
   email: string;
   name: string;
+}
+
+export interface ServerResult {
+  details: any;
+  error: boolean;
+  item: any;
+  message: string;
+}
+
+export interface ServerResults {
+  items: any;
+}
+
+export interface ServerValidationError {
+  field: string;
+  reason: string;
+}
+
+export interface UserRegistration {
+  email: string;
+  groupName: string;
+  name: string;
+  password: string;
+}
+
+export interface ApiSummary {
+  build: Build;
+  health: boolean;
+  message: string;
+  title: string;
+  versions: string[];
+}
+
+export interface Build {
+  buildTime: string;
+  commit: string;
+  version: string;
+}
+
+export interface ItemAttachmentToken {
+  token: string;
+}
+
+export interface TokenResponse {
+  expiresAt: string;
+  token: string;
 }

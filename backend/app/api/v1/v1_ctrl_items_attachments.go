@@ -4,15 +4,20 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/ent/attachment"
+	"github.com/hay-kot/homebox/backend/internal/repo"
 	"github.com/hay-kot/homebox/backend/internal/services"
-	"github.com/hay-kot/homebox/backend/internal/types"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 	"github.com/rs/zerolog/log"
+)
+
+type (
+	ItemAttachmentToken struct {
+		Token string `json:"token"`
+	}
 )
 
 // HandleItemsImport godocs
@@ -23,7 +28,7 @@ import (
 // @Param     file  formData  file    true  "File attachment"
 // @Param     type  formData  string  true  "Type of file"
 // @Param     name  formData  string  true  "name of the file including extension"
-// @Success   200   {object}  types.ItemOut
+// @Success   200   {object}  repo.ItemOut
 // @Failure   422   {object}  []server.ValidationError
 // @Router    /v1/items/{id}/attachments [POST]
 // @Security  Bearer
@@ -105,7 +110,7 @@ func (ctrl *V1Controller) HandleItemAttachmentDownload() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		token := server.GetParam(r, "token", "")
 
-		path, err := ctrl.svc.Items.AttachmentPath(r.Context(), token)
+		doc, err := ctrl.svc.Items.AttachmentPath(r.Context(), token)
 
 		if err != nil {
 			log.Err(err).Msg("failed to get attachment")
@@ -113,9 +118,9 @@ func (ctrl *V1Controller) HandleItemAttachmentDownload() http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filepath.Base(path)))
+		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", doc.Title))
 		w.Header().Set("Content-Type", "application/octet-stream")
-		http.ServeFile(w, r, path)
+		http.ServeFile(w, r, doc.Path)
 	}
 }
 
@@ -125,7 +130,7 @@ func (ctrl *V1Controller) HandleItemAttachmentDownload() http.HandlerFunc {
 // @Produce   application/octet-stream
 // @Param     id             path      string  true  "Item ID"
 // @Param     attachment_id  path      string  true  "Attachment ID"
-// @Success   200            {object}  types.ItemAttachmentToken
+// @Success   200            {object}  ItemAttachmentToken
 // @Router    /v1/items/{id}/attachments/{attachment_id} [GET]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleItemAttachmentToken() http.HandlerFunc {
@@ -147,10 +152,10 @@ func (ctrl *V1Controller) HandleItemAttachmentDelete() http.HandlerFunc {
 // HandleItemAttachmentUpdate godocs
 // @Summary   retrieves an attachment for an item
 // @Tags      Items
-// @Param     id             path      string                      true  "Item ID"
-// @Param     attachment_id  path      string                      true  "Attachment ID"
-// @Param     payload        body      types.ItemAttachmentUpdate  true  "Attachment Update"
-// @Success   200            {object}  types.ItemOut
+// @Param     id             path      string                     true  "Item ID"
+// @Param     attachment_id  path      string                     true  "Attachment ID"
+// @Param     payload        body      repo.ItemAttachmentUpdate  true  "Attachment Update"
+// @Success   200            {object}  repo.ItemOut
 // @Router    /v1/items/{id}/attachments/{attachment_id} [PUT]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleItemAttachmentUpdate() http.HandlerFunc {
@@ -201,7 +206,7 @@ func (ctrl *V1Controller) handleItemAttachmentsHandler(w http.ResponseWriter, r 
 			}
 		}
 
-		server.Respond(w, http.StatusOK, types.ItemAttachmentToken{Token: token})
+		server.Respond(w, http.StatusOK, ItemAttachmentToken{Token: token})
 
 	// Delete Attachment Handler
 	case http.MethodDelete:
@@ -216,7 +221,7 @@ func (ctrl *V1Controller) handleItemAttachmentsHandler(w http.ResponseWriter, r 
 
 	// Update Attachment Handler
 	case http.MethodPut:
-		var attachment types.ItemAttachmentUpdate
+		var attachment repo.ItemAttachmentUpdate
 		err = server.Decode(r, &attachment)
 		if err != nil {
 			log.Err(err).Msg("failed to decode attachment")

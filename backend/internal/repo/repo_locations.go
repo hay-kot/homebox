@@ -2,24 +2,79 @@ package repo
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/ent"
+	"github.com/hay-kot/homebox/backend/ent/group"
 	"github.com/hay-kot/homebox/backend/ent/location"
-	"github.com/hay-kot/homebox/backend/internal/types"
+	"github.com/hay-kot/homebox/backend/ent/predicate"
 )
 
 type LocationRepository struct {
 	db *ent.Client
 }
 
-type LocationWithCount struct {
-	*ent.Location
-	ItemCount int `json:"itemCount"`
+type (
+	LocationCreate struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+	}
+
+	LocationUpdate struct {
+		ID          uuid.UUID `json:"id"`
+		Name        string    `json:"name"`
+		Description string    `json:"description"`
+	}
+
+	LocationSummary struct {
+		ID          uuid.UUID `json:"id"`
+		Name        string    `json:"name"`
+		Description string    `json:"description"`
+		CreatedAt   time.Time `json:"createdAt"`
+		UpdatedAt   time.Time `json:"updatedAt"`
+	}
+
+	LocationOutCount struct {
+		LocationSummary
+		ItemCount int `json:"itemCount"`
+	}
+
+	LocationOut struct {
+		LocationSummary
+		Items []ItemSummary `json:"items"`
+	}
+)
+
+func mapLocationSummary(location *ent.Location) LocationSummary {
+	return LocationSummary{
+		ID:          location.ID,
+		Name:        location.Name,
+		Description: location.Description,
+		CreatedAt:   location.CreatedAt,
+		UpdatedAt:   location.UpdatedAt,
+	}
+}
+
+var (
+	mapLocationOutErr = mapTErrFunc(mapLocationOut)
+)
+
+func mapLocationOut(location *ent.Location) LocationOut {
+	return LocationOut{
+		LocationSummary: LocationSummary{
+			ID:          location.ID,
+			Name:        location.Name,
+			Description: location.Description,
+			CreatedAt:   location.CreatedAt,
+			UpdatedAt:   location.UpdatedAt,
+		},
+		Items: mapEach(location.Edges.Items, mapItemSummary),
+	}
 }
 
 // GetALlWithCount returns all locations with item count field populated
-func (r *LocationRepository) GetAll(ctx context.Context, groupId uuid.UUID) ([]LocationWithCount, error) {
+func (r *LocationRepository) GetAll(ctx context.Context, groupId uuid.UUID) ([]LocationOutCount, error) {
 	query := `--sql
 		SELECT
 			id,
@@ -46,54 +101,62 @@ func (r *LocationRepository) GetAll(ctx context.Context, groupId uuid.UUID) ([]L
 		return nil, err
 	}
 
-	list := []LocationWithCount{}
+	list := []LocationOutCount{}
 	for rows.Next() {
-		var loc ent.Location
-		var ct LocationWithCount
-		err := rows.Scan(&loc.ID, &loc.Name, &loc.Description, &loc.CreatedAt, &loc.UpdatedAt, &ct.ItemCount)
+		var ct LocationOutCount
+
+		err := rows.Scan(&ct.ID, &ct.Name, &ct.Description, &ct.CreatedAt, &ct.UpdatedAt, &ct.ItemCount)
 		if err != nil {
 			return nil, err
 		}
-		ct.Location = &loc
+
 		list = append(list, ct)
 	}
 
 	return list, err
 }
 
-func (r *LocationRepository) Get(ctx context.Context, ID uuid.UUID) (*ent.Location, error) {
-	return r.db.Location.Query().
-		Where(location.ID(ID)).
+func (r *LocationRepository) getOne(ctx context.Context, where ...predicate.Location) (LocationOut, error) {
+	return mapLocationOutErr(r.db.Location.Query().
+		Where(where...).
 		WithGroup().
 		WithItems(func(iq *ent.ItemQuery) {
 			iq.WithLabel()
 		}).
-		Only(ctx)
+		Only(ctx))
 }
 
-func (r *LocationRepository) Create(ctx context.Context, groupdId uuid.UUID, data types.LocationCreate) (*ent.Location, error) {
+func (r *LocationRepository) Get(ctx context.Context, ID uuid.UUID) (LocationOut, error) {
+	return r.getOne(ctx, location.ID(ID))
+}
+
+func (r *LocationRepository) GetOneByGroup(ctx context.Context, GID, ID uuid.UUID) (LocationOut, error) {
+	return r.getOne(ctx, location.ID(ID), location.HasGroupWith(group.ID(GID)))
+}
+
+func (r *LocationRepository) Create(ctx context.Context, gid uuid.UUID, data LocationCreate) (LocationOut, error) {
 	location, err := r.db.Location.Create().
 		SetName(data.Name).
 		SetDescription(data.Description).
-		SetGroupID(groupdId).
+		SetGroupID(gid).
 		Save(ctx)
 
 	if err != nil {
-		return nil, err
+		return LocationOut{}, err
 	}
 
-	location.Edges.Group = &ent.Group{ID: groupdId} // bootstrap group ID
-	return location, err
+	location.Edges.Group = &ent.Group{ID: gid} // bootstrap group ID
+	return mapLocationOut(location), nil
 }
 
-func (r *LocationRepository) Update(ctx context.Context, data types.LocationUpdate) (*ent.Location, error) {
+func (r *LocationRepository) Update(ctx context.Context, data LocationUpdate) (LocationOut, error) {
 	_, err := r.db.Location.UpdateOneID(data.ID).
 		SetName(data.Name).
 		SetDescription(data.Description).
 		Save(ctx)
 
 	if err != nil {
-		return nil, err
+		return LocationOut{}, err
 	}
 
 	return r.Get(ctx, data.ID)

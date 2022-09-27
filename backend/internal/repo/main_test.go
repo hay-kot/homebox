@@ -18,7 +18,7 @@ var (
 
 	tClient *ent.Client
 	tRepos  *AllRepos
-	tUser   *ent.User
+	tUser   UserOut
 	tGroup  *ent.Group
 )
 
@@ -53,7 +53,7 @@ func TestMain(m *testing.M) {
 	}
 
 	tClient = client
-	tRepos = EntAllRepos(tClient)
+	tRepos = EntAllRepos(tClient, os.TempDir())
 	defer client.Close()
 
 	bootstrap()

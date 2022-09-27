@@ -49,7 +49,7 @@ const docTemplate = `{
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/types.ItemSummary"
+                                                "$ref": "#/definitions/repo.ItemSummary"
                                             }
                                         }
                                     }
@@ -79,7 +79,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/types.ItemCreate"
+                            "$ref": "#/definitions/repo.ItemCreate"
                         }
                     }
                 ],
@@ -87,7 +87,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/types.ItemSummary"
+                            "$ref": "#/definitions/repo.ItemSummary"
                         }
                     }
                 }
@@ -150,7 +150,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/types.ItemOut"
+                            "$ref": "#/definitions/repo.ItemOut"
                         }
                     }
                 }
@@ -182,7 +182,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/types.ItemUpdate"
+                            "$ref": "#/definitions/repo.ItemUpdate"
                         }
                     }
                 ],
@@ -190,7 +190,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/types.ItemOut"
+                            "$ref": "#/definitions/repo.ItemOut"
                         }
                     }
                 }
@@ -272,7 +272,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/types.ItemOut"
+                            "$ref": "#/definitions/repo.ItemOut"
                         }
                     },
                     "422": {
@@ -358,7 +358,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/types.ItemAttachmentToken"
+                            "$ref": "#/definitions/v1.ItemAttachmentToken"
                         }
                     }
                 }
@@ -394,7 +394,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/types.ItemAttachmentUpdate"
+                            "$ref": "#/definitions/repo.ItemAttachmentUpdate"
                         }
                     }
                 ],
@@ -402,7 +402,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/types.ItemOut"
+                            "$ref": "#/definitions/repo.ItemOut"
                         }
                     }
                 }
@@ -468,7 +468,7 @@ const docTemplate = `{
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/types.LabelOut"
+                                                "$ref": "#/definitions/repo.LabelOut"
                                             }
                                         }
                                     }
@@ -498,7 +498,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/types.LabelCreate"
+                            "$ref": "#/definitions/repo.LabelCreate"
                         }
                     }
                 ],
@@ -506,7 +506,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/types.LabelSummary"
+                            "$ref": "#/definitions/repo.LabelSummary"
                         }
                     }
                 }
@@ -539,7 +539,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/types.LabelOut"
+                            "$ref": "#/definitions/repo.LabelOut"
                         }
                     }
                 }
@@ -570,7 +570,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/types.LabelOut"
+                            "$ref": "#/definitions/repo.LabelOut"
                         }
                     }
                 }
@@ -632,7 +632,7 @@ const docTemplate = `{
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/types.LocationCount"
+                                                "$ref": "#/definitions/repo.LocationOutCount"
                                             }
                                         }
                                     }
@@ -662,7 +662,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/types.LocationCreate"
+                            "$ref": "#/definitions/repo.LocationCreate"
                         }
                     }
                 ],
@@ -670,7 +670,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/types.LocationSummary"
+                            "$ref": "#/definitions/repo.LocationSummary"
                         }
                     }
                 }
@@ -703,7 +703,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/types.LocationOut"
+                            "$ref": "#/definitions/repo.LocationOut"
                         }
                     }
                 }
@@ -734,7 +734,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/types.LocationOut"
+                            "$ref": "#/definitions/repo.LocationOut"
                         }
                     }
                 }
@@ -781,7 +781,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/types.ApiSummary"
+                            "$ref": "#/definitions/v1.ApiSummary"
                         }
                     }
                 }
@@ -820,7 +820,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/types.TokenResponse"
+                            "$ref": "#/definitions/v1.TokenResponse"
                         }
                     }
                 }
@@ -879,7 +879,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/types.UserRegistration"
+                            "$ref": "#/definitions/services.UserRegistration"
                         }
                     }
                 ],
@@ -916,7 +916,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "item": {
-                                            "$ref": "#/definitions/types.UserOut"
+                                            "$ref": "#/definitions/repo.UserOut"
                                         }
                                     }
                                 }
@@ -945,7 +945,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/types.UserUpdate"
+                            "$ref": "#/definitions/repo.UserUpdate"
                         }
                     }
                 ],
@@ -961,7 +961,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "item": {
-                                            "$ref": "#/definitions/types.UserUpdate"
+                                            "$ref": "#/definitions/repo.UserUpdate"
                                         }
                                     }
                                 }
@@ -1013,6 +1013,451 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "repo.DocumentOut": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "repo.ItemAttachment": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "document": {
+                    "$ref": "#/definitions/repo.DocumentOut"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "repo.ItemAttachmentUpdate": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "repo.ItemCreate": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "labelIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "locationId": {
+                    "description": "Edges",
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "repo.ItemOut": {
+            "type": "object",
+            "properties": {
+                "attachments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/repo.ItemAttachment"
+                    }
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "insured": {
+                    "type": "boolean"
+                },
+                "labels": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/repo.LabelSummary"
+                    }
+                },
+                "lifetimeWarranty": {
+                    "description": "Warranty",
+                    "type": "boolean"
+                },
+                "location": {
+                    "description": "Edges",
+                    "$ref": "#/definitions/repo.LocationSummary"
+                },
+                "manufacturer": {
+                    "type": "string"
+                },
+                "modelNumber": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "notes": {
+                    "description": "Extras",
+                    "type": "string"
+                },
+                "purchaseFrom": {
+                    "type": "string"
+                },
+                "purchasePrice": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "purchaseTime": {
+                    "description": "Purchase",
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "serialNumber": {
+                    "type": "string"
+                },
+                "soldNotes": {
+                    "type": "string"
+                },
+                "soldPrice": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "soldTime": {
+                    "description": "Sold",
+                    "type": "string"
+                },
+                "soldTo": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "warrantyDetails": {
+                    "type": "string"
+                },
+                "warrantyExpires": {
+                    "type": "string"
+                }
+            }
+        },
+        "repo.ItemSummary": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "insured": {
+                    "type": "boolean"
+                },
+                "labels": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/repo.LabelSummary"
+                    }
+                },
+                "location": {
+                    "description": "Edges",
+                    "$ref": "#/definitions/repo.LocationSummary"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "repo.ItemUpdate": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "insured": {
+                    "type": "boolean"
+                },
+                "labelIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "lifetimeWarranty": {
+                    "description": "Warranty",
+                    "type": "boolean"
+                },
+                "locationId": {
+                    "description": "Edges",
+                    "type": "string"
+                },
+                "manufacturer": {
+                    "type": "string"
+                },
+                "modelNumber": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "notes": {
+                    "description": "Extras",
+                    "type": "string"
+                },
+                "purchaseFrom": {
+                    "type": "string"
+                },
+                "purchasePrice": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "purchaseTime": {
+                    "description": "Purchase",
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "serialNumber": {
+                    "description": "Identifications",
+                    "type": "string"
+                },
+                "soldNotes": {
+                    "type": "string"
+                },
+                "soldPrice": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "soldTime": {
+                    "description": "Sold",
+                    "type": "string"
+                },
+                "soldTo": {
+                    "type": "string"
+                },
+                "warrantyDetails": {
+                    "type": "string"
+                },
+                "warrantyExpires": {
+                    "type": "string"
+                }
+            }
+        },
+        "repo.LabelCreate": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "repo.LabelOut": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/repo.ItemSummary"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "repo.LabelSummary": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "repo.LocationCreate": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "repo.LocationOut": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/repo.ItemSummary"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "repo.LocationOutCount": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "itemCount": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "repo.LocationSummary": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "repo.UserOut": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "groupId": {
+                    "type": "string"
+                },
+                "groupName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "isSuperuser": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "repo.UserUpdate": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "server.Result": {
             "type": "object",
             "properties": {
@@ -1045,11 +1490,28 @@ const docTemplate = `{
                 }
             }
         },
-        "types.ApiSummary": {
+        "services.UserRegistration": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "groupName": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.ApiSummary": {
             "type": "object",
             "properties": {
                 "build": {
-                    "$ref": "#/definitions/types.Build"
+                    "$ref": "#/definitions/v1.Build"
                 },
                 "health": {
                     "type": "boolean"
@@ -1068,7 +1530,7 @@ const docTemplate = `{
                 }
             }
         },
-        "types.Build": {
+        "v1.Build": {
             "type": "object",
             "properties": {
                 "buildTime": {
@@ -1082,41 +1544,7 @@ const docTemplate = `{
                 }
             }
         },
-        "types.DocumentOut": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "path": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.ItemAttachment": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "document": {
-                    "$ref": "#/definitions/types.DocumentOut"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.ItemAttachmentToken": {
+        "v1.ItemAttachmentToken": {
             "type": "object",
             "properties": {
                 "token": {
@@ -1124,499 +1552,13 @@ const docTemplate = `{
                 }
             }
         },
-        "types.ItemAttachmentUpdate": {
-            "type": "object",
-            "properties": {
-                "title": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.ItemCreate": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "labelIds": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "locationId": {
-                    "description": "Edges",
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.ItemOut": {
-            "type": "object",
-            "properties": {
-                "attachments": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/types.ItemAttachment"
-                    }
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "insured": {
-                    "type": "boolean"
-                },
-                "labels": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/types.LabelSummary"
-                    }
-                },
-                "lifetimeWarranty": {
-                    "description": "Warranty",
-                    "type": "boolean"
-                },
-                "location": {
-                    "description": "Edges",
-                    "$ref": "#/definitions/types.LocationSummary"
-                },
-                "manufacturer": {
-                    "type": "string"
-                },
-                "modelNumber": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "notes": {
-                    "description": "Extras",
-                    "type": "string"
-                },
-                "purchaseFrom": {
-                    "type": "string"
-                },
-                "purchasePrice": {
-                    "type": "string",
-                    "example": "0"
-                },
-                "purchaseTime": {
-                    "description": "Purchase",
-                    "type": "string"
-                },
-                "quantity": {
-                    "type": "integer"
-                },
-                "serialNumber": {
-                    "description": "Identifications",
-                    "type": "string"
-                },
-                "soldNotes": {
-                    "type": "string"
-                },
-                "soldPrice": {
-                    "type": "string",
-                    "example": "0"
-                },
-                "soldTime": {
-                    "description": "Sold",
-                    "type": "string"
-                },
-                "soldTo": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "warrantyDetails": {
-                    "type": "string"
-                },
-                "warrantyExpires": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.ItemSummary": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "insured": {
-                    "type": "boolean"
-                },
-                "labels": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/types.LabelSummary"
-                    }
-                },
-                "lifetimeWarranty": {
-                    "description": "Warranty",
-                    "type": "boolean"
-                },
-                "location": {
-                    "description": "Edges",
-                    "$ref": "#/definitions/types.LocationSummary"
-                },
-                "manufacturer": {
-                    "type": "string"
-                },
-                "modelNumber": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "notes": {
-                    "description": "Extras",
-                    "type": "string"
-                },
-                "purchaseFrom": {
-                    "type": "string"
-                },
-                "purchasePrice": {
-                    "type": "string",
-                    "example": "0"
-                },
-                "purchaseTime": {
-                    "description": "Purchase",
-                    "type": "string"
-                },
-                "quantity": {
-                    "type": "integer"
-                },
-                "serialNumber": {
-                    "description": "Identifications",
-                    "type": "string"
-                },
-                "soldNotes": {
-                    "type": "string"
-                },
-                "soldPrice": {
-                    "type": "string",
-                    "example": "0"
-                },
-                "soldTime": {
-                    "description": "Sold",
-                    "type": "string"
-                },
-                "soldTo": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "warrantyDetails": {
-                    "type": "string"
-                },
-                "warrantyExpires": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.ItemUpdate": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "insured": {
-                    "type": "boolean"
-                },
-                "labelIds": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "lifetimeWarranty": {
-                    "description": "Warranty",
-                    "type": "boolean"
-                },
-                "locationId": {
-                    "description": "Edges",
-                    "type": "string"
-                },
-                "manufacturer": {
-                    "type": "string"
-                },
-                "modelNumber": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "notes": {
-                    "description": "Extras",
-                    "type": "string"
-                },
-                "purchaseFrom": {
-                    "type": "string"
-                },
-                "purchasePrice": {
-                    "type": "string",
-                    "example": "0"
-                },
-                "purchaseTime": {
-                    "description": "Purchase",
-                    "type": "string"
-                },
-                "quantity": {
-                    "type": "integer"
-                },
-                "serialNumber": {
-                    "description": "Identifications",
-                    "type": "string"
-                },
-                "soldNotes": {
-                    "type": "string"
-                },
-                "soldPrice": {
-                    "type": "string",
-                    "example": "0"
-                },
-                "soldTime": {
-                    "description": "Sold",
-                    "type": "string"
-                },
-                "soldTo": {
-                    "type": "string"
-                },
-                "warrantyDetails": {
-                    "type": "string"
-                },
-                "warrantyExpires": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.LabelCreate": {
-            "type": "object",
-            "properties": {
-                "color": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.LabelOut": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/types.ItemSummary"
-                    }
-                },
-                "name": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.LabelSummary": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.LocationCount": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "itemCount": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.LocationCreate": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.LocationOut": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/types.ItemSummary"
-                    }
-                },
-                "name": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.LocationSummary": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.TokenResponse": {
+        "v1.TokenResponse": {
             "type": "object",
             "properties": {
                 "expiresAt": {
                     "type": "string"
                 },
                 "token": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.UserIn": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.UserOut": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "groupId": {
-                    "type": "string"
-                },
-                "groupName": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "isSuperuser": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.UserRegistration": {
-            "type": "object",
-            "properties": {
-                "groupName": {
-                    "type": "string"
-                },
-                "user": {
-                    "$ref": "#/definitions/types.UserIn"
-                }
-            }
-        },
-        "types.UserUpdate": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "name": {
                     "type": "string"
                 }
             }

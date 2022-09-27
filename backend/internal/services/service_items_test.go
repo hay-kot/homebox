@@ -71,19 +71,8 @@ func TestItemService_CsvImport(t *testing.T) {
 		for _, csvRow := range dataCsv {
 			if csvRow.Item.Name == item.Name {
 				assert.Equal(t, csvRow.Item.Description, item.Description)
-				assert.Equal(t, csvRow.Item.SerialNumber, item.SerialNumber)
-				assert.Equal(t, csvRow.Item.Manufacturer, item.Manufacturer)
-				assert.Equal(t, csvRow.Item.Notes, item.Notes)
-
-				// Purchase Fields
-				assert.Equal(t, csvRow.Item.PurchaseTime, item.PurchaseTime)
-				assert.Equal(t, csvRow.Item.PurchaseFrom, item.PurchaseFrom)
-				assert.Equal(t, csvRow.Item.PurchasePrice, item.PurchasePrice)
-
-				// Sold Fields
-				assert.Equal(t, csvRow.Item.SoldTime, item.SoldTime)
-				assert.Equal(t, csvRow.Item.SoldTo, item.SoldTo)
-				assert.Equal(t, csvRow.Item.SoldPrice, item.SoldPrice)
+				assert.Equal(t, csvRow.Item.Quantity, item.Quantity)
+				assert.Equal(t, csvRow.Item.Insured, item.Insured)
 			}
 		}
 	}

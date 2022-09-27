@@ -1,110 +1,28 @@
 package repo
 
 import (
+	"bytes"
 	"context"
+	"fmt"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/ent"
-	"github.com/hay-kot/homebox/backend/internal/types"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDocumentRepository_Create(t *testing.T) {
-	type args struct {
-		ctx context.Context
-		gid uuid.UUID
-		doc types.DocumentCreate
-	}
-	tests := []struct {
-		name    string
-		args    args
-		want    *ent.Document
-		wantErr bool
-	}{
-		{
-			name: "create document",
-			args: args{
-				ctx: context.Background(),
-				gid: tGroup.ID,
-				doc: types.DocumentCreate{
-					Title: "test document",
-					Path:  "/test/document",
-				},
-			},
-			want: &ent.Document{
-				Title: "test document",
-				Path:  "/test/document",
-			},
-			wantErr: false,
-		},
-		{
-			name: "create document with empty title",
-			args: args{
-				ctx: context.Background(),
-				gid: tGroup.ID,
-				doc: types.DocumentCreate{
-					Title: "",
-					Path:  "/test/document",
-				},
-			},
-			want:    nil,
-			wantErr: true,
-		},
-		{
-			name: "create document with empty path",
-			args: args{
-				ctx: context.Background(),
-				gid: tGroup.ID,
-				doc: types.DocumentCreate{
-					Title: "test document",
-					Path:  "",
-				},
-			},
-			want:    nil,
-			wantErr: true,
-		},
-	}
-	ids := make([]uuid.UUID, 0, len(tests))
-
-	t.Cleanup(func() {
-		for _, id := range ids {
-			err := tRepos.Docs.Delete(context.Background(), id)
-			assert.NoError(t, err)
-		}
-	})
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := tRepos.Docs.Create(tt.args.ctx, tt.args.gid, tt.args.doc)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("DocumentRepository.Create() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-
-			if tt.wantErr {
-				assert.Error(t, err)
-				assert.Nil(t, got)
-				return
-			}
-
-			assert.Equal(t, tt.want.Title, got.Title)
-			assert.Equal(t, tt.want.Path, got.Path)
-			ids = append(ids, got.ID)
-		})
-	}
-}
-
-func useDocs(t *testing.T, num int) []*ent.Document {
+func useDocs(t *testing.T, num int) []DocumentOut {
 	t.Helper()
 
-	results := make([]*ent.Document, 0, num)
+	results := make([]DocumentOut, 0, num)
 	ids := make([]uuid.UUID, 0, num)
 
 	for i := 0; i < num; i++ {
-		doc, err := tRepos.Docs.Create(context.Background(), tGroup.ID, types.DocumentCreate{
-			Title: fk.Str(10),
-			Path:  fk.Path(),
+		doc, err := tRepos.Docs.Create(context.Background(), tGroup.ID, DocumentCreate{
+			Title:   fk.Str(10) + ".md",
+			Content: bytes.NewReader([]byte(fk.Str(10))),
 		})
 
 		assert.NoError(t, err)
@@ -126,77 +44,68 @@ func useDocs(t *testing.T, num int) []*ent.Document {
 	return results
 }
 
-func TestDocumentRepository_GetAll(t *testing.T) {
-	entities := useDocs(t, 10)
-
-	for _, entity := range entities {
-		assert.NotNil(t, entity)
+func TestDocumentRepository_CreateUpdateDelete(t *testing.T) {
+	temp := t.TempDir()
+	r := DocumentRepository{
+		db:  tClient,
+		dir: temp,
 	}
 
-	all, err := tRepos.Docs.GetAll(context.Background(), tGroup.ID)
-	assert.NoError(t, err)
+	type args struct {
+		ctx context.Context
+		gid uuid.UUID
+		doc DocumentCreate
+	}
+	tests := []struct {
+		name    string
+		content string
+		args    args
+		title   string
+		wantErr bool
+	}{
+		{
+			name:    "basic create",
+			title:   "test.md",
+			content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+			args: args{
+				ctx: context.Background(),
+				gid: tGroup.ID,
+				doc: DocumentCreate{
+					Title:   "test.md",
+					Content: bytes.NewReader([]byte("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")),
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Create Document
+			got, err := r.Create(tt.args.ctx, tt.args.gid, tt.args.doc)
+			assert.NoError(t, err)
+			assert.Equal(t, tt.title, got.Title)
+			assert.Equal(t, fmt.Sprintf("%s/%s/documents", temp, tt.args.gid), filepath.Dir(got.Path))
 
-	assert.Len(t, all, 10)
-	for _, entity := range all {
-		assert.NotNil(t, entity)
-
-		for _, e := range entities {
-			if e.ID == entity.ID {
-				assert.Equal(t, e.Title, entity.Title)
-				assert.Equal(t, e.Path, entity.Path)
+			ensureRead := func() {
+				// Read Document
+				bts, err := os.ReadFile(got.Path)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.content, string(bts))
 			}
-		}
-	}
-}
+			ensureRead()
 
-func TestDocumentRepository_Get(t *testing.T) {
-	entities := useDocs(t, 10)
+			// Update Document
+			got, err = r.Rename(tt.args.ctx, got.ID, "__"+tt.title+"__")
+			assert.NoError(t, err)
+			assert.Equal(t, "__"+tt.title+"__", got.Title)
 
-	for _, entity := range entities {
-		got, err := tRepos.Docs.Get(context.Background(), entity.ID)
+			ensureRead()
 
-		assert.NoError(t, err)
-		assert.Equal(t, entity.ID, got.ID)
-		assert.Equal(t, entity.Title, got.Title)
-		assert.Equal(t, entity.Path, got.Path)
-	}
-}
+			// Delete Document
+			err = r.Delete(tt.args.ctx, got.ID)
+			assert.NoError(t, err)
 
-func TestDocumentRepository_Update(t *testing.T) {
-	entities := useDocs(t, 10)
-
-	for _, entity := range entities {
-		got, err := tRepos.Docs.Get(context.Background(), entity.ID)
-
-		assert.NoError(t, err)
-		assert.Equal(t, entity.ID, got.ID)
-		assert.Equal(t, entity.Title, got.Title)
-		assert.Equal(t, entity.Path, got.Path)
-	}
-
-	for _, entity := range entities {
-		updateData := types.DocumentUpdate{
-			Title: fk.Str(10),
-			Path:  fk.Path(),
-		}
-
-		updated, err := tRepos.Docs.Update(context.Background(), entity.ID, updateData)
-
-		assert.NoError(t, err)
-		assert.Equal(t, entity.ID, updated.ID)
-		assert.Equal(t, updateData.Title, updated.Title)
-		assert.Equal(t, updateData.Path, updated.Path)
-	}
-}
-
-func TestDocumentRepository_Delete(t *testing.T) {
-	entities := useDocs(t, 10)
-
-	for _, entity := range entities {
-		err := tRepos.Docs.Delete(context.Background(), entity.ID)
-		assert.NoError(t, err)
-
-		_, err = tRepos.Docs.Get(context.Background(), entity.ID)
-		assert.Error(t, err)
+			_, err = os.Stat(got.Path)
+			assert.Error(t, err)
+		})
 	}
 }

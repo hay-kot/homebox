@@ -1,12 +1,12 @@
 import { BaseAPI, route } from "../base";
-import { LocationCount, LocationCreate, LocationOut } from "../types/data-contracts";
+import { LocationOutCount, LocationCreate, LocationOut } from "../types/data-contracts";
 import { Results } from "./types";
 
 export type LocationUpdate = LocationCreate;
 
 export class LocationsApi extends BaseAPI {
   getAll() {
-    return this.http.get<Results<LocationCount>>({ url: route("/locations") });
+    return this.http.get<Results<LocationOutCount>>({ url: route("/locations") });
   }
 
   create(body: LocationCreate) {

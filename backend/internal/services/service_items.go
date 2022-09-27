@@ -7,8 +7,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/repo"
-	"github.com/hay-kot/homebox/backend/internal/services/mappers"
-	"github.com/hay-kot/homebox/backend/internal/types"
 	"github.com/rs/zerolog/log"
 )
 
@@ -26,76 +24,24 @@ type ItemService struct {
 	at attachmentTokens
 }
 
-func (svc *ItemService) GetOne(ctx context.Context, gid uuid.UUID, id uuid.UUID) (*types.ItemOut, error) {
-	result, err := svc.repo.Items.GetOne(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-
-	if result.Edges.Group.ID != gid {
-		return nil, ErrNotOwner
-	}
-
-	return mappers.ToItemOut(result), nil
+func (svc *ItemService) GetOne(ctx context.Context, gid uuid.UUID, id uuid.UUID) (repo.ItemOut, error) {
+	return svc.repo.Items.GetOneByGroup(ctx, gid, id)
 }
 
-func (svc *ItemService) GetAll(ctx context.Context, gid uuid.UUID) ([]*types.ItemSummary, error) {
-	items, err := svc.repo.Items.GetAll(ctx, gid)
-	if err != nil {
-		return nil, err
-	}
-
-	itemsOut := make([]*types.ItemSummary, len(items))
-	for i, item := range items {
-		itemsOut[i] = mappers.ToItemSummary(item)
-	}
-
-	return itemsOut, nil
+func (svc *ItemService) GetAll(ctx context.Context, gid uuid.UUID) ([]repo.ItemSummary, error) {
+	return svc.repo.Items.GetAll(ctx, gid)
 }
 
-func (svc *ItemService) Create(ctx context.Context, gid uuid.UUID, data types.ItemCreate) (*types.ItemOut, error) {
-	item, err := svc.repo.Items.Create(ctx, gid, data)
-	if err != nil {
-		return nil, err
-	}
-
-	return mappers.ToItemOut(item), nil
+func (svc *ItemService) Create(ctx context.Context, gid uuid.UUID, data repo.ItemCreate) (repo.ItemOut, error) {
+	return svc.repo.Items.Create(ctx, gid, data)
 }
 
 func (svc *ItemService) Delete(ctx context.Context, gid uuid.UUID, id uuid.UUID) error {
-	item, err := svc.repo.Items.GetOne(ctx, id)
-	if err != nil {
-		return err
-	}
-
-	if item.Edges.Group.ID != gid {
-		return ErrNotOwner
-	}
-
-	err = svc.repo.Items.Delete(ctx, id)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return svc.repo.Items.DeleteByGroup(ctx, gid, id)
 }
 
-func (svc *ItemService) Update(ctx context.Context, gid uuid.UUID, data types.ItemUpdate) (*types.ItemOut, error) {
-	item, err := svc.repo.Items.GetOne(ctx, data.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	if item.Edges.Group.ID != gid {
-		return nil, ErrNotOwner
-	}
-
-	item, err = svc.repo.Items.Update(ctx, data)
-	if err != nil {
-		return nil, err
-	}
-
-	return mappers.ToItemOut(item), nil
+func (svc *ItemService) Update(ctx context.Context, gid uuid.UUID, data repo.ItemUpdate) (repo.ItemOut, error) {
+	return svc.repo.Items.UpdateByGroup(ctx, gid, data)
 }
 
 func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]string) error {
@@ -144,7 +90,7 @@ func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]s
 
 		fmt.Println("Creating Location: ", row.Location)
 
-		result, err := svc.repo.Locations.Create(ctx, gid, types.LocationCreate{
+		result, err := svc.repo.Locations.Create(ctx, gid, repo.LocationCreate{
 			Name:        row.Location,
 			Description: "",
 		})
@@ -159,7 +105,7 @@ func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]s
 			if _, ok := labels[label]; ok {
 				continue
 			}
-			result, err := svc.repo.Labels.Create(ctx, gid, types.LabelCreate{
+			result, err := svc.repo.Labels.Create(ctx, gid, repo.LabelCreate{
 				Name:        label,
 				Description: "",
 			})
@@ -185,7 +131,7 @@ func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]s
 			Str("locationId", locationID.String()).
 			Msgf("Creating Item: %s", row.Item.Name)
 
-		result, err := svc.repo.Items.Create(ctx, gid, types.ItemCreate{
+		result, err := svc.repo.Items.Create(ctx, gid, repo.ItemCreate{
 			ImportRef:   row.Item.ImportRef,
 			Name:        row.Item.Name,
 			Description: row.Item.Description,
@@ -198,7 +144,7 @@ func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]s
 		}
 
 		// Update the item with the rest of the data
-		_, err = svc.repo.Items.Update(ctx, types.ItemUpdate{
+		_, err = svc.repo.Items.UpdateByGroup(ctx, gid, repo.ItemUpdate{
 			// Edges
 			LocationID: locationID,
 			LabelIDs:   labelIDs,
@@ -209,6 +155,7 @@ func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]s
 			Description: result.Description,
 			Insured:     row.Item.Insured,
 			Notes:       row.Item.Notes,
+			Quantity:    row.Item.Quantity,
 
 			// Identifies the item as imported
 			SerialNumber: row.Item.SerialNumber,

@@ -3,11 +3,23 @@ package v1
 import (
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/hay-kot/homebox/backend/internal/services"
-	"github.com/hay-kot/homebox/backend/internal/types"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 	"github.com/rs/zerolog/log"
+)
+
+type (
+	TokenResponse struct {
+		Token     string    `json:"token"`
+		ExpiresAt time.Time `json:"expiresAt"`
+	}
+
+	LoginForm struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
 )
 
 // HandleAuthLogin godoc
@@ -18,11 +30,11 @@ import (
 // @Param    username  formData  string  false  "string"  example(admin@admin.com)
 // @Param    password  formData  string  false  "string"  example(admin)
 // @Produce  json
-// @Success  200  {object}  types.TokenResponse
+// @Success  200  {object}  TokenResponse
 // @Router   /v1/users/login [POST]
 func (ctrl *V1Controller) HandleAuthLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		loginForm := &types.LoginForm{}
+		loginForm := &LoginForm{}
 
 		if r.Header.Get("Content-Type") == server.ContentFormUrlEncoded {
 			err := r.ParseForm()
@@ -59,9 +71,9 @@ func (ctrl *V1Controller) HandleAuthLogin() http.HandlerFunc {
 			return
 		}
 
-		server.Respond(w, http.StatusOK, types.TokenResponse{
-			BearerToken: "Bearer " + newToken.Raw,
-			ExpiresAt:   newToken.ExpiresAt,
+		server.Respond(w, http.StatusOK, TokenResponse{
+			Token:     "Bearer " + newToken.Raw,
+			ExpiresAt: newToken.ExpiresAt,
 		})
 	}
 }

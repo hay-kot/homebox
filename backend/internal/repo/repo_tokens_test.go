@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hay-kot/homebox/backend/internal/types"
 	"github.com/hay-kot/homebox/backend/pkgs/hasher"
 	"github.com/stretchr/testify/assert"
 )
@@ -22,7 +21,7 @@ func TestAuthTokenRepo_CreateToken(t *testing.T) {
 
 	generatedToken := hasher.GenerateToken()
 
-	token, err := tRepos.AuthTokens.CreateToken(ctx, types.UserAuthTokenCreate{
+	token, err := tRepos.AuthTokens.CreateToken(ctx, UserAuthTokenCreate{
 		TokenHash: generatedToken.Hash,
 		ExpiresAt: expiresAt,
 		UserID:    userOut.ID,
@@ -50,7 +49,7 @@ func TestAuthTokenRepo_DeleteToken(t *testing.T) {
 
 	generatedToken := hasher.GenerateToken()
 
-	_, err = tRepos.AuthTokens.CreateToken(ctx, types.UserAuthTokenCreate{
+	_, err = tRepos.AuthTokens.CreateToken(ctx, UserAuthTokenCreate{
 		TokenHash: generatedToken.Hash,
 		ExpiresAt: expiresAt,
 		UserID:    userOut.ID,
@@ -72,7 +71,7 @@ func TestAuthTokenRepo_GetUserByToken(t *testing.T) {
 	expiresAt := time.Now().Add(time.Hour)
 	generatedToken := hasher.GenerateToken()
 
-	token, err := tRepos.AuthTokens.CreateToken(ctx, types.UserAuthTokenCreate{
+	token, err := tRepos.AuthTokens.CreateToken(ctx, UserAuthTokenCreate{
 		TokenHash: generatedToken.Hash,
 		ExpiresAt: expiresAt,
 		UserID:    userOut.ID,
@@ -101,13 +100,13 @@ func TestAuthTokenRepo_PurgeExpiredTokens(t *testing.T) {
 	user := userFactory()
 	userOut, _ := tRepos.Users.Create(ctx, user)
 
-	createdTokens := []types.UserAuthToken{}
+	createdTokens := []UserAuthToken{}
 
 	for i := 0; i < 5; i++ {
 		expiresAt := time.Now()
 		generatedToken := hasher.GenerateToken()
 
-		createdToken, err := tRepos.AuthTokens.CreateToken(ctx, types.UserAuthTokenCreate{
+		createdToken, err := tRepos.AuthTokens.CreateToken(ctx, UserAuthTokenCreate{
 			TokenHash: generatedToken.Hash,
 			ExpiresAt: expiresAt,
 			UserID:    userOut.ID,

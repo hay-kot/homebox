@@ -6,37 +6,77 @@ import (
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/ent"
 	"github.com/hay-kot/homebox/backend/ent/user"
-	"github.com/hay-kot/homebox/backend/internal/types"
 )
 
 type UserRepository struct {
 	db *ent.Client
 }
 
-func (e *UserRepository) GetOneId(ctx context.Context, id uuid.UUID) (*ent.User, error) {
-	return e.db.User.Query().
-		Where(user.ID(id)).
-		WithGroup().
-		Only(ctx)
-}
-
-func (e *UserRepository) GetOneEmail(ctx context.Context, email string) (*ent.User, error) {
-	return e.db.User.Query().
-		Where(user.Email(email)).
-		WithGroup().
-		Only(ctx)
-}
-
-func (e *UserRepository) GetAll(ctx context.Context) ([]*ent.User, error) {
-	return e.db.User.Query().WithGroup().All(ctx)
-}
-
-func (e *UserRepository) Create(ctx context.Context, usr types.UserCreate) (*ent.User, error) {
-	err := usr.Validate()
-	if err != nil {
-		return &ent.User{}, err
+type (
+	// UserCreate is the Data object contain the requirements of creating a user
+	// in the database. It should to create users from an API unless the user has
+	// rights to create SuperUsers. For regular user in data use the UserIn struct.
+	UserCreate struct {
+		Name        string    `json:"name"`
+		Email       string    `json:"email"`
+		Password    string    `json:"password"`
+		IsSuperuser bool      `json:"isSuperuser"`
+		GroupID     uuid.UUID `json:"groupID"`
 	}
 
+	UserUpdate struct {
+		Name  string `json:"name"`
+		Email string `json:"email"`
+	}
+
+	UserOut struct {
+		ID           uuid.UUID `json:"id"`
+		Name         string    `json:"name"`
+		Email        string    `json:"email"`
+		IsSuperuser  bool      `json:"isSuperuser"`
+		GroupID      uuid.UUID `json:"groupId"`
+		GroupName    string    `json:"groupName"`
+		PasswordHash string    `json:"-"`
+	}
+)
+
+var (
+	mapUserOutErr  = mapTErrFunc(mapUserOut)
+	mapUsersOutErr = mapTEachErrFunc(mapUserOut)
+)
+
+func mapUserOut(user *ent.User) UserOut {
+	return UserOut{
+		ID:           user.ID,
+		Name:         user.Name,
+		Email:        user.Email,
+		IsSuperuser:  user.IsSuperuser,
+		GroupID:      user.Edges.Group.ID,
+		GroupName:    user.Edges.Group.Name,
+		PasswordHash: user.Password,
+	}
+}
+
+func (e *UserRepository) GetOneId(ctx context.Context, id uuid.UUID) (UserOut, error) {
+	return mapUserOutErr(e.db.User.Query().
+		Where(user.ID(id)).
+		WithGroup().
+		Only(ctx))
+}
+
+func (e *UserRepository) GetOneEmail(ctx context.Context, email string) (UserOut, error) {
+	return mapUserOutErr(e.db.User.Query().
+		Where(user.Email(email)).
+		WithGroup().
+		Only(ctx),
+	)
+}
+
+func (e *UserRepository) GetAll(ctx context.Context) ([]UserOut, error) {
+	return mapUsersOutErr(e.db.User.Query().WithGroup().All(ctx))
+}
+
+func (e *UserRepository) Create(ctx context.Context, usr UserCreate) (UserOut, error) {
 	entUser, err := e.db.User.
 		Create().
 		SetName(usr.Name).
@@ -46,13 +86,13 @@ func (e *UserRepository) Create(ctx context.Context, usr types.UserCreate) (*ent
 		SetGroupID(usr.GroupID).
 		Save(ctx)
 	if err != nil {
-		return entUser, err
+		return UserOut{}, err
 	}
 
 	return e.GetOneId(ctx, entUser.ID)
 }
 
-func (e *UserRepository) Update(ctx context.Context, ID uuid.UUID, data types.UserUpdate) error {
+func (e *UserRepository) Update(ctx context.Context, ID uuid.UUID, data UserUpdate) error {
 	q := e.db.User.Update().
 		Where(user.ID(ID)).
 		SetName(data.Name).

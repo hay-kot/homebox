@@ -4,22 +4,20 @@ import (
 	"context"
 	"testing"
 
-	"github.com/hay-kot/homebox/backend/ent"
-	"github.com/hay-kot/homebox/backend/internal/types"
 	"github.com/stretchr/testify/assert"
 )
 
-func labelFactory() types.LabelCreate {
-	return types.LabelCreate{
+func labelFactory() LabelCreate {
+	return LabelCreate{
 		Name:        fk.Str(10),
 		Description: fk.Str(100),
 	}
 }
 
-func useLabels(t *testing.T, len int) []*ent.Label {
+func useLabels(t *testing.T, len int) []LabelOut {
 	t.Helper()
 
-	labels := make([]*ent.Label, len)
+	labels := make([]LabelOut, len)
 	for i := 0; i < len; i++ {
 		itm := labelFactory()
 
@@ -42,7 +40,7 @@ func TestLabelRepository_Get(t *testing.T) {
 	label := labels[0]
 
 	// Get by ID
-	foundLoc, err := tRepos.Labels.Get(context.Background(), label.ID)
+	foundLoc, err := tRepos.Labels.GetOne(context.Background(), label.ID)
 	assert.NoError(t, err)
 	assert.Equal(t, label.ID, foundLoc.ID)
 }
@@ -60,7 +58,7 @@ func TestLabelRepository_Create(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Get by ID
-	foundLoc, err := tRepos.Labels.Get(context.Background(), loc.ID)
+	foundLoc, err := tRepos.Labels.GetOne(context.Background(), loc.ID)
 	assert.NoError(t, err)
 	assert.Equal(t, loc.ID, foundLoc.ID)
 
@@ -72,7 +70,7 @@ func TestLabelRepository_Update(t *testing.T) {
 	loc, err := tRepos.Labels.Create(context.Background(), tGroup.ID, labelFactory())
 	assert.NoError(t, err)
 
-	updateData := types.LabelUpdate{
+	updateData := LabelUpdate{
 		ID:          loc.ID,
 		Name:        fk.Str(10),
 		Description: fk.Str(100),
@@ -81,7 +79,7 @@ func TestLabelRepository_Update(t *testing.T) {
 	update, err := tRepos.Labels.Update(context.Background(), updateData)
 	assert.NoError(t, err)
 
-	foundLoc, err := tRepos.Labels.Get(context.Background(), loc.ID)
+	foundLoc, err := tRepos.Labels.GetOne(context.Background(), loc.ID)
 	assert.NoError(t, err)
 
 	assert.Equal(t, update.ID, foundLoc.ID)
@@ -99,6 +97,6 @@ func TestLabelRepository_Delete(t *testing.T) {
 	err = tRepos.Labels.Delete(context.Background(), loc.ID)
 	assert.NoError(t, err)
 
-	_, err = tRepos.Labels.Get(context.Background(), loc.ID)
+	_, err = tRepos.Labels.GetOne(context.Background(), loc.ID)
 	assert.Error(t, err)
 }

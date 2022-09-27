@@ -8,7 +8,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/ent"
 	"github.com/hay-kot/homebox/backend/ent/documenttoken"
-	"github.com/hay-kot/homebox/backend/internal/types"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -19,7 +18,7 @@ func TestDocumentTokensRepository_Create(t *testing.T) {
 
 	type args struct {
 		ctx  context.Context
-		data types.DocumentTokenCreate
+		data DocumentTokenCreate
 	}
 	tests := []struct {
 		name    string
@@ -31,7 +30,7 @@ func TestDocumentTokensRepository_Create(t *testing.T) {
 			name: "create document token",
 			args: args{
 				ctx: context.Background(),
-				data: types.DocumentTokenCreate{
+				data: DocumentTokenCreate{
 					DocumentID: doc.ID,
 					TokenHash:  []byte("token"),
 					ExpiresAt:  expires,
@@ -39,7 +38,9 @@ func TestDocumentTokensRepository_Create(t *testing.T) {
 			},
 			want: &ent.DocumentToken{
 				Edges: ent.DocumentTokenEdges{
-					Document: doc,
+					Document: &ent.Document{
+						ID: doc.ID,
+					},
 				},
 				Token:     []byte("token"),
 				ExpiresAt: expires,
@@ -50,7 +51,7 @@ func TestDocumentTokensRepository_Create(t *testing.T) {
 			name: "create document token with empty token",
 			args: args{
 				ctx: context.Background(),
-				data: types.DocumentTokenCreate{
+				data: DocumentTokenCreate{
 					DocumentID: doc.ID,
 					TokenHash:  []byte(""),
 					ExpiresAt:  expires,
@@ -63,7 +64,7 @@ func TestDocumentTokensRepository_Create(t *testing.T) {
 			name: "create document token with empty document id",
 			args: args{
 				ctx: context.Background(),
-				data: types.DocumentTokenCreate{
+				data: DocumentTokenCreate{
 					DocumentID: uuid.Nil,
 					TokenHash:  []byte("token"),
 					ExpiresAt:  expires,
@@ -94,18 +95,18 @@ func TestDocumentTokensRepository_Create(t *testing.T) {
 				return
 			}
 
-			assert.Equal(t, tt.want.Token, got.Token)
+			assert.Equal(t, tt.want.Token, got.TokenHash)
 			assert.WithinDuration(t, tt.want.ExpiresAt, got.ExpiresAt, time.Duration(1)*time.Second)
-			assert.Equal(t, tt.want.Edges.Document.ID, got.Edges.Document.ID)
+			assert.Equal(t, tt.want.Edges.Document.ID, got.DocumentID)
 		})
 
 	}
 }
 
-func useDocTokens(t *testing.T, num int) []*ent.DocumentToken {
+func useDocTokens(t *testing.T, num int) []DocumentToken {
 	entity := useDocs(t, 1)[0]
 
-	results := make([]*ent.DocumentToken, 0, num)
+	results := make([]DocumentToken, 0, num)
 
 	ids := make([]uuid.UUID, 0, num)
 	t.Cleanup(func() {
@@ -115,7 +116,7 @@ func useDocTokens(t *testing.T, num int) []*ent.DocumentToken {
 	})
 
 	for i := 0; i < num; i++ {
-		e, err := tRepos.DocTokens.Create(context.Background(), types.DocumentTokenCreate{
+		e, err := tRepos.DocTokens.Create(context.Background(), DocumentTokenCreate{
 			DocumentID: entity.ID,
 			TokenHash:  []byte(fk.Str(10)),
 			ExpiresAt:  fk.Time(),

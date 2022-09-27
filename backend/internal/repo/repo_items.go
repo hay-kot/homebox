@@ -2,21 +2,187 @@ package repo
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/ent"
 	"github.com/hay-kot/homebox/backend/ent/group"
 	"github.com/hay-kot/homebox/backend/ent/item"
-	"github.com/hay-kot/homebox/backend/internal/types"
+	"github.com/hay-kot/homebox/backend/ent/predicate"
 )
 
 type ItemsRepository struct {
 	db *ent.Client
 }
 
-func (e *ItemsRepository) GetOne(ctx context.Context, id uuid.UUID) (*ent.Item, error) {
-	return e.db.Item.Query().
-		Where(item.ID(id)).
+type (
+	ItemCreate struct {
+		ImportRef   string `json:"-"`
+		Name        string `json:"name"`
+		Description string `json:"description"`
+
+		// Edges
+		LocationID uuid.UUID   `json:"locationId"`
+		LabelIDs   []uuid.UUID `json:"labelIds"`
+	}
+	ItemUpdate struct {
+		ID          uuid.UUID `json:"id"`
+		Name        string    `json:"name"`
+		Description string    `json:"description"`
+		Quantity    int       `json:"quantity"`
+		Insured     bool      `json:"insured"`
+
+		// Edges
+		LocationID uuid.UUID   `json:"locationId"`
+		LabelIDs   []uuid.UUID `json:"labelIds"`
+
+		// Identifications
+		SerialNumber string `json:"serialNumber"`
+		ModelNumber  string `json:"modelNumber"`
+		Manufacturer string `json:"manufacturer"`
+
+		// Warranty
+		LifetimeWarranty bool      `json:"lifetimeWarranty"`
+		WarrantyExpires  time.Time `json:"warrantyExpires"`
+		WarrantyDetails  string    `json:"warrantyDetails"`
+
+		// Purchase
+		PurchaseTime  time.Time `json:"purchaseTime"`
+		PurchaseFrom  string    `json:"purchaseFrom"`
+		PurchasePrice float64   `json:"purchasePrice,string"`
+
+		// Sold
+		SoldTime  time.Time `json:"soldTime"`
+		SoldTo    string    `json:"soldTo"`
+		SoldPrice float64   `json:"soldPrice,string"`
+		SoldNotes string    `json:"soldNotes"`
+
+		// Extras
+		Notes string `json:"notes"`
+		// Fields []*FieldSummary `json:"fields"`
+	}
+
+	ItemSummary struct {
+		ImportRef   string    `json:"-"`
+		ID          uuid.UUID `json:"id"`
+		Name        string    `json:"name"`
+		Description string    `json:"description"`
+		Quantity    int       `json:"quantity"`
+		Insured     bool      `json:"insured"`
+		CreatedAt   time.Time `json:"createdAt"`
+		UpdatedAt   time.Time `json:"updatedAt"`
+
+		// Edges
+		Location LocationSummary `json:"location"`
+		Labels   []LabelSummary  `json:"labels"`
+	}
+
+	ItemOut struct {
+		ItemSummary
+
+		SerialNumber string `json:"serialNumber"`
+		ModelNumber  string `json:"modelNumber"`
+		Manufacturer string `json:"manufacturer"`
+
+		// Warranty
+		LifetimeWarranty bool      `json:"lifetimeWarranty"`
+		WarrantyExpires  time.Time `json:"warrantyExpires"`
+		WarrantyDetails  string    `json:"warrantyDetails"`
+
+		// Purchase
+		PurchaseTime  time.Time `json:"purchaseTime"`
+		PurchaseFrom  string    `json:"purchaseFrom"`
+		PurchasePrice float64   `json:"purchasePrice,string"`
+
+		// Sold
+		SoldTime  time.Time `json:"soldTime"`
+		SoldTo    string    `json:"soldTo"`
+		SoldPrice float64   `json:"soldPrice,string"`
+		SoldNotes string    `json:"soldNotes"`
+
+		// Extras
+		Notes string `json:"notes"`
+
+		Attachments []ItemAttachment `json:"attachments"`
+		// Future
+		// Fields []*FieldSummary `json:"fields"`
+	}
+)
+
+var (
+	mapItemsSummaryErr = mapTEachErrFunc(mapItemSummary)
+)
+
+func mapItemSummary(item *ent.Item) ItemSummary {
+	var location LocationSummary
+	if item.Edges.Location != nil {
+		location = mapLocationSummary(item.Edges.Location)
+	}
+
+	var labels []LabelSummary
+	if item.Edges.Label != nil {
+		labels = mapEach(item.Edges.Label, mapLabelSummary)
+	}
+
+	return ItemSummary{
+		ID:          item.ID,
+		Name:        item.Name,
+		Description: item.Description,
+		Quantity:    item.Quantity,
+		CreatedAt:   item.CreatedAt,
+		UpdatedAt:   item.UpdatedAt,
+
+		// Edges
+		Location: location,
+		Labels:   labels,
+
+		// Warranty
+		Insured: item.Insured,
+	}
+}
+
+var (
+	mapItemOutErr = mapTErrFunc(mapItemOut)
+)
+
+func mapItemOut(item *ent.Item) ItemOut {
+	var attachments []ItemAttachment
+	if item.Edges.Attachments != nil {
+		attachments = mapEach(item.Edges.Attachments, ToItemAttachment)
+	}
+
+	return ItemOut{
+		ItemSummary:      mapItemSummary(item),
+		LifetimeWarranty: item.LifetimeWarranty,
+		WarrantyExpires:  item.WarrantyExpires,
+		WarrantyDetails:  item.WarrantyDetails,
+
+		// Identification
+		SerialNumber: item.SerialNumber,
+		ModelNumber:  item.ModelNumber,
+		Manufacturer: item.Manufacturer,
+
+		// Purchase
+		PurchaseTime:  item.PurchaseTime,
+		PurchaseFrom:  item.PurchaseFrom,
+		PurchasePrice: item.PurchasePrice,
+
+		// Sold
+		SoldTime:  item.SoldTime,
+		SoldTo:    item.SoldTo,
+		SoldPrice: item.SoldPrice,
+		SoldNotes: item.SoldNotes,
+
+		// Extras
+		Notes:       item.Notes,
+		Attachments: attachments,
+	}
+}
+
+func (e *ItemsRepository) getOne(ctx context.Context, where ...predicate.Item) (ItemOut, error) {
+	q := e.db.Item.Query().Where(where...)
+
+	return mapItemOutErr(q.
 		WithFields().
 		WithLabel().
 		WithLocation().
@@ -24,19 +190,32 @@ func (e *ItemsRepository) GetOne(ctx context.Context, id uuid.UUID) (*ent.Item, 
 		WithAttachments(func(aq *ent.AttachmentQuery) {
 			aq.WithDocument()
 		}).
-		Only(ctx)
+		Only(ctx),
+	)
+}
+
+// GetOne returns a single item by ID. If the item does not exist, an error is returned.
+// See also: GetOneByGroup to ensure that the item belongs to a specific group.
+func (e *ItemsRepository) GetOne(ctx context.Context, id uuid.UUID) (ItemOut, error) {
+	return e.getOne(ctx, item.ID(id))
+}
+
+// GetOneByGroup returns a single item by ID. If the item does not exist, an error is returned.
+// GetOneByGroup ensures that the item belongs to a specific group.
+func (e *ItemsRepository) GetOneByGroup(ctx context.Context, gid, id uuid.UUID) (ItemOut, error) {
+	return e.getOne(ctx, item.ID(id), item.HasGroupWith(group.ID(gid)))
 }
 
 // GetAll returns all the items in the database with the Labels and Locations eager loaded.
-func (e *ItemsRepository) GetAll(ctx context.Context, gid uuid.UUID) ([]*ent.Item, error) {
-	return e.db.Item.Query().
+func (e *ItemsRepository) GetAll(ctx context.Context, gid uuid.UUID) ([]ItemSummary, error) {
+	return mapItemsSummaryErr(e.db.Item.Query().
 		Where(item.HasGroupWith(group.ID(gid))).
 		WithLabel().
 		WithLocation().
-		All(ctx)
+		All(ctx))
 }
 
-func (e *ItemsRepository) Create(ctx context.Context, gid uuid.UUID, data types.ItemCreate) (*ent.Item, error) {
+func (e *ItemsRepository) Create(ctx context.Context, gid uuid.UUID, data ItemCreate) (ItemOut, error) {
 	q := e.db.Item.Create().
 		SetName(data.Name).
 		SetDescription(data.Description).
@@ -49,7 +228,7 @@ func (e *ItemsRepository) Create(ctx context.Context, gid uuid.UUID, data types.
 
 	result, err := q.Save(ctx)
 	if err != nil {
-		return nil, err
+		return ItemOut{}, err
 	}
 
 	return e.GetOne(ctx, result.ID)
@@ -59,8 +238,18 @@ func (e *ItemsRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	return e.db.Item.DeleteOneID(id).Exec(ctx)
 }
 
-func (e *ItemsRepository) Update(ctx context.Context, data types.ItemUpdate) (*ent.Item, error) {
-	q := e.db.Item.UpdateOneID(data.ID).
+func (e *ItemsRepository) DeleteByGroup(ctx context.Context, gid, id uuid.UUID) error {
+	_, err := e.db.Item.
+		Delete().
+		Where(
+			item.ID(id),
+			item.HasGroupWith(group.ID(gid)),
+		).Exec(ctx)
+	return err
+}
+
+func (e *ItemsRepository) UpdateByGroup(ctx context.Context, gid uuid.UUID, data ItemUpdate) (ItemOut, error) {
+	q := e.db.Item.Update().Where(item.ID(data.ID), item.HasGroupWith(group.ID(gid))).
 		SetName(data.Name).
 		SetDescription(data.Description).
 		SetLocationID(data.LocationID).
@@ -83,13 +272,13 @@ func (e *ItemsRepository) Update(ctx context.Context, data types.ItemUpdate) (*e
 
 	currentLabels, err := e.db.Item.Query().Where(item.ID(data.ID)).QueryLabel().All(ctx)
 	if err != nil {
-		return nil, err
+		return ItemOut{}, err
 	}
 
-	set := EntitiesToIDSet(currentLabels)
+	set := newIDSet(currentLabels)
 
 	for _, l := range data.LabelIDs {
-		if set.Has(l) {
+		if set.Contains(l) {
 			set.Remove(l)
 			continue
 		}
@@ -102,7 +291,7 @@ func (e *ItemsRepository) Update(ctx context.Context, data types.ItemUpdate) (*e
 
 	err = q.Exec(ctx)
 	if err != nil {
-		return nil, err
+		return ItemOut{}, err
 	}
 
 	return e.GetOne(ctx, data.ID)
