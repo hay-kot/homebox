@@ -97,6 +97,7 @@ func run(cfg *config.Config) error {
 		// Write the embed migrations to the temp directory.
 		fsDir, err := migrations.Files.ReadDir(".")
 		if err != nil {
+			return err
 		}
 
 		for _, f := range fsDir {
@@ -121,7 +122,6 @@ func run(cfg *config.Config) error {
 		}
 
 		options := []schema.MigrateOption{
-			schema.WithAtlas(true),
 			schema.WithDir(dir),
 			schema.WithDropColumn(true),
 			schema.WithDropIndex(true),
