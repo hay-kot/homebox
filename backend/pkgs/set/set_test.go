@@ -2,6 +2,7 @@ package set
 
 import (
 	"reflect"
+	"sort"
 	"testing"
 )
 
@@ -247,7 +248,11 @@ func TestSet_Slice(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.s.Slice(); !reflect.DeepEqual(got, tt.want) {
+			got := tt.s.Slice()
+
+			sort.Strings(got)
+
+			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Set.Slice() = %v, want %v", got, tt.want)
 			}
 		})
