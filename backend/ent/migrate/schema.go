@@ -159,7 +159,6 @@ var (
 		{Name: "sold_to", Type: field.TypeString, Nullable: true},
 		{Name: "sold_price", Type: field.TypeFloat64, Default: 0},
 		{Name: "sold_notes", Type: field.TypeString, Nullable: true, Size: 1000},
-		{Name: "test_migration_field", Type: field.TypeString, Default: "test-migration-value"},
 		{Name: "group_items", Type: field.TypeUUID},
 		{Name: "location_items", Type: field.TypeUUID, Nullable: true},
 	}
@@ -171,13 +170,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "items_groups_items",
-				Columns:    []*schema.Column{ItemsColumns[23]},
+				Columns:    []*schema.Column{ItemsColumns[22]},
 				RefColumns: []*schema.Column{GroupsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "items_locations_items",
-				Columns:    []*schema.Column{ItemsColumns[24]},
+				Columns:    []*schema.Column{ItemsColumns[23]},
 				RefColumns: []*schema.Column{LocationsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},

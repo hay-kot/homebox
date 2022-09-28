@@ -61,8 +61,6 @@ type Item struct {
 	SoldPrice float64 `json:"sold_price,omitempty"`
 	// SoldNotes holds the value of the "sold_notes" field.
 	SoldNotes string `json:"sold_notes,omitempty"`
-	// TestMigrationField holds the value of the "test_migration_field" field.
-	TestMigrationField string `json:"test_migration_field,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ItemQuery when eager-loading is set.
 	Edges          ItemEdges `json:"edges"`
@@ -151,7 +149,7 @@ func (*Item) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullFloat64)
 		case item.FieldQuantity:
 			values[i] = new(sql.NullInt64)
-		case item.FieldName, item.FieldDescription, item.FieldImportRef, item.FieldNotes, item.FieldSerialNumber, item.FieldModelNumber, item.FieldManufacturer, item.FieldWarrantyDetails, item.FieldPurchaseFrom, item.FieldSoldTo, item.FieldSoldNotes, item.FieldTestMigrationField:
+		case item.FieldName, item.FieldDescription, item.FieldImportRef, item.FieldNotes, item.FieldSerialNumber, item.FieldModelNumber, item.FieldManufacturer, item.FieldWarrantyDetails, item.FieldPurchaseFrom, item.FieldSoldTo, item.FieldSoldNotes:
 			values[i] = new(sql.NullString)
 		case item.FieldCreatedAt, item.FieldUpdatedAt, item.FieldWarrantyExpires, item.FieldPurchaseTime, item.FieldSoldTime:
 			values[i] = new(sql.NullTime)
@@ -308,12 +306,6 @@ func (i *Item) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				i.SoldNotes = value.String
 			}
-		case item.FieldTestMigrationField:
-			if value, ok := values[j].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field test_migration_field", values[j])
-			} else if value.Valid {
-				i.TestMigrationField = value.String
-			}
 		case item.ForeignKeys[0]:
 			if value, ok := values[j].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field group_items", values[j])
@@ -443,9 +435,6 @@ func (i *Item) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("sold_notes=")
 	builder.WriteString(i.SoldNotes)
-	builder.WriteString(", ")
-	builder.WriteString("test_migration_field=")
-	builder.WriteString(i.TestMigrationField)
 	builder.WriteByte(')')
 	return builder.String()
 }

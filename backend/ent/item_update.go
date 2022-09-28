@@ -377,20 +377,6 @@ func (iu *ItemUpdate) ClearSoldNotes() *ItemUpdate {
 	return iu
 }
 
-// SetTestMigrationField sets the "test_migration_field" field.
-func (iu *ItemUpdate) SetTestMigrationField(s string) *ItemUpdate {
-	iu.mutation.SetTestMigrationField(s)
-	return iu
-}
-
-// SetNillableTestMigrationField sets the "test_migration_field" field if the given value is not nil.
-func (iu *ItemUpdate) SetNillableTestMigrationField(s *string) *ItemUpdate {
-	if s != nil {
-		iu.SetTestMigrationField(*s)
-	}
-	return iu
-}
-
 // SetGroupID sets the "group" edge to the Group entity by ID.
 func (iu *ItemUpdate) SetGroupID(id uuid.UUID) *ItemUpdate {
 	iu.mutation.SetGroupID(id)
@@ -911,13 +897,6 @@ func (iu *ItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: item.FieldSoldNotes,
-		})
-	}
-	if value, ok := iu.mutation.TestMigrationField(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldTestMigrationField,
 		})
 	}
 	if iu.mutation.GroupCleared() {
@@ -1514,20 +1493,6 @@ func (iuo *ItemUpdateOne) ClearSoldNotes() *ItemUpdateOne {
 	return iuo
 }
 
-// SetTestMigrationField sets the "test_migration_field" field.
-func (iuo *ItemUpdateOne) SetTestMigrationField(s string) *ItemUpdateOne {
-	iuo.mutation.SetTestMigrationField(s)
-	return iuo
-}
-
-// SetNillableTestMigrationField sets the "test_migration_field" field if the given value is not nil.
-func (iuo *ItemUpdateOne) SetNillableTestMigrationField(s *string) *ItemUpdateOne {
-	if s != nil {
-		iuo.SetTestMigrationField(*s)
-	}
-	return iuo
-}
-
 // SetGroupID sets the "group" edge to the Group entity by ID.
 func (iuo *ItemUpdateOne) SetGroupID(id uuid.UUID) *ItemUpdateOne {
 	iuo.mutation.SetGroupID(id)
@@ -2078,13 +2043,6 @@ func (iuo *ItemUpdateOne) sqlSave(ctx context.Context) (_node *Item, err error) 
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: item.FieldSoldNotes,
-		})
-	}
-	if value, ok := iuo.mutation.TestMigrationField(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldTestMigrationField,
 		})
 	}
 	if iuo.mutation.GroupCleared() {
