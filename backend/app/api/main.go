@@ -80,62 +80,37 @@ func run(cfg *config.Config) error {
 		}
 	}(c)
 
-	err = func() error {
-		temp := filepath.Join(os.TempDir(), "migrations")
-		defer func() {
-			err := os.RemoveAll(temp)
-			if err != nil {
-				log.Err(err).Msg("failed to remove temp directory")
-			}
-		}()
+	temp := filepath.Join(os.TempDir(), "migrations")
 
-		err := os.MkdirAll(temp, 0755)
-		if err != nil {
-			return err
-		}
+	err = migrations.Write(temp)
+	if err != nil {
+		return err
+	}
 
-		// Write the embed migrations to the temp directory.
-		fsDir, err := migrations.Files.ReadDir(".")
-		if err != nil {
-			return err
-		}
+	dir, err := atlas.NewLocalDir(temp)
+	if err != nil {
+		return err
+	}
 
-		for _, f := range fsDir {
-			if f.IsDir() {
-				continue
-			}
+	options := []schema.MigrateOption{
+		schema.WithDir(dir),
+		schema.WithDropColumn(true),
+		schema.WithDropIndex(true),
+	}
 
-			b, err := migrations.Files.ReadFile(filepath.Join("migrations", f.Name()))
-			if err != nil {
-				return err
-			}
-
-			err = os.WriteFile(filepath.Join(temp, f.Name()), b, 0644)
-			if err != nil {
-				return err
-			}
-		}
-
-		dir, err := atlas.NewLocalDir(temp)
-		if err != nil {
-			return err
-		}
-
-		options := []schema.MigrateOption{
-			schema.WithDir(dir),
-			schema.WithDropColumn(true),
-			schema.WithDropIndex(true),
-		}
-
-		return c.Schema.Create(context.Background(), options...)
-	}()
-
+	err = c.Schema.Create(context.Background(), options...)
 	if err != nil {
 		log.Fatal().
 			Err(err).
 			Str("driver", "sqlite").
 			Str("url", cfg.Storage.SqliteUrl).
 			Msg("failed creating schema resources")
+	}
+
+	err = os.RemoveAll(temp)
+	if err != nil {
+		log.Fatal().Err(err).Msg("failed to remove temporary directory for database migrations")
+		return err
 	}
 
 	app.db = c
