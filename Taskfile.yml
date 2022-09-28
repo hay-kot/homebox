@@ -1,14 +1,16 @@
 version: "3"
 
+env:
+  HBOX_STORAGE_SQLITE_URL: .data/homebox.db?_fk=1
+
 tasks:
   generate:
     desc: |
       Generates collateral files from the backend project
       including swagger docs and typescripts type for the frontend
+    deps:
+      - db:generate
     cmds:
-      - |
-        cd backend && ent generate ./ent/schema \
-          --template=ent/schema/templates/has_id.tmpl
       - cd backend/app/api/ && swag fmt
       - cd backend/app/api/ && swag init --dir=./,../../internal,../../pkgs
       - |
@@ -72,3 +74,21 @@ tasks:
     desc: Run frontend development server
     cmds:
       - cd frontend && pnpm dev
+
+  db:generate:
+    desc: Run Entgo.io Code Generation
+    cmds:
+      - |
+        cd backend && go generate ./... \
+        --template=ent/schema/templates/has_id.tmpl
+    sources:
+      - "./backend/ent/schema/**/*"
+    generates:
+      - "./backend/ent/"
+
+  db:migration:
+    desc: Runs the database diff engine to generate a SQL migration files
+    deps:
+      - db:generate
+    cmds:
+      - cd backend && go run app/migrations/main.go {{ .CLI_ARGS }}

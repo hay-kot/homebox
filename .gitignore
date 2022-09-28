@@ -1,5 +1,5 @@
 # Project Specific
-backend/homebox-data/*
+backend/.data/*
 config.yml
 homebox.db
 .idea

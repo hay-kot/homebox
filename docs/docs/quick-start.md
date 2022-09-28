@@ -65,8 +65,8 @@ volumes:
         --web-port/$HBOX_WEB_PORT                        <string>  (default: 7745)
         --web-host/$HBOX_WEB_HOST                        <string>
         --web-max-upload-size/$HBOX_WEB_MAX_UPLOAD_SIZE  <int>     (default: 10)
-        --storage-data/$HBOX_STORAGE_DATA                <string>  (default: ./homebox-data)
-        --storage-sqlite-url/$HBOX_STORAGE_SQLITE_URL    <string>  (default: ./homebox-data/homebox.db?_fk=1)
+        --storage-data/$HBOX_STORAGE_DATA                <string>  (default: ./.data)
+        --storage-sqlite-url/$HBOX_STORAGE_SQLITE_URL    <string>  (default: ./.data/homebox.db?_fk=1)
         --log-level/$HBOX_LOG_LEVEL                      <string>  (default: info)
         --log-format/$HBOX_LOG_FORMAT                    <string>  (default: text)
         --mailer-host/$HBOX_MAILER_HOST                  <string>

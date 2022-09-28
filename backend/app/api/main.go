@@ -3,11 +3,15 @@ package main
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"time"
 
+	atlas "ariga.io/atlas/sql/migrate"
+	"entgo.io/ent/dialect/sql/schema"
 	"github.com/hay-kot/homebox/backend/app/api/docs"
 	"github.com/hay-kot/homebox/backend/ent"
 	"github.com/hay-kot/homebox/backend/internal/config"
+	"github.com/hay-kot/homebox/backend/internal/migrations"
 	"github.com/hay-kot/homebox/backend/internal/repo"
 	"github.com/hay-kot/homebox/backend/internal/services"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
@@ -70,14 +74,43 @@ func run(cfg *config.Config) error {
 			Msg("failed opening connection to sqlite")
 	}
 	defer func(c *ent.Client) {
-		_ = c.Close()
+		err := c.Close()
+		if err != nil {
+			log.Fatal().Err(err).Msg("failed to close database connection")
+		}
 	}(c)
-	if err := c.Schema.Create(context.Background()); err != nil {
+
+	temp := filepath.Join(os.TempDir(), "migrations")
+
+	err = migrations.Write(temp)
+	if err != nil {
+		return err
+	}
+
+	dir, err := atlas.NewLocalDir(temp)
+	if err != nil {
+		return err
+	}
+
+	options := []schema.MigrateOption{
+		schema.WithDir(dir),
+		schema.WithDropColumn(true),
+		schema.WithDropIndex(true),
+	}
+
+	err = c.Schema.Create(context.Background(), options...)
+	if err != nil {
 		log.Fatal().
 			Err(err).
 			Str("driver", "sqlite").
 			Str("url", cfg.Storage.SqliteUrl).
 			Msg("failed creating schema resources")
+	}
+
+	err = os.RemoveAll(temp)
+	if err != nil {
+		log.Fatal().Err(err).Msg("failed to remove temporary directory for database migrations")
+		return err
 	}
 
 	app.db = c
