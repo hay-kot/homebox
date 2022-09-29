@@ -35,7 +35,7 @@ func IDNEQ(id uuid.UUID) predicate.DocumentToken {
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uuid.UUID) predicate.DocumentToken {
 	return predicate.DocumentToken(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -46,7 +46,7 @@ func IDIn(ids ...uuid.UUID) predicate.DocumentToken {
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uuid.UUID) predicate.DocumentToken {
 	return predicate.DocumentToken(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -133,7 +133,7 @@ func CreatedAtNEQ(v time.Time) predicate.DocumentToken {
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.DocumentToken {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -144,7 +144,7 @@ func CreatedAtIn(vs ...time.Time) predicate.DocumentToken {
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.DocumentToken {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -197,7 +197,7 @@ func UpdatedAtNEQ(v time.Time) predicate.DocumentToken {
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.DocumentToken {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -208,7 +208,7 @@ func UpdatedAtIn(vs ...time.Time) predicate.DocumentToken {
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.DocumentToken {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -261,7 +261,7 @@ func TokenNEQ(v []byte) predicate.DocumentToken {
 
 // TokenIn applies the In predicate on the "token" field.
 func TokenIn(vs ...[]byte) predicate.DocumentToken {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -272,7 +272,7 @@ func TokenIn(vs ...[]byte) predicate.DocumentToken {
 
 // TokenNotIn applies the NotIn predicate on the "token" field.
 func TokenNotIn(vs ...[]byte) predicate.DocumentToken {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -325,7 +325,7 @@ func UsesNEQ(v int) predicate.DocumentToken {
 
 // UsesIn applies the In predicate on the "uses" field.
 func UsesIn(vs ...int) predicate.DocumentToken {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -336,7 +336,7 @@ func UsesIn(vs ...int) predicate.DocumentToken {
 
 // UsesNotIn applies the NotIn predicate on the "uses" field.
 func UsesNotIn(vs ...int) predicate.DocumentToken {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -389,7 +389,7 @@ func ExpiresAtNEQ(v time.Time) predicate.DocumentToken {
 
 // ExpiresAtIn applies the In predicate on the "expires_at" field.
 func ExpiresAtIn(vs ...time.Time) predicate.DocumentToken {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -400,7 +400,7 @@ func ExpiresAtIn(vs ...time.Time) predicate.DocumentToken {
 
 // ExpiresAtNotIn applies the NotIn predicate on the "expires_at" field.
 func ExpiresAtNotIn(vs ...time.Time) predicate.DocumentToken {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}

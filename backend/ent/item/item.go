@@ -57,12 +57,12 @@ const (
 	FieldSoldNotes = "sold_notes"
 	// EdgeGroup holds the string denoting the group edge name in mutations.
 	EdgeGroup = "group"
+	// EdgeLabel holds the string denoting the label edge name in mutations.
+	EdgeLabel = "label"
 	// EdgeLocation holds the string denoting the location edge name in mutations.
 	EdgeLocation = "location"
 	// EdgeFields holds the string denoting the fields edge name in mutations.
 	EdgeFields = "fields"
-	// EdgeLabel holds the string denoting the label edge name in mutations.
-	EdgeLabel = "label"
 	// EdgeAttachments holds the string denoting the attachments edge name in mutations.
 	EdgeAttachments = "attachments"
 	// Table holds the table name of the item in the database.
@@ -74,6 +74,11 @@ const (
 	GroupInverseTable = "groups"
 	// GroupColumn is the table column denoting the group relation/edge.
 	GroupColumn = "group_items"
+	// LabelTable is the table that holds the label relation/edge. The primary key declared below.
+	LabelTable = "label_items"
+	// LabelInverseTable is the table name for the Label entity.
+	// It exists in this package in order to avoid circular dependency with the "label" package.
+	LabelInverseTable = "labels"
 	// LocationTable is the table that holds the location relation/edge.
 	LocationTable = "items"
 	// LocationInverseTable is the table name for the Location entity.
@@ -88,11 +93,6 @@ const (
 	FieldsInverseTable = "item_fields"
 	// FieldsColumn is the table column denoting the fields relation/edge.
 	FieldsColumn = "item_fields"
-	// LabelTable is the table that holds the label relation/edge. The primary key declared below.
-	LabelTable = "label_items"
-	// LabelInverseTable is the table name for the Label entity.
-	// It exists in this package in order to avoid circular dependency with the "label" package.
-	LabelInverseTable = "labels"
 	// AttachmentsTable is the table that holds the attachments relation/edge.
 	AttachmentsTable = "attachments"
 	// AttachmentsInverseTable is the table name for the Attachment entity.

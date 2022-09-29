@@ -35,7 +35,7 @@ func IDNEQ(id uuid.UUID) predicate.Item {
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uuid.UUID) predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -46,7 +46,7 @@ func IDIn(ids ...uuid.UUID) predicate.Item {
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uuid.UUID) predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -245,7 +245,7 @@ func CreatedAtNEQ(v time.Time) predicate.Item {
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -256,7 +256,7 @@ func CreatedAtIn(vs ...time.Time) predicate.Item {
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -309,7 +309,7 @@ func UpdatedAtNEQ(v time.Time) predicate.Item {
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -320,7 +320,7 @@ func UpdatedAtIn(vs ...time.Time) predicate.Item {
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -373,7 +373,7 @@ func NameNEQ(v string) predicate.Item {
 
 // NameIn applies the In predicate on the "name" field.
 func NameIn(vs ...string) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -384,7 +384,7 @@ func NameIn(vs ...string) predicate.Item {
 
 // NameNotIn applies the NotIn predicate on the "name" field.
 func NameNotIn(vs ...string) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -472,7 +472,7 @@ func DescriptionNEQ(v string) predicate.Item {
 
 // DescriptionIn applies the In predicate on the "description" field.
 func DescriptionIn(vs ...string) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -483,7 +483,7 @@ func DescriptionIn(vs ...string) predicate.Item {
 
 // DescriptionNotIn applies the NotIn predicate on the "description" field.
 func DescriptionNotIn(vs ...string) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -585,7 +585,7 @@ func ImportRefNEQ(v string) predicate.Item {
 
 // ImportRefIn applies the In predicate on the "import_ref" field.
 func ImportRefIn(vs ...string) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -596,7 +596,7 @@ func ImportRefIn(vs ...string) predicate.Item {
 
 // ImportRefNotIn applies the NotIn predicate on the "import_ref" field.
 func ImportRefNotIn(vs ...string) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -698,7 +698,7 @@ func NotesNEQ(v string) predicate.Item {
 
 // NotesIn applies the In predicate on the "notes" field.
 func NotesIn(vs ...string) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -709,7 +709,7 @@ func NotesIn(vs ...string) predicate.Item {
 
 // NotesNotIn applies the NotIn predicate on the "notes" field.
 func NotesNotIn(vs ...string) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -811,7 +811,7 @@ func QuantityNEQ(v int) predicate.Item {
 
 // QuantityIn applies the In predicate on the "quantity" field.
 func QuantityIn(vs ...int) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -822,7 +822,7 @@ func QuantityIn(vs ...int) predicate.Item {
 
 // QuantityNotIn applies the NotIn predicate on the "quantity" field.
 func QuantityNotIn(vs ...int) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -889,7 +889,7 @@ func SerialNumberNEQ(v string) predicate.Item {
 
 // SerialNumberIn applies the In predicate on the "serial_number" field.
 func SerialNumberIn(vs ...string) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -900,7 +900,7 @@ func SerialNumberIn(vs ...string) predicate.Item {
 
 // SerialNumberNotIn applies the NotIn predicate on the "serial_number" field.
 func SerialNumberNotIn(vs ...string) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1002,7 +1002,7 @@ func ModelNumberNEQ(v string) predicate.Item {
 
 // ModelNumberIn applies the In predicate on the "model_number" field.
 func ModelNumberIn(vs ...string) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1013,7 +1013,7 @@ func ModelNumberIn(vs ...string) predicate.Item {
 
 // ModelNumberNotIn applies the NotIn predicate on the "model_number" field.
 func ModelNumberNotIn(vs ...string) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1115,7 +1115,7 @@ func ManufacturerNEQ(v string) predicate.Item {
 
 // ManufacturerIn applies the In predicate on the "manufacturer" field.
 func ManufacturerIn(vs ...string) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1126,7 +1126,7 @@ func ManufacturerIn(vs ...string) predicate.Item {
 
 // ManufacturerNotIn applies the NotIn predicate on the "manufacturer" field.
 func ManufacturerNotIn(vs ...string) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1242,7 +1242,7 @@ func WarrantyExpiresNEQ(v time.Time) predicate.Item {
 
 // WarrantyExpiresIn applies the In predicate on the "warranty_expires" field.
 func WarrantyExpiresIn(vs ...time.Time) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1253,7 +1253,7 @@ func WarrantyExpiresIn(vs ...time.Time) predicate.Item {
 
 // WarrantyExpiresNotIn applies the NotIn predicate on the "warranty_expires" field.
 func WarrantyExpiresNotIn(vs ...time.Time) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1320,7 +1320,7 @@ func WarrantyDetailsNEQ(v string) predicate.Item {
 
 // WarrantyDetailsIn applies the In predicate on the "warranty_details" field.
 func WarrantyDetailsIn(vs ...string) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1331,7 +1331,7 @@ func WarrantyDetailsIn(vs ...string) predicate.Item {
 
 // WarrantyDetailsNotIn applies the NotIn predicate on the "warranty_details" field.
 func WarrantyDetailsNotIn(vs ...string) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1433,7 +1433,7 @@ func PurchaseTimeNEQ(v time.Time) predicate.Item {
 
 // PurchaseTimeIn applies the In predicate on the "purchase_time" field.
 func PurchaseTimeIn(vs ...time.Time) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1444,7 +1444,7 @@ func PurchaseTimeIn(vs ...time.Time) predicate.Item {
 
 // PurchaseTimeNotIn applies the NotIn predicate on the "purchase_time" field.
 func PurchaseTimeNotIn(vs ...time.Time) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1511,7 +1511,7 @@ func PurchaseFromNEQ(v string) predicate.Item {
 
 // PurchaseFromIn applies the In predicate on the "purchase_from" field.
 func PurchaseFromIn(vs ...string) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1522,7 +1522,7 @@ func PurchaseFromIn(vs ...string) predicate.Item {
 
 // PurchaseFromNotIn applies the NotIn predicate on the "purchase_from" field.
 func PurchaseFromNotIn(vs ...string) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1624,7 +1624,7 @@ func PurchasePriceNEQ(v float64) predicate.Item {
 
 // PurchasePriceIn applies the In predicate on the "purchase_price" field.
 func PurchasePriceIn(vs ...float64) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1635,7 +1635,7 @@ func PurchasePriceIn(vs ...float64) predicate.Item {
 
 // PurchasePriceNotIn applies the NotIn predicate on the "purchase_price" field.
 func PurchasePriceNotIn(vs ...float64) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1688,7 +1688,7 @@ func SoldTimeNEQ(v time.Time) predicate.Item {
 
 // SoldTimeIn applies the In predicate on the "sold_time" field.
 func SoldTimeIn(vs ...time.Time) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1699,7 +1699,7 @@ func SoldTimeIn(vs ...time.Time) predicate.Item {
 
 // SoldTimeNotIn applies the NotIn predicate on the "sold_time" field.
 func SoldTimeNotIn(vs ...time.Time) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1766,7 +1766,7 @@ func SoldToNEQ(v string) predicate.Item {
 
 // SoldToIn applies the In predicate on the "sold_to" field.
 func SoldToIn(vs ...string) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1777,7 +1777,7 @@ func SoldToIn(vs ...string) predicate.Item {
 
 // SoldToNotIn applies the NotIn predicate on the "sold_to" field.
 func SoldToNotIn(vs ...string) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1879,7 +1879,7 @@ func SoldPriceNEQ(v float64) predicate.Item {
 
 // SoldPriceIn applies the In predicate on the "sold_price" field.
 func SoldPriceIn(vs ...float64) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1890,7 +1890,7 @@ func SoldPriceIn(vs ...float64) predicate.Item {
 
 // SoldPriceNotIn applies the NotIn predicate on the "sold_price" field.
 func SoldPriceNotIn(vs ...float64) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1943,7 +1943,7 @@ func SoldNotesNEQ(v string) predicate.Item {
 
 // SoldNotesIn applies the In predicate on the "sold_notes" field.
 func SoldNotesIn(vs ...string) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -1954,7 +1954,7 @@ func SoldNotesIn(vs ...string) predicate.Item {
 
 // SoldNotesNotIn applies the NotIn predicate on the "sold_notes" field.
 func SoldNotesNotIn(vs ...string) predicate.Item {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -2068,6 +2068,34 @@ func HasGroupWith(preds ...predicate.Group) predicate.Item {
 	})
 }
 
+// HasLabel applies the HasEdge predicate on the "label" edge.
+func HasLabel() predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(LabelTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, LabelTable, LabelPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasLabelWith applies the HasEdge predicate on the "label" edge with a given conditions (other predicates).
+func HasLabelWith(preds ...predicate.Label) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(LabelInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, LabelTable, LabelPrimaryKey...),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasLocation applies the HasEdge predicate on the "location" edge.
 func HasLocation() predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
@@ -2115,34 +2143,6 @@ func HasFieldsWith(preds ...predicate.ItemField) predicate.Item {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(FieldsInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, FieldsTable, FieldsColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasLabel applies the HasEdge predicate on the "label" edge.
-func HasLabel() predicate.Item {
-	return predicate.Item(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(LabelTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, LabelTable, LabelPrimaryKey...),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasLabelWith applies the HasEdge predicate on the "label" edge with a given conditions (other predicates).
-func HasLabelWith(preds ...predicate.Label) predicate.Item {
-	return predicate.Item(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(LabelInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, LabelTable, LabelPrimaryKey...),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

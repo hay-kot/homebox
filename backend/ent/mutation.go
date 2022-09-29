@@ -542,8 +542,6 @@ func (m *AttachmentMutation) RemovedEdges() []string {
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *AttachmentMutation) RemovedIDs(name string) []ent.Value {
-	switch name {
-	}
 	return nil
 }
 
@@ -1101,8 +1099,6 @@ func (m *AuthTokensMutation) RemovedEdges() []string {
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *AuthTokensMutation) RemovedIDs(name string) []ent.Value {
-	switch name {
-	}
 	return nil
 }
 
@@ -2453,8 +2449,6 @@ func (m *DocumentTokenMutation) RemovedEdges() []string {
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *DocumentTokenMutation) RemovedIDs(name string) []ent.Value {
-	switch name {
-	}
 	return nil
 }
 
@@ -3436,14 +3430,14 @@ type ItemMutation struct {
 	clearedFields      map[string]struct{}
 	group              *uuid.UUID
 	clearedgroup       bool
+	label              map[uuid.UUID]struct{}
+	removedlabel       map[uuid.UUID]struct{}
+	clearedlabel       bool
 	location           *uuid.UUID
 	clearedlocation    bool
 	fields             map[uuid.UUID]struct{}
 	removedfields      map[uuid.UUID]struct{}
 	clearedfields      bool
-	label              map[uuid.UUID]struct{}
-	removedlabel       map[uuid.UUID]struct{}
-	clearedlabel       bool
 	attachments        map[uuid.UUID]struct{}
 	removedattachments map[uuid.UUID]struct{}
 	clearedattachments bool
@@ -4580,6 +4574,60 @@ func (m *ItemMutation) ResetGroup() {
 	m.clearedgroup = false
 }
 
+// AddLabelIDs adds the "label" edge to the Label entity by ids.
+func (m *ItemMutation) AddLabelIDs(ids ...uuid.UUID) {
+	if m.label == nil {
+		m.label = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.label[ids[i]] = struct{}{}
+	}
+}
+
+// ClearLabel clears the "label" edge to the Label entity.
+func (m *ItemMutation) ClearLabel() {
+	m.clearedlabel = true
+}
+
+// LabelCleared reports if the "label" edge to the Label entity was cleared.
+func (m *ItemMutation) LabelCleared() bool {
+	return m.clearedlabel
+}
+
+// RemoveLabelIDs removes the "label" edge to the Label entity by IDs.
+func (m *ItemMutation) RemoveLabelIDs(ids ...uuid.UUID) {
+	if m.removedlabel == nil {
+		m.removedlabel = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.label, ids[i])
+		m.removedlabel[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedLabel returns the removed IDs of the "label" edge to the Label entity.
+func (m *ItemMutation) RemovedLabelIDs() (ids []uuid.UUID) {
+	for id := range m.removedlabel {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// LabelIDs returns the "label" edge IDs in the mutation.
+func (m *ItemMutation) LabelIDs() (ids []uuid.UUID) {
+	for id := range m.label {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetLabel resets all changes to the "label" edge.
+func (m *ItemMutation) ResetLabel() {
+	m.label = nil
+	m.clearedlabel = false
+	m.removedlabel = nil
+}
+
 // SetLocationID sets the "location" edge to the Location entity by id.
 func (m *ItemMutation) SetLocationID(id uuid.UUID) {
 	m.location = &id
@@ -4671,60 +4719,6 @@ func (m *ItemMutation) ResetFields() {
 	m.fields = nil
 	m.clearedfields = false
 	m.removedfields = nil
-}
-
-// AddLabelIDs adds the "label" edge to the Label entity by ids.
-func (m *ItemMutation) AddLabelIDs(ids ...uuid.UUID) {
-	if m.label == nil {
-		m.label = make(map[uuid.UUID]struct{})
-	}
-	for i := range ids {
-		m.label[ids[i]] = struct{}{}
-	}
-}
-
-// ClearLabel clears the "label" edge to the Label entity.
-func (m *ItemMutation) ClearLabel() {
-	m.clearedlabel = true
-}
-
-// LabelCleared reports if the "label" edge to the Label entity was cleared.
-func (m *ItemMutation) LabelCleared() bool {
-	return m.clearedlabel
-}
-
-// RemoveLabelIDs removes the "label" edge to the Label entity by IDs.
-func (m *ItemMutation) RemoveLabelIDs(ids ...uuid.UUID) {
-	if m.removedlabel == nil {
-		m.removedlabel = make(map[uuid.UUID]struct{})
-	}
-	for i := range ids {
-		delete(m.label, ids[i])
-		m.removedlabel[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedLabel returns the removed IDs of the "label" edge to the Label entity.
-func (m *ItemMutation) RemovedLabelIDs() (ids []uuid.UUID) {
-	for id := range m.removedlabel {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// LabelIDs returns the "label" edge IDs in the mutation.
-func (m *ItemMutation) LabelIDs() (ids []uuid.UUID) {
-	for id := range m.label {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetLabel resets all changes to the "label" edge.
-func (m *ItemMutation) ResetLabel() {
-	m.label = nil
-	m.clearedlabel = false
-	m.removedlabel = nil
 }
 
 // AddAttachmentIDs adds the "attachments" edge to the Attachment entity by ids.
@@ -5363,14 +5357,14 @@ func (m *ItemMutation) AddedEdges() []string {
 	if m.group != nil {
 		edges = append(edges, item.EdgeGroup)
 	}
+	if m.label != nil {
+		edges = append(edges, item.EdgeLabel)
+	}
 	if m.location != nil {
 		edges = append(edges, item.EdgeLocation)
 	}
 	if m.fields != nil {
 		edges = append(edges, item.EdgeFields)
-	}
-	if m.label != nil {
-		edges = append(edges, item.EdgeLabel)
 	}
 	if m.attachments != nil {
 		edges = append(edges, item.EdgeAttachments)
@@ -5386,6 +5380,12 @@ func (m *ItemMutation) AddedIDs(name string) []ent.Value {
 		if id := m.group; id != nil {
 			return []ent.Value{*id}
 		}
+	case item.EdgeLabel:
+		ids := make([]ent.Value, 0, len(m.label))
+		for id := range m.label {
+			ids = append(ids, id)
+		}
+		return ids
 	case item.EdgeLocation:
 		if id := m.location; id != nil {
 			return []ent.Value{*id}
@@ -5393,12 +5393,6 @@ func (m *ItemMutation) AddedIDs(name string) []ent.Value {
 	case item.EdgeFields:
 		ids := make([]ent.Value, 0, len(m.fields))
 		for id := range m.fields {
-			ids = append(ids, id)
-		}
-		return ids
-	case item.EdgeLabel:
-		ids := make([]ent.Value, 0, len(m.label))
-		for id := range m.label {
 			ids = append(ids, id)
 		}
 		return ids
@@ -5415,11 +5409,11 @@ func (m *ItemMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ItemMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 5)
-	if m.removedfields != nil {
-		edges = append(edges, item.EdgeFields)
-	}
 	if m.removedlabel != nil {
 		edges = append(edges, item.EdgeLabel)
+	}
+	if m.removedfields != nil {
+		edges = append(edges, item.EdgeFields)
 	}
 	if m.removedattachments != nil {
 		edges = append(edges, item.EdgeAttachments)
@@ -5431,15 +5425,15 @@ func (m *ItemMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *ItemMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case item.EdgeFields:
-		ids := make([]ent.Value, 0, len(m.removedfields))
-		for id := range m.removedfields {
-			ids = append(ids, id)
-		}
-		return ids
 	case item.EdgeLabel:
 		ids := make([]ent.Value, 0, len(m.removedlabel))
 		for id := range m.removedlabel {
+			ids = append(ids, id)
+		}
+		return ids
+	case item.EdgeFields:
+		ids := make([]ent.Value, 0, len(m.removedfields))
+		for id := range m.removedfields {
 			ids = append(ids, id)
 		}
 		return ids
@@ -5459,14 +5453,14 @@ func (m *ItemMutation) ClearedEdges() []string {
 	if m.clearedgroup {
 		edges = append(edges, item.EdgeGroup)
 	}
+	if m.clearedlabel {
+		edges = append(edges, item.EdgeLabel)
+	}
 	if m.clearedlocation {
 		edges = append(edges, item.EdgeLocation)
 	}
 	if m.clearedfields {
 		edges = append(edges, item.EdgeFields)
-	}
-	if m.clearedlabel {
-		edges = append(edges, item.EdgeLabel)
 	}
 	if m.clearedattachments {
 		edges = append(edges, item.EdgeAttachments)
@@ -5480,12 +5474,12 @@ func (m *ItemMutation) EdgeCleared(name string) bool {
 	switch name {
 	case item.EdgeGroup:
 		return m.clearedgroup
+	case item.EdgeLabel:
+		return m.clearedlabel
 	case item.EdgeLocation:
 		return m.clearedlocation
 	case item.EdgeFields:
 		return m.clearedfields
-	case item.EdgeLabel:
-		return m.clearedlabel
 	case item.EdgeAttachments:
 		return m.clearedattachments
 	}
@@ -5513,14 +5507,14 @@ func (m *ItemMutation) ResetEdge(name string) error {
 	case item.EdgeGroup:
 		m.ResetGroup()
 		return nil
+	case item.EdgeLabel:
+		m.ResetLabel()
+		return nil
 	case item.EdgeLocation:
 		m.ResetLocation()
 		return nil
 	case item.EdgeFields:
 		m.ResetFields()
-		return nil
-	case item.EdgeLabel:
-		m.ResetLabel()
 		return nil
 	case item.EdgeAttachments:
 		m.ResetAttachments()
@@ -6398,8 +6392,6 @@ func (m *ItemFieldMutation) RemovedEdges() []string {
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *ItemFieldMutation) RemovedIDs(name string) []ent.Value {
-	switch name {
-	}
 	return nil
 }
 

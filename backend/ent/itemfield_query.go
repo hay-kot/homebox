@@ -364,10 +364,10 @@ func (ifq *ItemFieldQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*I
 	if withFKs {
 		_spec.Node.Columns = append(_spec.Node.Columns, itemfield.ForeignKeys...)
 	}
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*ItemField).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &ItemField{config: ifq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -431,11 +431,14 @@ func (ifq *ItemFieldQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (ifq *ItemFieldQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := ifq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := ifq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (ifq *ItemFieldQuery) querySpec() *sqlgraph.QuerySpec {
@@ -536,7 +539,7 @@ func (ifgb *ItemFieldGroupBy) Aggregate(fns ...AggregateFunc) *ItemFieldGroupBy 
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (ifgb *ItemFieldGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (ifgb *ItemFieldGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := ifgb.path(ctx)
 	if err != nil {
 		return err
@@ -545,7 +548,7 @@ func (ifgb *ItemFieldGroupBy) Scan(ctx context.Context, v interface{}) error {
 	return ifgb.sqlScan(ctx, v)
 }
 
-func (ifgb *ItemFieldGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (ifgb *ItemFieldGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range ifgb.fields {
 		if !itemfield.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -592,7 +595,7 @@ type ItemFieldSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (ifs *ItemFieldSelect) Scan(ctx context.Context, v interface{}) error {
+func (ifs *ItemFieldSelect) Scan(ctx context.Context, v any) error {
 	if err := ifs.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -600,7 +603,7 @@ func (ifs *ItemFieldSelect) Scan(ctx context.Context, v interface{}) error {
 	return ifs.sqlScan(ctx, v)
 }
 
-func (ifs *ItemFieldSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (ifs *ItemFieldSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := ifs.sql.Query()
 	if err := ifs.driver.Query(ctx, query, args, rows); err != nil {

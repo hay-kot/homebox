@@ -930,6 +930,22 @@ func (c *ItemClient) QueryGroup(i *Item) *GroupQuery {
 	return query
 }
 
+// QueryLabel queries the label edge of a Item.
+func (c *ItemClient) QueryLabel(i *Item) *LabelQuery {
+	query := &LabelQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := i.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(item.Table, item.FieldID, id),
+			sqlgraph.To(label.Table, label.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, item.LabelTable, item.LabelPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(i.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryLocation queries the location edge of a Item.
 func (c *ItemClient) QueryLocation(i *Item) *LocationQuery {
 	query := &LocationQuery{config: c.config}
@@ -955,22 +971,6 @@ func (c *ItemClient) QueryFields(i *Item) *ItemFieldQuery {
 			sqlgraph.From(item.Table, item.FieldID, id),
 			sqlgraph.To(itemfield.Table, itemfield.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, item.FieldsTable, item.FieldsColumn),
-		)
-		fromV = sqlgraph.Neighbors(i.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryLabel queries the label edge of a Item.
-func (c *ItemClient) QueryLabel(i *Item) *LabelQuery {
-	query := &LabelQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := i.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(item.Table, item.FieldID, id),
-			sqlgraph.To(label.Table, label.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, item.LabelTable, item.LabelPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(i.driver.Dialect(), step)
 		return fromV, nil

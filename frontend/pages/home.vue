@@ -18,7 +18,7 @@
   if (auth.self === null) {
     const { data, error } = await api.self();
     if (error) {
-      navigateTo("/login");
+      navigateTo("/");
     }
 
     auth.$patch({ self: data.item });

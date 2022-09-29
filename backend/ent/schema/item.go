@@ -98,15 +98,12 @@ func (Item) Edges() []ent.Edge {
 			Ref("items").
 			Required().
 			Unique(),
+		edge.From("label", Label.Type).
+			Ref("items"),
 		edge.From("location", Location.Type).
 			Ref("items").
 			Unique(),
 		edge.To("fields", ItemField.Type).
-			Annotations(entsql.Annotation{
-				OnDelete: entsql.Cascade,
-			}),
-		edge.From("label", Label.Type).
-			Ref("items").
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,
 			}),

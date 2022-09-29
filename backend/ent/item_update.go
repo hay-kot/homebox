@@ -388,6 +388,21 @@ func (iu *ItemUpdate) SetGroup(g *Group) *ItemUpdate {
 	return iu.SetGroupID(g.ID)
 }
 
+// AddLabelIDs adds the "label" edge to the Label entity by IDs.
+func (iu *ItemUpdate) AddLabelIDs(ids ...uuid.UUID) *ItemUpdate {
+	iu.mutation.AddLabelIDs(ids...)
+	return iu
+}
+
+// AddLabel adds the "label" edges to the Label entity.
+func (iu *ItemUpdate) AddLabel(l ...*Label) *ItemUpdate {
+	ids := make([]uuid.UUID, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return iu.AddLabelIDs(ids...)
+}
+
 // SetLocationID sets the "location" edge to the Location entity by ID.
 func (iu *ItemUpdate) SetLocationID(id uuid.UUID) *ItemUpdate {
 	iu.mutation.SetLocationID(id)
@@ -422,21 +437,6 @@ func (iu *ItemUpdate) AddFields(i ...*ItemField) *ItemUpdate {
 	return iu.AddFieldIDs(ids...)
 }
 
-// AddLabelIDs adds the "label" edge to the Label entity by IDs.
-func (iu *ItemUpdate) AddLabelIDs(ids ...uuid.UUID) *ItemUpdate {
-	iu.mutation.AddLabelIDs(ids...)
-	return iu
-}
-
-// AddLabel adds the "label" edges to the Label entity.
-func (iu *ItemUpdate) AddLabel(l ...*Label) *ItemUpdate {
-	ids := make([]uuid.UUID, len(l))
-	for i := range l {
-		ids[i] = l[i].ID
-	}
-	return iu.AddLabelIDs(ids...)
-}
-
 // AddAttachmentIDs adds the "attachments" edge to the Attachment entity by IDs.
 func (iu *ItemUpdate) AddAttachmentIDs(ids ...uuid.UUID) *ItemUpdate {
 	iu.mutation.AddAttachmentIDs(ids...)
@@ -461,6 +461,27 @@ func (iu *ItemUpdate) Mutation() *ItemMutation {
 func (iu *ItemUpdate) ClearGroup() *ItemUpdate {
 	iu.mutation.ClearGroup()
 	return iu
+}
+
+// ClearLabel clears all "label" edges to the Label entity.
+func (iu *ItemUpdate) ClearLabel() *ItemUpdate {
+	iu.mutation.ClearLabel()
+	return iu
+}
+
+// RemoveLabelIDs removes the "label" edge to Label entities by IDs.
+func (iu *ItemUpdate) RemoveLabelIDs(ids ...uuid.UUID) *ItemUpdate {
+	iu.mutation.RemoveLabelIDs(ids...)
+	return iu
+}
+
+// RemoveLabel removes "label" edges to Label entities.
+func (iu *ItemUpdate) RemoveLabel(l ...*Label) *ItemUpdate {
+	ids := make([]uuid.UUID, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return iu.RemoveLabelIDs(ids...)
 }
 
 // ClearLocation clears the "location" edge to the Location entity.
@@ -488,27 +509,6 @@ func (iu *ItemUpdate) RemoveFields(i ...*ItemField) *ItemUpdate {
 		ids[j] = i[j].ID
 	}
 	return iu.RemoveFieldIDs(ids...)
-}
-
-// ClearLabel clears all "label" edges to the Label entity.
-func (iu *ItemUpdate) ClearLabel() *ItemUpdate {
-	iu.mutation.ClearLabel()
-	return iu
-}
-
-// RemoveLabelIDs removes the "label" edge to Label entities by IDs.
-func (iu *ItemUpdate) RemoveLabelIDs(ids ...uuid.UUID) *ItemUpdate {
-	iu.mutation.RemoveLabelIDs(ids...)
-	return iu
-}
-
-// RemoveLabel removes "label" edges to Label entities.
-func (iu *ItemUpdate) RemoveLabel(l ...*Label) *ItemUpdate {
-	ids := make([]uuid.UUID, len(l))
-	for i := range l {
-		ids[i] = l[i].ID
-	}
-	return iu.RemoveLabelIDs(ids...)
 }
 
 // ClearAttachments clears all "attachments" edges to the Attachment entity.
@@ -934,6 +934,60 @@ func (iu *ItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if iu.mutation.LabelCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   item.LabelTable,
+			Columns: item.LabelPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: label.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := iu.mutation.RemovedLabelIDs(); len(nodes) > 0 && !iu.mutation.LabelCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   item.LabelTable,
+			Columns: item.LabelPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: label.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := iu.mutation.LabelIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   item.LabelTable,
+			Columns: item.LabelPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: label.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if iu.mutation.LocationCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1015,60 +1069,6 @@ func (iu *ItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: itemfield.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if iu.mutation.LabelCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   item.LabelTable,
-			Columns: item.LabelPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: label.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := iu.mutation.RemovedLabelIDs(); len(nodes) > 0 && !iu.mutation.LabelCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   item.LabelTable,
-			Columns: item.LabelPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: label.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := iu.mutation.LabelIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   item.LabelTable,
-			Columns: item.LabelPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: label.FieldID,
 				},
 			},
 		}
@@ -1504,6 +1504,21 @@ func (iuo *ItemUpdateOne) SetGroup(g *Group) *ItemUpdateOne {
 	return iuo.SetGroupID(g.ID)
 }
 
+// AddLabelIDs adds the "label" edge to the Label entity by IDs.
+func (iuo *ItemUpdateOne) AddLabelIDs(ids ...uuid.UUID) *ItemUpdateOne {
+	iuo.mutation.AddLabelIDs(ids...)
+	return iuo
+}
+
+// AddLabel adds the "label" edges to the Label entity.
+func (iuo *ItemUpdateOne) AddLabel(l ...*Label) *ItemUpdateOne {
+	ids := make([]uuid.UUID, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return iuo.AddLabelIDs(ids...)
+}
+
 // SetLocationID sets the "location" edge to the Location entity by ID.
 func (iuo *ItemUpdateOne) SetLocationID(id uuid.UUID) *ItemUpdateOne {
 	iuo.mutation.SetLocationID(id)
@@ -1538,21 +1553,6 @@ func (iuo *ItemUpdateOne) AddFields(i ...*ItemField) *ItemUpdateOne {
 	return iuo.AddFieldIDs(ids...)
 }
 
-// AddLabelIDs adds the "label" edge to the Label entity by IDs.
-func (iuo *ItemUpdateOne) AddLabelIDs(ids ...uuid.UUID) *ItemUpdateOne {
-	iuo.mutation.AddLabelIDs(ids...)
-	return iuo
-}
-
-// AddLabel adds the "label" edges to the Label entity.
-func (iuo *ItemUpdateOne) AddLabel(l ...*Label) *ItemUpdateOne {
-	ids := make([]uuid.UUID, len(l))
-	for i := range l {
-		ids[i] = l[i].ID
-	}
-	return iuo.AddLabelIDs(ids...)
-}
-
 // AddAttachmentIDs adds the "attachments" edge to the Attachment entity by IDs.
 func (iuo *ItemUpdateOne) AddAttachmentIDs(ids ...uuid.UUID) *ItemUpdateOne {
 	iuo.mutation.AddAttachmentIDs(ids...)
@@ -1577,6 +1577,27 @@ func (iuo *ItemUpdateOne) Mutation() *ItemMutation {
 func (iuo *ItemUpdateOne) ClearGroup() *ItemUpdateOne {
 	iuo.mutation.ClearGroup()
 	return iuo
+}
+
+// ClearLabel clears all "label" edges to the Label entity.
+func (iuo *ItemUpdateOne) ClearLabel() *ItemUpdateOne {
+	iuo.mutation.ClearLabel()
+	return iuo
+}
+
+// RemoveLabelIDs removes the "label" edge to Label entities by IDs.
+func (iuo *ItemUpdateOne) RemoveLabelIDs(ids ...uuid.UUID) *ItemUpdateOne {
+	iuo.mutation.RemoveLabelIDs(ids...)
+	return iuo
+}
+
+// RemoveLabel removes "label" edges to Label entities.
+func (iuo *ItemUpdateOne) RemoveLabel(l ...*Label) *ItemUpdateOne {
+	ids := make([]uuid.UUID, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return iuo.RemoveLabelIDs(ids...)
 }
 
 // ClearLocation clears the "location" edge to the Location entity.
@@ -1604,27 +1625,6 @@ func (iuo *ItemUpdateOne) RemoveFields(i ...*ItemField) *ItemUpdateOne {
 		ids[j] = i[j].ID
 	}
 	return iuo.RemoveFieldIDs(ids...)
-}
-
-// ClearLabel clears all "label" edges to the Label entity.
-func (iuo *ItemUpdateOne) ClearLabel() *ItemUpdateOne {
-	iuo.mutation.ClearLabel()
-	return iuo
-}
-
-// RemoveLabelIDs removes the "label" edge to Label entities by IDs.
-func (iuo *ItemUpdateOne) RemoveLabelIDs(ids ...uuid.UUID) *ItemUpdateOne {
-	iuo.mutation.RemoveLabelIDs(ids...)
-	return iuo
-}
-
-// RemoveLabel removes "label" edges to Label entities.
-func (iuo *ItemUpdateOne) RemoveLabel(l ...*Label) *ItemUpdateOne {
-	ids := make([]uuid.UUID, len(l))
-	for i := range l {
-		ids[i] = l[i].ID
-	}
-	return iuo.RemoveLabelIDs(ids...)
 }
 
 // ClearAttachments clears all "attachments" edges to the Attachment entity.
@@ -2080,6 +2080,60 @@ func (iuo *ItemUpdateOne) sqlSave(ctx context.Context) (_node *Item, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if iuo.mutation.LabelCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   item.LabelTable,
+			Columns: item.LabelPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: label.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := iuo.mutation.RemovedLabelIDs(); len(nodes) > 0 && !iuo.mutation.LabelCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   item.LabelTable,
+			Columns: item.LabelPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: label.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := iuo.mutation.LabelIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   item.LabelTable,
+			Columns: item.LabelPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: label.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if iuo.mutation.LocationCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -2161,60 +2215,6 @@ func (iuo *ItemUpdateOne) sqlSave(ctx context.Context) (_node *Item, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: itemfield.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if iuo.mutation.LabelCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   item.LabelTable,
-			Columns: item.LabelPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: label.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := iuo.mutation.RemovedLabelIDs(); len(nodes) > 0 && !iuo.mutation.LabelCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   item.LabelTable,
-			Columns: item.LabelPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: label.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := iuo.mutation.LabelIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   item.LabelTable,
-			Columns: item.LabelPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: label.FieldID,
 				},
 			},
 		}

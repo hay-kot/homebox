@@ -72,12 +72,12 @@ type Item struct {
 type ItemEdges struct {
 	// Group holds the value of the group edge.
 	Group *Group `json:"group,omitempty"`
+	// Label holds the value of the label edge.
+	Label []*Label `json:"label,omitempty"`
 	// Location holds the value of the location edge.
 	Location *Location `json:"location,omitempty"`
 	// Fields holds the value of the fields edge.
 	Fields []*ItemField `json:"fields,omitempty"`
-	// Label holds the value of the label edge.
-	Label []*Label `json:"label,omitempty"`
 	// Attachments holds the value of the attachments edge.
 	Attachments []*Attachment `json:"attachments,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -98,10 +98,19 @@ func (e ItemEdges) GroupOrErr() (*Group, error) {
 	return nil, &NotLoadedError{edge: "group"}
 }
 
+// LabelOrErr returns the Label value or an error if the edge
+// was not loaded in eager-loading.
+func (e ItemEdges) LabelOrErr() ([]*Label, error) {
+	if e.loadedTypes[1] {
+		return e.Label, nil
+	}
+	return nil, &NotLoadedError{edge: "label"}
+}
+
 // LocationOrErr returns the Location value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ItemEdges) LocationOrErr() (*Location, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		if e.Location == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: location.Label}
@@ -114,19 +123,10 @@ func (e ItemEdges) LocationOrErr() (*Location, error) {
 // FieldsOrErr returns the Fields value or an error if the edge
 // was not loaded in eager-loading.
 func (e ItemEdges) FieldsOrErr() ([]*ItemField, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		return e.Fields, nil
 	}
 	return nil, &NotLoadedError{edge: "fields"}
-}
-
-// LabelOrErr returns the Label value or an error if the edge
-// was not loaded in eager-loading.
-func (e ItemEdges) LabelOrErr() ([]*Label, error) {
-	if e.loadedTypes[3] {
-		return e.Label, nil
-	}
-	return nil, &NotLoadedError{edge: "label"}
 }
 
 // AttachmentsOrErr returns the Attachments value or an error if the edge
@@ -139,8 +139,8 @@ func (e ItemEdges) AttachmentsOrErr() ([]*Attachment, error) {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Item) scanValues(columns []string) ([]interface{}, error) {
-	values := make([]interface{}, len(columns))
+func (*Item) scanValues(columns []string) ([]any, error) {
+	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
 		case item.FieldInsured, item.FieldLifetimeWarranty:
@@ -168,7 +168,7 @@ func (*Item) scanValues(columns []string) ([]interface{}, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Item fields.
-func (i *Item) assignValues(columns []string, values []interface{}) error {
+func (i *Item) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -330,6 +330,11 @@ func (i *Item) QueryGroup() *GroupQuery {
 	return (&ItemClient{config: i.config}).QueryGroup(i)
 }
 
+// QueryLabel queries the "label" edge of the Item entity.
+func (i *Item) QueryLabel() *LabelQuery {
+	return (&ItemClient{config: i.config}).QueryLabel(i)
+}
+
 // QueryLocation queries the "location" edge of the Item entity.
 func (i *Item) QueryLocation() *LocationQuery {
 	return (&ItemClient{config: i.config}).QueryLocation(i)
@@ -338,11 +343,6 @@ func (i *Item) QueryLocation() *LocationQuery {
 // QueryFields queries the "fields" edge of the Item entity.
 func (i *Item) QueryFields() *ItemFieldQuery {
 	return (&ItemClient{config: i.config}).QueryFields(i)
-}
-
-// QueryLabel queries the "label" edge of the Item entity.
-func (i *Item) QueryLabel() *LabelQuery {
-	return (&ItemClient{config: i.config}).QueryLabel(i)
 }
 
 // QueryAttachments queries the "attachments" edge of the Item entity.

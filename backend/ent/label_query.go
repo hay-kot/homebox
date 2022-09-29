@@ -402,10 +402,10 @@ func (lq *LabelQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Label,
 	if withFKs {
 		_spec.Node.Columns = append(_spec.Node.Columns, label.ForeignKeys...)
 	}
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Label).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &Label{config: lq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -491,14 +491,14 @@ func (lq *LabelQuery) loadItems(ctx context.Context, query *ItemQuery, nodes []*
 	neighbors, err := query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
 		assign := spec.Assign
 		values := spec.ScanValues
-		spec.ScanValues = func(columns []string) ([]interface{}, error) {
+		spec.ScanValues = func(columns []string) ([]any, error) {
 			values, err := values(columns[1:])
 			if err != nil {
 				return nil, err
 			}
-			return append([]interface{}{new(uuid.UUID)}, values...), nil
+			return append([]any{new(uuid.UUID)}, values...), nil
 		}
-		spec.Assign = func(columns []string, values []interface{}) error {
+		spec.Assign = func(columns []string, values []any) error {
 			outValue := *values[0].(*uuid.UUID)
 			inValue := *values[1].(*uuid.UUID)
 			if nids[inValue] == nil {
@@ -534,11 +534,14 @@ func (lq *LabelQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (lq *LabelQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := lq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := lq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (lq *LabelQuery) querySpec() *sqlgraph.QuerySpec {
@@ -639,7 +642,7 @@ func (lgb *LabelGroupBy) Aggregate(fns ...AggregateFunc) *LabelGroupBy {
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (lgb *LabelGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (lgb *LabelGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := lgb.path(ctx)
 	if err != nil {
 		return err
@@ -648,7 +651,7 @@ func (lgb *LabelGroupBy) Scan(ctx context.Context, v interface{}) error {
 	return lgb.sqlScan(ctx, v)
 }
 
-func (lgb *LabelGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (lgb *LabelGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range lgb.fields {
 		if !label.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -695,7 +698,7 @@ type LabelSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (ls *LabelSelect) Scan(ctx context.Context, v interface{}) error {
+func (ls *LabelSelect) Scan(ctx context.Context, v any) error {
 	if err := ls.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -703,7 +706,7 @@ func (ls *LabelSelect) Scan(ctx context.Context, v interface{}) error {
 	return ls.sqlScan(ctx, v)
 }
 
-func (ls *LabelSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (ls *LabelSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := ls.sql.Query()
 	if err := ls.driver.Query(ctx, query, args, rows); err != nil {

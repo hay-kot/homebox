@@ -402,10 +402,10 @@ func (lq *LocationQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Loc
 	if withFKs {
 		_spec.Node.Columns = append(_spec.Node.Columns, location.ForeignKeys...)
 	}
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Location).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &Location{config: lq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -507,11 +507,14 @@ func (lq *LocationQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (lq *LocationQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := lq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := lq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (lq *LocationQuery) querySpec() *sqlgraph.QuerySpec {
@@ -612,7 +615,7 @@ func (lgb *LocationGroupBy) Aggregate(fns ...AggregateFunc) *LocationGroupBy {
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (lgb *LocationGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (lgb *LocationGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := lgb.path(ctx)
 	if err != nil {
 		return err
@@ -621,7 +624,7 @@ func (lgb *LocationGroupBy) Scan(ctx context.Context, v interface{}) error {
 	return lgb.sqlScan(ctx, v)
 }
 
-func (lgb *LocationGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (lgb *LocationGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range lgb.fields {
 		if !location.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -668,7 +671,7 @@ type LocationSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (ls *LocationSelect) Scan(ctx context.Context, v interface{}) error {
+func (ls *LocationSelect) Scan(ctx context.Context, v any) error {
 	if err := ls.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -676,7 +679,7 @@ func (ls *LocationSelect) Scan(ctx context.Context, v interface{}) error {
 	return ls.sqlScan(ctx, v)
 }
 
-func (ls *LocationSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (ls *LocationSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := ls.sql.Query()
 	if err := ls.driver.Query(ctx, query, args, rows); err != nil {
