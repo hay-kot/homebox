@@ -401,10 +401,10 @@ func (aq *AttachmentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*A
 	if withFKs {
 		_spec.Node.Columns = append(_spec.Node.Columns, attachment.ForeignKeys...)
 	}
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Attachment).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &Attachment{config: aq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -503,11 +503,14 @@ func (aq *AttachmentQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (aq *AttachmentQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := aq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := aq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (aq *AttachmentQuery) querySpec() *sqlgraph.QuerySpec {
@@ -608,7 +611,7 @@ func (agb *AttachmentGroupBy) Aggregate(fns ...AggregateFunc) *AttachmentGroupBy
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (agb *AttachmentGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (agb *AttachmentGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := agb.path(ctx)
 	if err != nil {
 		return err
@@ -617,7 +620,7 @@ func (agb *AttachmentGroupBy) Scan(ctx context.Context, v interface{}) error {
 	return agb.sqlScan(ctx, v)
 }
 
-func (agb *AttachmentGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (agb *AttachmentGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range agb.fields {
 		if !attachment.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -664,7 +667,7 @@ type AttachmentSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (as *AttachmentSelect) Scan(ctx context.Context, v interface{}) error {
+func (as *AttachmentSelect) Scan(ctx context.Context, v any) error {
 	if err := as.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -672,7 +675,7 @@ func (as *AttachmentSelect) Scan(ctx context.Context, v interface{}) error {
 	return as.sqlScan(ctx, v)
 }
 
-func (as *AttachmentSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (as *AttachmentSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := as.sql.Query()
 	if err := as.driver.Query(ctx, query, args, rows); err != nil {

@@ -35,7 +35,7 @@ func IDNEQ(id uuid.UUID) predicate.AuthTokens {
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uuid.UUID) predicate.AuthTokens {
 	return predicate.AuthTokens(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -46,7 +46,7 @@ func IDIn(ids ...uuid.UUID) predicate.AuthTokens {
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uuid.UUID) predicate.AuthTokens {
 	return predicate.AuthTokens(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -126,7 +126,7 @@ func CreatedAtNEQ(v time.Time) predicate.AuthTokens {
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.AuthTokens {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -137,7 +137,7 @@ func CreatedAtIn(vs ...time.Time) predicate.AuthTokens {
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.AuthTokens {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -190,7 +190,7 @@ func UpdatedAtNEQ(v time.Time) predicate.AuthTokens {
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.AuthTokens {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -201,7 +201,7 @@ func UpdatedAtIn(vs ...time.Time) predicate.AuthTokens {
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.AuthTokens {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -254,7 +254,7 @@ func TokenNEQ(v []byte) predicate.AuthTokens {
 
 // TokenIn applies the In predicate on the "token" field.
 func TokenIn(vs ...[]byte) predicate.AuthTokens {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -265,7 +265,7 @@ func TokenIn(vs ...[]byte) predicate.AuthTokens {
 
 // TokenNotIn applies the NotIn predicate on the "token" field.
 func TokenNotIn(vs ...[]byte) predicate.AuthTokens {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -318,7 +318,7 @@ func ExpiresAtNEQ(v time.Time) predicate.AuthTokens {
 
 // ExpiresAtIn applies the In predicate on the "expires_at" field.
 func ExpiresAtIn(vs ...time.Time) predicate.AuthTokens {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -329,7 +329,7 @@ func ExpiresAtIn(vs ...time.Time) predicate.AuthTokens {
 
 // ExpiresAtNotIn applies the NotIn predicate on the "expires_at" field.
 func ExpiresAtNotIn(vs ...time.Time) predicate.AuthTokens {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}

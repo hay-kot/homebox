@@ -364,10 +364,10 @@ func (dtq *DocumentTokenQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 	if withFKs {
 		_spec.Node.Columns = append(_spec.Node.Columns, documenttoken.ForeignKeys...)
 	}
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*DocumentToken).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &DocumentToken{config: dtq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -431,11 +431,14 @@ func (dtq *DocumentTokenQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (dtq *DocumentTokenQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := dtq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := dtq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (dtq *DocumentTokenQuery) querySpec() *sqlgraph.QuerySpec {
@@ -536,7 +539,7 @@ func (dtgb *DocumentTokenGroupBy) Aggregate(fns ...AggregateFunc) *DocumentToken
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (dtgb *DocumentTokenGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (dtgb *DocumentTokenGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := dtgb.path(ctx)
 	if err != nil {
 		return err
@@ -545,7 +548,7 @@ func (dtgb *DocumentTokenGroupBy) Scan(ctx context.Context, v interface{}) error
 	return dtgb.sqlScan(ctx, v)
 }
 
-func (dtgb *DocumentTokenGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (dtgb *DocumentTokenGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range dtgb.fields {
 		if !documenttoken.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -592,7 +595,7 @@ type DocumentTokenSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (dts *DocumentTokenSelect) Scan(ctx context.Context, v interface{}) error {
+func (dts *DocumentTokenSelect) Scan(ctx context.Context, v any) error {
 	if err := dts.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -600,7 +603,7 @@ func (dts *DocumentTokenSelect) Scan(ctx context.Context, v interface{}) error {
 	return dts.sqlScan(ctx, v)
 }
 
-func (dts *DocumentTokenSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (dts *DocumentTokenSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := dts.sql.Query()
 	if err := dts.driver.Query(ctx, query, args, rows); err != nil {

@@ -35,7 +35,7 @@ func IDNEQ(id uuid.UUID) predicate.ItemField {
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uuid.UUID) predicate.ItemField {
 	return predicate.ItemField(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -46,7 +46,7 @@ func IDIn(ids ...uuid.UUID) predicate.ItemField {
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uuid.UUID) predicate.ItemField {
 	return predicate.ItemField(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -154,7 +154,7 @@ func CreatedAtNEQ(v time.Time) predicate.ItemField {
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.ItemField {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -165,7 +165,7 @@ func CreatedAtIn(vs ...time.Time) predicate.ItemField {
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.ItemField {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -218,7 +218,7 @@ func UpdatedAtNEQ(v time.Time) predicate.ItemField {
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.ItemField {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -229,7 +229,7 @@ func UpdatedAtIn(vs ...time.Time) predicate.ItemField {
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.ItemField {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -282,7 +282,7 @@ func NameNEQ(v string) predicate.ItemField {
 
 // NameIn applies the In predicate on the "name" field.
 func NameIn(vs ...string) predicate.ItemField {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -293,7 +293,7 @@ func NameIn(vs ...string) predicate.ItemField {
 
 // NameNotIn applies the NotIn predicate on the "name" field.
 func NameNotIn(vs ...string) predicate.ItemField {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -381,7 +381,7 @@ func DescriptionNEQ(v string) predicate.ItemField {
 
 // DescriptionIn applies the In predicate on the "description" field.
 func DescriptionIn(vs ...string) predicate.ItemField {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -392,7 +392,7 @@ func DescriptionIn(vs ...string) predicate.ItemField {
 
 // DescriptionNotIn applies the NotIn predicate on the "description" field.
 func DescriptionNotIn(vs ...string) predicate.ItemField {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -494,7 +494,7 @@ func TypeNEQ(v Type) predicate.ItemField {
 
 // TypeIn applies the In predicate on the "type" field.
 func TypeIn(vs ...Type) predicate.ItemField {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -505,7 +505,7 @@ func TypeIn(vs ...Type) predicate.ItemField {
 
 // TypeNotIn applies the NotIn predicate on the "type" field.
 func TypeNotIn(vs ...Type) predicate.ItemField {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -530,7 +530,7 @@ func TextValueNEQ(v string) predicate.ItemField {
 
 // TextValueIn applies the In predicate on the "text_value" field.
 func TextValueIn(vs ...string) predicate.ItemField {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -541,7 +541,7 @@ func TextValueIn(vs ...string) predicate.ItemField {
 
 // TextValueNotIn applies the NotIn predicate on the "text_value" field.
 func TextValueNotIn(vs ...string) predicate.ItemField {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -643,7 +643,7 @@ func NumberValueNEQ(v int) predicate.ItemField {
 
 // NumberValueIn applies the In predicate on the "number_value" field.
 func NumberValueIn(vs ...int) predicate.ItemField {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -654,7 +654,7 @@ func NumberValueIn(vs ...int) predicate.ItemField {
 
 // NumberValueNotIn applies the NotIn predicate on the "number_value" field.
 func NumberValueNotIn(vs ...int) predicate.ItemField {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -735,7 +735,7 @@ func TimeValueNEQ(v time.Time) predicate.ItemField {
 
 // TimeValueIn applies the In predicate on the "time_value" field.
 func TimeValueIn(vs ...time.Time) predicate.ItemField {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -746,7 +746,7 @@ func TimeValueIn(vs ...time.Time) predicate.ItemField {
 
 // TimeValueNotIn applies the NotIn predicate on the "time_value" field.
 func TimeValueNotIn(vs ...time.Time) predicate.ItemField {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}

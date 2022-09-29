@@ -364,10 +364,10 @@ func (atq *AuthTokensQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 	if withFKs {
 		_spec.Node.Columns = append(_spec.Node.Columns, authtokens.ForeignKeys...)
 	}
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*AuthTokens).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &AuthTokens{config: atq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -431,11 +431,14 @@ func (atq *AuthTokensQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (atq *AuthTokensQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := atq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := atq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (atq *AuthTokensQuery) querySpec() *sqlgraph.QuerySpec {
@@ -536,7 +539,7 @@ func (atgb *AuthTokensGroupBy) Aggregate(fns ...AggregateFunc) *AuthTokensGroupB
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (atgb *AuthTokensGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (atgb *AuthTokensGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := atgb.path(ctx)
 	if err != nil {
 		return err
@@ -545,7 +548,7 @@ func (atgb *AuthTokensGroupBy) Scan(ctx context.Context, v interface{}) error {
 	return atgb.sqlScan(ctx, v)
 }
 
-func (atgb *AuthTokensGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (atgb *AuthTokensGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range atgb.fields {
 		if !authtokens.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -592,7 +595,7 @@ type AuthTokensSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (ats *AuthTokensSelect) Scan(ctx context.Context, v interface{}) error {
+func (ats *AuthTokensSelect) Scan(ctx context.Context, v any) error {
 	if err := ats.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -600,7 +603,7 @@ func (ats *AuthTokensSelect) Scan(ctx context.Context, v interface{}) error {
 	return ats.sqlScan(ctx, v)
 }
 
-func (ats *AuthTokensSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (ats *AuthTokensSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := ats.sql.Query()
 	if err := ats.driver.Query(ctx, query, args, rows); err != nil {
