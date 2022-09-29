@@ -45,8 +45,9 @@ func (User) Edges() []ent.Edge {
 			Ref("users").
 			Required().
 			Unique(),
-		edge.To("auth_tokens", AuthTokens.Type).Annotations(entsql.Annotation{
-			OnDelete: entsql.Cascade,
-		}),
+		edge.To("auth_tokens", AuthTokens.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
 	}
 }

@@ -337,6 +337,21 @@ func (ic *ItemCreate) SetGroup(g *Group) *ItemCreate {
 	return ic.SetGroupID(g.ID)
 }
 
+// AddLabelIDs adds the "label" edge to the Label entity by IDs.
+func (ic *ItemCreate) AddLabelIDs(ids ...uuid.UUID) *ItemCreate {
+	ic.mutation.AddLabelIDs(ids...)
+	return ic
+}
+
+// AddLabel adds the "label" edges to the Label entity.
+func (ic *ItemCreate) AddLabel(l ...*Label) *ItemCreate {
+	ids := make([]uuid.UUID, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return ic.AddLabelIDs(ids...)
+}
+
 // SetLocationID sets the "location" edge to the Location entity by ID.
 func (ic *ItemCreate) SetLocationID(id uuid.UUID) *ItemCreate {
 	ic.mutation.SetLocationID(id)
@@ -369,21 +384,6 @@ func (ic *ItemCreate) AddFields(i ...*ItemField) *ItemCreate {
 		ids[j] = i[j].ID
 	}
 	return ic.AddFieldIDs(ids...)
-}
-
-// AddLabelIDs adds the "label" edge to the Label entity by IDs.
-func (ic *ItemCreate) AddLabelIDs(ids ...uuid.UUID) *ItemCreate {
-	ic.mutation.AddLabelIDs(ids...)
-	return ic
-}
-
-// AddLabel adds the "label" edges to the Label entity.
-func (ic *ItemCreate) AddLabel(l ...*Label) *ItemCreate {
-	ids := make([]uuid.UUID, len(l))
-	for i := range l {
-		ids[i] = l[i].ID
-	}
-	return ic.AddLabelIDs(ids...)
 }
 
 // AddAttachmentIDs adds the "attachments" edge to the Attachment entity by IDs.
@@ -810,6 +810,25 @@ func (ic *ItemCreate) createSpec() (*Item, *sqlgraph.CreateSpec) {
 		_node.group_items = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := ic.mutation.LabelIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   item.LabelTable,
+			Columns: item.LabelPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: label.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := ic.mutation.LocationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -841,25 +860,6 @@ func (ic *ItemCreate) createSpec() (*Item, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: itemfield.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := ic.mutation.LabelIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   item.LabelTable,
-			Columns: item.LabelPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: label.FieldID,
 				},
 			},
 		}

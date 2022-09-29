@@ -31,9 +31,9 @@ type ItemQuery struct {
 	fields          []string
 	predicates      []predicate.Item
 	withGroup       *GroupQuery
+	withLabel       *LabelQuery
 	withLocation    *LocationQuery
 	withFields      *ItemFieldQuery
-	withLabel       *LabelQuery
 	withAttachments *AttachmentQuery
 	withFKs         bool
 	// intermediate query (i.e. traversal path).
@@ -94,6 +94,28 @@ func (iq *ItemQuery) QueryGroup() *GroupQuery {
 	return query
 }
 
+// QueryLabel chains the current query on the "label" edge.
+func (iq *ItemQuery) QueryLabel() *LabelQuery {
+	query := &LabelQuery{config: iq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := iq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := iq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(item.Table, item.FieldID, selector),
+			sqlgraph.To(label.Table, label.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, item.LabelTable, item.LabelPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(iq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // QueryLocation chains the current query on the "location" edge.
 func (iq *ItemQuery) QueryLocation() *LocationQuery {
 	query := &LocationQuery{config: iq.config}
@@ -131,28 +153,6 @@ func (iq *ItemQuery) QueryFields() *ItemFieldQuery {
 			sqlgraph.From(item.Table, item.FieldID, selector),
 			sqlgraph.To(itemfield.Table, itemfield.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, item.FieldsTable, item.FieldsColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(iq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryLabel chains the current query on the "label" edge.
-func (iq *ItemQuery) QueryLabel() *LabelQuery {
-	query := &LabelQuery{config: iq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := iq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := iq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(item.Table, item.FieldID, selector),
-			sqlgraph.To(label.Table, label.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, item.LabelTable, item.LabelPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(iq.driver.Dialect(), step)
 		return fromU, nil
@@ -364,9 +364,9 @@ func (iq *ItemQuery) Clone() *ItemQuery {
 		order:           append([]OrderFunc{}, iq.order...),
 		predicates:      append([]predicate.Item{}, iq.predicates...),
 		withGroup:       iq.withGroup.Clone(),
+		withLabel:       iq.withLabel.Clone(),
 		withLocation:    iq.withLocation.Clone(),
 		withFields:      iq.withFields.Clone(),
-		withLabel:       iq.withLabel.Clone(),
 		withAttachments: iq.withAttachments.Clone(),
 		// clone intermediate query.
 		sql:    iq.sql.Clone(),
@@ -383,6 +383,17 @@ func (iq *ItemQuery) WithGroup(opts ...func(*GroupQuery)) *ItemQuery {
 		opt(query)
 	}
 	iq.withGroup = query
+	return iq
+}
+
+// WithLabel tells the query-builder to eager-load the nodes that are connected to
+// the "label" edge. The optional arguments are used to configure the query builder of the edge.
+func (iq *ItemQuery) WithLabel(opts ...func(*LabelQuery)) *ItemQuery {
+	query := &LabelQuery{config: iq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	iq.withLabel = query
 	return iq
 }
 
@@ -405,17 +416,6 @@ func (iq *ItemQuery) WithFields(opts ...func(*ItemFieldQuery)) *ItemQuery {
 		opt(query)
 	}
 	iq.withFields = query
-	return iq
-}
-
-// WithLabel tells the query-builder to eager-load the nodes that are connected to
-// the "label" edge. The optional arguments are used to configure the query builder of the edge.
-func (iq *ItemQuery) WithLabel(opts ...func(*LabelQuery)) *ItemQuery {
-	query := &LabelQuery{config: iq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	iq.withLabel = query
 	return iq
 }
 
@@ -501,9 +501,9 @@ func (iq *ItemQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Item, e
 		_spec       = iq.querySpec()
 		loadedTypes = [5]bool{
 			iq.withGroup != nil,
+			iq.withLabel != nil,
 			iq.withLocation != nil,
 			iq.withFields != nil,
-			iq.withLabel != nil,
 			iq.withAttachments != nil,
 		}
 	)
@@ -537,6 +537,13 @@ func (iq *ItemQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Item, e
 			return nil, err
 		}
 	}
+	if query := iq.withLabel; query != nil {
+		if err := iq.loadLabel(ctx, query, nodes,
+			func(n *Item) { n.Edges.Label = []*Label{} },
+			func(n *Item, e *Label) { n.Edges.Label = append(n.Edges.Label, e) }); err != nil {
+			return nil, err
+		}
+	}
 	if query := iq.withLocation; query != nil {
 		if err := iq.loadLocation(ctx, query, nodes, nil,
 			func(n *Item, e *Location) { n.Edges.Location = e }); err != nil {
@@ -547,13 +554,6 @@ func (iq *ItemQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Item, e
 		if err := iq.loadFields(ctx, query, nodes,
 			func(n *Item) { n.Edges.Fields = []*ItemField{} },
 			func(n *Item, e *ItemField) { n.Edges.Fields = append(n.Edges.Fields, e) }); err != nil {
-			return nil, err
-		}
-	}
-	if query := iq.withLabel; query != nil {
-		if err := iq.loadLabel(ctx, query, nodes,
-			func(n *Item) { n.Edges.Label = []*Label{} },
-			func(n *Item, e *Label) { n.Edges.Label = append(n.Edges.Label, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -592,6 +592,64 @@ func (iq *ItemQuery) loadGroup(ctx context.Context, query *GroupQuery, nodes []*
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (iq *ItemQuery) loadLabel(ctx context.Context, query *LabelQuery, nodes []*Item, init func(*Item), assign func(*Item, *Label)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[uuid.UUID]*Item)
+	nids := make(map[uuid.UUID]map[*Item]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(item.LabelTable)
+		s.Join(joinT).On(s.C(label.FieldID), joinT.C(item.LabelPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(item.LabelPrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(item.LabelPrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	neighbors, err := query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+		assign := spec.Assign
+		values := spec.ScanValues
+		spec.ScanValues = func(columns []string) ([]any, error) {
+			values, err := values(columns[1:])
+			if err != nil {
+				return nil, err
+			}
+			return append([]any{new(uuid.UUID)}, values...), nil
+		}
+		spec.Assign = func(columns []string, values []any) error {
+			outValue := *values[0].(*uuid.UUID)
+			inValue := *values[1].(*uuid.UUID)
+			if nids[inValue] == nil {
+				nids[inValue] = map[*Item]struct{}{byID[outValue]: struct{}{}}
+				return assign(columns[1:], values[1:])
+			}
+			nids[inValue][byID[outValue]] = struct{}{}
+			return nil
+		}
+	})
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "label" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
 		}
 	}
 	return nil
@@ -653,64 +711,6 @@ func (iq *ItemQuery) loadFields(ctx context.Context, query *ItemFieldQuery, node
 			return fmt.Errorf(`unexpected foreign-key "item_fields" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
-	}
-	return nil
-}
-func (iq *ItemQuery) loadLabel(ctx context.Context, query *LabelQuery, nodes []*Item, init func(*Item), assign func(*Item, *Label)) error {
-	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[uuid.UUID]*Item)
-	nids := make(map[uuid.UUID]map[*Item]struct{})
-	for i, node := range nodes {
-		edgeIDs[i] = node.ID
-		byID[node.ID] = node
-		if init != nil {
-			init(node)
-		}
-	}
-	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(item.LabelTable)
-		s.Join(joinT).On(s.C(label.FieldID), joinT.C(item.LabelPrimaryKey[0]))
-		s.Where(sql.InValues(joinT.C(item.LabelPrimaryKey[1]), edgeIDs...))
-		columns := s.SelectedColumns()
-		s.Select(joinT.C(item.LabelPrimaryKey[1]))
-		s.AppendSelect(columns...)
-		s.SetDistinct(false)
-	})
-	if err := query.prepareQuery(ctx); err != nil {
-		return err
-	}
-	neighbors, err := query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
-		assign := spec.Assign
-		values := spec.ScanValues
-		spec.ScanValues = func(columns []string) ([]any, error) {
-			values, err := values(columns[1:])
-			if err != nil {
-				return nil, err
-			}
-			return append([]any{new(uuid.UUID)}, values...), nil
-		}
-		spec.Assign = func(columns []string, values []any) error {
-			outValue := *values[0].(*uuid.UUID)
-			inValue := *values[1].(*uuid.UUID)
-			if nids[inValue] == nil {
-				nids[inValue] = map[*Item]struct{}{byID[outValue]: struct{}{}}
-				return assign(columns[1:], values[1:])
-			}
-			nids[inValue][byID[outValue]] = struct{}{}
-			return nil
-		}
-	})
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected "label" node returned %v`, n.ID)
-		}
-		for kn := range nodes {
-			assign(kn, n)
-		}
 	}
 	return nil
 }

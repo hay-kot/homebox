@@ -2068,6 +2068,34 @@ func HasGroupWith(preds ...predicate.Group) predicate.Item {
 	})
 }
 
+// HasLabel applies the HasEdge predicate on the "label" edge.
+func HasLabel() predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(LabelTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, LabelTable, LabelPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasLabelWith applies the HasEdge predicate on the "label" edge with a given conditions (other predicates).
+func HasLabelWith(preds ...predicate.Label) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(LabelInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, LabelTable, LabelPrimaryKey...),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasLocation applies the HasEdge predicate on the "location" edge.
 func HasLocation() predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
@@ -2115,34 +2143,6 @@ func HasFieldsWith(preds ...predicate.ItemField) predicate.Item {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(FieldsInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, FieldsTable, FieldsColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasLabel applies the HasEdge predicate on the "label" edge.
-func HasLabel() predicate.Item {
-	return predicate.Item(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(LabelTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, LabelTable, LabelPrimaryKey...),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasLabelWith applies the HasEdge predicate on the "label" edge with a given conditions (other predicates).
-func HasLabelWith(preds ...predicate.Label) predicate.Item {
-	return predicate.Item(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(LabelInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, LabelTable, LabelPrimaryKey...),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
