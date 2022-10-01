@@ -1,5 +1,7 @@
 <script setup lang="ts">
+  import { Detail } from "~~/components/global/DetailsSection/types";
   import { DaisyTheme } from "~~/composables/use-preferences";
+  import { useAuthStore } from "~~/stores/auth";
 
   definePageMeta({
     layout: "home",
@@ -129,16 +131,81 @@
       value: "winter",
     },
   ];
+
+  const auth = useAuthStore();
+
+  const details = computed(() => {
+    return [
+      {
+        name: "Name",
+        text: auth.self?.name || "Unknown",
+      },
+      {
+        name: "Email",
+        text: auth.self?.email || "Unknown",
+      },
+      {
+        name: "Invitation Code",
+        text: "",
+        slot: "invitation",
+      },
+      {
+        name: "Change Password",
+        text: "",
+        slot: "change-password",
+      },
+      {
+        name: "Delete Profile",
+        text: "",
+        slot: "delete-profile",
+      },
+    ] as Detail[];
+  });
+
+  const confirm = useConfirm();
+
+  async function deleteProfile() {
+    const result = await confirm.open(
+      "Are you sure you want to delete your account? If you are the last member in your group all your data will be deleted. This action cannot be undone."
+    );
+
+    if (result.isCanceled) {
+      return;
+    }
+
+    console.log("delete profile");
+  }
 </script>
 
 <template>
-  <BaseContainer>
+  <BaseContainer class="flex flex-col gap-4 mb-6">
     <BaseCard>
       <template #title>
         <BaseSectionHeader>
           <Icon name="mdi-fill" class="mr-2 text-base-600" />
-          <span class="text-base-600"> Theme Selector </span>
+          <span class="text-base-600"> User Profile </span>
+          <template #description> Invite users, and manage your account. </template>
+        </BaseSectionHeader>
+      </template>
 
+      <DetailsSection :details="details">
+        <template #invitation>
+          <BaseButton class="ml-auto" size="sm"> Generate Invite Link </BaseButton>
+        </template>
+        <template #change-password>
+          <BaseButton class="ml-auto" size="sm"> Change Password </BaseButton>
+        </template>
+        <template #delete-profile>
+          <BaseButton class="ml-auto btn-error" size="sm" @click="deleteProfile"> Delete Profile </BaseButton>
+        </template>
+      </DetailsSection>
+    </BaseCard>
+
+    <BaseCard>
+      <template #title>
+        <BaseSectionHeader>
+          <Icon name="mdi-fill" class="mr-2 text-base-600" />
+          <span class="text-base-600"> Theme Settings </span>
           <template #description>
             Theme settings are stored in your browser's local storage. You can change the theme at any time. If you're
             having trouble setting your theme try refreshing your browser.
@@ -147,7 +214,7 @@
       </template>
 
       <div class="px-4 pb-4">
-        <div class="rounded-box grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        <div class="rounded-box grid grid-cols-1 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           <div
             v-for="theme in themes"
             :key="theme.value"
