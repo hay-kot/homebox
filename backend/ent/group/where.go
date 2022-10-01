@@ -506,6 +506,34 @@ func HasDocumentsWith(preds ...predicate.Document) predicate.Group {
 	})
 }
 
+// HasInvitationTokens applies the HasEdge predicate on the "invitation_tokens" edge.
+func HasInvitationTokens() predicate.Group {
+	return predicate.Group(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(InvitationTokensTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, InvitationTokensTable, InvitationTokensColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasInvitationTokensWith applies the HasEdge predicate on the "invitation_tokens" edge with a given conditions (other predicates).
+func HasInvitationTokensWith(preds ...predicate.GroupInvitationToken) predicate.Group {
+	return predicate.Group(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(InvitationTokensInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, InvitationTokensTable, InvitationTokensColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Group) predicate.Group {
 	return predicate.Group(func(s *sql.Selector) {

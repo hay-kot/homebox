@@ -135,6 +135,30 @@ var (
 		Columns:    GroupsColumns,
 		PrimaryKey: []*schema.Column{GroupsColumns[0]},
 	}
+	// GroupInvitationTokensColumns holds the columns for the "group_invitation_tokens" table.
+	GroupInvitationTokensColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "token", Type: field.TypeBytes, Unique: true},
+		{Name: "expires_at", Type: field.TypeTime},
+		{Name: "uses", Type: field.TypeInt, Default: 0},
+		{Name: "group_invitation_tokens", Type: field.TypeUUID, Nullable: true},
+	}
+	// GroupInvitationTokensTable holds the schema information for the "group_invitation_tokens" table.
+	GroupInvitationTokensTable = &schema.Table{
+		Name:       "group_invitation_tokens",
+		Columns:    GroupInvitationTokensColumns,
+		PrimaryKey: []*schema.Column{GroupInvitationTokensColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "group_invitation_tokens_groups_invitation_tokens",
+				Columns:    []*schema.Column{GroupInvitationTokensColumns[6]},
+				RefColumns: []*schema.Column{GroupsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// ItemsColumns holds the columns for the "items" table.
 	ItemsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -336,6 +360,7 @@ var (
 		DocumentsTable,
 		DocumentTokensTable,
 		GroupsTable,
+		GroupInvitationTokensTable,
 		ItemsTable,
 		ItemFieldsTable,
 		LabelsTable,
@@ -351,6 +376,7 @@ func init() {
 	AuthTokensTable.ForeignKeys[0].RefTable = UsersTable
 	DocumentsTable.ForeignKeys[0].RefTable = GroupsTable
 	DocumentTokensTable.ForeignKeys[0].RefTable = DocumentsTable
+	GroupInvitationTokensTable.ForeignKeys[0].RefTable = GroupsTable
 	ItemsTable.ForeignKeys[0].RefTable = GroupsTable
 	ItemsTable.ForeignKeys[1].RefTable = LocationsTable
 	ItemFieldsTable.ForeignKeys[0].RefTable = ItemsTable

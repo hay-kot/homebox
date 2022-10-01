@@ -42,9 +42,11 @@ type GroupEdges struct {
 	Labels []*Label `json:"labels,omitempty"`
 	// Documents holds the value of the documents edge.
 	Documents []*Document `json:"documents,omitempty"`
+	// InvitationTokens holds the value of the invitation_tokens edge.
+	InvitationTokens []*GroupInvitationToken `json:"invitation_tokens,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 }
 
 // UsersOrErr returns the Users value or an error if the edge
@@ -90,6 +92,15 @@ func (e GroupEdges) DocumentsOrErr() ([]*Document, error) {
 		return e.Documents, nil
 	}
 	return nil, &NotLoadedError{edge: "documents"}
+}
+
+// InvitationTokensOrErr returns the InvitationTokens value or an error if the edge
+// was not loaded in eager-loading.
+func (e GroupEdges) InvitationTokensOrErr() ([]*GroupInvitationToken, error) {
+	if e.loadedTypes[5] {
+		return e.InvitationTokens, nil
+	}
+	return nil, &NotLoadedError{edge: "invitation_tokens"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -176,6 +187,11 @@ func (gr *Group) QueryLabels() *LabelQuery {
 // QueryDocuments queries the "documents" edge of the Group entity.
 func (gr *Group) QueryDocuments() *DocumentQuery {
 	return (&GroupClient{config: gr.config}).QueryDocuments(gr)
+}
+
+// QueryInvitationTokens queries the "invitation_tokens" edge of the Group entity.
+func (gr *Group) QueryInvitationTokens() *GroupInvitationTokenQuery {
+	return (&GroupClient{config: gr.config}).QueryInvitationTokens(gr)
 }
 
 // Update returns a builder for updating this Group.

@@ -66,6 +66,8 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 			r.Post(v1Base("/users/logout"), v1Ctrl.HandleAuthLogout())
 			r.Get(v1Base("/users/refresh"), v1Ctrl.HandleAuthRefresh())
 
+			r.Post(v1Base("/groups/invitations"), v1Ctrl.HandleGroupInvitationsCreate())
+
 			r.Get(v1Base("/locations"), v1Ctrl.HandleLocationGetAll())
 			r.Post(v1Base("/locations"), v1Ctrl.HandleLocationCreate())
 			r.Get(v1Base("/locations/{id}"), v1Ctrl.HandleLocationGet())

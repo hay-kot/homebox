@@ -21,7 +21,7 @@ var (
 	tClient *ent.Client
 	tRepos  *repo.AllRepos
 	tUser   repo.UserOut
-	tGroup  *ent.Group
+	tGroup  repo.Group
 	tSvc    *AllServices
 )
 
@@ -31,7 +31,7 @@ func bootstrap() {
 		ctx = context.Background()
 	)
 
-	tGroup, err = tRepos.Groups.Create(ctx, "test-group")
+	tGroup, err = tRepos.Groups.GroupCreate(ctx, "test-group")
 	if err != nil {
 		log.Fatal(err)
 	}

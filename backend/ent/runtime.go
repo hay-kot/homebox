@@ -11,6 +11,7 @@ import (
 	"github.com/hay-kot/homebox/backend/ent/document"
 	"github.com/hay-kot/homebox/backend/ent/documenttoken"
 	"github.com/hay-kot/homebox/backend/ent/group"
+	"github.com/hay-kot/homebox/backend/ent/groupinvitationtoken"
 	"github.com/hay-kot/homebox/backend/ent/item"
 	"github.com/hay-kot/homebox/backend/ent/itemfield"
 	"github.com/hay-kot/homebox/backend/ent/label"
@@ -188,6 +189,33 @@ func init() {
 	groupDescID := groupMixinFields0[0].Descriptor()
 	// group.DefaultID holds the default value on creation for the id field.
 	group.DefaultID = groupDescID.Default.(func() uuid.UUID)
+	groupinvitationtokenMixin := schema.GroupInvitationToken{}.Mixin()
+	groupinvitationtokenMixinFields0 := groupinvitationtokenMixin[0].Fields()
+	_ = groupinvitationtokenMixinFields0
+	groupinvitationtokenFields := schema.GroupInvitationToken{}.Fields()
+	_ = groupinvitationtokenFields
+	// groupinvitationtokenDescCreatedAt is the schema descriptor for created_at field.
+	groupinvitationtokenDescCreatedAt := groupinvitationtokenMixinFields0[1].Descriptor()
+	// groupinvitationtoken.DefaultCreatedAt holds the default value on creation for the created_at field.
+	groupinvitationtoken.DefaultCreatedAt = groupinvitationtokenDescCreatedAt.Default.(func() time.Time)
+	// groupinvitationtokenDescUpdatedAt is the schema descriptor for updated_at field.
+	groupinvitationtokenDescUpdatedAt := groupinvitationtokenMixinFields0[2].Descriptor()
+	// groupinvitationtoken.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	groupinvitationtoken.DefaultUpdatedAt = groupinvitationtokenDescUpdatedAt.Default.(func() time.Time)
+	// groupinvitationtoken.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	groupinvitationtoken.UpdateDefaultUpdatedAt = groupinvitationtokenDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// groupinvitationtokenDescExpiresAt is the schema descriptor for expires_at field.
+	groupinvitationtokenDescExpiresAt := groupinvitationtokenFields[1].Descriptor()
+	// groupinvitationtoken.DefaultExpiresAt holds the default value on creation for the expires_at field.
+	groupinvitationtoken.DefaultExpiresAt = groupinvitationtokenDescExpiresAt.Default.(func() time.Time)
+	// groupinvitationtokenDescUses is the schema descriptor for uses field.
+	groupinvitationtokenDescUses := groupinvitationtokenFields[2].Descriptor()
+	// groupinvitationtoken.DefaultUses holds the default value on creation for the uses field.
+	groupinvitationtoken.DefaultUses = groupinvitationtokenDescUses.Default.(int)
+	// groupinvitationtokenDescID is the schema descriptor for id field.
+	groupinvitationtokenDescID := groupinvitationtokenMixinFields0[0].Descriptor()
+	// groupinvitationtoken.DefaultID holds the default value on creation for the id field.
+	groupinvitationtoken.DefaultID = groupinvitationtokenDescID.Default.(func() uuid.UUID)
 	itemMixin := schema.Item{}.Mixin()
 	itemMixinFields0 := itemMixin[0].Fields()
 	_ = itemMixinFields0

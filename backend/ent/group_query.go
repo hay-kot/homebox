@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/ent/document"
 	"github.com/hay-kot/homebox/backend/ent/group"
+	"github.com/hay-kot/homebox/backend/ent/groupinvitationtoken"
 	"github.com/hay-kot/homebox/backend/ent/item"
 	"github.com/hay-kot/homebox/backend/ent/label"
 	"github.com/hay-kot/homebox/backend/ent/location"
@@ -24,17 +25,18 @@ import (
 // GroupQuery is the builder for querying Group entities.
 type GroupQuery struct {
 	config
-	limit         *int
-	offset        *int
-	unique        *bool
-	order         []OrderFunc
-	fields        []string
-	predicates    []predicate.Group
-	withUsers     *UserQuery
-	withLocations *LocationQuery
-	withItems     *ItemQuery
-	withLabels    *LabelQuery
-	withDocuments *DocumentQuery
+	limit                *int
+	offset               *int
+	unique               *bool
+	order                []OrderFunc
+	fields               []string
+	predicates           []predicate.Group
+	withUsers            *UserQuery
+	withLocations        *LocationQuery
+	withItems            *ItemQuery
+	withLabels           *LabelQuery
+	withDocuments        *DocumentQuery
+	withInvitationTokens *GroupInvitationTokenQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -174,6 +176,28 @@ func (gq *GroupQuery) QueryDocuments() *DocumentQuery {
 			sqlgraph.From(group.Table, group.FieldID, selector),
 			sqlgraph.To(document.Table, document.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, group.DocumentsTable, group.DocumentsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(gq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryInvitationTokens chains the current query on the "invitation_tokens" edge.
+func (gq *GroupQuery) QueryInvitationTokens() *GroupInvitationTokenQuery {
+	query := &GroupInvitationTokenQuery{config: gq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := gq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := gq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(group.Table, group.FieldID, selector),
+			sqlgraph.To(groupinvitationtoken.Table, groupinvitationtoken.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, group.InvitationTokensTable, group.InvitationTokensColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(gq.driver.Dialect(), step)
 		return fromU, nil
@@ -357,16 +381,17 @@ func (gq *GroupQuery) Clone() *GroupQuery {
 		return nil
 	}
 	return &GroupQuery{
-		config:        gq.config,
-		limit:         gq.limit,
-		offset:        gq.offset,
-		order:         append([]OrderFunc{}, gq.order...),
-		predicates:    append([]predicate.Group{}, gq.predicates...),
-		withUsers:     gq.withUsers.Clone(),
-		withLocations: gq.withLocations.Clone(),
-		withItems:     gq.withItems.Clone(),
-		withLabels:    gq.withLabels.Clone(),
-		withDocuments: gq.withDocuments.Clone(),
+		config:               gq.config,
+		limit:                gq.limit,
+		offset:               gq.offset,
+		order:                append([]OrderFunc{}, gq.order...),
+		predicates:           append([]predicate.Group{}, gq.predicates...),
+		withUsers:            gq.withUsers.Clone(),
+		withLocations:        gq.withLocations.Clone(),
+		withItems:            gq.withItems.Clone(),
+		withLabels:           gq.withLabels.Clone(),
+		withDocuments:        gq.withDocuments.Clone(),
+		withInvitationTokens: gq.withInvitationTokens.Clone(),
 		// clone intermediate query.
 		sql:    gq.sql.Clone(),
 		path:   gq.path,
@@ -426,6 +451,17 @@ func (gq *GroupQuery) WithDocuments(opts ...func(*DocumentQuery)) *GroupQuery {
 		opt(query)
 	}
 	gq.withDocuments = query
+	return gq
+}
+
+// WithInvitationTokens tells the query-builder to eager-load the nodes that are connected to
+// the "invitation_tokens" edge. The optional arguments are used to configure the query builder of the edge.
+func (gq *GroupQuery) WithInvitationTokens(opts ...func(*GroupInvitationTokenQuery)) *GroupQuery {
+	query := &GroupInvitationTokenQuery{config: gq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	gq.withInvitationTokens = query
 	return gq
 }
 
@@ -497,12 +533,13 @@ func (gq *GroupQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Group,
 	var (
 		nodes       = []*Group{}
 		_spec       = gq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
 			gq.withUsers != nil,
 			gq.withLocations != nil,
 			gq.withItems != nil,
 			gq.withLabels != nil,
 			gq.withDocuments != nil,
+			gq.withInvitationTokens != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -555,6 +592,15 @@ func (gq *GroupQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Group,
 		if err := gq.loadDocuments(ctx, query, nodes,
 			func(n *Group) { n.Edges.Documents = []*Document{} },
 			func(n *Group, e *Document) { n.Edges.Documents = append(n.Edges.Documents, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := gq.withInvitationTokens; query != nil {
+		if err := gq.loadInvitationTokens(ctx, query, nodes,
+			func(n *Group) { n.Edges.InvitationTokens = []*GroupInvitationToken{} },
+			func(n *Group, e *GroupInvitationToken) {
+				n.Edges.InvitationTokens = append(n.Edges.InvitationTokens, e)
+			}); err != nil {
 			return nil, err
 		}
 	}
@@ -711,6 +757,37 @@ func (gq *GroupQuery) loadDocuments(ctx context.Context, query *DocumentQuery, n
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "group_documents" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (gq *GroupQuery) loadInvitationTokens(ctx context.Context, query *GroupInvitationTokenQuery, nodes []*Group, init func(*Group), assign func(*Group, *GroupInvitationToken)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*Group)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.GroupInvitationToken(func(s *sql.Selector) {
+		s.Where(sql.InValues(group.InvitationTokensColumn, fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.group_invitation_tokens
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "group_invitation_tokens" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "group_invitation_tokens" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

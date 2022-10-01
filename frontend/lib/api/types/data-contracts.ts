@@ -222,6 +222,7 @@ export interface UserRegistration {
   groupName: string;
   name: string;
   password: string;
+  token: string;
 }
 
 export interface ApiSummary {
@@ -236,6 +237,17 @@ export interface Build {
   buildTime: string;
   commit: string;
   version: string;
+}
+
+export interface GroupTokenPayload {
+  expiresAt: string;
+  uses: number;
+}
+
+export interface GroupTokenResponse {
+  expiresAt: string;
+  token: string;
+  uses: number;
 }
 
 export interface ItemAttachmentToken {

@@ -22,6 +22,8 @@ type Tx struct {
 	DocumentToken *DocumentTokenClient
 	// Group is the client for interacting with the Group builders.
 	Group *GroupClient
+	// GroupInvitationToken is the client for interacting with the GroupInvitationToken builders.
+	GroupInvitationToken *GroupInvitationTokenClient
 	// Item is the client for interacting with the Item builders.
 	Item *ItemClient
 	// ItemField is the client for interacting with the ItemField builders.
@@ -172,6 +174,7 @@ func (tx *Tx) init() {
 	tx.Document = NewDocumentClient(tx.config)
 	tx.DocumentToken = NewDocumentTokenClient(tx.config)
 	tx.Group = NewGroupClient(tx.config)
+	tx.GroupInvitationToken = NewGroupInvitationTokenClient(tx.config)
 	tx.Item = NewItemClient(tx.config)
 	tx.ItemField = NewItemFieldClient(tx.config)
 	tx.Label = NewLabelClient(tx.config)

@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/ent/document"
 	"github.com/hay-kot/homebox/backend/ent/group"
+	"github.com/hay-kot/homebox/backend/ent/groupinvitationtoken"
 	"github.com/hay-kot/homebox/backend/ent/item"
 	"github.com/hay-kot/homebox/backend/ent/label"
 	"github.com/hay-kot/homebox/backend/ent/location"
@@ -135,6 +136,21 @@ func (gu *GroupUpdate) AddDocuments(d ...*Document) *GroupUpdate {
 	return gu.AddDocumentIDs(ids...)
 }
 
+// AddInvitationTokenIDs adds the "invitation_tokens" edge to the GroupInvitationToken entity by IDs.
+func (gu *GroupUpdate) AddInvitationTokenIDs(ids ...uuid.UUID) *GroupUpdate {
+	gu.mutation.AddInvitationTokenIDs(ids...)
+	return gu
+}
+
+// AddInvitationTokens adds the "invitation_tokens" edges to the GroupInvitationToken entity.
+func (gu *GroupUpdate) AddInvitationTokens(g ...*GroupInvitationToken) *GroupUpdate {
+	ids := make([]uuid.UUID, len(g))
+	for i := range g {
+		ids[i] = g[i].ID
+	}
+	return gu.AddInvitationTokenIDs(ids...)
+}
+
 // Mutation returns the GroupMutation object of the builder.
 func (gu *GroupUpdate) Mutation() *GroupMutation {
 	return gu.mutation
@@ -243,6 +259,27 @@ func (gu *GroupUpdate) RemoveDocuments(d ...*Document) *GroupUpdate {
 		ids[i] = d[i].ID
 	}
 	return gu.RemoveDocumentIDs(ids...)
+}
+
+// ClearInvitationTokens clears all "invitation_tokens" edges to the GroupInvitationToken entity.
+func (gu *GroupUpdate) ClearInvitationTokens() *GroupUpdate {
+	gu.mutation.ClearInvitationTokens()
+	return gu
+}
+
+// RemoveInvitationTokenIDs removes the "invitation_tokens" edge to GroupInvitationToken entities by IDs.
+func (gu *GroupUpdate) RemoveInvitationTokenIDs(ids ...uuid.UUID) *GroupUpdate {
+	gu.mutation.RemoveInvitationTokenIDs(ids...)
+	return gu
+}
+
+// RemoveInvitationTokens removes "invitation_tokens" edges to GroupInvitationToken entities.
+func (gu *GroupUpdate) RemoveInvitationTokens(g ...*GroupInvitationToken) *GroupUpdate {
+	ids := make([]uuid.UUID, len(g))
+	for i := range g {
+		ids[i] = g[i].ID
+	}
+	return gu.RemoveInvitationTokenIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -638,6 +675,60 @@ func (gu *GroupUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if gu.mutation.InvitationTokensCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.InvitationTokensTable,
+			Columns: []string{group.InvitationTokensColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: groupinvitationtoken.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := gu.mutation.RemovedInvitationTokensIDs(); len(nodes) > 0 && !gu.mutation.InvitationTokensCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.InvitationTokensTable,
+			Columns: []string{group.InvitationTokensColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: groupinvitationtoken.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := gu.mutation.InvitationTokensIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.InvitationTokensTable,
+			Columns: []string{group.InvitationTokensColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: groupinvitationtoken.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, gu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{group.Label}
@@ -758,6 +849,21 @@ func (guo *GroupUpdateOne) AddDocuments(d ...*Document) *GroupUpdateOne {
 	return guo.AddDocumentIDs(ids...)
 }
 
+// AddInvitationTokenIDs adds the "invitation_tokens" edge to the GroupInvitationToken entity by IDs.
+func (guo *GroupUpdateOne) AddInvitationTokenIDs(ids ...uuid.UUID) *GroupUpdateOne {
+	guo.mutation.AddInvitationTokenIDs(ids...)
+	return guo
+}
+
+// AddInvitationTokens adds the "invitation_tokens" edges to the GroupInvitationToken entity.
+func (guo *GroupUpdateOne) AddInvitationTokens(g ...*GroupInvitationToken) *GroupUpdateOne {
+	ids := make([]uuid.UUID, len(g))
+	for i := range g {
+		ids[i] = g[i].ID
+	}
+	return guo.AddInvitationTokenIDs(ids...)
+}
+
 // Mutation returns the GroupMutation object of the builder.
 func (guo *GroupUpdateOne) Mutation() *GroupMutation {
 	return guo.mutation
@@ -866,6 +972,27 @@ func (guo *GroupUpdateOne) RemoveDocuments(d ...*Document) *GroupUpdateOne {
 		ids[i] = d[i].ID
 	}
 	return guo.RemoveDocumentIDs(ids...)
+}
+
+// ClearInvitationTokens clears all "invitation_tokens" edges to the GroupInvitationToken entity.
+func (guo *GroupUpdateOne) ClearInvitationTokens() *GroupUpdateOne {
+	guo.mutation.ClearInvitationTokens()
+	return guo
+}
+
+// RemoveInvitationTokenIDs removes the "invitation_tokens" edge to GroupInvitationToken entities by IDs.
+func (guo *GroupUpdateOne) RemoveInvitationTokenIDs(ids ...uuid.UUID) *GroupUpdateOne {
+	guo.mutation.RemoveInvitationTokenIDs(ids...)
+	return guo
+}
+
+// RemoveInvitationTokens removes "invitation_tokens" edges to GroupInvitationToken entities.
+func (guo *GroupUpdateOne) RemoveInvitationTokens(g ...*GroupInvitationToken) *GroupUpdateOne {
+	ids := make([]uuid.UUID, len(g))
+	for i := range g {
+		ids[i] = g[i].ID
+	}
+	return guo.RemoveInvitationTokenIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1283,6 +1410,60 @@ func (guo *GroupUpdateOne) sqlSave(ctx context.Context) (_node *Group, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: document.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if guo.mutation.InvitationTokensCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.InvitationTokensTable,
+			Columns: []string{group.InvitationTokensColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: groupinvitationtoken.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := guo.mutation.RemovedInvitationTokensIDs(); len(nodes) > 0 && !guo.mutation.InvitationTokensCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.InvitationTokensTable,
+			Columns: []string{group.InvitationTokensColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: groupinvitationtoken.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := guo.mutation.InvitationTokensIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.InvitationTokensTable,
+			Columns: []string{group.InvitationTokensColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: groupinvitationtoken.FieldID,
 				},
 			},
 		}

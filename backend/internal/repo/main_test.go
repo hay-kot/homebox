@@ -19,7 +19,7 @@ var (
 	tClient *ent.Client
 	tRepos  *AllRepos
 	tUser   UserOut
-	tGroup  *ent.Group
+	tGroup  Group
 )
 
 func bootstrap() {
@@ -28,7 +28,7 @@ func bootstrap() {
 		ctx = context.Background()
 	)
 
-	tGroup, err = tRepos.Groups.Create(ctx, "test-group")
+	tGroup, err = tRepos.Groups.GroupCreate(ctx, "test-group")
 	if err != nil {
 		log.Fatal(err)
 	}

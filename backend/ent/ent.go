@@ -15,6 +15,7 @@ import (
 	"github.com/hay-kot/homebox/backend/ent/document"
 	"github.com/hay-kot/homebox/backend/ent/documenttoken"
 	"github.com/hay-kot/homebox/backend/ent/group"
+	"github.com/hay-kot/homebox/backend/ent/groupinvitationtoken"
 	"github.com/hay-kot/homebox/backend/ent/item"
 	"github.com/hay-kot/homebox/backend/ent/itemfield"
 	"github.com/hay-kot/homebox/backend/ent/label"
@@ -40,16 +41,17 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
-		attachment.Table:    attachment.ValidColumn,
-		authtokens.Table:    authtokens.ValidColumn,
-		document.Table:      document.ValidColumn,
-		documenttoken.Table: documenttoken.ValidColumn,
-		group.Table:         group.ValidColumn,
-		item.Table:          item.ValidColumn,
-		itemfield.Table:     itemfield.ValidColumn,
-		label.Table:         label.ValidColumn,
-		location.Table:      location.ValidColumn,
-		user.Table:          user.ValidColumn,
+		attachment.Table:           attachment.ValidColumn,
+		authtokens.Table:           authtokens.ValidColumn,
+		document.Table:             document.ValidColumn,
+		documenttoken.Table:        documenttoken.ValidColumn,
+		group.Table:                group.ValidColumn,
+		groupinvitationtoken.Table: groupinvitationtoken.ValidColumn,
+		item.Table:                 item.ValidColumn,
+		itemfield.Table:            itemfield.ValidColumn,
+		label.Table:                label.ValidColumn,
+		location.Table:             location.ValidColumn,
+		user.Table:                 user.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

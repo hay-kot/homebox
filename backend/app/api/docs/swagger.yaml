@@ -328,6 +328,8 @@ definitions:
         type: string
       password:
         type: string
+      token:
+        type: string
     type: object
   v1.ApiSummary:
     properties:
@@ -353,6 +355,22 @@ definitions:
       version:
         type: string
     type: object
+  v1.GroupTokenPayload:
+    properties:
+      expiresAt:
+        type: string
+      uses:
+        type: integer
+    type: object
+  v1.GroupTokenResponse:
+    properties:
+      expiresAt:
+        type: string
+      token:
+        type: string
+      uses:
+        type: integer
+    type: object
   v1.ItemAttachmentToken:
     properties:
       token:
@@ -376,6 +394,27 @@ info:
   title: Go API Templates
   version: "1.0"
 paths:
+  /v1/groups/invitations:
+    post:
+      parameters:
+      - description: User Data
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/v1.GroupTokenPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.GroupTokenResponse'
+      security:
+      - Bearer: []
+      summary: Get the current user
+      tags:
+      - User
   /v1/items:
     get:
       produces:
