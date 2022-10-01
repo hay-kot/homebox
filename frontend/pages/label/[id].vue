@@ -125,8 +125,8 @@
     <BaseCard class="mb-16">
       <template #title>
         <BaseSectionHeader>
-          <Icon name="mdi-tag" class="mr-2 text-gray-600" />
-          <span class="text-gray-600">
+          <Icon name="mdi-tag" class="mr-2 -mt-1 text-base-content" />
+          <span class="text-base-content">
             {{ label ? label.name : "" }}
           </span>
         </BaseSectionHeader>

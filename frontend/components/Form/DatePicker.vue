@@ -1,5 +1,5 @@
 <template>
-  <div ref="label" class="dropdown dropdown-end w-full">
+  <div ref="label" class="dropdown dropdown-end dropdown-top w-full">
     <FormTextField v-model="dateText" tabindex="0" label="Date" :inline="inline" readonly />
     <div tabindex="0" class="mt-1 card compact dropdown-content shadow bg-base-100 rounded-box w-64" @blur="resetTime">
       <div class="card-body">

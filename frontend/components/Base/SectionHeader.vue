@@ -9,7 +9,7 @@
     >
       <slot />
     </h3>
-    <p v-if="$slots.description" class="mt-2 max-w-4xl text-sm text-gray-500">
+    <p v-if="$slots.description" class="mt-2 max-w-4xl text-sm text-base-content">
       <slot name="description" />
     </p>
     <div v-if="$slots.after">

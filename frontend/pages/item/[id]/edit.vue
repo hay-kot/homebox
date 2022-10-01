@@ -283,13 +283,13 @@
 
     <section class="px-3">
       <div class="space-y-4">
-        <div class="overflow-hidden card bg-base-100 shadow-xl sm:rounded-lg">
+        <div class="card bg-base-100 shadow-xl sm:rounded-lg overflow-visible">
           <BaseSectionHeader v-if="item" class="p-5">
-            <Icon name="mdi-package-variant" class="-mt-1 mr-2 text-gray-600" />
-            <span class="text-gray-600">
+            <Icon name="mdi-package-variant" class="-mt-1 mr-2 text-base-content" />
+            <span class="text-base-content">
               {{ item.name }}
             </span>
-            <p class="text-sm text-gray-600 font-bold pb-0 mb-0">Quantity {{ item.quantity }}</p>
+            <p class="text-sm text-base-content font-bold pb-0 mb-0">Quantity {{ item.quantity }}</p>
             <template #after>
               <div class="modal-action mt-3">
                 <div class="mr-auto tooltip" data-tip="Hide the cruft! ">
