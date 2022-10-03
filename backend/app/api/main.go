@@ -119,7 +119,11 @@ func run(cfg *config.Config) error {
 
 	// =========================================================================
 	// Start Server
-	app.server = server.NewServer(app.conf.Web.Host, app.conf.Web.Port)
+	app.server = server.NewServer(
+		server.WithHost(app.conf.Web.Host),
+		server.WithPort(app.conf.Web.Port),
+	)
+
 	routes := app.newRouter(app.repos)
 
 	if app.conf.Mode != config.ModeDevelopment {

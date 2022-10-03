@@ -21,7 +21,7 @@ func Respond(w http.ResponseWriter, statusCode int, data interface{}) {
 	}
 
 	// Set the content type and headers once we know marshaling has succeeded.
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", ContentJSON)
 
 	// Write the status code to the response.
 	w.WriteHeader(statusCode)
