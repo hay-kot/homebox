@@ -24,11 +24,7 @@ export const useAuthStore = defineStore("auth", {
   },
   actions: {
     async logout(api: UserClient) {
-      const result = await api.logout();
-
-      if (result.error) {
-        return result;
-      }
+      const result = await api.user.logout();
 
       this.token = "";
       this.expires = "";

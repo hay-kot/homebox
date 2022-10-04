@@ -144,25 +144,12 @@
         name: "Email",
         text: auth.self?.email || "Unknown",
       },
-      {
-        name: "Invitation Code",
-        text: "",
-        slot: "invitation",
-      },
-      {
-        name: "Change Password",
-        text: "",
-        slot: "change-password",
-      },
-      {
-        name: "Delete Profile",
-        text: "",
-        slot: "delete-profile",
-      },
     ] as Detail[];
   });
 
+  const api = useUserApi();
   const confirm = useConfirm();
+  const notify = useNotifier();
 
   async function deleteProfile() {
     const result = await confirm.open(
@@ -173,7 +160,37 @@
       return;
     }
 
-    console.log("delete profile");
+    const { response } = await api.user.delete();
+
+    if (response?.status === 204) {
+      notify.success("Your account has been deleted.");
+      auth.logout(api);
+      navigateTo("/");
+    }
+
+    notify.error("Failed to delete your account.");
+  }
+
+  const token = ref("");
+  const tokenUrl = computed(() => {
+    if (!window) {
+      return "";
+    }
+
+    return `${window.location.origin}?token=${token.value}`;
+  });
+
+  async function generateToken() {
+    const date = new Date();
+
+    const { response, data } = await api.group.createInvitation({
+      expiresAt: new Date(date.setDate(date.getDate() + 7)),
+      uses: 1,
+    });
+
+    if (response?.status === 201) {
+      token.value = data.token;
+    }
   }
 </script>
 
@@ -182,23 +199,28 @@
     <BaseCard>
       <template #title>
         <BaseSectionHeader>
-          <Icon name="mdi-fill" class="mr-2 text-base-600" />
+          <Icon name="mdi-account" class="mr-2 -mt-1 text-base-600" />
           <span class="text-base-600"> User Profile </span>
           <template #description> Invite users, and manage your account. </template>
         </BaseSectionHeader>
       </template>
 
-      <DetailsSection :details="details">
-        <template #invitation>
-          <BaseButton class="ml-auto" size="sm"> Generate Invite Link </BaseButton>
-        </template>
-        <template #change-password>
-          <BaseButton class="ml-auto" size="sm"> Change Password </BaseButton>
-        </template>
-        <template #delete-profile>
-          <BaseButton class="ml-auto btn-error" size="sm" @click="deleteProfile"> Delete Profile </BaseButton>
-        </template>
-      </DetailsSection>
+      <DetailsSection :details="details" />
+
+      <div class="p-4">
+        <div class="flex gap-2">
+          <BaseButton size="sm"> Change Password </BaseButton>
+          <BaseButton size="sm" @click="generateToken"> Generate Invite Link </BaseButton>
+        </div>
+        <div v-if="token" class="pt-4 flex items-center pl-1">
+          <CopyText class="mr-2 btn-primary" :text="tokenUrl" />
+          {{ tokenUrl }}
+        </div>
+        <div v-if="token" class="pt-4 flex items-center pl-1">
+          <CopyText class="mr-2 btn-primary" :text="token" />
+          {{ token }}
+        </div>
+      </div>
     </BaseCard>
 
     <BaseCard>
@@ -250,6 +272,20 @@
           </div>
         </div>
       </div>
+    </BaseCard>
+
+    <BaseCard>
+      <template #title>
+        <BaseSectionHeader>
+          <Icon name="mdi-delete" class="mr-2 -mt-1 text-base-600" />
+          <span class="text-base-600"> Delete Account</span>
+          <template #description> Delete your account and all it's associated data </template>
+        </BaseSectionHeader>
+
+        <div class="py-4 border-t-2 border-gray-300">
+          <BaseButton class="btn-error" @click="deleteProfile"> Delete Account </BaseButton>
+        </div>
+      </template>
     </BaseCard>
   </BaseContainer>
 </template>

@@ -16,11 +16,33 @@
     navigateTo("/home");
   }
 
+  const route = useRoute();
+  const router = useRouter();
+
   const username = ref("");
   const email = ref("");
   const groupName = ref("");
   const password = ref("");
   const canRegister = ref(false);
+
+  const groupToken = computed<string>({
+    get() {
+      const params = route.query.token;
+
+      if (typeof params === "string") {
+        return params;
+      }
+
+      return "";
+    },
+    set(v) {
+      router.push({
+        query: {
+          token: v,
+        },
+      });
+    },
+  });
 
   async function registerUser() {
     loading.value = true;
@@ -29,6 +51,7 @@
       email: email.value,
       password: password.value,
       groupName: groupName.value,
+      token: groupToken.value,
     });
 
     if (error) {
@@ -41,6 +64,13 @@
     loading.value = false;
     registerForm.value = false;
   }
+
+  onMounted(() => {
+    console.log(groupToken.value);
+    if (groupToken.value !== "") {
+      registerForm.value = true;
+    }
+  });
 
   const loading = ref(false);
   const loginPassword = ref("");
@@ -57,6 +87,7 @@
 
     toast.success("Logged in successfully");
 
+    // @ts-expect-error - expires is either a date or a string, need to figure out store typing
     authStore.$patch({
       token: data.token,
       expires: data.expiresAt,
@@ -122,7 +153,13 @@
                   </h2>
                   <FormTextField v-model="email" label="Set your email?" />
                   <FormTextField v-model="username" label="What's your name?" />
-                  <FormTextField v-model="groupName" label="Name your group" />
+                  <FormTextField v-if="groupToken == ''" v-model="groupName" label="Name your group" />
+                  <div v-else class="pt-4 pb-1 text-center">
+                    <p>You're Joining an Existing Group!</p>
+                    <button type="button" class="text-xs underline" @click="groupToken = ''">
+                      Don't Want To Join a Group?
+                    </button>
+                  </div>
                   <FormTextField v-model="password" label="Set your password" type="password" />
                   <PasswordScore v-model:valid="canRegister" :password="password" />
                   <div class="card-actions justify-end">
