@@ -10,12 +10,12 @@ import (
 )
 
 type (
-	GroupTokenPayload struct {
+	GroupInvitationCreate struct {
 		Uses      int       `json:"uses"`
 		ExpiresAt time.Time `json:"expiresAt"`
 	}
 
-	GroupTokenResponse struct {
+	GroupInvitation struct {
 		Token     string    `json:"token"`
 		ExpiresAt time.Time `json:"expiresAt"`
 		Uses      int       `json:"uses"`
@@ -26,13 +26,13 @@ type (
 // @Summary   Get the current user
 // @Tags      User
 // @Produce   json
-// @Param     payload  body      GroupTokenPayload  true  "User Data"
-// @Success   200      {object}  GroupTokenResponse
+// @Param     payload  body      GroupInvitationCreate  true  "User Data"
+// @Success   200      {object}  GroupInvitation
 // @Router    /v1/groups/invitations [Post]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleGroupInvitationsCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		data := GroupTokenPayload{}
+		data := GroupInvitationCreate{}
 
 		if err := server.Decode(r, &data); err != nil {
 			log.Err(err).Msg("failed to decode user registration data")
@@ -53,10 +53,10 @@ func (ctrl *V1Controller) HandleGroupInvitationsCreate() http.HandlerFunc {
 			return
 		}
 
-		server.Respond(w, http.StatusCreated, server.Wrap(GroupTokenResponse{
+		server.Respond(w, http.StatusCreated, GroupInvitation{
 			Token:     token,
 			ExpiresAt: data.ExpiresAt,
 			Uses:      data.Uses,
-		}))
+		})
 	}
 }

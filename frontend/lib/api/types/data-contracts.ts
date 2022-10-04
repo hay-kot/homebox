@@ -239,14 +239,14 @@ export interface Build {
   version: string;
 }
 
-export interface GroupTokenPayload {
-  expiresAt: string;
+export interface GroupInvitation {
+  expiresAt: Date;
+  token: string;
   uses: number;
 }
 
-export interface GroupTokenResponse {
-  expiresAt: string;
-  token: string;
+export interface GroupInvitationCreate {
+  expiresAt: Date;
   uses: number;
 }
 
@@ -255,6 +255,6 @@ export interface ItemAttachmentToken {
 }
 
 export interface TokenResponse {
-  expiresAt: string;
+  expiresAt: Date;
   token: string;
 }

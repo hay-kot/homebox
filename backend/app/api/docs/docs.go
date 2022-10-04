@@ -42,7 +42,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.GroupTokenPayload"
+                            "$ref": "#/definitions/v1.GroupInvitationCreate"
                         }
                     }
                 ],
@@ -50,7 +50,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/v1.GroupTokenResponse"
+                            "$ref": "#/definitions/v1.GroupInvitation"
                         }
                     }
                 }
@@ -1582,10 +1582,13 @@ const docTemplate = `{
                 }
             }
         },
-        "v1.GroupTokenPayload": {
+        "v1.GroupInvitation": {
             "type": "object",
             "properties": {
                 "expiresAt": {
+                    "type": "string"
+                },
+                "token": {
                     "type": "string"
                 },
                 "uses": {
@@ -1593,13 +1596,10 @@ const docTemplate = `{
                 }
             }
         },
-        "v1.GroupTokenResponse": {
+        "v1.GroupInvitationCreate": {
             "type": "object",
             "properties": {
                 "expiresAt": {
-                    "type": "string"
-                },
-                "token": {
                     "type": "string"
                 },
                 "uses": {

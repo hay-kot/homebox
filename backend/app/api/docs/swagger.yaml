@@ -355,18 +355,18 @@ definitions:
       version:
         type: string
     type: object
-  v1.GroupTokenPayload:
-    properties:
-      expiresAt:
-        type: string
-      uses:
-        type: integer
-    type: object
-  v1.GroupTokenResponse:
+  v1.GroupInvitation:
     properties:
       expiresAt:
         type: string
       token:
+        type: string
+      uses:
+        type: integer
+    type: object
+  v1.GroupInvitationCreate:
+    properties:
+      expiresAt:
         type: string
       uses:
         type: integer
@@ -402,14 +402,14 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/v1.GroupTokenPayload'
+          $ref: '#/definitions/v1.GroupInvitationCreate'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/v1.GroupTokenResponse'
+            $ref: '#/definitions/v1.GroupInvitation'
       security:
       - Bearer: []
       summary: Get the current user

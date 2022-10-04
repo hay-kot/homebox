@@ -34,7 +34,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.GroupTokenPayload"
+                            "$ref": "#/definitions/v1.GroupInvitationCreate"
                         }
                     }
                 ],
@@ -42,7 +42,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/v1.GroupTokenResponse"
+                            "$ref": "#/definitions/v1.GroupInvitation"
                         }
                     }
                 }
@@ -1574,10 +1574,13 @@
                 }
             }
         },
-        "v1.GroupTokenPayload": {
+        "v1.GroupInvitation": {
             "type": "object",
             "properties": {
                 "expiresAt": {
+                    "type": "string"
+                },
+                "token": {
                     "type": "string"
                 },
                 "uses": {
@@ -1585,13 +1588,10 @@
                 }
             }
         },
-        "v1.GroupTokenResponse": {
+        "v1.GroupInvitationCreate": {
             "type": "object",
             "properties": {
                 "expiresAt": {
-                    "type": "string"
-                },
-                "token": {
                     "type": "string"
                 },
                 "uses": {
