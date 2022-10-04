@@ -3,7 +3,7 @@ import { Requests } from "../../requests";
 import { overrideParts } from "../base/urls";
 import { PublicApi } from "../public";
 import * as config from "../../../test/config";
-import { UserApi } from "../user";
+import { UserClient } from "../user";
 
 export function client() {
   overrideParts(config.BASE_URL, "/api/v1");
@@ -14,7 +14,7 @@ export function client() {
 export function userClient(token: string) {
   overrideParts(config.BASE_URL, "/api/v1");
   const requests = new Requests("", token);
-  return new UserApi(requests);
+  return new UserClient(requests);
 }
 
 const cache = {
@@ -25,7 +25,7 @@ const cache = {
  * Shared UserApi token for tests where the creation of a user is _not_ import
  * to the test. This is useful for tests that are testing the user API itself.
  */
-export async function sharedUserClient(): Promise<UserApi> {
+export async function sharedUserClient(): Promise<UserClient> {
   if (cache.token) {
     return userClient(cache.token);
   }

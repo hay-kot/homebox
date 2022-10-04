@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { LocationOut } from "../../types/data-contracts";
-import { UserApi } from "../../user";
+import { UserClient } from "../../user";
 import { sharedUserClient } from "../test-utils";
 
 describe("locations lifecycle (create, update, delete)", () => {
@@ -10,7 +10,7 @@ describe("locations lifecycle (create, update, delete)", () => {
    * useLocatio sets up a location resource for testing, and returns a function
    * that can be used to delete the location from the backend server.
    */
-  async function useLocation(api: UserApi): Promise<[LocationOut, () => Promise<void>]> {
+  async function useLocation(api: UserClient): Promise<[LocationOut, () => Promise<void>]> {
     const { response, data } = await api.locations.create({
       name: `__test__.location.name_${increment}`,
       description: `__test__.location.description_${increment}`,

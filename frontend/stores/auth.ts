@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { useLocalStorage } from "@vueuse/core";
-import { UserApi } from "~~/lib/api/user";
+import { UserClient } from "~~/lib/api/user";
 import { UserOut } from "~~/lib/api/types/data-contracts";
 
 export const useAuthStore = defineStore("auth", {
@@ -23,7 +23,7 @@ export const useAuthStore = defineStore("auth", {
     },
   },
   actions: {
-    async logout(api: UserApi) {
+    async logout(api: UserClient) {
       const result = await api.logout();
 
       if (result.error) {
