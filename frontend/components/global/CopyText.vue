@@ -30,7 +30,6 @@
 
     setTimeout(() => {
       copied.value = false;
-      console.log(copied.value);
     }, 1000);
   }
 </script>

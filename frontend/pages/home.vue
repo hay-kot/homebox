@@ -16,14 +16,12 @@
   const auth = useAuthStore();
 
   if (auth.self === null) {
-    const { data, error } = await api.self();
+    const { data, error } = await api.user.self();
     if (error) {
       navigateTo("/");
     }
 
     auth.$patch({ self: data.item });
-
-    console.log(auth.self);
   }
 
   const itemsStore = useItemStore();

@@ -66,7 +66,6 @@
   }
 
   onMounted(() => {
-    console.log(groupToken.value);
     if (groupToken.value !== "") {
       registerForm.value = true;
     }

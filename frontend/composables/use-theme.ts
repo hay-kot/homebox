@@ -30,11 +30,9 @@ export function useTheme(): UseTheme {
     }
 
     htmlEl.value = document.querySelector("html");
-    console.log(htmlEl.value);
   });
 
   const theme = computed(() => {
-    console.log(themeRef.value);
     return themeRef.value;
   });
 
