@@ -62,7 +62,7 @@ func TestMain(m *testing.M) {
 	}
 
 	tClient = client
-	tRepos = repo.EntAllRepos(tClient, os.TempDir()+"/homebox")
+	tRepos = repo.New(tClient, os.TempDir()+"/homebox")
 	tSvc = NewServices(tRepos)
 	defer client.Close()
 

@@ -15,7 +15,7 @@ type AllRepos struct {
 	Attachments *AttachmentRepo
 }
 
-func EntAllRepos(db *ent.Client, root string) *AllRepos {
+func New(db *ent.Client, root string) *AllRepos {
 	return &AllRepos{
 		Users:       &UserRepository{db},
 		AuthTokens:  &TokenRepository{db},
