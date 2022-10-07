@@ -4,3 +4,7 @@ export enum AttachmentTypes {
   Warranty = "warranty",
   Attachment = "attachment",
 }
+
+export type Result<T> = {
+  item: T;
+};

@@ -222,6 +222,7 @@ export interface UserRegistration {
   groupName: string;
   name: string;
   password: string;
+  token: string;
 }
 
 export interface ApiSummary {
@@ -238,11 +239,22 @@ export interface Build {
   version: string;
 }
 
+export interface GroupInvitation {
+  expiresAt: Date;
+  token: string;
+  uses: number;
+}
+
+export interface GroupInvitationCreate {
+  expiresAt: Date;
+  uses: number;
+}
+
 export interface ItemAttachmentToken {
   token: string;
 }
 
 export interface TokenResponse {
-  expiresAt: string;
+  expiresAt: Date;
   token: string;
 }

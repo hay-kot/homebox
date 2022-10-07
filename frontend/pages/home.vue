@@ -16,14 +16,12 @@
   const auth = useAuthStore();
 
   if (auth.self === null) {
-    const { data, error } = await api.self();
+    const { data, error } = await api.user.self();
     if (error) {
       navigateTo("/");
     }
 
     auth.$patch({ self: data.item });
-
-    console.log(auth.self);
   }
 
   const itemsStore = useItemStore();
@@ -140,7 +138,7 @@
                   Import
                 </button>
               </div>
-              <BaseButton type="button" size="sm">
+              <BaseButton type="button" size="sm" to="/profile">
                 <Icon class="h-5 w-5 mr-2" name="mdi-person" />
                 Profile
               </BaseButton>
@@ -148,12 +146,12 @@
           </template>
 
           <div
-            class="grid grid-cols-1 divide-y divide-gray-300 border-t border-gray-300 sm:grid-cols-3 sm:divide-y-0 sm:divide-x"
+            class="grid grid-cols-1 divide-y divide-base-300 border-t border-base-300 sm:grid-cols-3 sm:divide-y-0 sm:divide-x"
           >
             <div v-for="stat in stats" :key="stat.label" class="px-6 py-5 text-center text-sm font-medium">
-              <span class="text-gray-900">{{ stat.value.value }}</span>
+              <span class="text-base-900 font-bold">{{ stat.value.value }}</span>
               {{ " " }}
-              <span class="text-gray-600">{{ stat.label }}</span>
+              <span class="text-base-600">{{ stat.label }}</span>
             </div>
           </div>
         </BaseCard>

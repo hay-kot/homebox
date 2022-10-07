@@ -123,8 +123,8 @@
     <BaseCard class="mb-16">
       <template #title>
         <BaseSectionHeader>
-          <Icon name="mdi-map-marker" class="mr-2 text-gray-600" />
-          <span class="text-gray-600">
+          <Icon name="mdi-map-marker" class="mr-2 -mt-1 text-base-content" />
+          <span class="text-base-content">
             {{ location ? location.name : "" }}
           </span>
         </BaseSectionHeader>

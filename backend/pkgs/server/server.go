@@ -12,29 +12,44 @@ import (
 	"time"
 )
 
-// TODO: #2 Implement Go routine pool/job queue
-
-var ErrServerNotStarted = errors.New("server not started")
-var ErrServerAlreadyStarted = errors.New("server already started")
+var (
+	ErrServerNotStarted     = errors.New("server not started")
+	ErrServerAlreadyStarted = errors.New("server already started")
+)
 
 type Server struct {
-	Host string
-	Port string
-
+	Host   string
+	Port   string
 	Worker Worker
-	wg     sync.WaitGroup
+
+	wg sync.WaitGroup
 
 	started      bool
 	activeServer *http.Server
+
+	idleTimeout  time.Duration
+	readTimeout  time.Duration
+	writeTimeout time.Duration
 }
 
-func NewServer(host, port string) *Server {
-	return &Server{
-		Host:   host,
-		Port:   port,
-		wg:     sync.WaitGroup{},
-		Worker: NewSimpleWorker(),
+func NewServer(opts ...Option) *Server {
+	s := &Server{
+		Host:         "localhost",
+		Port:         "8080",
+		Worker:       NewSimpleWorker(),
+		idleTimeout:  30 * time.Second,
+		readTimeout:  10 * time.Second,
+		writeTimeout: 10 * time.Second,
 	}
+
+	for _, opt := range opts {
+		err := opt(s)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	return s
 }
 
 func (s *Server) Shutdown(sig string) error {
@@ -68,9 +83,9 @@ func (s *Server) Start(router http.Handler) error {
 	s.activeServer = &http.Server{
 		Addr:         s.Host + ":" + s.Port,
 		Handler:      router,
-		IdleTimeout:  time.Minute,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  s.idleTimeout,
+		ReadTimeout:  s.readTimeout,
+		WriteTimeout: s.writeTimeout,
 	}
 
 	shutdownError := make(chan error)

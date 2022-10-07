@@ -15,6 +15,7 @@ import (
 	"github.com/hay-kot/homebox/backend/ent/document"
 	"github.com/hay-kot/homebox/backend/ent/documenttoken"
 	"github.com/hay-kot/homebox/backend/ent/group"
+	"github.com/hay-kot/homebox/backend/ent/groupinvitationtoken"
 	"github.com/hay-kot/homebox/backend/ent/item"
 	"github.com/hay-kot/homebox/backend/ent/itemfield"
 	"github.com/hay-kot/homebox/backend/ent/label"
@@ -34,16 +35,17 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeAttachment    = "Attachment"
-	TypeAuthTokens    = "AuthTokens"
-	TypeDocument      = "Document"
-	TypeDocumentToken = "DocumentToken"
-	TypeGroup         = "Group"
-	TypeItem          = "Item"
-	TypeItemField     = "ItemField"
-	TypeLabel         = "Label"
-	TypeLocation      = "Location"
-	TypeUser          = "User"
+	TypeAttachment           = "Attachment"
+	TypeAuthTokens           = "AuthTokens"
+	TypeDocument             = "Document"
+	TypeDocumentToken        = "DocumentToken"
+	TypeGroup                = "Group"
+	TypeGroupInvitationToken = "GroupInvitationToken"
+	TypeItem                 = "Item"
+	TypeItemField            = "ItemField"
+	TypeLabel                = "Label"
+	TypeLocation             = "Location"
+	TypeUser                 = "User"
 )
 
 // AttachmentMutation represents an operation that mutates the Attachment nodes in the graph.
@@ -2496,32 +2498,35 @@ func (m *DocumentTokenMutation) ResetEdge(name string) error {
 // GroupMutation represents an operation that mutates the Group nodes in the graph.
 type GroupMutation struct {
 	config
-	op               Op
-	typ              string
-	id               *uuid.UUID
-	created_at       *time.Time
-	updated_at       *time.Time
-	name             *string
-	currency         *group.Currency
-	clearedFields    map[string]struct{}
-	users            map[uuid.UUID]struct{}
-	removedusers     map[uuid.UUID]struct{}
-	clearedusers     bool
-	locations        map[uuid.UUID]struct{}
-	removedlocations map[uuid.UUID]struct{}
-	clearedlocations bool
-	items            map[uuid.UUID]struct{}
-	removeditems     map[uuid.UUID]struct{}
-	cleareditems     bool
-	labels           map[uuid.UUID]struct{}
-	removedlabels    map[uuid.UUID]struct{}
-	clearedlabels    bool
-	documents        map[uuid.UUID]struct{}
-	removeddocuments map[uuid.UUID]struct{}
-	cleareddocuments bool
-	done             bool
-	oldValue         func(context.Context) (*Group, error)
-	predicates       []predicate.Group
+	op                       Op
+	typ                      string
+	id                       *uuid.UUID
+	created_at               *time.Time
+	updated_at               *time.Time
+	name                     *string
+	currency                 *group.Currency
+	clearedFields            map[string]struct{}
+	users                    map[uuid.UUID]struct{}
+	removedusers             map[uuid.UUID]struct{}
+	clearedusers             bool
+	locations                map[uuid.UUID]struct{}
+	removedlocations         map[uuid.UUID]struct{}
+	clearedlocations         bool
+	items                    map[uuid.UUID]struct{}
+	removeditems             map[uuid.UUID]struct{}
+	cleareditems             bool
+	labels                   map[uuid.UUID]struct{}
+	removedlabels            map[uuid.UUID]struct{}
+	clearedlabels            bool
+	documents                map[uuid.UUID]struct{}
+	removeddocuments         map[uuid.UUID]struct{}
+	cleareddocuments         bool
+	invitation_tokens        map[uuid.UUID]struct{}
+	removedinvitation_tokens map[uuid.UUID]struct{}
+	clearedinvitation_tokens bool
+	done                     bool
+	oldValue                 func(context.Context) (*Group, error)
+	predicates               []predicate.Group
 }
 
 var _ ent.Mutation = (*GroupMutation)(nil)
@@ -3042,6 +3047,60 @@ func (m *GroupMutation) ResetDocuments() {
 	m.removeddocuments = nil
 }
 
+// AddInvitationTokenIDs adds the "invitation_tokens" edge to the GroupInvitationToken entity by ids.
+func (m *GroupMutation) AddInvitationTokenIDs(ids ...uuid.UUID) {
+	if m.invitation_tokens == nil {
+		m.invitation_tokens = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.invitation_tokens[ids[i]] = struct{}{}
+	}
+}
+
+// ClearInvitationTokens clears the "invitation_tokens" edge to the GroupInvitationToken entity.
+func (m *GroupMutation) ClearInvitationTokens() {
+	m.clearedinvitation_tokens = true
+}
+
+// InvitationTokensCleared reports if the "invitation_tokens" edge to the GroupInvitationToken entity was cleared.
+func (m *GroupMutation) InvitationTokensCleared() bool {
+	return m.clearedinvitation_tokens
+}
+
+// RemoveInvitationTokenIDs removes the "invitation_tokens" edge to the GroupInvitationToken entity by IDs.
+func (m *GroupMutation) RemoveInvitationTokenIDs(ids ...uuid.UUID) {
+	if m.removedinvitation_tokens == nil {
+		m.removedinvitation_tokens = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.invitation_tokens, ids[i])
+		m.removedinvitation_tokens[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedInvitationTokens returns the removed IDs of the "invitation_tokens" edge to the GroupInvitationToken entity.
+func (m *GroupMutation) RemovedInvitationTokensIDs() (ids []uuid.UUID) {
+	for id := range m.removedinvitation_tokens {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// InvitationTokensIDs returns the "invitation_tokens" edge IDs in the mutation.
+func (m *GroupMutation) InvitationTokensIDs() (ids []uuid.UUID) {
+	for id := range m.invitation_tokens {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetInvitationTokens resets all changes to the "invitation_tokens" edge.
+func (m *GroupMutation) ResetInvitationTokens() {
+	m.invitation_tokens = nil
+	m.clearedinvitation_tokens = false
+	m.removedinvitation_tokens = nil
+}
+
 // Where appends a list predicates to the GroupMutation builder.
 func (m *GroupMutation) Where(ps ...predicate.Group) {
 	m.predicates = append(m.predicates, ps...)
@@ -3211,7 +3270,7 @@ func (m *GroupMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *GroupMutation) AddedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.users != nil {
 		edges = append(edges, group.EdgeUsers)
 	}
@@ -3226,6 +3285,9 @@ func (m *GroupMutation) AddedEdges() []string {
 	}
 	if m.documents != nil {
 		edges = append(edges, group.EdgeDocuments)
+	}
+	if m.invitation_tokens != nil {
+		edges = append(edges, group.EdgeInvitationTokens)
 	}
 	return edges
 }
@@ -3264,13 +3326,19 @@ func (m *GroupMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case group.EdgeInvitationTokens:
+		ids := make([]ent.Value, 0, len(m.invitation_tokens))
+		for id := range m.invitation_tokens {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *GroupMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.removedusers != nil {
 		edges = append(edges, group.EdgeUsers)
 	}
@@ -3285,6 +3353,9 @@ func (m *GroupMutation) RemovedEdges() []string {
 	}
 	if m.removeddocuments != nil {
 		edges = append(edges, group.EdgeDocuments)
+	}
+	if m.removedinvitation_tokens != nil {
+		edges = append(edges, group.EdgeInvitationTokens)
 	}
 	return edges
 }
@@ -3323,13 +3394,19 @@ func (m *GroupMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case group.EdgeInvitationTokens:
+		ids := make([]ent.Value, 0, len(m.removedinvitation_tokens))
+		for id := range m.removedinvitation_tokens {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *GroupMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.clearedusers {
 		edges = append(edges, group.EdgeUsers)
 	}
@@ -3344,6 +3421,9 @@ func (m *GroupMutation) ClearedEdges() []string {
 	}
 	if m.cleareddocuments {
 		edges = append(edges, group.EdgeDocuments)
+	}
+	if m.clearedinvitation_tokens {
+		edges = append(edges, group.EdgeInvitationTokens)
 	}
 	return edges
 }
@@ -3362,6 +3442,8 @@ func (m *GroupMutation) EdgeCleared(name string) bool {
 		return m.clearedlabels
 	case group.EdgeDocuments:
 		return m.cleareddocuments
+	case group.EdgeInvitationTokens:
+		return m.clearedinvitation_tokens
 	}
 	return false
 }
@@ -3393,8 +3475,647 @@ func (m *GroupMutation) ResetEdge(name string) error {
 	case group.EdgeDocuments:
 		m.ResetDocuments()
 		return nil
+	case group.EdgeInvitationTokens:
+		m.ResetInvitationTokens()
+		return nil
 	}
 	return fmt.Errorf("unknown Group edge %s", name)
+}
+
+// GroupInvitationTokenMutation represents an operation that mutates the GroupInvitationToken nodes in the graph.
+type GroupInvitationTokenMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *uuid.UUID
+	created_at    *time.Time
+	updated_at    *time.Time
+	token         *[]byte
+	expires_at    *time.Time
+	uses          *int
+	adduses       *int
+	clearedFields map[string]struct{}
+	group         *uuid.UUID
+	clearedgroup  bool
+	done          bool
+	oldValue      func(context.Context) (*GroupInvitationToken, error)
+	predicates    []predicate.GroupInvitationToken
+}
+
+var _ ent.Mutation = (*GroupInvitationTokenMutation)(nil)
+
+// groupinvitationtokenOption allows management of the mutation configuration using functional options.
+type groupinvitationtokenOption func(*GroupInvitationTokenMutation)
+
+// newGroupInvitationTokenMutation creates new mutation for the GroupInvitationToken entity.
+func newGroupInvitationTokenMutation(c config, op Op, opts ...groupinvitationtokenOption) *GroupInvitationTokenMutation {
+	m := &GroupInvitationTokenMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeGroupInvitationToken,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withGroupInvitationTokenID sets the ID field of the mutation.
+func withGroupInvitationTokenID(id uuid.UUID) groupinvitationtokenOption {
+	return func(m *GroupInvitationTokenMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *GroupInvitationToken
+		)
+		m.oldValue = func(ctx context.Context) (*GroupInvitationToken, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().GroupInvitationToken.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withGroupInvitationToken sets the old GroupInvitationToken of the mutation.
+func withGroupInvitationToken(node *GroupInvitationToken) groupinvitationtokenOption {
+	return func(m *GroupInvitationTokenMutation) {
+		m.oldValue = func(context.Context) (*GroupInvitationToken, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m GroupInvitationTokenMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m GroupInvitationTokenMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of GroupInvitationToken entities.
+func (m *GroupInvitationTokenMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *GroupInvitationTokenMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *GroupInvitationTokenMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().GroupInvitationToken.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *GroupInvitationTokenMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *GroupInvitationTokenMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the GroupInvitationToken entity.
+// If the GroupInvitationToken object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GroupInvitationTokenMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *GroupInvitationTokenMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *GroupInvitationTokenMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *GroupInvitationTokenMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the GroupInvitationToken entity.
+// If the GroupInvitationToken object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GroupInvitationTokenMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *GroupInvitationTokenMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetToken sets the "token" field.
+func (m *GroupInvitationTokenMutation) SetToken(b []byte) {
+	m.token = &b
+}
+
+// Token returns the value of the "token" field in the mutation.
+func (m *GroupInvitationTokenMutation) Token() (r []byte, exists bool) {
+	v := m.token
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldToken returns the old "token" field's value of the GroupInvitationToken entity.
+// If the GroupInvitationToken object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GroupInvitationTokenMutation) OldToken(ctx context.Context) (v []byte, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldToken is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldToken requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldToken: %w", err)
+	}
+	return oldValue.Token, nil
+}
+
+// ResetToken resets all changes to the "token" field.
+func (m *GroupInvitationTokenMutation) ResetToken() {
+	m.token = nil
+}
+
+// SetExpiresAt sets the "expires_at" field.
+func (m *GroupInvitationTokenMutation) SetExpiresAt(t time.Time) {
+	m.expires_at = &t
+}
+
+// ExpiresAt returns the value of the "expires_at" field in the mutation.
+func (m *GroupInvitationTokenMutation) ExpiresAt() (r time.Time, exists bool) {
+	v := m.expires_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldExpiresAt returns the old "expires_at" field's value of the GroupInvitationToken entity.
+// If the GroupInvitationToken object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GroupInvitationTokenMutation) OldExpiresAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldExpiresAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldExpiresAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldExpiresAt: %w", err)
+	}
+	return oldValue.ExpiresAt, nil
+}
+
+// ResetExpiresAt resets all changes to the "expires_at" field.
+func (m *GroupInvitationTokenMutation) ResetExpiresAt() {
+	m.expires_at = nil
+}
+
+// SetUses sets the "uses" field.
+func (m *GroupInvitationTokenMutation) SetUses(i int) {
+	m.uses = &i
+	m.adduses = nil
+}
+
+// Uses returns the value of the "uses" field in the mutation.
+func (m *GroupInvitationTokenMutation) Uses() (r int, exists bool) {
+	v := m.uses
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUses returns the old "uses" field's value of the GroupInvitationToken entity.
+// If the GroupInvitationToken object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GroupInvitationTokenMutation) OldUses(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUses is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUses requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUses: %w", err)
+	}
+	return oldValue.Uses, nil
+}
+
+// AddUses adds i to the "uses" field.
+func (m *GroupInvitationTokenMutation) AddUses(i int) {
+	if m.adduses != nil {
+		*m.adduses += i
+	} else {
+		m.adduses = &i
+	}
+}
+
+// AddedUses returns the value that was added to the "uses" field in this mutation.
+func (m *GroupInvitationTokenMutation) AddedUses() (r int, exists bool) {
+	v := m.adduses
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetUses resets all changes to the "uses" field.
+func (m *GroupInvitationTokenMutation) ResetUses() {
+	m.uses = nil
+	m.adduses = nil
+}
+
+// SetGroupID sets the "group" edge to the Group entity by id.
+func (m *GroupInvitationTokenMutation) SetGroupID(id uuid.UUID) {
+	m.group = &id
+}
+
+// ClearGroup clears the "group" edge to the Group entity.
+func (m *GroupInvitationTokenMutation) ClearGroup() {
+	m.clearedgroup = true
+}
+
+// GroupCleared reports if the "group" edge to the Group entity was cleared.
+func (m *GroupInvitationTokenMutation) GroupCleared() bool {
+	return m.clearedgroup
+}
+
+// GroupID returns the "group" edge ID in the mutation.
+func (m *GroupInvitationTokenMutation) GroupID() (id uuid.UUID, exists bool) {
+	if m.group != nil {
+		return *m.group, true
+	}
+	return
+}
+
+// GroupIDs returns the "group" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// GroupID instead. It exists only for internal usage by the builders.
+func (m *GroupInvitationTokenMutation) GroupIDs() (ids []uuid.UUID) {
+	if id := m.group; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetGroup resets all changes to the "group" edge.
+func (m *GroupInvitationTokenMutation) ResetGroup() {
+	m.group = nil
+	m.clearedgroup = false
+}
+
+// Where appends a list predicates to the GroupInvitationTokenMutation builder.
+func (m *GroupInvitationTokenMutation) Where(ps ...predicate.GroupInvitationToken) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *GroupInvitationTokenMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (GroupInvitationToken).
+func (m *GroupInvitationTokenMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *GroupInvitationTokenMutation) Fields() []string {
+	fields := make([]string, 0, 5)
+	if m.created_at != nil {
+		fields = append(fields, groupinvitationtoken.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, groupinvitationtoken.FieldUpdatedAt)
+	}
+	if m.token != nil {
+		fields = append(fields, groupinvitationtoken.FieldToken)
+	}
+	if m.expires_at != nil {
+		fields = append(fields, groupinvitationtoken.FieldExpiresAt)
+	}
+	if m.uses != nil {
+		fields = append(fields, groupinvitationtoken.FieldUses)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *GroupInvitationTokenMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case groupinvitationtoken.FieldCreatedAt:
+		return m.CreatedAt()
+	case groupinvitationtoken.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case groupinvitationtoken.FieldToken:
+		return m.Token()
+	case groupinvitationtoken.FieldExpiresAt:
+		return m.ExpiresAt()
+	case groupinvitationtoken.FieldUses:
+		return m.Uses()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *GroupInvitationTokenMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case groupinvitationtoken.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case groupinvitationtoken.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case groupinvitationtoken.FieldToken:
+		return m.OldToken(ctx)
+	case groupinvitationtoken.FieldExpiresAt:
+		return m.OldExpiresAt(ctx)
+	case groupinvitationtoken.FieldUses:
+		return m.OldUses(ctx)
+	}
+	return nil, fmt.Errorf("unknown GroupInvitationToken field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *GroupInvitationTokenMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case groupinvitationtoken.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case groupinvitationtoken.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case groupinvitationtoken.FieldToken:
+		v, ok := value.([]byte)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetToken(v)
+		return nil
+	case groupinvitationtoken.FieldExpiresAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetExpiresAt(v)
+		return nil
+	case groupinvitationtoken.FieldUses:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUses(v)
+		return nil
+	}
+	return fmt.Errorf("unknown GroupInvitationToken field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *GroupInvitationTokenMutation) AddedFields() []string {
+	var fields []string
+	if m.adduses != nil {
+		fields = append(fields, groupinvitationtoken.FieldUses)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *GroupInvitationTokenMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case groupinvitationtoken.FieldUses:
+		return m.AddedUses()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *GroupInvitationTokenMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case groupinvitationtoken.FieldUses:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUses(v)
+		return nil
+	}
+	return fmt.Errorf("unknown GroupInvitationToken numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *GroupInvitationTokenMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *GroupInvitationTokenMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *GroupInvitationTokenMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown GroupInvitationToken nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *GroupInvitationTokenMutation) ResetField(name string) error {
+	switch name {
+	case groupinvitationtoken.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case groupinvitationtoken.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case groupinvitationtoken.FieldToken:
+		m.ResetToken()
+		return nil
+	case groupinvitationtoken.FieldExpiresAt:
+		m.ResetExpiresAt()
+		return nil
+	case groupinvitationtoken.FieldUses:
+		m.ResetUses()
+		return nil
+	}
+	return fmt.Errorf("unknown GroupInvitationToken field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *GroupInvitationTokenMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.group != nil {
+		edges = append(edges, groupinvitationtoken.EdgeGroup)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *GroupInvitationTokenMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case groupinvitationtoken.EdgeGroup:
+		if id := m.group; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *GroupInvitationTokenMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *GroupInvitationTokenMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *GroupInvitationTokenMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedgroup {
+		edges = append(edges, groupinvitationtoken.EdgeGroup)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *GroupInvitationTokenMutation) EdgeCleared(name string) bool {
+	switch name {
+	case groupinvitationtoken.EdgeGroup:
+		return m.clearedgroup
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *GroupInvitationTokenMutation) ClearEdge(name string) error {
+	switch name {
+	case groupinvitationtoken.EdgeGroup:
+		m.ClearGroup()
+		return nil
+	}
+	return fmt.Errorf("unknown GroupInvitationToken unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *GroupInvitationTokenMutation) ResetEdge(name string) error {
+	switch name {
+	case groupinvitationtoken.EdgeGroup:
+		m.ResetGroup()
+		return nil
+	}
+	return fmt.Errorf("unknown GroupInvitationToken edge %s", name)
 }
 
 // ItemMutation represents an operation that mutates the Item nodes in the graph.

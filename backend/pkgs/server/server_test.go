@@ -10,7 +10,7 @@ import (
 )
 
 func testServer(t *testing.T, r http.Handler) *Server {
-	svr := NewServer("127.0.0.1", "19245")
+	svr := NewServer(WithHost("127.0.0.1"), WithPort("19245"))
 
 	go func() {
 		err := svr.Start(r)
@@ -33,7 +33,7 @@ func testServer(t *testing.T, r http.Handler) *Server {
 }
 
 func Test_ServerShutdown_Error(t *testing.T) {
-	svr := NewServer("127.0.0.1", "19245")
+	svr := NewServer(WithHost("127.0.0.1"), WithPort("19245"))
 
 	err := svr.Shutdown("test")
 	assert.ErrorIs(t, err, ErrServerNotStarted)

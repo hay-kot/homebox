@@ -13,6 +13,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/ent/document"
 	"github.com/hay-kot/homebox/backend/ent/group"
+	"github.com/hay-kot/homebox/backend/ent/groupinvitationtoken"
 	"github.com/hay-kot/homebox/backend/ent/item"
 	"github.com/hay-kot/homebox/backend/ent/label"
 	"github.com/hay-kot/homebox/backend/ent/location"
@@ -161,6 +162,21 @@ func (gc *GroupCreate) AddDocuments(d ...*Document) *GroupCreate {
 		ids[i] = d[i].ID
 	}
 	return gc.AddDocumentIDs(ids...)
+}
+
+// AddInvitationTokenIDs adds the "invitation_tokens" edge to the GroupInvitationToken entity by IDs.
+func (gc *GroupCreate) AddInvitationTokenIDs(ids ...uuid.UUID) *GroupCreate {
+	gc.mutation.AddInvitationTokenIDs(ids...)
+	return gc
+}
+
+// AddInvitationTokens adds the "invitation_tokens" edges to the GroupInvitationToken entity.
+func (gc *GroupCreate) AddInvitationTokens(g ...*GroupInvitationToken) *GroupCreate {
+	ids := make([]uuid.UUID, len(g))
+	for i := range g {
+		ids[i] = g[i].ID
+	}
+	return gc.AddInvitationTokenIDs(ids...)
 }
 
 // Mutation returns the GroupMutation object of the builder.
@@ -437,6 +453,25 @@ func (gc *GroupCreate) createSpec() (*Group, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: document.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := gc.mutation.InvitationTokensIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.InvitationTokensTable,
+			Columns: []string{group.InvitationTokensColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: groupinvitationtoken.FieldID,
 				},
 			},
 		}

@@ -24,18 +24,14 @@ type UserService struct {
 
 type (
 	UserRegistration struct {
-		Name      string `json:"name"`
-		Email     string `json:"email"`
-		Password  string `json:"password"`
-		GroupName string `json:"groupName"`
+		GroupToken string `json:"token"`
+		Name       string `json:"name"`
+		Email      string `json:"email"`
+		Password   string `json:"password"`
+		GroupName  string `json:"groupName"`
 	}
 	UserAuthTokenDetail struct {
 		Raw       string    `json:"raw"`
-		ExpiresAt time.Time `json:"expiresAt"`
-	}
-	UserAuthTokenCreate struct {
-		TokenHash []byte    `json:"token"`
-		UserID    uuid.UUID `json:"userId"`
 		ExpiresAt time.Time `json:"expiresAt"`
 	}
 	LoginForm struct {
@@ -51,11 +47,28 @@ func (svc *UserService) RegisterUser(ctx context.Context, data UserRegistration)
 		Str("name", data.Name).
 		Str("email", data.Email).
 		Str("groupName", data.GroupName).
+		Str("groupToken", data.GroupToken).
 		Msg("Registering new user")
 
-	group, err := svc.repos.Groups.Create(ctx, data.GroupName)
-	if err != nil {
-		return repo.UserOut{}, err
+	var (
+		err   error
+		group repo.Group
+		token repo.GroupInvitation
+	)
+
+	if data.GroupToken == "" {
+		group, err = svc.repos.Groups.GroupCreate(ctx, data.GroupName)
+		if err != nil {
+			log.Err(err).Msg("Failed to create group")
+			return repo.UserOut{}, err
+		}
+	} else {
+		token, err = svc.repos.Groups.InvitationGet(ctx, hasher.HashToken(data.GroupToken))
+		if err != nil {
+			log.Err(err).Msg("Failed to get invitation token")
+			return repo.UserOut{}, err
+		}
+		group = token.Group
 	}
 
 	hashed, _ := hasher.HashPassword(data.Password)
@@ -82,6 +95,15 @@ func (svc *UserService) RegisterUser(ctx context.Context, data UserRegistration)
 	for _, location := range defaultLocations() {
 		_, err := svc.repos.Locations.Create(ctx, group.ID, location)
 		if err != nil {
+			return repo.UserOut{}, err
+		}
+	}
+
+	// Decrement the invitation token if it was used
+	if token.ID != uuid.Nil {
+		err = svc.repos.Groups.InvitationUpdate(ctx, token.ID, token.Uses-1)
+		if err != nil {
+			log.Err(err).Msg("Failed to update invitation token")
 			return repo.UserOut{}, err
 		}
 	}
@@ -154,4 +176,19 @@ func (svc *UserService) RenewToken(ctx context.Context, token string) (UserAuthT
 // be used when the identify of the user has been confirmed.
 func (svc *UserService) DeleteSelf(ctx context.Context, ID uuid.UUID) error {
 	return svc.repos.Users.Delete(ctx, ID)
+}
+
+func (svc *UserService) NewInvitation(ctx Context, uses int, expiresAt time.Time) (string, error) {
+	token := hasher.GenerateToken()
+
+	_, err := svc.repos.Groups.InvitationCreate(ctx, ctx.GID, repo.GroupInvitationCreate{
+		Token:     token.Hash,
+		Uses:      uses,
+		ExpiresAt: expiresAt,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return token.Raw, nil
 }

@@ -74,6 +74,19 @@ func (f GroupFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	return f(ctx, mv)
 }
 
+// The GroupInvitationTokenFunc type is an adapter to allow the use of ordinary
+// function as GroupInvitationToken mutator.
+type GroupInvitationTokenFunc func(context.Context, *ent.GroupInvitationTokenMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f GroupInvitationTokenFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.GroupInvitationTokenMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.GroupInvitationTokenMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The ItemFunc type is an adapter to allow the use of ordinary
 // function as Item mutator.
 type ItemFunc func(context.Context, *ent.ItemMutation) (ent.Value, error)

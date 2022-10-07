@@ -1,5 +1,7 @@
 package server
 
+// TODO: #2 Implement Go routine pool/job queue
+
 type Worker interface {
 	Add(func())
 }

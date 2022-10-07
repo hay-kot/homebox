@@ -56,7 +56,6 @@ func (ctrl *V1Controller) HandleItemsCreate() http.HandlerFunc {
 		}
 
 		server.Respond(w, http.StatusCreated, item)
-
 	}
 }
 
@@ -154,8 +153,7 @@ func (ctrl *V1Controller) HandleItemUpdate() http.HandlerFunc {
 func (ctrl *V1Controller) HandleItemsImport() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		// Max upload size of 10 MB - TODO: Set via config
-		err := r.ParseMultipartForm(10 << 20)
+		err := r.ParseMultipartForm(ctrl.maxUploadSize << 20)
 		if err != nil {
 			log.Err(err).Msg("failed to parse multipart form")
 			server.RespondServerError(w)

@@ -1,5 +1,5 @@
 import { PublicApi } from "~~/lib/api/public";
-import { UserApi } from "~~/lib/api/user";
+import { UserClient } from "~~/lib/api/user";
 import { Requests } from "~~/lib/requests";
 import { useAuthStore } from "~~/stores/auth";
 
@@ -28,7 +28,7 @@ export function usePublicApi(): PublicApi {
   return new PublicApi(requests);
 }
 
-export function useUserApi(): UserApi {
+export function useUserApi(): UserClient {
   const authStore = useAuthStore();
 
   const requests = new Requests("", () => authStore.token, {});
@@ -43,5 +43,5 @@ export function useUserApi(): UserApi {
     requests.addResponseInterceptor(observer.handler);
   }
 
-  return new UserApi(requests);
+  return new UserClient(requests);
 }

@@ -16,6 +16,7 @@ import (
 	"github.com/hay-kot/homebox/backend/ent/document"
 	"github.com/hay-kot/homebox/backend/ent/documenttoken"
 	"github.com/hay-kot/homebox/backend/ent/group"
+	"github.com/hay-kot/homebox/backend/ent/groupinvitationtoken"
 	"github.com/hay-kot/homebox/backend/ent/item"
 	"github.com/hay-kot/homebox/backend/ent/itemfield"
 	"github.com/hay-kot/homebox/backend/ent/label"
@@ -42,6 +43,8 @@ type Client struct {
 	DocumentToken *DocumentTokenClient
 	// Group is the client for interacting with the Group builders.
 	Group *GroupClient
+	// GroupInvitationToken is the client for interacting with the GroupInvitationToken builders.
+	GroupInvitationToken *GroupInvitationTokenClient
 	// Item is the client for interacting with the Item builders.
 	Item *ItemClient
 	// ItemField is the client for interacting with the ItemField builders.
@@ -70,6 +73,7 @@ func (c *Client) init() {
 	c.Document = NewDocumentClient(c.config)
 	c.DocumentToken = NewDocumentTokenClient(c.config)
 	c.Group = NewGroupClient(c.config)
+	c.GroupInvitationToken = NewGroupInvitationTokenClient(c.config)
 	c.Item = NewItemClient(c.config)
 	c.ItemField = NewItemFieldClient(c.config)
 	c.Label = NewLabelClient(c.config)
@@ -106,18 +110,19 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:           ctx,
-		config:        cfg,
-		Attachment:    NewAttachmentClient(cfg),
-		AuthTokens:    NewAuthTokensClient(cfg),
-		Document:      NewDocumentClient(cfg),
-		DocumentToken: NewDocumentTokenClient(cfg),
-		Group:         NewGroupClient(cfg),
-		Item:          NewItemClient(cfg),
-		ItemField:     NewItemFieldClient(cfg),
-		Label:         NewLabelClient(cfg),
-		Location:      NewLocationClient(cfg),
-		User:          NewUserClient(cfg),
+		ctx:                  ctx,
+		config:               cfg,
+		Attachment:           NewAttachmentClient(cfg),
+		AuthTokens:           NewAuthTokensClient(cfg),
+		Document:             NewDocumentClient(cfg),
+		DocumentToken:        NewDocumentTokenClient(cfg),
+		Group:                NewGroupClient(cfg),
+		GroupInvitationToken: NewGroupInvitationTokenClient(cfg),
+		Item:                 NewItemClient(cfg),
+		ItemField:            NewItemFieldClient(cfg),
+		Label:                NewLabelClient(cfg),
+		Location:             NewLocationClient(cfg),
+		User:                 NewUserClient(cfg),
 	}, nil
 }
 
@@ -135,18 +140,19 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:           ctx,
-		config:        cfg,
-		Attachment:    NewAttachmentClient(cfg),
-		AuthTokens:    NewAuthTokensClient(cfg),
-		Document:      NewDocumentClient(cfg),
-		DocumentToken: NewDocumentTokenClient(cfg),
-		Group:         NewGroupClient(cfg),
-		Item:          NewItemClient(cfg),
-		ItemField:     NewItemFieldClient(cfg),
-		Label:         NewLabelClient(cfg),
-		Location:      NewLocationClient(cfg),
-		User:          NewUserClient(cfg),
+		ctx:                  ctx,
+		config:               cfg,
+		Attachment:           NewAttachmentClient(cfg),
+		AuthTokens:           NewAuthTokensClient(cfg),
+		Document:             NewDocumentClient(cfg),
+		DocumentToken:        NewDocumentTokenClient(cfg),
+		Group:                NewGroupClient(cfg),
+		GroupInvitationToken: NewGroupInvitationTokenClient(cfg),
+		Item:                 NewItemClient(cfg),
+		ItemField:            NewItemFieldClient(cfg),
+		Label:                NewLabelClient(cfg),
+		Location:             NewLocationClient(cfg),
+		User:                 NewUserClient(cfg),
 	}, nil
 }
 
@@ -180,6 +186,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Document.Use(hooks...)
 	c.DocumentToken.Use(hooks...)
 	c.Group.Use(hooks...)
+	c.GroupInvitationToken.Use(hooks...)
 	c.Item.Use(hooks...)
 	c.ItemField.Use(hooks...)
 	c.Label.Use(hooks...)
@@ -824,9 +831,131 @@ func (c *GroupClient) QueryDocuments(gr *Group) *DocumentQuery {
 	return query
 }
 
+// QueryInvitationTokens queries the invitation_tokens edge of a Group.
+func (c *GroupClient) QueryInvitationTokens(gr *Group) *GroupInvitationTokenQuery {
+	query := &GroupInvitationTokenQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := gr.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(group.Table, group.FieldID, id),
+			sqlgraph.To(groupinvitationtoken.Table, groupinvitationtoken.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, group.InvitationTokensTable, group.InvitationTokensColumn),
+		)
+		fromV = sqlgraph.Neighbors(gr.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *GroupClient) Hooks() []Hook {
 	return c.hooks.Group
+}
+
+// GroupInvitationTokenClient is a client for the GroupInvitationToken schema.
+type GroupInvitationTokenClient struct {
+	config
+}
+
+// NewGroupInvitationTokenClient returns a client for the GroupInvitationToken from the given config.
+func NewGroupInvitationTokenClient(c config) *GroupInvitationTokenClient {
+	return &GroupInvitationTokenClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `groupinvitationtoken.Hooks(f(g(h())))`.
+func (c *GroupInvitationTokenClient) Use(hooks ...Hook) {
+	c.hooks.GroupInvitationToken = append(c.hooks.GroupInvitationToken, hooks...)
+}
+
+// Create returns a builder for creating a GroupInvitationToken entity.
+func (c *GroupInvitationTokenClient) Create() *GroupInvitationTokenCreate {
+	mutation := newGroupInvitationTokenMutation(c.config, OpCreate)
+	return &GroupInvitationTokenCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of GroupInvitationToken entities.
+func (c *GroupInvitationTokenClient) CreateBulk(builders ...*GroupInvitationTokenCreate) *GroupInvitationTokenCreateBulk {
+	return &GroupInvitationTokenCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for GroupInvitationToken.
+func (c *GroupInvitationTokenClient) Update() *GroupInvitationTokenUpdate {
+	mutation := newGroupInvitationTokenMutation(c.config, OpUpdate)
+	return &GroupInvitationTokenUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *GroupInvitationTokenClient) UpdateOne(git *GroupInvitationToken) *GroupInvitationTokenUpdateOne {
+	mutation := newGroupInvitationTokenMutation(c.config, OpUpdateOne, withGroupInvitationToken(git))
+	return &GroupInvitationTokenUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *GroupInvitationTokenClient) UpdateOneID(id uuid.UUID) *GroupInvitationTokenUpdateOne {
+	mutation := newGroupInvitationTokenMutation(c.config, OpUpdateOne, withGroupInvitationTokenID(id))
+	return &GroupInvitationTokenUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for GroupInvitationToken.
+func (c *GroupInvitationTokenClient) Delete() *GroupInvitationTokenDelete {
+	mutation := newGroupInvitationTokenMutation(c.config, OpDelete)
+	return &GroupInvitationTokenDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *GroupInvitationTokenClient) DeleteOne(git *GroupInvitationToken) *GroupInvitationTokenDeleteOne {
+	return c.DeleteOneID(git.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *GroupInvitationTokenClient) DeleteOneID(id uuid.UUID) *GroupInvitationTokenDeleteOne {
+	builder := c.Delete().Where(groupinvitationtoken.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &GroupInvitationTokenDeleteOne{builder}
+}
+
+// Query returns a query builder for GroupInvitationToken.
+func (c *GroupInvitationTokenClient) Query() *GroupInvitationTokenQuery {
+	return &GroupInvitationTokenQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a GroupInvitationToken entity by its id.
+func (c *GroupInvitationTokenClient) Get(ctx context.Context, id uuid.UUID) (*GroupInvitationToken, error) {
+	return c.Query().Where(groupinvitationtoken.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *GroupInvitationTokenClient) GetX(ctx context.Context, id uuid.UUID) *GroupInvitationToken {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryGroup queries the group edge of a GroupInvitationToken.
+func (c *GroupInvitationTokenClient) QueryGroup(git *GroupInvitationToken) *GroupQuery {
+	query := &GroupQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := git.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(groupinvitationtoken.Table, groupinvitationtoken.FieldID, id),
+			sqlgraph.To(group.Table, group.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, groupinvitationtoken.GroupTable, groupinvitationtoken.GroupColumn),
+		)
+		fromV = sqlgraph.Neighbors(git.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *GroupInvitationTokenClient) Hooks() []Hook {
+	return c.hooks.GroupInvitationToken
 }
 
 // ItemClient is a client for the Item schema.

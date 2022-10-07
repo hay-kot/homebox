@@ -1,9 +1,41 @@
 import { Ref } from "vue";
 
+export type DaisyTheme =
+  | "light"
+  | "dark"
+  | "cupcake"
+  | "bumblebee"
+  | "emerald"
+  | "corporate"
+  | "synthwave"
+  | "retro"
+  | "cyberpunk"
+  | "valentine"
+  | "halloween"
+  | "garden"
+  | "forest"
+  | "aqua"
+  | "lofi"
+  | "pastel"
+  | "fantasy"
+  | "wireframe"
+  | "black"
+  | "luxury"
+  | "dracula"
+  | "cmyk"
+  | "autumn"
+  | "business"
+  | "acid"
+  | "lemonade"
+  | "night"
+  | "coffee"
+  | "winter";
+
 export type LocationViewPreferences = {
   showDetails: boolean;
   showEmpty: boolean;
   editorSimpleView: boolean;
+  theme: DaisyTheme;
 };
 
 /**
@@ -17,6 +49,7 @@ export function useViewPreferences(): Ref<LocationViewPreferences> {
       showDetails: true,
       showEmpty: true,
       editorSimpleView: true,
+      theme: "garden",
     },
     { mergeDefaults: true }
   );

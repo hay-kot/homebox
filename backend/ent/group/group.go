@@ -32,6 +32,8 @@ const (
 	EdgeLabels = "labels"
 	// EdgeDocuments holds the string denoting the documents edge name in mutations.
 	EdgeDocuments = "documents"
+	// EdgeInvitationTokens holds the string denoting the invitation_tokens edge name in mutations.
+	EdgeInvitationTokens = "invitation_tokens"
 	// Table holds the table name of the group in the database.
 	Table = "groups"
 	// UsersTable is the table that holds the users relation/edge.
@@ -69,6 +71,13 @@ const (
 	DocumentsInverseTable = "documents"
 	// DocumentsColumn is the table column denoting the documents relation/edge.
 	DocumentsColumn = "group_documents"
+	// InvitationTokensTable is the table that holds the invitation_tokens relation/edge.
+	InvitationTokensTable = "group_invitation_tokens"
+	// InvitationTokensInverseTable is the table name for the GroupInvitationToken entity.
+	// It exists in this package in order to avoid circular dependency with the "groupinvitationtoken" package.
+	InvitationTokensInverseTable = "group_invitation_tokens"
+	// InvitationTokensColumn is the table column denoting the invitation_tokens relation/edge.
+	InvitationTokensColumn = "group_invitation_tokens"
 )
 
 // Columns holds all SQL columns for group fields.
