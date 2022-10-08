@@ -52,7 +52,7 @@
   const loading = ref(false);
   const focused = ref(false);
   const form = reactive({
-    location: locations.value.length > 0 ? locations.value[0] : ({} as LocationOut),
+    location: locations.value && locations.value.length > 0 ? locations.value[0] : ({} as LocationOut),
     name: "",
     description: "",
     color: "", // Future!
