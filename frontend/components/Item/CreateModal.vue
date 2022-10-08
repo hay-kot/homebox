@@ -37,13 +37,22 @@
     },
   });
 
+  const api = useUserApi();
+  const toast = useNotifier();
+
+  const locationsStore = useLocationStore();
+  const locations = computed(() => locationsStore.locations);
+
+  const labelStore = useLabelStore();
+  const labels = computed(() => labelStore.labels);
+
   const submitBtn = ref(null);
 
   const modal = useVModel(props, "modelValue");
   const loading = ref(false);
   const focused = ref(false);
   const form = reactive({
-    location: {} as LocationOut,
+    location: locations.value.length > 0 ? locations.value[0] : ({} as LocationOut),
     name: "",
     description: "",
     color: "", // Future!
@@ -65,14 +74,6 @@
       focused.value = true;
     }
   );
-  const api = useUserApi();
-  const toast = useNotifier();
-
-  const locationsStore = useLocationStore();
-  const locations = computed(() => locationsStore.locations);
-
-  const labelStore = useLabelStore();
-  const labels = computed(() => labelStore.labels);
 
   async function create() {
     if (!form.location) {
@@ -88,7 +89,7 @@
 
     const { error } = await api.items.create(out);
     if (error) {
-      toast.error("Couldn't create label");
+      toast.error("Couldn't create item");
       return;
     }
 
