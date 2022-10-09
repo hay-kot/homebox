@@ -238,6 +238,11 @@ export interface Build {
   version: string;
 }
 
+export interface ChangePassword {
+  current: string;
+  new: string;
+}
+
 export interface GroupInvitation {
   expiresAt: Date;
   token: string;

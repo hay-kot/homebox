@@ -196,3 +196,29 @@ func (svc *UserService) NewInvitation(ctx Context, uses int, expiresAt time.Time
 
 	return token.Raw, nil
 }
+
+func (svc *UserService) ChangePassword(ctx Context, current string, new string) (ok bool) {
+	usr, err := svc.repos.Users.GetOneId(ctx, ctx.UID)
+	if err != nil {
+		return false
+	}
+
+	if !hasher.CheckPasswordHash(current, usr.PasswordHash) {
+		log.Err(errors.New("current password is incorrect")).Msg("Failed to change password")
+		return false
+	}
+
+	hashed, err := hasher.HashPassword(new)
+	if err != nil {
+		log.Err(err).Msg("Failed to hash password")
+		return false
+	}
+
+	err = svc.repos.Users.ChangePassword(ctx.Context, ctx.UID, hashed)
+	if err != nil {
+		log.Err(err).Msg("Failed to change password")
+		return false
+	}
+
+	return true
+}

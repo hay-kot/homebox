@@ -1,4 +1,5 @@
 import { faker } from "@faker-js/faker";
+import { expect } from "vitest";
 import { overrideParts } from "../../base/urls";
 import { PublicApi } from "../../public";
 import { LabelCreate, LocationCreate, UserRegistration } from "../../types/data-contracts";
@@ -55,8 +56,11 @@ async function userSingleUse(): Promise<TestUser> {
   const usr = user();
 
   const pub = publicClient();
-  pub.register(usr);
-  const result = await pub.login(usr.name, usr.password);
+  await pub.register(usr);
+  const result = await pub.login(usr.email, usr.password);
+
+  expect(result.error).toBeFalsy();
+  expect(result.status).toBe(200);
 
   return {
     client: new UserClient(new Requests("", result.data.token)),

@@ -20,7 +20,7 @@ tasks:
           --path ./backend/app/api/docs/swagger.json \
           --output ./frontend/lib/api/types
 
-        python3 ./scripts/process-types.py ./frontend/lib/api/types/data-contracts.ts
+      - python3 ./scripts/process-types.py ./frontend/lib/api/types/data-contracts.ts
     sources:
       - "./backend/app/api/**/*"
       - "./backend/internal/repo/**/*"

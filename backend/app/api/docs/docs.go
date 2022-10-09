@@ -822,6 +822,35 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/users/change-password": {
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Updates the users password",
+                "parameters": [
+                    {
+                        "description": "Password Payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.ChangePassword"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/v1/users/login": {
             "post": {
                 "consumes": [
@@ -1575,6 +1604,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.ChangePassword": {
+            "type": "object",
+            "properties": {
+                "current": {
+                    "type": "string"
+                },
+                "new": {
                     "type": "string"
                 }
             }

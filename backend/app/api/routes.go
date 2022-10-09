@@ -65,6 +65,7 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 			r.Put(v1Base("/users/self/password"), v1Ctrl.HandleUserUpdatePassword())
 			r.Post(v1Base("/users/logout"), v1Ctrl.HandleAuthLogout())
 			r.Get(v1Base("/users/refresh"), v1Ctrl.HandleAuthRefresh())
+			r.Put(v1Base("/users/self/change-password"), v1Ctrl.HandleUserSelfChangePassword())
 
 			r.Post(v1Base("/groups/invitations"), v1Ctrl.HandleGroupInvitationsCreate())
 
