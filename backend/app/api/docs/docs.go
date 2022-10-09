@@ -1531,9 +1531,6 @@ const docTemplate = `{
                 "email": {
                     "type": "string"
                 },
-                "groupName": {
-                    "type": "string"
-                },
                 "name": {
                     "type": "string"
                 },

@@ -28,7 +28,6 @@ type (
 		Name       string `json:"name"`
 		Email      string `json:"email"`
 		Password   string `json:"password"`
-		GroupName  string `json:"groupName"`
 	}
 	UserAuthTokenDetail struct {
 		Raw       string    `json:"raw"`
@@ -46,7 +45,6 @@ func (svc *UserService) RegisterUser(ctx context.Context, data UserRegistration)
 	log.Debug().
 		Str("name", data.Name).
 		Str("email", data.Email).
-		Str("groupName", data.GroupName).
 		Str("groupToken", data.GroupToken).
 		Msg("Registering new user")
 
@@ -57,7 +55,7 @@ func (svc *UserService) RegisterUser(ctx context.Context, data UserRegistration)
 	)
 
 	if data.GroupToken == "" {
-		group, err = svc.repos.Groups.GroupCreate(ctx, data.GroupName)
+		group, err = svc.repos.Groups.GroupCreate(ctx, "Home")
 		if err != nil {
 			log.Err(err).Msg("Failed to create group")
 			return repo.UserOut{}, err

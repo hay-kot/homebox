@@ -30,10 +30,10 @@ export async function sharedUserClient(): Promise<UserClient> {
     return userClient(cache.token);
   }
   const testUser = {
-    groupName: "test-group",
     email: "__test__@__test__.com",
     name: "__test__",
     password: "__test__",
+    token: "",
   };
 
   const api = client();

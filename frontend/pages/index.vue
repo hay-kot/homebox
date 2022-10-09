@@ -21,7 +21,6 @@
 
   const username = ref("");
   const email = ref("");
-  const groupName = ref("");
   const password = ref("");
   const canRegister = ref(false);
 
@@ -50,7 +49,6 @@
       name: username.value,
       email: email.value,
       password: password.value,
-      groupName: groupName.value,
       token: groupToken.value,
     });
 
@@ -152,8 +150,7 @@
                   </h2>
                   <FormTextField v-model="email" label="Set your email?" />
                   <FormTextField v-model="username" label="What's your name?" />
-                  <FormTextField v-if="groupToken == ''" v-model="groupName" label="Name your group" />
-                  <div v-else class="pt-4 pb-1 text-center">
+                  <div v-if="!(groupToken == '')" class="pt-4 pb-1 text-center">
                     <p>You're Joining an Existing Group!</p>
                     <button type="button" class="text-xs underline" @click="groupToken = ''">
                       Don't Want To Join a Group?

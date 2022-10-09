@@ -219,7 +219,6 @@ export interface ServerValidationError {
 
 export interface UserRegistration {
   email: string;
-  groupName: string;
   name: string;
   password: string;
   token: string;
