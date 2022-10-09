@@ -1,5 +1,10 @@
 import { faker } from "@faker-js/faker";
+import { overrideParts } from "../../base/urls";
+import { PublicApi } from "../../public";
 import { LabelCreate, LocationCreate, UserRegistration } from "../../types/data-contracts";
+import * as config from "../../../../test/config";
+import { UserClient } from "../../user";
+import { Requests } from "../../../requests";
 
 /**
  * Returns a random user registration object that can be
@@ -29,4 +34,43 @@ function label(): LabelCreate {
   };
 }
 
-export const factories = { user, location, label };
+function publicClient(): PublicApi {
+  overrideParts(config.BASE_URL, "/api/v1");
+  const requests = new Requests("");
+  return new PublicApi(requests);
+}
+
+function userClient(token: string): UserClient {
+  overrideParts(config.BASE_URL, "/api/v1");
+  const requests = new Requests("", token);
+  return new UserClient(requests);
+}
+
+type TestUser = {
+  client: UserClient;
+  user: UserRegistration;
+};
+
+async function userSingleUse(): Promise<TestUser> {
+  const usr = user();
+
+  const pub = publicClient();
+  pub.register(usr);
+  const result = await pub.login(usr.name, usr.password);
+
+  return {
+    client: new UserClient(new Requests("", result.data.token)),
+    user: usr,
+  };
+}
+
+export const factories = {
+  user,
+  location,
+  label,
+  client: {
+    public: publicClient,
+    user: userClient,
+    singleUse: userSingleUse,
+  },
+};

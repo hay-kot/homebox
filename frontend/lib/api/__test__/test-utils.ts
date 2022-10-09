@@ -1,21 +1,6 @@
 import { beforeAll, expect } from "vitest";
-import { Requests } from "../../requests";
-import { overrideParts } from "../base/urls";
-import { PublicApi } from "../public";
-import * as config from "../../../test/config";
 import { UserClient } from "../user";
-
-export function client() {
-  overrideParts(config.BASE_URL, "/api/v1");
-  const requests = new Requests("");
-  return new PublicApi(requests);
-}
-
-export function userClient(token: string) {
-  overrideParts(config.BASE_URL, "/api/v1");
-  const requests = new Requests("", token);
-  return new UserClient(requests);
-}
+import { factories } from "./factories";
 
 const cache = {
   token: "",
@@ -27,7 +12,7 @@ const cache = {
  */
 export async function sharedUserClient(): Promise<UserClient> {
   if (cache.token) {
-    return userClient(cache.token);
+    return factories.client.user(cache.token);
   }
   const testUser = {
     email: "__test__@__test__.com",
@@ -36,12 +21,12 @@ export async function sharedUserClient(): Promise<UserClient> {
     token: "",
   };
 
-  const api = client();
+  const api = factories.client.public();
   const { response: tryLoginResp, data } = await api.login(testUser.email, testUser.password);
 
   if (tryLoginResp.status === 200) {
     cache.token = data.token;
-    return userClient(cache.token);
+    return factories.client.user(cache.token);
   }
 
   const { response: registerResp } = await api.register(testUser);
@@ -51,7 +36,7 @@ export async function sharedUserClient(): Promise<UserClient> {
   expect(loginResp.status).toBe(200);
 
   cache.token = loginData.token;
-  return userClient(data.token);
+  return factories.client.user(data.token);
 }
 
 beforeAll(async () => {
