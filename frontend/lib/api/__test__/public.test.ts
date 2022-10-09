@@ -1,20 +1,10 @@
 import { describe, test, expect } from "vitest";
-import { faker } from "@faker-js/faker";
-import { UserRegistration } from "../types/data-contracts";
-import { client, sharedUserClient, userClient } from "./test-utils";
-
-function userFactory(): UserRegistration {
-  return {
-    email: faker.internet.email(),
-    password: faker.internet.password(),
-    name: faker.name.firstName(),
-    token: "",
-  };
-}
+import { factories } from "./factories";
+import { sharedUserClient } from "./test-utils";
 
 describe("[GET] /api/v1/status", () => {
   test("server should respond", async () => {
-    const api = client();
+    const api = factories.client.public();
     const { response, data } = await api.status();
     expect(response.status).toBe(200);
     expect(data.health).toBe(true);
@@ -22,8 +12,8 @@ describe("[GET] /api/v1/status", () => {
 });
 
 describe("first time user workflow (register, login, join group)", () => {
-  const api = client();
-  const userData = userFactory();
+  const api = factories.client.public();
+  const userData = factories.user();
 
   test("user should be able to register", async () => {
     const { response } = await api.register(userData);
@@ -36,7 +26,7 @@ describe("first time user workflow (register, login, join group)", () => {
     expect(data.token).toBeTruthy();
 
     // Cleanup
-    const userApi = userClient(data.token);
+    const userApi = factories.client.user(data.token);
     {
       const { response } = await userApi.user.delete();
       expect(response.status).toBe(204);
@@ -59,7 +49,7 @@ describe("first time user workflow (register, login, join group)", () => {
 
     // Create User 2 with token
 
-    const duplicateUser = userFactory();
+    const duplicateUser = factories.user();
     duplicateUser.token = data.token;
 
     const { response: registerResp } = await api.register(duplicateUser);
@@ -70,7 +60,7 @@ describe("first time user workflow (register, login, join group)", () => {
 
     // Get Self and Assert
 
-    const client2 = userClient(loginData.token);
+    const client2 = factories.client.user(loginData.token);
 
     const { data: user2 } = await client2.user.self();
 

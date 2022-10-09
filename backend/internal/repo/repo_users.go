@@ -121,3 +121,7 @@ func (e *UserRepository) GetSuperusers(ctx context.Context) ([]*ent.User, error)
 
 	return users, nil
 }
+
+func (r *UserRepository) ChangePassword(ctx context.Context, UID uuid.UUID, pw string) error {
+	return r.db.User.UpdateOneID(UID).SetPassword(pw).Exec(ctx)
+}

@@ -1,5 +1,5 @@
 import { BaseAPI, route } from "../base";
-import { UserOut } from "../types/data-contracts";
+import { ChangePassword, UserOut } from "../types/data-contracts";
 import { Result } from "../types/non-generated";
 
 export class UserApi extends BaseAPI {
@@ -13,5 +13,15 @@ export class UserApi extends BaseAPI {
 
   public delete() {
     return this.http.delete<void>({ url: route("/users/self") });
+  }
+
+  public changePassword(current: string, newPassword: string) {
+    return this.http.put<ChangePassword, void>({
+      url: route("/users/self/change-password"),
+      body: {
+        current,
+        new: newPassword,
+      },
+    });
   }
 }

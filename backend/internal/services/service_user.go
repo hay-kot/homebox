@@ -142,7 +142,13 @@ func (svc *UserService) createToken(ctx context.Context, userId uuid.UUID) (User
 func (svc *UserService) Login(ctx context.Context, username, password string) (UserAuthTokenDetail, error) {
 	usr, err := svc.repos.Users.GetOneEmail(ctx, username)
 
-	if err != nil || !hasher.CheckPasswordHash(password, usr.PasswordHash) {
+	if err != nil {
+		// SECURITY: Perform hash to ensure response times are the same
+		hasher.CheckPasswordHash("not-a-real-password", "not-a-real-password")
+		return UserAuthTokenDetail{}, ErrorInvalidLogin
+	}
+
+	if !hasher.CheckPasswordHash(password, usr.PasswordHash) {
 		return UserAuthTokenDetail{}, ErrorInvalidLogin
 	}
 
@@ -189,4 +195,30 @@ func (svc *UserService) NewInvitation(ctx Context, uses int, expiresAt time.Time
 	}
 
 	return token.Raw, nil
+}
+
+func (svc *UserService) ChangePassword(ctx Context, current string, new string) (ok bool) {
+	usr, err := svc.repos.Users.GetOneId(ctx, ctx.UID)
+	if err != nil {
+		return false
+	}
+
+	if !hasher.CheckPasswordHash(current, usr.PasswordHash) {
+		log.Err(errors.New("current password is incorrect")).Msg("Failed to change password")
+		return false
+	}
+
+	hashed, err := hasher.HashPassword(new)
+	if err != nil {
+		log.Err(err).Msg("Failed to hash password")
+		return false
+	}
+
+	err = svc.repos.Users.ChangePassword(ctx.Context, ctx.UID, hashed)
+	if err != nil {
+		log.Err(err).Msg("Failed to change password")
+		return false
+	}
+
+	return true
 }

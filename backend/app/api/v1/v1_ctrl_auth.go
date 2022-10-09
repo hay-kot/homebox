@@ -36,7 +36,8 @@ func (ctrl *V1Controller) HandleAuthLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		loginForm := &LoginForm{}
 
-		if r.Header.Get("Content-Type") == server.ContentFormUrlEncoded {
+		switch r.Header.Get("Content-Type") {
+		case server.ContentFormUrlEncoded:
 			err := r.ParseForm()
 			if err != nil {
 				server.Respond(w, http.StatusBadRequest, server.Wrap(err))
@@ -46,7 +47,7 @@ func (ctrl *V1Controller) HandleAuthLogin() http.HandlerFunc {
 
 			loginForm.Username = r.PostFormValue("username")
 			loginForm.Password = r.PostFormValue("password")
-		} else if r.Header.Get("Content-Type") == server.ContentJSON {
+		case server.ContentJSON:
 			err := server.Decode(r, loginForm)
 
 			if err != nil {
@@ -54,7 +55,7 @@ func (ctrl *V1Controller) HandleAuthLogin() http.HandlerFunc {
 				server.Respond(w, http.StatusBadRequest, server.Wrap(err))
 				return
 			}
-		} else {
+		default:
 			server.Respond(w, http.StatusBadRequest, errors.New("invalid content type"))
 			return
 		}
@@ -67,7 +68,7 @@ func (ctrl *V1Controller) HandleAuthLogin() http.HandlerFunc {
 		newToken, err := ctrl.svc.User.Login(r.Context(), loginForm.Username, loginForm.Password)
 
 		if err != nil {
-			server.RespondError(w, http.StatusUnauthorized, err)
+			server.RespondError(w, http.StatusInternalServerError, err)
 			return
 		}
 

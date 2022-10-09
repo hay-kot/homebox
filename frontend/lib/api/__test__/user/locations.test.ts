@@ -1,22 +1,17 @@
 import { describe, expect, test } from "vitest";
 import { LocationOut } from "../../types/data-contracts";
 import { UserClient } from "../../user";
+import { factories } from "../factories";
 import { sharedUserClient } from "../test-utils";
 
 describe("locations lifecycle (create, update, delete)", () => {
-  let increment = 0;
-
   /**
    * useLocatio sets up a location resource for testing, and returns a function
    * that can be used to delete the location from the backend server.
    */
   async function useLocation(api: UserClient): Promise<[LocationOut, () => Promise<void>]> {
-    const { response, data } = await api.locations.create({
-      name: `__test__.location.name_${increment}`,
-      description: `__test__.location.description_${increment}`,
-    });
+    const { response, data } = await api.locations.create(factories.location());
     expect(response.status).toBe(201);
-    increment++;
 
     const cleanup = async () => {
       const { response } = await api.locations.delete(data.id);
@@ -29,10 +24,7 @@ describe("locations lifecycle (create, update, delete)", () => {
   test("user should be able to create a location", async () => {
     const api = await sharedUserClient();
 
-    const locationData = {
-      name: "test-location",
-      description: "test-description",
-    };
+    const locationData = factories.location();
 
     const { response, data } = await api.locations.create(locationData);
 

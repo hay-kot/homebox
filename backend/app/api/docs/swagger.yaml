@@ -353,6 +353,13 @@ definitions:
       version:
         type: string
     type: object
+  v1.ChangePassword:
+    properties:
+      current:
+        type: string
+      new:
+        type: string
+    type: object
   v1.GroupInvitation:
     properties:
       expiresAt:
@@ -877,6 +884,23 @@ paths:
       summary: Retrieves the basic information about the API
       tags:
       - Base
+  /v1/users/change-password:
+    put:
+      parameters:
+      - description: Password Payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/v1.ChangePassword'
+      responses:
+        "204":
+          description: ""
+      security:
+      - Bearer: []
+      summary: Updates the users password
+      tags:
+      - User
   /v1/users/login:
     post:
       consumes:

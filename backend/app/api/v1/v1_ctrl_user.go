@@ -119,3 +119,37 @@ func (ctrl *V1Controller) HandleUserSelfDelete() http.HandlerFunc {
 		server.Respond(w, http.StatusNoContent, nil)
 	}
 }
+
+type (
+	ChangePassword struct {
+		Current string `json:"current,omitempty"`
+		New     string `json:"new,omitempty"`
+	}
+)
+
+// HandleUserSelfChangePassword godoc
+// @Summary   Updates the users password
+// @Tags      User
+// @Success   204
+// @Param     payload  body  ChangePassword  true  "Password Payload"
+// @Router    /v1/users/change-password [PUT]
+// @Security  Bearer
+func (ctrl *V1Controller) HandleUserSelfChangePassword() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var cp ChangePassword
+		err := server.Decode(r, &cp)
+		if err != nil {
+			log.Err(err).Msg("user failed to change password")
+		}
+
+		ctx := services.NewContext(r.Context())
+
+		ok := ctrl.svc.User.ChangePassword(ctx, cp.Current, cp.New)
+		if !ok {
+			server.RespondError(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		server.Respond(w, http.StatusNoContent, nil)
+	}
+}
