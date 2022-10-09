@@ -142,7 +142,13 @@ func (svc *UserService) createToken(ctx context.Context, userId uuid.UUID) (User
 func (svc *UserService) Login(ctx context.Context, username, password string) (UserAuthTokenDetail, error) {
 	usr, err := svc.repos.Users.GetOneEmail(ctx, username)
 
-	if err != nil || !hasher.CheckPasswordHash(password, usr.PasswordHash) {
+	if err != nil {
+		// SECURITY: Perform hash to ensure response times are the same
+		hasher.CheckPasswordHash("not-a-real-password", "not-a-real-password")
+		return UserAuthTokenDetail{}, ErrorInvalidLogin
+	}
+
+	if !hasher.CheckPasswordHash(password, usr.PasswordHash) {
 		return UserAuthTokenDetail{}, ErrorInvalidLogin
 	}
 
