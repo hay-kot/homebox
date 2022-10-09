@@ -1,16 +1,6 @@
 import { describe, test, expect } from "vitest";
-import { faker } from "@faker-js/faker";
-import { UserRegistration } from "../types/data-contracts";
+import { factories } from "./factories";
 import { client, sharedUserClient, userClient } from "./test-utils";
-
-function userFactory(): UserRegistration {
-  return {
-    email: faker.internet.email(),
-    password: faker.internet.password(),
-    name: faker.name.firstName(),
-    token: "",
-  };
-}
 
 describe("[GET] /api/v1/status", () => {
   test("server should respond", async () => {
@@ -23,7 +13,7 @@ describe("[GET] /api/v1/status", () => {
 
 describe("first time user workflow (register, login, join group)", () => {
   const api = client();
-  const userData = userFactory();
+  const userData = factories.user();
 
   test("user should be able to register", async () => {
     const { response } = await api.register(userData);
@@ -59,7 +49,7 @@ describe("first time user workflow (register, login, join group)", () => {
 
     // Create User 2 with token
 
-    const duplicateUser = userFactory();
+    const duplicateUser = factories.user();
     duplicateUser.token = data.token;
 
     const { response: registerResp } = await api.register(duplicateUser);

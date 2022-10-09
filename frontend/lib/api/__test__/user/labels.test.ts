@@ -1,23 +1,17 @@
 import { describe, expect, test } from "vitest";
 import { LabelOut } from "../../types/data-contracts";
 import { UserClient } from "../../user";
+import { factories } from "../factories";
 import { sharedUserClient } from "../test-utils";
 
 describe("locations lifecycle (create, update, delete)", () => {
-  let increment = 0;
-
   /**
    * useLabel sets up a label resource for testing, and returns a function
    * that can be used to delete the label from the backend server.
    */
   async function useLabel(api: UserClient): Promise<[LabelOut, () => Promise<void>]> {
-    const { response, data } = await api.labels.create({
-      name: `__test__.label.name_${increment}`,
-      description: `__test__.label.description_${increment}`,
-      color: "",
-    });
+    const { response, data } = await api.labels.create(factories.label());
     expect(response.status).toBe(201);
-    increment++;
 
     const cleanup = async () => {
       const { response } = await api.labels.delete(data.id);
@@ -29,11 +23,7 @@ describe("locations lifecycle (create, update, delete)", () => {
   test("user should be able to create a label", async () => {
     const api = await sharedUserClient();
 
-    const labelData = {
-      name: "test-label",
-      description: "test-description",
-      color: "",
-    };
+    const labelData = factories.label();
 
     const { response, data } = await api.labels.create(labelData);
 
