@@ -43,7 +43,7 @@ export class BaseAPI {
    * are present. This is useful for when you want to send a subset of fields to
    * the server like when performing an update.
    */
-  dropFields<T>(obj: T, keys: Array<keyof T> = []): T {
+  protected dropFields<T>(obj: T, keys: Array<keyof T> = []): T {
     const result = { ...obj };
     [...keys, "createdAt", "updatedAt"].forEach(key => {
       // @ts-ignore - we are checking for the key above
