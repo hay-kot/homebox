@@ -19,7 +19,7 @@
       return "";
     }
 
-    if (nullDate(dt)) {
+    if (!validDate(dt)) {
       return "";
     }
 
@@ -34,10 +34,6 @@
         return "";
     }
   });
-
-  function nullDate(dt: Date) {
-    return dt.getFullYear() === 1;
-  }
 
   const props = defineProps({
     date: {

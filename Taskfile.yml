@@ -23,7 +23,8 @@ tasks:
         python3 ./scripts/process-types.py ./frontend/lib/api/types/data-contracts.ts
     sources:
       - "./backend/app/api/**/*"
-      - "./backend/app/internal/types/**/*"
+      - "./backend/internal/repo/**/*"
+      - "./backend/internal/services/**/*"
       - "./scripts/process-types.py"
     generates:
       - "./frontend/lib/api/types/data-contracts.ts"

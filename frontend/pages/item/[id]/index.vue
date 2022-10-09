@@ -177,14 +177,14 @@
     if (preferences.value.showEmpty) {
       return true;
     }
-    return item.value?.purchaseFrom || item.value?.purchasePrice;
+    return item.value?.purchaseFrom || item.value?.purchasePrice !== "0";
   });
 
-  const purchaseDetails = computed<(Detail | DateDetail)[]>(() => {
+  const purchaseDetails = computed<Array<Detail | DateDetail>>(() => {
     return [
       {
         name: "Purchase From",
-        label: item.value?.purchaseFrom || "",
+        text: item.value?.purchaseFrom || "",
       },
       {
         name: "Purchase Price",
@@ -193,18 +193,19 @@
       {
         name: "Purchase Date",
         text: item.value.purchaseTime,
+        type: "date",
       },
-    ] as (Detail | DateDetail)[];
+    ];
   });
 
   const showSold = computed(() => {
     if (preferences.value.showEmpty) {
       return true;
     }
-    return item.value?.soldTo || item.value?.soldPrice;
+    return item.value?.soldTo || item.value?.soldPrice !== "0";
   });
 
-  const soldDetails = computed<Array<Detail>>(() => {
+  const soldDetails = computed<Array<Detail | DateDetail>>(() => {
     return [
       {
         name: "Sold To",
@@ -217,8 +218,9 @@
       {
         name: "Sold At",
         text: item.value?.soldTime || "",
+        type: "date",
       },
-    ] as Detail[];
+    ];
   });
 
   const confirm = useConfirm();

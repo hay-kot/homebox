@@ -8,7 +8,6 @@ function userFactory(): UserRegistration {
     email: faker.internet.email(),
     password: faker.internet.password(),
     name: faker.name.firstName(),
-    groupName: faker.animal.cat(),
     token: "",
   };
 }
