@@ -124,6 +124,20 @@ func IsSuperuser(v bool) predicate.User {
 	})
 }
 
+// Superuser applies equality check predicate on the "superuser" field. It's identical to SuperuserEQ.
+func Superuser(v bool) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSuperuser), v))
+	})
+}
+
+// ActivatedOn applies equality check predicate on the "activated_on" field. It's identical to ActivatedOnEQ.
+func ActivatedOn(v time.Time) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldActivatedOn), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
@@ -560,6 +574,134 @@ func IsSuperuserEQ(v bool) predicate.User {
 func IsSuperuserNEQ(v bool) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldIsSuperuser), v))
+	})
+}
+
+// RoleEQ applies the EQ predicate on the "role" field.
+func RoleEQ(v Role) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRole), v))
+	})
+}
+
+// RoleNEQ applies the NEQ predicate on the "role" field.
+func RoleNEQ(v Role) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldRole), v))
+	})
+}
+
+// RoleIn applies the In predicate on the "role" field.
+func RoleIn(vs ...Role) predicate.User {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldRole), v...))
+	})
+}
+
+// RoleNotIn applies the NotIn predicate on the "role" field.
+func RoleNotIn(vs ...Role) predicate.User {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldRole), v...))
+	})
+}
+
+// SuperuserEQ applies the EQ predicate on the "superuser" field.
+func SuperuserEQ(v bool) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSuperuser), v))
+	})
+}
+
+// SuperuserNEQ applies the NEQ predicate on the "superuser" field.
+func SuperuserNEQ(v bool) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldSuperuser), v))
+	})
+}
+
+// ActivatedOnEQ applies the EQ predicate on the "activated_on" field.
+func ActivatedOnEQ(v time.Time) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldActivatedOn), v))
+	})
+}
+
+// ActivatedOnNEQ applies the NEQ predicate on the "activated_on" field.
+func ActivatedOnNEQ(v time.Time) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldActivatedOn), v))
+	})
+}
+
+// ActivatedOnIn applies the In predicate on the "activated_on" field.
+func ActivatedOnIn(vs ...time.Time) predicate.User {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldActivatedOn), v...))
+	})
+}
+
+// ActivatedOnNotIn applies the NotIn predicate on the "activated_on" field.
+func ActivatedOnNotIn(vs ...time.Time) predicate.User {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldActivatedOn), v...))
+	})
+}
+
+// ActivatedOnGT applies the GT predicate on the "activated_on" field.
+func ActivatedOnGT(v time.Time) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldActivatedOn), v))
+	})
+}
+
+// ActivatedOnGTE applies the GTE predicate on the "activated_on" field.
+func ActivatedOnGTE(v time.Time) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldActivatedOn), v))
+	})
+}
+
+// ActivatedOnLT applies the LT predicate on the "activated_on" field.
+func ActivatedOnLT(v time.Time) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldActivatedOn), v))
+	})
+}
+
+// ActivatedOnLTE applies the LTE predicate on the "activated_on" field.
+func ActivatedOnLTE(v time.Time) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldActivatedOn), v))
+	})
+}
+
+// ActivatedOnIsNil applies the IsNil predicate on the "activated_on" field.
+func ActivatedOnIsNil() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldActivatedOn)))
+	})
+}
+
+// ActivatedOnNotNil applies the NotNil predicate on the "activated_on" field.
+func ActivatedOnNotNil() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldActivatedOn)))
 	})
 }
 

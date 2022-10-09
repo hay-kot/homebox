@@ -192,6 +192,7 @@ export interface UserOut {
   groupId: string;
   groupName: string;
   id: string;
+  isOwner: boolean;
   isSuperuser: boolean;
   name: string;
 }

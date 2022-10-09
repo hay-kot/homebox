@@ -83,6 +83,48 @@ func (uc *UserCreate) SetNillableIsSuperuser(b *bool) *UserCreate {
 	return uc
 }
 
+// SetRole sets the "role" field.
+func (uc *UserCreate) SetRole(u user.Role) *UserCreate {
+	uc.mutation.SetRole(u)
+	return uc
+}
+
+// SetNillableRole sets the "role" field if the given value is not nil.
+func (uc *UserCreate) SetNillableRole(u *user.Role) *UserCreate {
+	if u != nil {
+		uc.SetRole(*u)
+	}
+	return uc
+}
+
+// SetSuperuser sets the "superuser" field.
+func (uc *UserCreate) SetSuperuser(b bool) *UserCreate {
+	uc.mutation.SetSuperuser(b)
+	return uc
+}
+
+// SetNillableSuperuser sets the "superuser" field if the given value is not nil.
+func (uc *UserCreate) SetNillableSuperuser(b *bool) *UserCreate {
+	if b != nil {
+		uc.SetSuperuser(*b)
+	}
+	return uc
+}
+
+// SetActivatedOn sets the "activated_on" field.
+func (uc *UserCreate) SetActivatedOn(t time.Time) *UserCreate {
+	uc.mutation.SetActivatedOn(t)
+	return uc
+}
+
+// SetNillableActivatedOn sets the "activated_on" field if the given value is not nil.
+func (uc *UserCreate) SetNillableActivatedOn(t *time.Time) *UserCreate {
+	if t != nil {
+		uc.SetActivatedOn(*t)
+	}
+	return uc
+}
+
 // SetID sets the "id" field.
 func (uc *UserCreate) SetID(u uuid.UUID) *UserCreate {
 	uc.mutation.SetID(u)
@@ -212,6 +254,14 @@ func (uc *UserCreate) defaults() {
 		v := user.DefaultIsSuperuser
 		uc.mutation.SetIsSuperuser(v)
 	}
+	if _, ok := uc.mutation.Role(); !ok {
+		v := user.DefaultRole
+		uc.mutation.SetRole(v)
+	}
+	if _, ok := uc.mutation.Superuser(); !ok {
+		v := user.DefaultSuperuser
+		uc.mutation.SetSuperuser(v)
+	}
 	if _, ok := uc.mutation.ID(); !ok {
 		v := user.DefaultID()
 		uc.mutation.SetID(v)
@@ -252,6 +302,17 @@ func (uc *UserCreate) check() error {
 	}
 	if _, ok := uc.mutation.IsSuperuser(); !ok {
 		return &ValidationError{Name: "is_superuser", err: errors.New(`ent: missing required field "User.is_superuser"`)}
+	}
+	if _, ok := uc.mutation.Role(); !ok {
+		return &ValidationError{Name: "role", err: errors.New(`ent: missing required field "User.role"`)}
+	}
+	if v, ok := uc.mutation.Role(); ok {
+		if err := user.RoleValidator(v); err != nil {
+			return &ValidationError{Name: "role", err: fmt.Errorf(`ent: validator failed for field "User.role": %w`, err)}
+		}
+	}
+	if _, ok := uc.mutation.Superuser(); !ok {
+		return &ValidationError{Name: "superuser", err: errors.New(`ent: missing required field "User.superuser"`)}
 	}
 	if _, ok := uc.mutation.GroupID(); !ok {
 		return &ValidationError{Name: "group", err: errors.New(`ent: missing required edge "User.group"`)}
@@ -339,6 +400,30 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Column: user.FieldIsSuperuser,
 		})
 		_node.IsSuperuser = value
+	}
+	if value, ok := uc.mutation.Role(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Value:  value,
+			Column: user.FieldRole,
+		})
+		_node.Role = value
+	}
+	if value, ok := uc.mutation.Superuser(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: user.FieldSuperuser,
+		})
+		_node.Superuser = value
+	}
+	if value, ok := uc.mutation.ActivatedOn(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: user.FieldActivatedOn,
+		})
+		_node.ActivatedOn = value
 	}
 	if nodes := uc.mutation.GroupIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

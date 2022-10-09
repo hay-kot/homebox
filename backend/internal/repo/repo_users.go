@@ -22,6 +22,7 @@ type (
 		Password    string    `json:"password"`
 		IsSuperuser bool      `json:"isSuperuser"`
 		GroupID     uuid.UUID `json:"groupID"`
+		IsOwner     bool      `json:"isOwner"`
 	}
 
 	UserUpdate struct {
@@ -37,6 +38,7 @@ type (
 		GroupID      uuid.UUID `json:"groupId"`
 		GroupName    string    `json:"groupName"`
 		PasswordHash string    `json:"-"`
+		IsOwner      bool      `json:"isOwner"`
 	}
 )
 
@@ -54,6 +56,7 @@ func mapUserOut(user *ent.User) UserOut {
 		GroupID:      user.Edges.Group.ID,
 		GroupName:    user.Edges.Group.Name,
 		PasswordHash: user.Password,
+		IsOwner:      user.Role == "owner",
 	}
 }
 
@@ -77,6 +80,11 @@ func (e *UserRepository) GetAll(ctx context.Context) ([]UserOut, error) {
 }
 
 func (e *UserRepository) Create(ctx context.Context, usr UserCreate) (UserOut, error) {
+	role := user.RoleUser
+	if usr.IsOwner {
+		role = user.RoleOwner
+	}
+
 	entUser, err := e.db.User.
 		Create().
 		SetName(usr.Name).
@@ -84,6 +92,7 @@ func (e *UserRepository) Create(ctx context.Context, usr UserCreate) (UserOut, e
 		SetPassword(usr.Password).
 		SetIsSuperuser(usr.IsSuperuser).
 		SetGroupID(usr.GroupID).
+		SetRole(role).
 		Save(ctx)
 	if err != nil {
 		return UserOut{}, err

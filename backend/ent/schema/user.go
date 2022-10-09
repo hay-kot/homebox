@@ -35,6 +35,13 @@ func (User) Fields() []ent.Field {
 			Sensitive(),
 		field.Bool("is_superuser").
 			Default(false),
+		field.Enum("role").
+			Default("user").
+			Values("user", "owner"),
+		field.Bool("superuser").
+			Default(false),
+		field.Time("activated_on").
+			Optional(),
 	}
 }
 

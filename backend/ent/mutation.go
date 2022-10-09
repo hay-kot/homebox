@@ -8548,6 +8548,9 @@ type UserMutation struct {
 	email              *string
 	password           *string
 	is_superuser       *bool
+	role               *user.Role
+	superuser          *bool
+	activated_on       *time.Time
 	clearedFields      map[string]struct{}
 	group              *uuid.UUID
 	clearedgroup       bool
@@ -8879,6 +8882,127 @@ func (m *UserMutation) ResetIsSuperuser() {
 	m.is_superuser = nil
 }
 
+// SetRole sets the "role" field.
+func (m *UserMutation) SetRole(u user.Role) {
+	m.role = &u
+}
+
+// Role returns the value of the "role" field in the mutation.
+func (m *UserMutation) Role() (r user.Role, exists bool) {
+	v := m.role
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRole returns the old "role" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldRole(ctx context.Context) (v user.Role, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRole is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRole requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRole: %w", err)
+	}
+	return oldValue.Role, nil
+}
+
+// ResetRole resets all changes to the "role" field.
+func (m *UserMutation) ResetRole() {
+	m.role = nil
+}
+
+// SetSuperuser sets the "superuser" field.
+func (m *UserMutation) SetSuperuser(b bool) {
+	m.superuser = &b
+}
+
+// Superuser returns the value of the "superuser" field in the mutation.
+func (m *UserMutation) Superuser() (r bool, exists bool) {
+	v := m.superuser
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSuperuser returns the old "superuser" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldSuperuser(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSuperuser is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSuperuser requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSuperuser: %w", err)
+	}
+	return oldValue.Superuser, nil
+}
+
+// ResetSuperuser resets all changes to the "superuser" field.
+func (m *UserMutation) ResetSuperuser() {
+	m.superuser = nil
+}
+
+// SetActivatedOn sets the "activated_on" field.
+func (m *UserMutation) SetActivatedOn(t time.Time) {
+	m.activated_on = &t
+}
+
+// ActivatedOn returns the value of the "activated_on" field in the mutation.
+func (m *UserMutation) ActivatedOn() (r time.Time, exists bool) {
+	v := m.activated_on
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldActivatedOn returns the old "activated_on" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldActivatedOn(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldActivatedOn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldActivatedOn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldActivatedOn: %w", err)
+	}
+	return oldValue.ActivatedOn, nil
+}
+
+// ClearActivatedOn clears the value of the "activated_on" field.
+func (m *UserMutation) ClearActivatedOn() {
+	m.activated_on = nil
+	m.clearedFields[user.FieldActivatedOn] = struct{}{}
+}
+
+// ActivatedOnCleared returns if the "activated_on" field was cleared in this mutation.
+func (m *UserMutation) ActivatedOnCleared() bool {
+	_, ok := m.clearedFields[user.FieldActivatedOn]
+	return ok
+}
+
+// ResetActivatedOn resets all changes to the "activated_on" field.
+func (m *UserMutation) ResetActivatedOn() {
+	m.activated_on = nil
+	delete(m.clearedFields, user.FieldActivatedOn)
+}
+
 // SetGroupID sets the "group" edge to the Group entity by id.
 func (m *UserMutation) SetGroupID(id uuid.UUID) {
 	m.group = &id
@@ -8991,7 +9115,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 9)
 	if m.created_at != nil {
 		fields = append(fields, user.FieldCreatedAt)
 	}
@@ -9009,6 +9133,15 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.is_superuser != nil {
 		fields = append(fields, user.FieldIsSuperuser)
+	}
+	if m.role != nil {
+		fields = append(fields, user.FieldRole)
+	}
+	if m.superuser != nil {
+		fields = append(fields, user.FieldSuperuser)
+	}
+	if m.activated_on != nil {
+		fields = append(fields, user.FieldActivatedOn)
 	}
 	return fields
 }
@@ -9030,6 +9163,12 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Password()
 	case user.FieldIsSuperuser:
 		return m.IsSuperuser()
+	case user.FieldRole:
+		return m.Role()
+	case user.FieldSuperuser:
+		return m.Superuser()
+	case user.FieldActivatedOn:
+		return m.ActivatedOn()
 	}
 	return nil, false
 }
@@ -9051,6 +9190,12 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldPassword(ctx)
 	case user.FieldIsSuperuser:
 		return m.OldIsSuperuser(ctx)
+	case user.FieldRole:
+		return m.OldRole(ctx)
+	case user.FieldSuperuser:
+		return m.OldSuperuser(ctx)
+	case user.FieldActivatedOn:
+		return m.OldActivatedOn(ctx)
 	}
 	return nil, fmt.Errorf("unknown User field %s", name)
 }
@@ -9102,6 +9247,27 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetIsSuperuser(v)
 		return nil
+	case user.FieldRole:
+		v, ok := value.(user.Role)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRole(v)
+		return nil
+	case user.FieldSuperuser:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSuperuser(v)
+		return nil
+	case user.FieldActivatedOn:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetActivatedOn(v)
+		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)
 }
@@ -9131,7 +9297,11 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *UserMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(user.FieldActivatedOn) {
+		fields = append(fields, user.FieldActivatedOn)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -9144,6 +9314,11 @@ func (m *UserMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *UserMutation) ClearField(name string) error {
+	switch name {
+	case user.FieldActivatedOn:
+		m.ClearActivatedOn()
+		return nil
+	}
 	return fmt.Errorf("unknown User nullable field %s", name)
 }
 
@@ -9168,6 +9343,15 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldIsSuperuser:
 		m.ResetIsSuperuser()
+		return nil
+	case user.FieldRole:
+		m.ResetRole()
+		return nil
+	case user.FieldSuperuser:
+		m.ResetSuperuser()
+		return nil
+	case user.FieldActivatedOn:
+		m.ResetActivatedOn()
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)

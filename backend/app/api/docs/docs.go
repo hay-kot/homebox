@@ -1503,6 +1503,9 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "isOwner": {
+                    "type": "boolean"
+                },
                 "isSuperuser": {
                     "type": "boolean"
                 },

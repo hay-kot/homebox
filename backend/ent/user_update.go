@@ -69,6 +69,54 @@ func (uu *UserUpdate) SetNillableIsSuperuser(b *bool) *UserUpdate {
 	return uu
 }
 
+// SetRole sets the "role" field.
+func (uu *UserUpdate) SetRole(u user.Role) *UserUpdate {
+	uu.mutation.SetRole(u)
+	return uu
+}
+
+// SetNillableRole sets the "role" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableRole(u *user.Role) *UserUpdate {
+	if u != nil {
+		uu.SetRole(*u)
+	}
+	return uu
+}
+
+// SetSuperuser sets the "superuser" field.
+func (uu *UserUpdate) SetSuperuser(b bool) *UserUpdate {
+	uu.mutation.SetSuperuser(b)
+	return uu
+}
+
+// SetNillableSuperuser sets the "superuser" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableSuperuser(b *bool) *UserUpdate {
+	if b != nil {
+		uu.SetSuperuser(*b)
+	}
+	return uu
+}
+
+// SetActivatedOn sets the "activated_on" field.
+func (uu *UserUpdate) SetActivatedOn(t time.Time) *UserUpdate {
+	uu.mutation.SetActivatedOn(t)
+	return uu
+}
+
+// SetNillableActivatedOn sets the "activated_on" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableActivatedOn(t *time.Time) *UserUpdate {
+	if t != nil {
+		uu.SetActivatedOn(*t)
+	}
+	return uu
+}
+
+// ClearActivatedOn clears the value of the "activated_on" field.
+func (uu *UserUpdate) ClearActivatedOn() *UserUpdate {
+	uu.mutation.ClearActivatedOn()
+	return uu
+}
+
 // SetGroupID sets the "group" edge to the Group entity by ID.
 func (uu *UserUpdate) SetGroupID(id uuid.UUID) *UserUpdate {
 	uu.mutation.SetGroupID(id)
@@ -213,6 +261,11 @@ func (uu *UserUpdate) check() error {
 			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "User.password": %w`, err)}
 		}
 	}
+	if v, ok := uu.mutation.Role(); ok {
+		if err := user.RoleValidator(v); err != nil {
+			return &ValidationError{Name: "role", err: fmt.Errorf(`ent: validator failed for field "User.role": %w`, err)}
+		}
+	}
 	if _, ok := uu.mutation.GroupID(); uu.mutation.GroupCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "User.group"`)
 	}
@@ -270,6 +323,33 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: user.FieldIsSuperuser,
+		})
+	}
+	if value, ok := uu.mutation.Role(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Value:  value,
+			Column: user.FieldRole,
+		})
+	}
+	if value, ok := uu.mutation.Superuser(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: user.FieldSuperuser,
+		})
+	}
+	if value, ok := uu.mutation.ActivatedOn(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: user.FieldActivatedOn,
+		})
+	}
+	if uu.mutation.ActivatedOnCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: user.FieldActivatedOn,
 		})
 	}
 	if uu.mutation.GroupCleared() {
@@ -415,6 +495,54 @@ func (uuo *UserUpdateOne) SetNillableIsSuperuser(b *bool) *UserUpdateOne {
 	if b != nil {
 		uuo.SetIsSuperuser(*b)
 	}
+	return uuo
+}
+
+// SetRole sets the "role" field.
+func (uuo *UserUpdateOne) SetRole(u user.Role) *UserUpdateOne {
+	uuo.mutation.SetRole(u)
+	return uuo
+}
+
+// SetNillableRole sets the "role" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableRole(u *user.Role) *UserUpdateOne {
+	if u != nil {
+		uuo.SetRole(*u)
+	}
+	return uuo
+}
+
+// SetSuperuser sets the "superuser" field.
+func (uuo *UserUpdateOne) SetSuperuser(b bool) *UserUpdateOne {
+	uuo.mutation.SetSuperuser(b)
+	return uuo
+}
+
+// SetNillableSuperuser sets the "superuser" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableSuperuser(b *bool) *UserUpdateOne {
+	if b != nil {
+		uuo.SetSuperuser(*b)
+	}
+	return uuo
+}
+
+// SetActivatedOn sets the "activated_on" field.
+func (uuo *UserUpdateOne) SetActivatedOn(t time.Time) *UserUpdateOne {
+	uuo.mutation.SetActivatedOn(t)
+	return uuo
+}
+
+// SetNillableActivatedOn sets the "activated_on" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableActivatedOn(t *time.Time) *UserUpdateOne {
+	if t != nil {
+		uuo.SetActivatedOn(*t)
+	}
+	return uuo
+}
+
+// ClearActivatedOn clears the value of the "activated_on" field.
+func (uuo *UserUpdateOne) ClearActivatedOn() *UserUpdateOne {
+	uuo.mutation.ClearActivatedOn()
 	return uuo
 }
 
@@ -575,6 +703,11 @@ func (uuo *UserUpdateOne) check() error {
 			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "User.password": %w`, err)}
 		}
 	}
+	if v, ok := uuo.mutation.Role(); ok {
+		if err := user.RoleValidator(v); err != nil {
+			return &ValidationError{Name: "role", err: fmt.Errorf(`ent: validator failed for field "User.role": %w`, err)}
+		}
+	}
 	if _, ok := uuo.mutation.GroupID(); uuo.mutation.GroupCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "User.group"`)
 	}
@@ -649,6 +782,33 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: user.FieldIsSuperuser,
+		})
+	}
+	if value, ok := uuo.mutation.Role(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Value:  value,
+			Column: user.FieldRole,
+		})
+	}
+	if value, ok := uuo.mutation.Superuser(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: user.FieldSuperuser,
+		})
+	}
+	if value, ok := uuo.mutation.ActivatedOn(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: user.FieldActivatedOn,
+		})
+	}
+	if uuo.mutation.ActivatedOnCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: user.FieldActivatedOn,
 		})
 	}
 	if uuo.mutation.GroupCleared() {

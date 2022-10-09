@@ -525,6 +525,10 @@ func init() {
 	userDescIsSuperuser := userFields[3].Descriptor()
 	// user.DefaultIsSuperuser holds the default value on creation for the is_superuser field.
 	user.DefaultIsSuperuser = userDescIsSuperuser.Default.(bool)
+	// userDescSuperuser is the schema descriptor for superuser field.
+	userDescSuperuser := userFields[5].Descriptor()
+	// user.DefaultSuperuser holds the default value on creation for the superuser field.
+	user.DefaultSuperuser = userDescSuperuser.Default.(bool)
 	// userDescID is the schema descriptor for id field.
 	userDescID := userMixinFields0[0].Descriptor()
 	// user.DefaultID holds the default value on creation for the id field.
