@@ -312,6 +312,9 @@ var (
 		{Name: "email", Type: field.TypeString, Unique: true, Size: 255},
 		{Name: "password", Type: field.TypeString, Size: 255},
 		{Name: "is_superuser", Type: field.TypeBool, Default: false},
+		{Name: "role", Type: field.TypeEnum, Enums: []string{"user", "owner"}, Default: "user"},
+		{Name: "superuser", Type: field.TypeBool, Default: false},
+		{Name: "activated_on", Type: field.TypeTime, Nullable: true},
 		{Name: "group_users", Type: field.TypeUUID},
 	}
 	// UsersTable holds the schema information for the "users" table.
@@ -322,7 +325,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "users_groups_users",
-				Columns:    []*schema.Column{UsersColumns[7]},
+				Columns:    []*schema.Column{UsersColumns[10]},
 				RefColumns: []*schema.Column{GroupsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},

@@ -285,6 +285,8 @@ definitions:
         type: string
       id:
         type: string
+      isOwner:
+        type: boolean
       isSuperuser:
         type: boolean
       name:

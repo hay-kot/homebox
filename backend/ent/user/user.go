@@ -3,6 +3,7 @@
 package user
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -25,6 +26,12 @@ const (
 	FieldPassword = "password"
 	// FieldIsSuperuser holds the string denoting the is_superuser field in the database.
 	FieldIsSuperuser = "is_superuser"
+	// FieldRole holds the string denoting the role field in the database.
+	FieldRole = "role"
+	// FieldSuperuser holds the string denoting the superuser field in the database.
+	FieldSuperuser = "superuser"
+	// FieldActivatedOn holds the string denoting the activated_on field in the database.
+	FieldActivatedOn = "activated_on"
 	// EdgeGroup holds the string denoting the group edge name in mutations.
 	EdgeGroup = "group"
 	// EdgeAuthTokens holds the string denoting the auth_tokens edge name in mutations.
@@ -56,6 +63,9 @@ var Columns = []string{
 	FieldEmail,
 	FieldPassword,
 	FieldIsSuperuser,
+	FieldRole,
+	FieldSuperuser,
+	FieldActivatedOn,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "users"
@@ -94,6 +104,34 @@ var (
 	PasswordValidator func(string) error
 	// DefaultIsSuperuser holds the default value on creation for the "is_superuser" field.
 	DefaultIsSuperuser bool
+	// DefaultSuperuser holds the default value on creation for the "superuser" field.
+	DefaultSuperuser bool
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )
+
+// Role defines the type for the "role" enum field.
+type Role string
+
+// RoleUser is the default value of the Role enum.
+const DefaultRole = RoleUser
+
+// Role values.
+const (
+	RoleUser  Role = "user"
+	RoleOwner Role = "owner"
+)
+
+func (r Role) String() string {
+	return string(r)
+}
+
+// RoleValidator is a validator for the "role" field enum values. It is called by the builders before save.
+func RoleValidator(r Role) error {
+	switch r {
+	case RoleUser, RoleOwner:
+		return nil
+	default:
+		return fmt.Errorf("user: invalid enum value for role field: %q", r)
+	}
+}

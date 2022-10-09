@@ -49,18 +49,21 @@ func (svc *UserService) RegisterUser(ctx context.Context, data UserRegistration)
 		Msg("Registering new user")
 
 	var (
-		err   error
-		group repo.Group
-		token repo.GroupInvitation
+		err     error
+		group   repo.Group
+		token   repo.GroupInvitation
+		isOwner = false
 	)
 
-	if data.GroupToken == "" {
+	switch data.GroupToken {
+	case "":
+		isOwner = true
 		group, err = svc.repos.Groups.GroupCreate(ctx, "Home")
 		if err != nil {
 			log.Err(err).Msg("Failed to create group")
 			return repo.UserOut{}, err
 		}
-	} else {
+	default:
 		token, err = svc.repos.Groups.InvitationGet(ctx, hasher.HashToken(data.GroupToken))
 		if err != nil {
 			log.Err(err).Msg("Failed to get invitation token")
@@ -76,6 +79,7 @@ func (svc *UserService) RegisterUser(ctx context.Context, data UserRegistration)
 		Password:    hashed,
 		IsSuperuser: false,
 		GroupID:     group.ID,
+		IsOwner:     isOwner,
 	}
 
 	usr, err := svc.repos.Users.Create(ctx, usrCreate)
