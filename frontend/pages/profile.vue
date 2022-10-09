@@ -192,78 +192,132 @@
       token.value = data.token;
     }
   }
+
+  const passwordChange = reactive({
+    loading: false,
+    dialog: false,
+    current: "",
+    new: "",
+    isValid: false,
+  });
+
+  function openPassChange() {
+    passwordChange.dialog = true;
+  }
+
+  async function changePassword() {
+    passwordChange.loading = true;
+    if (!passwordChange.isValid) {
+      return;
+    }
+
+    const { error } = await api.user.changePassword(passwordChange.current, passwordChange.new);
+
+    if (error) {
+      notify.error("Failed to change password.");
+      passwordChange.loading = false;
+      return;
+    }
+
+    notify.success("Password changed successfully.");
+    passwordChange.dialog = false;
+    passwordChange.new = "";
+    passwordChange.current = "";
+    passwordChange.loading = false;
+  }
 </script>
 
 <template>
-  <BaseContainer class="flex flex-col gap-4 mb-6">
-    <BaseCard>
-      <template #title>
-        <BaseSectionHeader>
-          <Icon name="mdi-account" class="mr-2 -mt-1 text-base-600" />
-          <span class="text-base-600"> User Profile </span>
-          <template #description> Invite users, and manage your account. </template>
-        </BaseSectionHeader>
-      </template>
+  <div>
+    <BaseModal v-model="passwordChange.dialog">
+      <template #title> Change Password </template>
 
-      <DetailsSection :details="details" />
+      <FormTextField v-model="passwordChange.current" label="Current Password" type="password" />
+      <FormTextField v-model="passwordChange.new" label="New Password" type="password" />
+      <PasswordScore v-model:valid="passwordChange.isValid" :password="passwordChange.new" />
 
-      <div class="p-4">
-        <div class="flex gap-2">
-          <BaseButton size="sm"> Change Password </BaseButton>
-          <BaseButton size="sm" @click="generateToken"> Generate Invite Link </BaseButton>
-        </div>
-        <div v-if="token" class="pt-4 flex items-center pl-1">
-          <CopyText class="mr-2 btn-primary" :text="tokenUrl" />
-          {{ tokenUrl }}
-        </div>
-        <div v-if="token" class="pt-4 flex items-center pl-1">
-          <CopyText class="mr-2 btn-primary" :text="token" />
-          {{ token }}
-        </div>
+      <div class="flex">
+        <BaseButton
+          class="ml-auto"
+          :loading="passwordChange.loading"
+          :disabled="!passwordChange.isValid"
+          @click="changePassword"
+        >
+          Submit
+        </BaseButton>
       </div>
-    </BaseCard>
+    </BaseModal>
 
-    <BaseCard>
-      <template #title>
-        <BaseSectionHeader>
-          <Icon name="mdi-fill" class="mr-2 text-base-600" />
-          <span class="text-base-600"> Theme Settings </span>
-          <template #description>
-            Theme settings are stored in your browser's local storage. You can change the theme at any time. If you're
-            having trouble setting your theme try refreshing your browser.
-          </template>
-        </BaseSectionHeader>
-      </template>
+    <BaseContainer class="flex flex-col gap-4 mb-6">
+      <BaseCard>
+        <template #title>
+          <BaseSectionHeader>
+            <Icon name="mdi-account" class="mr-2 -mt-1 text-base-600" />
+            <span class="text-base-600"> User Profile </span>
+            <template #description> Invite users, and manage your account. </template>
+          </BaseSectionHeader>
+        </template>
 
-      <div class="px-4 pb-4">
-        <div class="rounded-box grid grid-cols-1 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          <div
-            v-for="theme in themes"
-            :key="theme.value"
-            class="border-base-content/20 hover:border-base-content/40 outline-base-content overflow-hidden rounded-lg border outline-2 outline-offset-2"
-            :data-theme="theme.value"
-            :data-set-theme="theme.value"
-            data-act-class="outline"
-            @click="setTheme(theme.value)"
-          >
-            <div :data-theme="theme.value" class="bg-base-100 text-base-content w-full cursor-pointer font-sans">
-              <div class="grid grid-cols-5 grid-rows-3">
-                <div class="bg-base-200 col-start-1 row-span-2 row-start-1"></div>
-                <div class="bg-base-300 col-start-1 row-start-3"></div>
-                <div class="bg-base-100 col-span-4 col-start-2 row-span-3 row-start-1 flex flex-col gap-1 p-2">
-                  <div class="font-bold">{{ theme.label }}</div>
-                  <div class="flex flex-wrap gap-1">
-                    <div class="bg-primary flex aspect-square w-5 items-center justify-center rounded lg:w-6">
-                      <div class="text-primary-content text-sm font-bold">A</div>
-                    </div>
-                    <div class="bg-secondary flex aspect-square w-5 items-center justify-center rounded lg:w-6">
-                      <div class="text-secondary-content text-sm font-bold">A</div>
-                    </div>
-                    <div class="bg-accent flex aspect-square w-5 items-center justify-center rounded lg:w-6">
-                      <div class="text-accent-content text-sm font-bold">A</div>
-                    </div>
-                    <div class="bg-neutral flex aspect-square w-5 items-center justify-center rounded lg:w-6">
-                      <div class="text-neutral-content text-sm font-bold">A</div>
+        <DetailsSection :details="details" />
+
+        <div class="p-4">
+          <div class="flex gap-2">
+            <BaseButton size="sm" @click="openPassChange"> Change Password </BaseButton>
+            <BaseButton size="sm" @click="generateToken"> Generate Invite Link </BaseButton>
+          </div>
+          <div v-if="token" class="pt-4 flex items-center pl-1">
+            <CopyText class="mr-2 btn-primary" :text="tokenUrl" />
+            {{ tokenUrl }}
+          </div>
+          <div v-if="token" class="pt-4 flex items-center pl-1">
+            <CopyText class="mr-2 btn-primary" :text="token" />
+            {{ token }}
+          </div>
+        </div>
+      </BaseCard>
+
+      <BaseCard>
+        <template #title>
+          <BaseSectionHeader>
+            <Icon name="mdi-fill" class="mr-2 text-base-600" />
+            <span class="text-base-600"> Theme Settings </span>
+            <template #description>
+              Theme settings are stored in your browser's local storage. You can change the theme at any time. If you're
+              having trouble setting your theme try refreshing your browser.
+            </template>
+          </BaseSectionHeader>
+        </template>
+
+        <div class="px-4 pb-4">
+          <div class="rounded-box grid grid-cols-1 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            <div
+              v-for="theme in themes"
+              :key="theme.value"
+              class="border-base-content/20 hover:border-base-content/40 outline-base-content overflow-hidden rounded-lg border outline-2 outline-offset-2"
+              :data-theme="theme.value"
+              :data-set-theme="theme.value"
+              data-act-class="outline"
+              @click="setTheme(theme.value)"
+            >
+              <div :data-theme="theme.value" class="bg-base-100 text-base-content w-full cursor-pointer font-sans">
+                <div class="grid grid-cols-5 grid-rows-3">
+                  <div class="bg-base-200 col-start-1 row-span-2 row-start-1"></div>
+                  <div class="bg-base-300 col-start-1 row-start-3"></div>
+                  <div class="bg-base-100 col-span-4 col-start-2 row-span-3 row-start-1 flex flex-col gap-1 p-2">
+                    <div class="font-bold">{{ theme.label }}</div>
+                    <div class="flex flex-wrap gap-1">
+                      <div class="bg-primary flex aspect-square w-5 items-center justify-center rounded lg:w-6">
+                        <div class="text-primary-content text-sm font-bold">A</div>
+                      </div>
+                      <div class="bg-secondary flex aspect-square w-5 items-center justify-center rounded lg:w-6">
+                        <div class="text-secondary-content text-sm font-bold">A</div>
+                      </div>
+                      <div class="bg-accent flex aspect-square w-5 items-center justify-center rounded lg:w-6">
+                        <div class="text-accent-content text-sm font-bold">A</div>
+                      </div>
+                      <div class="bg-neutral flex aspect-square w-5 items-center justify-center rounded lg:w-6">
+                        <div class="text-neutral-content text-sm font-bold">A</div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -271,23 +325,23 @@
             </div>
           </div>
         </div>
-      </div>
-    </BaseCard>
+      </BaseCard>
 
-    <BaseCard>
-      <template #title>
-        <BaseSectionHeader>
-          <Icon name="mdi-delete" class="mr-2 -mt-1 text-base-600" />
-          <span class="text-base-600"> Delete Account</span>
-          <template #description> Delete your account and all it's associated data </template>
-        </BaseSectionHeader>
+      <BaseCard>
+        <template #title>
+          <BaseSectionHeader>
+            <Icon name="mdi-delete" class="mr-2 -mt-1 text-base-600" />
+            <span class="text-base-600"> Delete Account</span>
+            <template #description> Delete your account and all it's associated data </template>
+          </BaseSectionHeader>
 
-        <div class="py-4 border-t-2 border-gray-300">
-          <BaseButton class="btn-error" @click="deleteProfile"> Delete Account </BaseButton>
-        </div>
-      </template>
-    </BaseCard>
-  </BaseContainer>
+          <div class="py-4 border-t-2 border-gray-300">
+            <BaseButton class="btn-error" @click="deleteProfile"> Delete Account </BaseButton>
+          </div>
+        </template>
+      </BaseCard>
+    </BaseContainer>
+  </div>
 </template>
 
 <style scoped></style>
