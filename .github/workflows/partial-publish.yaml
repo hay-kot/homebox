@@ -48,7 +48,7 @@ jobs:
         if: ${{ inputs.release == false }}
         run: |
           docker build --push \
-            --tag "ghcr.io/hay-kot/homebox:{{ inputs.tag }}" \
+            --tag ghcr.io/hay-kot/homebox:{{ inputs.tag }} \
             --build-arg COMMIT=$(git rev-parse HEAD) \
             --build-arg BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ") \
             --platform linux/amd64,linux/arm64,linux/arm/v7 .
@@ -57,9 +57,9 @@ jobs:
         if: ${{ inputs.release == true }}
         run: |
           docker build --push \
-            --tag "ghcr.io/hay-kot/homebox:nightly" \
-            --tag "ghcr.io/hay-kot/homebox:latest" \
-            --tag "ghcr.io/hay-kot/homebox:{{ inputs.tag }}" \
+            --tag ghcr.io/hay-kot/homebox:nightly \
+            --tag ghcr.io/hay-kot/homebox:latest \
+            --tag ghcr.io/hay-kot/homebox:{{ inputs.tag }} \
             --build-arg COMMIT=$(git rev-parse HEAD) \
             --build-arg BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ") \
             --platform linux/amd64,linux/arm64,linux/arm/v7 .
