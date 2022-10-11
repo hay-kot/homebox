@@ -33,7 +33,7 @@ jobs:
 
   publish-nightly:
     name: "Publish Nightly"
-    if: ${{ github.event_name != 'release' }}
+    if: github.event_name != 'release'
     needs:
       - backend-tests
       - frontend-tests
