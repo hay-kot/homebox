@@ -42,7 +42,7 @@ jobs:
       release: true
       tag: ${{ github.event.release.tag_name }}
     secrets:
-      GITHUB_TOKEN: ${{ secrets.CR_PAT }}
+      GH_TOKEN: ${{ secrets.CR_PAT }}
 
   publish-nightly:
     name: "Publish Nightly"
@@ -53,7 +53,7 @@ jobs:
     with:
       tag: nightly
     secrets:
-      GITHUB_TOKEN: ${{ secrets.CR_PAT }}
+      GH_TOKEN: ${{ secrets.CR_PAT }}
 
   deploy-docs:
     name: Deploy docs

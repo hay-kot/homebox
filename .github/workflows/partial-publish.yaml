@@ -12,7 +12,7 @@ on:
         default: false
 
     secrets:
-      GITHUB_TOKEN:
+      GH_TOKEN:
         required: true
 
 jobs:
@@ -42,7 +42,7 @@ jobs:
       - name: login to container registry
         run: docker login ghcr.io --username hay-kot --password $CR_PAT
         env:
-          CR_PAT: ${{ secrets.GITHUB_TOKEN }}
+          CR_PAT: ${{ secrets.GH_TOKEN }}
 
       - name: Build and push
         uses: docker/build-push-action@v3
