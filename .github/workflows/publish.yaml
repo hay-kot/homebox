@@ -33,6 +33,7 @@ jobs:
 
   publish-nightly:
     name: "Publish Nightly"
+    if: ${{ github.event_name != 'release' }}
     needs:
       - backend-tests
       - frontend-tests
@@ -43,8 +44,8 @@ jobs:
       GH_TOKEN: ${{ secrets.CR_PAT }}
 
   publish-tag:
-    if: github.event_name == 'release'
     name: "Publish Tag"
+    if: github.event_name == 'release'
     needs:
       - backend-tests
       - frontend-tests
