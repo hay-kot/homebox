@@ -54,7 +54,7 @@ jobs:
   deploy-docs:
     name: Deploy docs
     needs:
-      - publish
+      - publish-tag
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
