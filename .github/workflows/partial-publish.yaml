@@ -56,7 +56,7 @@ jobs:
       - name: build release tagged the image
         if: ${{ inputs.release == true }}
         run: |
-          docker build --push --no \
+          docker build --push --no-cache \
             --tag ghcr.io/hay-kot/homebox:nightly \
             --tag ghcr.io/hay-kot/homebox:latest \
             --tag ghcr.io/hay-kot/homebox:${{ inputs.tag }} \
