@@ -11,6 +11,10 @@ on:
         type: boolean
         default: false
 
+    secrets:
+      GITHUB_TOKEN:
+        required: true
+
 jobs:
   publish:
     name: "Publish Homebox"
@@ -38,7 +42,7 @@ jobs:
       - name: login to container registry
         run: docker login ghcr.io --username hay-kot --password $CR_PAT
         env:
-          CR_PAT: ${{ secrets.CR_PAT }}
+          CR_PAT: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
         uses: docker/build-push-action@v3

@@ -41,6 +41,8 @@ jobs:
     with:
       release: true
       tag: ${{ github.event.release.tag_name }}
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.CR_PAT }}
 
   publish-nightly:
     name: "Publish Nightly"
@@ -50,6 +52,8 @@ jobs:
     uses: hay-kot/homebox/.github/workflows/partial-publish.yaml@main
     with:
       tag: nightly
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.CR_PAT }}
 
   deploy-docs:
     name: Deploy docs
