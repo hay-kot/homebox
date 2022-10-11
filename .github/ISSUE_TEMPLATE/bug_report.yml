@@ -34,6 +34,7 @@ body:
   - type: textarea
     id: reproduction
     attributes:
+      description: If you do not provide a way to reproduce the issue, your issue will likely be closed.
       label: How can the maintainer reproduce the issue?
       placeholder: A clear step-by-step guide on how to reproduce the issue.
     validations:
