@@ -31,6 +31,17 @@ jobs:
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - run: flyctl deploy --remote-only
 
+  publish-nightly:
+    name: "Publish Nightly"
+    needs:
+      - backend-tests
+      - frontend-tests
+    uses: hay-kot/homebox/.github/workflows/partial-publish.yaml@main
+    with:
+      tag: nightly
+    secrets:
+      GH_TOKEN: ${{ secrets.CR_PAT }}
+
   publish-tag:
     if: github.event_name == 'release'
     name: "Publish Tag"
@@ -41,17 +52,6 @@ jobs:
     with:
       release: true
       tag: ${{ github.event.release.tag_name }}
-    secrets:
-      GH_TOKEN: ${{ secrets.CR_PAT }}
-
-  publish-nightly:
-    name: "Publish Nightly"
-    needs:
-      - backend-tests
-      - frontend-tests
-    uses: hay-kot/homebox/.github/workflows/partial-publish.yaml@main
-    with:
-      tag: nightly
     secrets:
       GH_TOKEN: ${{ secrets.CR_PAT }}
 
