@@ -44,12 +44,6 @@ jobs:
         env:
           CR_PAT: ${{ secrets.GH_TOKEN }}
 
-      - name: Build and push
-        uses: docker/build-push-action@v3
-        with:
-          push: true
-          tags: user/app:latest
-
       - name: build nightly the image
         if: ${{ inputs.release == false }}
         run: |
