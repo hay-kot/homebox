@@ -47,11 +47,7 @@ jobs:
       - name: build nightly the image
         if: ${{ inputs.release == false }}
         run: |
-          docker build --push --no-cache \
-            --tag ghcr.io/hay-kot/homebox:{{ inputs.tag }}  \
-            --build-arg COMMIT=$(git rev-parse HEAD) \
-            --build-arg BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ") \
-            --platform linux/amd64,linux/arm64,linux/arm/v7 .
+          docker build --push --no-cache --tag ghcr.io/hay-kot/homebox:{{ inputs.tag }} --build-arg COMMIT=$(git rev-parse HEAD) --build-arg BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ") --platform linux/amd64,linux/arm64,linux/arm/v7 .
 
       - name: build release tagged the image
         if: ${{ inputs.release == true }}
