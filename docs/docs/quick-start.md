@@ -8,7 +8,7 @@ Great for testing out the application, but not recommended for stable use. Check
 docker run --name=homebox \
     --restart=always \
     --publish=3100:7745 \
-    ghcr.io/hay-kot/homebox:nightly
+    ghcr.io/hay-kot/homebox:latest
 ```
 
 ## Docker-Compose
@@ -17,7 +17,7 @@ docker run --name=homebox \
 version: "3.4"
  services:
    homebox:
-     image: ghcr.io/hay-kot/homebox:nightly
+     image: ghcr.io/hay-kot/homebox:latest
      container_name: homebox
      restart: always
      environment:

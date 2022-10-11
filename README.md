@@ -19,7 +19,7 @@
 docker run --name=homebox \
     --restart=always \
     --publish=3100:7745 \
-    ghcr.io/hay-kot/homebox:nightly
+    ghcr.io/hay-kot/homebox:latest
 ```
 
 ## Credits

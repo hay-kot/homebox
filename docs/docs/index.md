@@ -23,7 +23,7 @@ Homebox is the inventory and organization system built for the Home User! With a
 
 ## Project Status
 
-Homebox is currently in early-active development and is currently in **preview** stage. This means that the project may still be unstable and clunky. Overall we are striving to not introduce any breaking changes and have checks in place to ensure migrations and upgrades are smooth. However, we do not guarantee that there will be no breaking changes. We will try to keep the documentation up to date as we make changes.
+Homebox is currently in early-active development and is currently in **beta** stage. This means that the project may still be unstable and clunky. Overall we are striving to not introduce any breaking changes and have checks in place to ensure migrations and upgrades are smooth. However, we do not guarantee that there will be no breaking changes. We will try to keep the documentation up to date as we make changes.
 
 ## Features
 

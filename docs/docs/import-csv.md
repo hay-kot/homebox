@@ -18,7 +18,7 @@ Import RefLocation	Labels	Quantity	Name	Description	Insured	Serial Number	Model 
 ```
 
 !!! tip "Column Order"
-    Column headers are just there for reference, the important thing is that the order is correct. You can change the headers to anything you like.
+    Column headers are just there for reference, the important thing is that the order is correct. You can change the headers to anything you like, this behavior may change in the future.
 
 
 ## CSV Reference
