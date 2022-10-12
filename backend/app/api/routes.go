@@ -44,7 +44,7 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 	v1Base := v1.BaseUrlFunc(prefix)
 	v1Ctrl := v1.NewControllerV1(a.services,
 		v1.WithMaxUploadSize(a.conf.Web.MaxUploadSize),
-		v1.WithDisablePasswordChange(a.conf.Demo), // Disable Password Change in Demo Mode
+		v1.WithDemoStatus(a.conf.Demo), // Disable Password Change in Demo Mode
 	)
 	r.Get(v1Base("/status"), v1Ctrl.HandleBase(func() bool { return true }, v1.Build{
 		Version:   Version,

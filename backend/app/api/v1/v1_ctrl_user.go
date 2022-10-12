@@ -136,7 +136,7 @@ type (
 // @Security  Bearer
 func (ctrl *V1Controller) HandleUserSelfChangePassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if ctrl.disablePasswordChange {
+		if ctrl.isDemo {
 			server.RespondError(w, http.StatusForbidden, nil)
 			return
 		}

@@ -13,16 +13,16 @@ func WithMaxUploadSize(maxUploadSize int64) func(*V1Controller) {
 	}
 }
 
-func WithDisablePasswordChange(disablePasswordChange bool) func(*V1Controller) {
+func WithDemoStatus(demoStatus bool) func(*V1Controller) {
 	return func(ctrl *V1Controller) {
-		ctrl.disablePasswordChange = disablePasswordChange
+		ctrl.isDemo = demoStatus
 	}
 }
 
 type V1Controller struct {
-	svc                   *services.AllServices
-	maxUploadSize         int64
-	disablePasswordChange bool
+	svc           *services.AllServices
+	maxUploadSize int64
+	isDemo        bool
 }
 
 type (
@@ -37,7 +37,8 @@ type (
 		Versions []string `json:"versions"`
 		Title    string   `json:"title"`
 		Message  string   `json:"message"`
-		Build    Build
+		Build    Build    `json:"build"`
+		Demo     bool     `json:"demo"`
 	}
 )
 
@@ -73,6 +74,7 @@ func (ctrl *V1Controller) HandleBase(ready ReadyFunc, build Build) http.HandlerF
 			Title:   "Go API Template",
 			Message: "Welcome to the Go API Template Application!",
 			Build:   build,
+			Demo:    ctrl.isDemo,
 		})
 	}
 }
