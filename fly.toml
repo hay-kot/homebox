@@ -8,6 +8,7 @@ processes = []
 
 [env]
   PORT = "7745"
+  HBOX_DEMO = "true"
 
 [experimental]
   allowed_public_ports = []

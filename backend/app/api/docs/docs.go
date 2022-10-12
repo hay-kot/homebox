@@ -1580,6 +1580,9 @@ const docTemplate = `{
                 "build": {
                     "$ref": "#/definitions/v1.Build"
                 },
+                "demo": {
+                    "type": "boolean"
+                },
                 "health": {
                     "type": "boolean"
                 },

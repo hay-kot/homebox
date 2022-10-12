@@ -11,6 +11,24 @@
   const api = usePublicApi();
   const toast = useNotifier();
 
+  const { data: status } = useAsyncData(async () => {
+    const { data } = await api.status();
+
+    if (data) {
+      console.log(data);
+      username.value = "demo@email.com";
+      password.value = "demo";
+    }
+    return data;
+  });
+
+  whenever(status, status => {
+    if (status?.demo) {
+      email.value = "demo@email.com";
+      loginPassword.value = "demo";
+    }
+  });
+
   const authStore = useAuthStore();
   if (!authStore.isTokenExpired) {
     navigateTo("/home");
@@ -178,6 +196,11 @@
                     <Icon name="heroicons-user" class="mr-1 w-7 h-7" />
                     Login
                   </h2>
+                  <template v-if="status && status.demo">
+                    <p class="text-xs italic text-center">This is a demo instance</p>
+                    <p class="text-xs text-center"><b>Email</b> demo@email.com</p>
+                    <p class="text-xs text-center"><b>Password</b> demo</p>
+                  </template>
                   <FormTextField v-model="email" label="Email" />
                   <FormTextField v-model="loginPassword" label="Password" type="password" />
                   <div class="card-actions justify-end mt-2">

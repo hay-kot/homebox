@@ -13,9 +13,16 @@ func WithMaxUploadSize(maxUploadSize int64) func(*V1Controller) {
 	}
 }
 
+func WithDemoStatus(demoStatus bool) func(*V1Controller) {
+	return func(ctrl *V1Controller) {
+		ctrl.isDemo = demoStatus
+	}
+}
+
 type V1Controller struct {
 	svc           *services.AllServices
 	maxUploadSize int64
+	isDemo        bool
 }
 
 type (
@@ -30,7 +37,8 @@ type (
 		Versions []string `json:"versions"`
 		Title    string   `json:"title"`
 		Message  string   `json:"message"`
-		Build    Build
+		Build    Build    `json:"build"`
+		Demo     bool     `json:"demo"`
 	}
 )
 
@@ -46,6 +54,10 @@ func BaseUrlFunc(prefix string) func(s string) string {
 func NewControllerV1(svc *services.AllServices, options ...func(*V1Controller)) *V1Controller {
 	ctrl := &V1Controller{
 		svc: svc,
+	}
+
+	for _, opt := range options {
+		opt(ctrl)
 	}
 
 	return ctrl
@@ -66,6 +78,7 @@ func (ctrl *V1Controller) HandleBase(ready ReadyFunc, build Build) http.HandlerF
 			Title:   "Go API Template",
 			Message: "Welcome to the Go API Template Application!",
 			Build:   build,
+			Demo:    ctrl.isDemo,
 		})
 	}
 }
