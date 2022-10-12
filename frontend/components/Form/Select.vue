@@ -74,12 +74,8 @@
     selectedIdx.value = idx;
   }
 
-  watch(
-    () => props.modelValue,
-    () => {
-      syncSelect();
-    }
-  );
+  watch(() => props.items, syncSelect);
+  watch(() => props.modelValue, syncSelect);
 
   const selectedIdx = ref(0);
   watch(
