@@ -1,17 +1,8 @@
 <template>
   <div ref="label" class="dropdown dropdown-end dropdown-top w-full">
     <FormTextField v-model="dateText" tabindex="0" label="Date" :inline="inline" readonly />
-    <div tabindex="0" class="mt-1 card compact dropdown-content shadow bg-base-100 rounded-box w-64" @blur="resetTime">
+    <div tabindex="0" class="card compact dropdown-content shadow bg-base-100 rounded-box w-64" @blur="resetTime">
       <div class="card-body">
-        <div class="flex justify-between items-center">
-          <button class="btn btn-xs" @click="prevMonth">
-            <Icon class="h-5 w-5" name="mdi-arrow-left"></Icon>
-          </button>
-          <p class="text-center">{{ month }} {{ year }}</p>
-          <button class="btn btn-xs" @click="nextMonth">
-            <Icon class="h-5 w-5" name="mdi-arrow-right"></Icon>
-          </button>
-        </div>
         <div class="grid grid-cols-7 gap-2">
           <div v-for="d in daysIdx" :key="d">
             <p class="text-center">
@@ -29,6 +20,15 @@
             </button>
             <div v-else :key="`${day.number}-empty`"></div>
           </template>
+        </div>
+        <div class="flex justify-between mt-1 items-center">
+          <button class="btn btn-xs" @click="prevMonth">
+            <Icon class="h-5 w-5" name="mdi-arrow-left"></Icon>
+          </button>
+          <p class="text-center">{{ month }} {{ year }}</p>
+          <button class="btn btn-xs" @click="nextMonth">
+            <Icon class="h-5 w-5" name="mdi-arrow-right"></Icon>
+          </button>
         </div>
       </div>
     </div>
