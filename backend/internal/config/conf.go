@@ -23,6 +23,7 @@ type Config struct {
 	Log     LoggerConf  `yaml:"logger"`
 	Mailer  MailerConf  `yaml:"mailer"`
 	Swagger SwaggerConf `yaml:"swagger"`
+	Demo    bool        `yaml:"demo"`
 }
 
 type SwaggerConf struct {
