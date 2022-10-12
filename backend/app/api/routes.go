@@ -42,58 +42,59 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 	// API Version 1
 
 	v1Base := v1.BaseUrlFunc(prefix)
-	v1Ctrl := v1.NewControllerV1(a.services, v1.WithMaxUploadSize(a.conf.Web.MaxUploadSize))
-	{
-		r.Get(v1Base("/status"), v1Ctrl.HandleBase(func() bool { return true }, v1.Build{
-			Version:   Version,
-			Commit:    Commit,
-			BuildTime: BuildTime,
-		}))
+	v1Ctrl := v1.NewControllerV1(a.services,
+		v1.WithMaxUploadSize(a.conf.Web.MaxUploadSize),
+		v1.WithDisablePasswordChange(a.conf.Demo), // Disable Password Change in Demo Mode
+	)
+	r.Get(v1Base("/status"), v1Ctrl.HandleBase(func() bool { return true }, v1.Build{
+		Version:   Version,
+		Commit:    Commit,
+		BuildTime: BuildTime,
+	}))
 
-		r.Post(v1Base("/users/register"), v1Ctrl.HandleUserRegistration())
-		r.Post(v1Base("/users/login"), v1Ctrl.HandleAuthLogin())
+	r.Post(v1Base("/users/register"), v1Ctrl.HandleUserRegistration())
+	r.Post(v1Base("/users/login"), v1Ctrl.HandleAuthLogin())
 
-		// Attachment download URl needs a `token` query param to be passed in the request.
-		// and also needs to be outside of the `auth` middleware.
-		r.Get(v1Base("/items/{id}/attachments/download"), v1Ctrl.HandleItemAttachmentDownload())
+	// Attachment download URl needs a `token` query param to be passed in the request.
+	// and also needs to be outside of the `auth` middleware.
+	r.Get(v1Base("/items/{id}/attachments/download"), v1Ctrl.HandleItemAttachmentDownload())
 
-		r.Group(func(r chi.Router) {
-			r.Use(a.mwAuthToken)
-			r.Get(v1Base("/users/self"), v1Ctrl.HandleUserSelf())
-			r.Put(v1Base("/users/self"), v1Ctrl.HandleUserSelfUpdate())
-			r.Delete(v1Base("/users/self"), v1Ctrl.HandleUserSelfDelete())
-			r.Put(v1Base("/users/self/password"), v1Ctrl.HandleUserUpdatePassword())
-			r.Post(v1Base("/users/logout"), v1Ctrl.HandleAuthLogout())
-			r.Get(v1Base("/users/refresh"), v1Ctrl.HandleAuthRefresh())
-			r.Put(v1Base("/users/self/change-password"), v1Ctrl.HandleUserSelfChangePassword())
+	r.Group(func(r chi.Router) {
+		r.Use(a.mwAuthToken)
+		r.Get(v1Base("/users/self"), v1Ctrl.HandleUserSelf())
+		r.Put(v1Base("/users/self"), v1Ctrl.HandleUserSelfUpdate())
+		r.Delete(v1Base("/users/self"), v1Ctrl.HandleUserSelfDelete())
+		r.Put(v1Base("/users/self/password"), v1Ctrl.HandleUserUpdatePassword())
+		r.Post(v1Base("/users/logout"), v1Ctrl.HandleAuthLogout())
+		r.Get(v1Base("/users/refresh"), v1Ctrl.HandleAuthRefresh())
+		r.Put(v1Base("/users/self/change-password"), v1Ctrl.HandleUserSelfChangePassword())
 
-			r.Post(v1Base("/groups/invitations"), v1Ctrl.HandleGroupInvitationsCreate())
+		r.Post(v1Base("/groups/invitations"), v1Ctrl.HandleGroupInvitationsCreate())
 
-			r.Get(v1Base("/locations"), v1Ctrl.HandleLocationGetAll())
-			r.Post(v1Base("/locations"), v1Ctrl.HandleLocationCreate())
-			r.Get(v1Base("/locations/{id}"), v1Ctrl.HandleLocationGet())
-			r.Put(v1Base("/locations/{id}"), v1Ctrl.HandleLocationUpdate())
-			r.Delete(v1Base("/locations/{id}"), v1Ctrl.HandleLocationDelete())
+		r.Get(v1Base("/locations"), v1Ctrl.HandleLocationGetAll())
+		r.Post(v1Base("/locations"), v1Ctrl.HandleLocationCreate())
+		r.Get(v1Base("/locations/{id}"), v1Ctrl.HandleLocationGet())
+		r.Put(v1Base("/locations/{id}"), v1Ctrl.HandleLocationUpdate())
+		r.Delete(v1Base("/locations/{id}"), v1Ctrl.HandleLocationDelete())
 
-			r.Get(v1Base("/labels"), v1Ctrl.HandleLabelsGetAll())
-			r.Post(v1Base("/labels"), v1Ctrl.HandleLabelsCreate())
-			r.Get(v1Base("/labels/{id}"), v1Ctrl.HandleLabelGet())
-			r.Put(v1Base("/labels/{id}"), v1Ctrl.HandleLabelUpdate())
-			r.Delete(v1Base("/labels/{id}"), v1Ctrl.HandleLabelDelete())
+		r.Get(v1Base("/labels"), v1Ctrl.HandleLabelsGetAll())
+		r.Post(v1Base("/labels"), v1Ctrl.HandleLabelsCreate())
+		r.Get(v1Base("/labels/{id}"), v1Ctrl.HandleLabelGet())
+		r.Put(v1Base("/labels/{id}"), v1Ctrl.HandleLabelUpdate())
+		r.Delete(v1Base("/labels/{id}"), v1Ctrl.HandleLabelDelete())
 
-			r.Get(v1Base("/items"), v1Ctrl.HandleItemsGetAll())
-			r.Post(v1Base("/items/import"), v1Ctrl.HandleItemsImport())
-			r.Post(v1Base("/items"), v1Ctrl.HandleItemsCreate())
-			r.Get(v1Base("/items/{id}"), v1Ctrl.HandleItemGet())
-			r.Put(v1Base("/items/{id}"), v1Ctrl.HandleItemUpdate())
-			r.Delete(v1Base("/items/{id}"), v1Ctrl.HandleItemDelete())
+		r.Get(v1Base("/items"), v1Ctrl.HandleItemsGetAll())
+		r.Post(v1Base("/items/import"), v1Ctrl.HandleItemsImport())
+		r.Post(v1Base("/items"), v1Ctrl.HandleItemsCreate())
+		r.Get(v1Base("/items/{id}"), v1Ctrl.HandleItemGet())
+		r.Put(v1Base("/items/{id}"), v1Ctrl.HandleItemUpdate())
+		r.Delete(v1Base("/items/{id}"), v1Ctrl.HandleItemDelete())
 
-			r.Post(v1Base("/items/{id}/attachments"), v1Ctrl.HandleItemAttachmentCreate())
-			r.Get(v1Base("/items/{id}/attachments/{attachment_id}"), v1Ctrl.HandleItemAttachmentToken())
-			r.Put(v1Base("/items/{id}/attachments/{attachment_id}"), v1Ctrl.HandleItemAttachmentUpdate())
-			r.Delete(v1Base("/items/{id}/attachments/{attachment_id}"), v1Ctrl.HandleItemAttachmentDelete())
-		})
-	}
+		r.Post(v1Base("/items/{id}/attachments"), v1Ctrl.HandleItemAttachmentCreate())
+		r.Get(v1Base("/items/{id}/attachments/{attachment_id}"), v1Ctrl.HandleItemAttachmentToken())
+		r.Put(v1Base("/items/{id}/attachments/{attachment_id}"), v1Ctrl.HandleItemAttachmentUpdate())
+		r.Delete(v1Base("/items/{id}/attachments/{attachment_id}"), v1Ctrl.HandleItemAttachmentDelete())
+	})
 
 	r.NotFound(notFoundHandler())
 	return r

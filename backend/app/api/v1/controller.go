@@ -13,9 +13,16 @@ func WithMaxUploadSize(maxUploadSize int64) func(*V1Controller) {
 	}
 }
 
+func WithDisablePasswordChange(disablePasswordChange bool) func(*V1Controller) {
+	return func(ctrl *V1Controller) {
+		ctrl.disablePasswordChange = disablePasswordChange
+	}
+}
+
 type V1Controller struct {
-	svc           *services.AllServices
-	maxUploadSize int64
+	svc                   *services.AllServices
+	maxUploadSize         int64
+	disablePasswordChange bool
 }
 
 type (
