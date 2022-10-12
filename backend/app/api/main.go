@@ -144,5 +144,11 @@ func run(cfg *config.Config) error {
 		}
 	})
 
+	// TODO: Remove through external API that does setup
+	if cfg.Demo {
+		log.Info().Msg("Running in demo mode, creating demo data")
+		app.SetupDemo()
+	}
+
 	return app.server.Start(routes)
 }
