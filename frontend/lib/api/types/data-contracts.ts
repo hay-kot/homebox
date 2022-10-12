@@ -227,6 +227,7 @@ export interface UserRegistration {
 
 export interface ApiSummary {
   build: Build;
+  demo: boolean;
   health: boolean;
   message: string;
   title: string;

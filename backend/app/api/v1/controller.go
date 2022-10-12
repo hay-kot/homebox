@@ -56,6 +56,10 @@ func NewControllerV1(svc *services.AllServices, options ...func(*V1Controller)) 
 		svc: svc,
 	}
 
+	for _, opt := range options {
+		opt(ctrl)
+	}
+
 	return ctrl
 }
 
