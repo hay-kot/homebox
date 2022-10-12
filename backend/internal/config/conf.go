@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/ardanlabs/conf/v2"
-	"github.com/ardanlabs/conf/v2/yaml"
 
 	"os"
 )
@@ -37,24 +36,13 @@ type WebConfig struct {
 	MaxUploadSize int64  `yaml:"max_file_upload" conf:"default:10"`
 }
 
-// NewConfig parses the CLI/Config file and returns a Config struct. If the file argument is an empty string, the
+// New parses the CLI/Config file and returns a Config struct. If the file argument is an empty string, the
 // file is not read. If the file is not empty, the file is read and the Config struct is returned.
-func NewConfig(file string) (*Config, error) {
+func New() (*Config, error) {
 	var cfg Config
-
 	const prefix = "HBOX"
 
-	help, err := func() (string, error) {
-		if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
-			return conf.Parse(prefix, &cfg)
-		} else {
-			yamlData, err := os.ReadFile(file)
-			if err != nil {
-				return "", err
-			}
-			return conf.Parse(prefix, &cfg, yaml.WithData(yamlData))
-		}
-	}()
+	help, err := conf.Parse(prefix, &cfg)
 
 	if err != nil {
 		if errors.Is(err, conf.ErrHelpWanted) {
