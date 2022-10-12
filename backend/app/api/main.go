@@ -36,12 +36,7 @@ var (
 // @name                        Authorization
 // @description                 "Type 'Bearer TOKEN' to correctly set the API Key"
 func main() {
-	path := ""
-	if len(os.Args) > 1 {
-		path = os.Args[1]
-	}
-
-	cfg, err := config.NewConfig(path)
+	cfg, err := config.New()
 	if err != nil {
 		panic(err)
 	}
