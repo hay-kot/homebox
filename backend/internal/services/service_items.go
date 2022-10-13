@@ -28,7 +28,7 @@ func (svc *ItemService) GetOne(ctx context.Context, gid uuid.UUID, id uuid.UUID)
 	return svc.repo.Items.GetOneByGroup(ctx, gid, id)
 }
 
-func (svc *ItemService) Query(ctx Context, q repo.ItemQuery) ([]repo.ItemSummary, error) {
+func (svc *ItemService) Query(ctx Context, q repo.ItemQuery) (repo.PaginationResult[repo.ItemSummary], error) {
 	return svc.repo.Items.QueryByGroup(ctx, ctx.GID, q)
 }
 

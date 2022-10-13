@@ -8,9 +8,11 @@ import {
   ItemSummary,
   ItemUpdate,
 } from "../types/data-contracts";
-import { AttachmentTypes, Results } from "../types/non-generated";
+import { AttachmentTypes, PaginationResult } from "../types/non-generated";
 
 export type ItemsQuery = {
+  page?: number;
+  pageSize?: number;
   locations?: string[];
   labels?: string[];
   q?: string;
@@ -18,7 +20,7 @@ export type ItemsQuery = {
 
 export class ItemsApi extends BaseAPI {
   getAll(q: ItemsQuery = {}) {
-    return this.http.get<Results<ItemSummary>>({ url: route("/items", q) });
+    return this.http.get<PaginationResult<ItemSummary>>({ url: route("/items", q) });
   }
 
   create(item: ItemCreate) {

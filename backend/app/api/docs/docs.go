@@ -78,6 +78,18 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "items per page",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
                         "type": "array",
                         "items": {
                             "type": "string"
@@ -102,22 +114,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/server.Results"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "items": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/repo.ItemSummary"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/repo.PaginationResult-repo_ItemSummary"
                         }
                     }
                 }
@@ -181,7 +178,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -282,7 +279,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -382,7 +379,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -498,7 +495,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -662,7 +659,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -826,7 +823,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -874,7 +871,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -931,7 +928,7 @@ const docTemplate = `{
                 "summary": "User Logout",
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -950,7 +947,7 @@ const docTemplate = `{
                 "summary": "User Token Refresh",
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -977,7 +974,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -1077,7 +1074,7 @@ const docTemplate = `{
                 "summary": "Deletes the user account",
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -1098,7 +1095,7 @@ const docTemplate = `{
                 "summary": "Update the current user's password // TODO:",
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -1516,6 +1513,26 @@ const docTemplate = `{
                 }
             }
         },
+        "repo.PaginationResult-repo_ItemSummary": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/repo.ItemSummary"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
         "repo.UserOut": {
             "type": "object",
             "properties": {
@@ -1569,9 +1586,7 @@ const docTemplate = `{
         "server.Results": {
             "type": "object",
             "properties": {
-                "items": {
-                    "type": "any"
-                }
+                "items": {}
             }
         },
         "server.ValidationError": {

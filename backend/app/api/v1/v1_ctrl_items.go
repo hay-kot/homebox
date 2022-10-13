@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"net/http"
 	"net/url"
+	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/repo"
@@ -24,10 +25,23 @@ func uuidList(params url.Values, key string) []uuid.UUID {
 	return ids
 }
 
+func intOrNegativeOne(s string) int {
+	i, err := strconv.Atoi(s)
+	if err != nil {
+		return -1
+	}
+	return i
+}
+
 func extractQuery(r *http.Request) repo.ItemQuery {
 	params := r.URL.Query()
 
+	page := intOrNegativeOne(params.Get("page"))
+	perPage := intOrNegativeOne(params.Get("perPage"))
+
 	return repo.ItemQuery{
+		Page:        page,
+		PageSize:    perPage,
 		Search:      params.Get("q"),
 		LocationIDs: uuidList(params, "locations"),
 		LabelIDs:    uuidList(params, "labels"),
@@ -35,15 +49,17 @@ func extractQuery(r *http.Request) repo.ItemQuery {
 }
 
 // HandleItemsGetAll godoc
-// @Summary   Get All Items
-// @Tags      Items
-// @Produce   json
-// @Param     q          query     string    false  "search string"
-// @Param     labels     query     []string  false  "label Ids"     collectionFormat(multi)
-// @Param     locations  query     []string  false  "location Ids"  collectionFormat(multi)
-// @Success   200        {object}  server.Results{items=[]repo.ItemSummary}
-// @Router    /v1/items [GET]
-// @Security  Bearer
+// @Summary  Get All Items
+// @Tags     Items
+// @Produce  json
+// @Param    q         query    string   false "search string"
+// @Param    page      query    int      false "page number"
+// @Param    pageSize  query    int      false "items per page"
+// @Param    labels    query    []string false "label Ids"    collectionFormat(multi)
+// @Param    locations query    []string false "location Ids" collectionFormat(multi)
+// @Success  200       {object} repo.PaginationResult[repo.ItemSummary]{}
+// @Router   /v1/items [GET]
+// @Security Bearer
 func (ctrl *V1Controller) HandleItemsGetAll() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := services.NewContext(r.Context())
@@ -53,18 +69,18 @@ func (ctrl *V1Controller) HandleItemsGetAll() http.HandlerFunc {
 			server.RespondServerError(w)
 			return
 		}
-		server.Respond(w, http.StatusOK, server.Results{Items: items})
+		server.Respond(w, http.StatusOK, items)
 	}
 }
 
 // HandleItemsCreate godoc
-// @Summary   Create a new item
-// @Tags      Items
-// @Produce   json
-// @Param     payload  body      repo.ItemCreate  true  "Item Data"
-// @Success   200      {object}  repo.ItemSummary
-// @Router    /v1/items [POST]
-// @Security  Bearer
+// @Summary  Create a new item
+// @Tags     Items
+// @Produce  json
+// @Param    payload body     repo.ItemCreate true "Item Data"
+// @Success  200     {object} repo.ItemSummary
+// @Router   /v1/items [POST]
+// @Security Bearer
 func (ctrl *V1Controller) HandleItemsCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		createData := repo.ItemCreate{}
@@ -87,13 +103,13 @@ func (ctrl *V1Controller) HandleItemsCreate() http.HandlerFunc {
 }
 
 // HandleItemDelete godocs
-// @Summary   deletes a item
-// @Tags      Items
-// @Produce   json
-// @Param     id  path  string  true  "Item ID"
-// @Success   204
-// @Router    /v1/items/{id} [DELETE]
-// @Security  Bearer
+// @Summary  deletes a item
+// @Tags     Items
+// @Produce  json
+// @Param    id path string true "Item ID"
+// @Success  204
+// @Router   /v1/items/{id} [DELETE]
+// @Security Bearer
 func (ctrl *V1Controller) HandleItemDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		uid, user, err := ctrl.partialParseIdAndUser(w, r)
@@ -112,13 +128,13 @@ func (ctrl *V1Controller) HandleItemDelete() http.HandlerFunc {
 }
 
 // HandleItemGet godocs
-// @Summary   Gets a item and fields
-// @Tags      Items
-// @Produce   json
-// @Param     id   path      string  true  "Item ID"
-// @Success   200      {object}  repo.ItemOut
-// @Router    /v1/items/{id} [GET]
-// @Security  Bearer
+// @Summary  Gets a item and fields
+// @Tags     Items
+// @Produce  json
+// @Param    id  path     string true "Item ID"
+// @Success  200 {object} repo.ItemOut
+// @Router   /v1/items/{id} [GET]
+// @Security Bearer
 func (ctrl *V1Controller) HandleItemGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		uid, user, err := ctrl.partialParseIdAndUser(w, r)
@@ -137,14 +153,14 @@ func (ctrl *V1Controller) HandleItemGet() http.HandlerFunc {
 }
 
 // HandleItemUpdate godocs
-// @Summary   updates a item
-// @Tags      Items
-// @Produce   json
-// @Param     id       path      string           true  "Item ID"
-// @Param     payload  body      repo.ItemUpdate  true  "Item Data"
-// @Success   200  {object}  repo.ItemOut
-// @Router    /v1/items/{id} [PUT]
-// @Security  Bearer
+// @Summary  updates a item
+// @Tags     Items
+// @Produce  json
+// @Param    id      path     string          true "Item ID"
+// @Param    payload body     repo.ItemUpdate true "Item Data"
+// @Success  200     {object} repo.ItemOut
+// @Router   /v1/items/{id} [PUT]
+// @Security Bearer
 func (ctrl *V1Controller) HandleItemUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body := repo.ItemUpdate{}
@@ -170,13 +186,13 @@ func (ctrl *V1Controller) HandleItemUpdate() http.HandlerFunc {
 }
 
 // HandleItemsImport godocs
-// @Summary   imports items into the database
-// @Tags      Items
-// @Produce   json
-// @Success   204
-// @Param     csv  formData  file  true  "Image to upload"
-// @Router    /v1/items/import [Post]
-// @Security  Bearer
+// @Summary  imports items into the database
+// @Tags     Items
+// @Produce  json
+// @Success  204
+// @Param    csv formData file true "Image to upload"
+// @Router   /v1/items/import [Post]
+// @Security Bearer
 func (ctrl *V1Controller) HandleItemsImport() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 

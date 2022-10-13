@@ -70,6 +70,18 @@
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "items per page",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
                         "type": "array",
                         "items": {
                             "type": "string"
@@ -94,22 +106,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/server.Results"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "items": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/repo.ItemSummary"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/repo.PaginationResult-repo_ItemSummary"
                         }
                     }
                 }
@@ -173,7 +170,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -274,7 +271,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -374,7 +371,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -490,7 +487,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -654,7 +651,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -818,7 +815,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -866,7 +863,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -923,7 +920,7 @@
                 "summary": "User Logout",
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -942,7 +939,7 @@
                 "summary": "User Token Refresh",
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -969,7 +966,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -1069,7 +1066,7 @@
                 "summary": "Deletes the user account",
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -1090,7 +1087,7 @@
                 "summary": "Update the current user's password // TODO:",
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -1508,6 +1505,26 @@
                 }
             }
         },
+        "repo.PaginationResult-repo_ItemSummary": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/repo.ItemSummary"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
         "repo.UserOut": {
             "type": "object",
             "properties": {
@@ -1561,9 +1578,7 @@
         "server.Results": {
             "type": "object",
             "properties": {
-                "items": {
-                    "type": "any"
-                }
+                "items": {}
             }
         },
         "server.ValidationError": {

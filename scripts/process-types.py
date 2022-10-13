@@ -22,6 +22,7 @@ def date_types(*names: list[str]) -> dict[re.Pattern, str]:
 
 
 regex_replace: dict[re.Pattern, str] = {
+    re.compile(r" PaginationResultRepo"): "PaginationResult",
     re.compile(r" Repo"): " ",
     re.compile(r" Services"): " ",
     re.compile(r" V1"): " ",

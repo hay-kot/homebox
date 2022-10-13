@@ -11,12 +11,12 @@ import (
 )
 
 // HandleLabelsGetAll godoc
-// @Summary   Get All Labels
-// @Tags      Labels
-// @Produce   json
-// @Success   200  {object}  server.Results{items=[]repo.LabelOut}
-// @Router    /v1/labels [GET]
-// @Security  Bearer
+// @Summary  Get All Labels
+// @Tags     Labels
+// @Produce  json
+// @Success  200 {object} server.Results{items=[]repo.LabelOut}
+// @Router   /v1/labels [GET]
+// @Security Bearer
 func (ctrl *V1Controller) HandleLabelsGetAll() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := services.UseUserCtx(r.Context())
@@ -31,13 +31,13 @@ func (ctrl *V1Controller) HandleLabelsGetAll() http.HandlerFunc {
 }
 
 // HandleLabelsCreate godoc
-// @Summary   Create a new label
-// @Tags      Labels
-// @Produce   json
-// @Param     payload  body      repo.LabelCreate  true  "Label Data"
-// @Success   200      {object}  repo.LabelSummary
-// @Router    /v1/labels [POST]
-// @Security  Bearer
+// @Summary  Create a new label
+// @Tags     Labels
+// @Produce  json
+// @Param    payload body     repo.LabelCreate true "Label Data"
+// @Success  200     {object} repo.LabelSummary
+// @Router   /v1/labels [POST]
+// @Security Bearer
 func (ctrl *V1Controller) HandleLabelsCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		createData := repo.LabelCreate{}
@@ -61,13 +61,13 @@ func (ctrl *V1Controller) HandleLabelsCreate() http.HandlerFunc {
 }
 
 // HandleLabelDelete godocs
-// @Summary   deletes a label
-// @Tags      Labels
-// @Produce   json
-// @Param     id   path      string  true  "Label ID"
-// @Success   204
-// @Router    /v1/labels/{id} [DELETE]
-// @Security  Bearer
+// @Summary  deletes a label
+// @Tags     Labels
+// @Produce  json
+// @Param    id path string true "Label ID"
+// @Success  204
+// @Router   /v1/labels/{id} [DELETE]
+// @Security Bearer
 func (ctrl *V1Controller) HandleLabelDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		uid, user, err := ctrl.partialParseIdAndUser(w, r)
@@ -86,13 +86,13 @@ func (ctrl *V1Controller) HandleLabelDelete() http.HandlerFunc {
 }
 
 // HandleLabelGet godocs
-// @Summary   Gets a label and fields
-// @Tags      Labels
-// @Produce   json
-// @Param     id   path      string  true  "Label ID"
-// @Success   200  {object}  repo.LabelOut
-// @Router    /v1/labels/{id} [GET]
-// @Security  Bearer
+// @Summary  Gets a label and fields
+// @Tags     Labels
+// @Produce  json
+// @Param    id  path     string true "Label ID"
+// @Success  200 {object} repo.LabelOut
+// @Router   /v1/labels/{id} [GET]
+// @Security Bearer
 func (ctrl *V1Controller) HandleLabelGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		uid, user, err := ctrl.partialParseIdAndUser(w, r)
@@ -118,13 +118,13 @@ func (ctrl *V1Controller) HandleLabelGet() http.HandlerFunc {
 }
 
 // HandleLabelUpdate godocs
-// @Summary   updates a label
-// @Tags      Labels
-// @Produce   json
-// @Param     id  path  string  true  "Label ID"
-// @Success   200  {object}  repo.LabelOut
-// @Router    /v1/labels/{id} [PUT]
-// @Security  Bearer
+// @Summary  updates a label
+// @Tags     Labels
+// @Produce  json
+// @Param    id  path     string true "Label ID"
+// @Success  200 {object} repo.LabelOut
+// @Router   /v1/labels/{id} [PUT]
+// @Security Bearer
 func (ctrl *V1Controller) HandleLabelUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body := repo.LabelUpdate{}

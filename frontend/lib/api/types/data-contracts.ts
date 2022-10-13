@@ -187,6 +187,7 @@ export interface LocationSummary {
   updatedAt: Date;
 }
 
+
 export interface UserOut {
   email: string;
   groupId: string;

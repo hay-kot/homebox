@@ -11,12 +11,12 @@ import (
 )
 
 // HandleUserSelf godoc
-// @Summary  Get the current user
-// @Tags     User
-// @Produce  json
-// @Param    payload  body  services.UserRegistration  true  "User Data"
-// @Success  204
-// @Router   /v1/users/register [Post]
+// @Summary Get the current user
+// @Tags    User
+// @Produce json
+// @Param   payload body services.UserRegistration true "User Data"
+// @Success 204
+// @Router  /v1/users/register [Post]
 func (ctrl *V1Controller) HandleUserRegistration() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		regData := services.UserRegistration{}
@@ -39,12 +39,12 @@ func (ctrl *V1Controller) HandleUserRegistration() http.HandlerFunc {
 }
 
 // HandleUserSelf godoc
-// @Summary   Get the current user
-// @Tags      User
-// @Produce   json
-// @Success   200  {object}  server.Result{item=repo.UserOut}
-// @Router    /v1/users/self [GET]
-// @Security  Bearer
+// @Summary  Get the current user
+// @Tags     User
+// @Produce  json
+// @Success  200 {object} server.Result{item=repo.UserOut}
+// @Router   /v1/users/self [GET]
+// @Security Bearer
 func (ctrl *V1Controller) HandleUserSelf() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		token := services.UseTokenCtx(r.Context())
@@ -60,13 +60,13 @@ func (ctrl *V1Controller) HandleUserSelf() http.HandlerFunc {
 }
 
 // HandleUserSelfUpdate godoc
-// @Summary   Update the current user
-// @Tags      User
-// @Produce   json
-// @Param     payload  body      repo.UserUpdate  true  "User Data"
-// @Success   200      {object}  server.Result{item=repo.UserUpdate}
-// @Router    /v1/users/self [PUT]
-// @Security  Bearer
+// @Summary  Update the current user
+// @Tags     User
+// @Produce  json
+// @Param    payload body     repo.UserUpdate true "User Data"
+// @Success  200     {object} server.Result{item=repo.UserUpdate}
+// @Router   /v1/users/self [PUT]
+// @Security Bearer
 func (ctrl *V1Controller) HandleUserSelfUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		updateData := repo.UserUpdate{}
@@ -90,24 +90,24 @@ func (ctrl *V1Controller) HandleUserSelfUpdate() http.HandlerFunc {
 }
 
 // HandleUserUpdatePassword godoc
-// @Summary   Update the current user's password // TODO:
-// @Tags      User
-// @Produce   json
-// @Success   204
-// @Router    /v1/users/self/password [PUT]
-// @Security  Bearer
+// @Summary  Update the current user's password // TODO:
+// @Tags     User
+// @Produce  json
+// @Success  204
+// @Router   /v1/users/self/password [PUT]
+// @Security Bearer
 func (ctrl *V1Controller) HandleUserUpdatePassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
 // HandleUserSelfDelete godoc
-// @Summary   Deletes the user account
-// @Tags      User
-// @Produce   json
-// @Success   204
-// @Router    /v1/users/self [DELETE]
-// @Security  Bearer
+// @Summary  Deletes the user account
+// @Tags     User
+// @Produce  json
+// @Success  204
+// @Router   /v1/users/self [DELETE]
+// @Security Bearer
 func (ctrl *V1Controller) HandleUserSelfDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		actor := services.UseUserCtx(r.Context())
@@ -128,12 +128,12 @@ type (
 )
 
 // HandleUserSelfChangePassword godoc
-// @Summary   Updates the users password
-// @Tags      User
-// @Success   204
-// @Param     payload  body  ChangePassword  true  "Password Payload"
-// @Router    /v1/users/change-password [PUT]
-// @Security  Bearer
+// @Summary  Updates the users password
+// @Tags     User
+// @Success  204
+// @Param    payload body ChangePassword true "Password Payload"
+// @Router   /v1/users/change-password [PUT]
+// @Security Bearer
 func (ctrl *V1Controller) HandleUserSelfChangePassword() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if ctrl.isDemo {

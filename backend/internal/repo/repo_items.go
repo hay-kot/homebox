@@ -19,6 +19,8 @@ type ItemsRepository struct {
 
 type (
 	ItemQuery struct {
+		Page        int
+		PageSize    int
 		Search      string      `json:"search"`
 		LocationIDs []uuid.UUID `json:"locationIds"`
 		LabelIDs    []uuid.UUID `json:"labelIds"`
@@ -215,7 +217,7 @@ func (e *ItemsRepository) GetOneByGroup(ctx context.Context, gid, id uuid.UUID) 
 }
 
 // QueryByGroup returns a list of items that belong to a specific group based on the provided query.
-func (e *ItemsRepository) QueryByGroup(ctx context.Context, gid uuid.UUID, q ItemQuery) ([]ItemSummary, error) {
+func (e *ItemsRepository) QueryByGroup(ctx context.Context, gid uuid.UUID, q ItemQuery) (PaginationResult[ItemSummary], error) {
 	qb := e.db.Item.Query().Where(item.HasGroupWith(group.ID(gid)))
 
 	if len(q.LabelIDs) > 0 {
@@ -243,9 +245,33 @@ func (e *ItemsRepository) QueryByGroup(ctx context.Context, gid uuid.UUID, q Ite
 		)
 	}
 
-	return mapItemsSummaryErr(qb.WithLabel().
-		WithLocation().
-		All(ctx))
+	if q.Page != -1 || q.PageSize != -1 {
+		qb = qb.
+			Offset(calculateOffset(q.Page, q.PageSize)).
+			Limit(q.PageSize)
+	}
+
+	items, err := mapItemsSummaryErr(
+		qb.WithLabel().
+			WithLocation().
+			All(ctx),
+	)
+	if err != nil {
+		return PaginationResult[ItemSummary]{}, err
+	}
+
+	count, err := qb.Count(ctx)
+	if err != nil {
+		return PaginationResult[ItemSummary]{}, err
+	}
+
+	return PaginationResult[ItemSummary]{
+		Page:     q.Page,
+		PageSize: q.PageSize,
+		Total:    count,
+		Items:    items,
+	}, nil
+
 }
 
 // GetAll returns all the items in the database with the Labels and Locations eager loaded.

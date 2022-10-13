@@ -25,16 +25,16 @@ var (
 	BuildTime = "now"
 )
 
-// @title                       Go API Templates
-// @version                     1.0
-// @description                 This is a simple Rest API Server Template that implements some basic User and Authentication patterns to help you get started and bootstrap your next project!.
-// @contact.name                Don't
-// @license.name                MIT
-// @BasePath                    /api
-// @securityDefinitions.apikey  Bearer
-// @in                          header
-// @name                        Authorization
-// @description                 "Type 'Bearer TOKEN' to correctly set the API Key"
+// @title                      Go API Templates
+// @version                    1.0
+// @description                This is a simple Rest API Server Template that implements some basic User and Authentication patterns to help you get started and bootstrap your next project!.
+// @contact.name               Don't
+// @license.name               MIT
+// @BasePath                   /api
+// @securityDefinitions.apikey Bearer
+// @in                         header
+// @name                       Authorization
+// @description                "Type 'Bearer TOKEN' to correctly set the API Key"
 func main() {
 	cfg, err := config.New()
 	if err != nil {
