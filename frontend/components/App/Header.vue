@@ -19,6 +19,10 @@
       href: "/home",
     },
     {
+      name: "Items",
+      href: "/items",
+    },
+    {
       name: "Logout",
       action: logout,
       last: true,

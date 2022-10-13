@@ -16,7 +16,7 @@
 
     if (data) {
       console.log(data);
-      username.value = "demo@email.com";
+      username.value = "demo@example.com";
       password.value = "demo";
     }
     return data;
@@ -24,7 +24,7 @@
 
   whenever(status, status => {
     if (status?.demo) {
-      email.value = "demo@email.com";
+      email.value = "demo@example.com";
       loginPassword.value = "demo";
     }
   });
@@ -198,7 +198,7 @@
                   </h2>
                   <template v-if="status && status.demo">
                     <p class="text-xs italic text-center">This is a demo instance</p>
-                    <p class="text-xs text-center"><b>Email</b> demo@email.com</p>
+                    <p class="text-xs text-center"><b>Email</b> demo@example.com</p>
                     <p class="text-xs text-center"><b>Password</b> demo</p>
                   </template>
                   <FormTextField v-model="email" label="Email" />

@@ -21,17 +21,17 @@ type (
 )
 
 // HandleItemsImport godocs
-// @Summary   imports items into the database
-// @Tags      Items
-// @Produce   json
-// @Param     id    path      string  true  "Item ID"
-// @Param     file  formData  file    true  "File attachment"
-// @Param     type  formData  string  true  "Type of file"
-// @Param     name  formData  string  true  "name of the file including extension"
-// @Success   200   {object}  repo.ItemOut
-// @Failure   422   {object}  []server.ValidationError
-// @Router    /v1/items/{id}/attachments [POST]
-// @Security  Bearer
+// @Summary  imports items into the database
+// @Tags     Items
+// @Produce  json
+// @Param    id   path     string true "Item ID"
+// @Param    file formData file   true "File attachment"
+// @Param    type formData string true "Type of file"
+// @Param    name formData string true "name of the file including extension"
+// @Success  200  {object} repo.ItemOut
+// @Failure  422  {object} []server.ValidationError
+// @Router   /v1/items/{id}/attachments [POST]
+// @Security Bearer
 func (ctrl *V1Controller) HandleItemAttachmentCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		err := r.ParseMultipartForm(ctrl.maxUploadSize << 20)
@@ -98,14 +98,14 @@ func (ctrl *V1Controller) HandleItemAttachmentCreate() http.HandlerFunc {
 }
 
 // HandleItemAttachmentGet godocs
-// @Summary   retrieves an attachment for an item
-// @Tags      Items
-// @Produce   application/octet-stream
-// @Param     id     path   string  true  "Item ID"
-// @Param     token  query  string  true  "Attachment token"
-// @Success   200
-// @Router    /v1/items/{id}/attachments/download [GET]
-// @Security  Bearer
+// @Summary  retrieves an attachment for an item
+// @Tags     Items
+// @Produce  application/octet-stream
+// @Param    id    path  string true "Item ID"
+// @Param    token query string true "Attachment token"
+// @Success  200
+// @Router   /v1/items/{id}/attachments/download [GET]
+// @Security Bearer
 func (ctrl *V1Controller) HandleItemAttachmentDownload() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		token := server.GetParam(r, "token", "")
@@ -125,39 +125,39 @@ func (ctrl *V1Controller) HandleItemAttachmentDownload() http.HandlerFunc {
 }
 
 // HandleItemAttachmentToken godocs
-// @Summary   retrieves an attachment for an item
-// @Tags      Items
-// @Produce   application/octet-stream
-// @Param     id             path      string  true  "Item ID"
-// @Param     attachment_id  path      string  true  "Attachment ID"
-// @Success   200            {object}  ItemAttachmentToken
-// @Router    /v1/items/{id}/attachments/{attachment_id} [GET]
-// @Security  Bearer
+// @Summary  retrieves an attachment for an item
+// @Tags     Items
+// @Produce  application/octet-stream
+// @Param    id            path     string true "Item ID"
+// @Param    attachment_id path     string true "Attachment ID"
+// @Success  200           {object} ItemAttachmentToken
+// @Router   /v1/items/{id}/attachments/{attachment_id} [GET]
+// @Security Bearer
 func (ctrl *V1Controller) HandleItemAttachmentToken() http.HandlerFunc {
 	return ctrl.handleItemAttachmentsHandler
 }
 
 // HandleItemAttachmentDelete godocs
-// @Summary   retrieves an attachment for an item
-// @Tags      Items
-// @Param     id             path  string  true  "Item ID"
-// @Param     attachment_id  path  string  true  "Attachment ID"
-// @Success   204
-// @Router    /v1/items/{id}/attachments/{attachment_id} [DELETE]
-// @Security  Bearer
+// @Summary  retrieves an attachment for an item
+// @Tags     Items
+// @Param    id            path string true "Item ID"
+// @Param    attachment_id path string true "Attachment ID"
+// @Success  204
+// @Router   /v1/items/{id}/attachments/{attachment_id} [DELETE]
+// @Security Bearer
 func (ctrl *V1Controller) HandleItemAttachmentDelete() http.HandlerFunc {
 	return ctrl.handleItemAttachmentsHandler
 }
 
 // HandleItemAttachmentUpdate godocs
-// @Summary   retrieves an attachment for an item
-// @Tags      Items
-// @Param     id             path      string                     true  "Item ID"
-// @Param     attachment_id  path      string                     true  "Attachment ID"
-// @Param     payload        body      repo.ItemAttachmentUpdate  true  "Attachment Update"
-// @Success   200            {object}  repo.ItemOut
-// @Router    /v1/items/{id}/attachments/{attachment_id} [PUT]
-// @Security  Bearer
+// @Summary  retrieves an attachment for an item
+// @Tags     Items
+// @Param    id            path     string                    true "Item ID"
+// @Param    attachment_id path     string                    true "Attachment ID"
+// @Param    payload       body     repo.ItemAttachmentUpdate true "Attachment Update"
+// @Success  200           {object} repo.ItemOut
+// @Router   /v1/items/{id}/attachments/{attachment_id} [PUT]
+// @Security Bearer
 func (ctrl *V1Controller) HandleItemAttachmentUpdate() http.HandlerFunc {
 	return ctrl.handleItemAttachmentsHandler
 }

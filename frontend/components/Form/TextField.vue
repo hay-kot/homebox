@@ -3,13 +3,13 @@
     <label class="label">
       <span class="label-text">{{ label }}</span>
     </label>
-    <input ref="input" v-model="value" :type="type" class="input input-bordered w-full" />
+    <input ref="input" v-model="value" :placeholder="placeholder" :type="type" class="input input-bordered w-full" />
   </div>
   <div v-else class="sm:grid sm:grid-cols-4 sm:items-start sm:gap-4">
     <label class="label">
       <span class="label-text">{{ label }}</span>
     </label>
-    <input v-model="value" class="input input-bordered col-span-3 w-full mt-2" />
+    <input v-model="value" :placeholder="placeholder" class="input input-bordered col-span-3 w-full mt-2" />
   </div>
 </template>
 
@@ -34,6 +34,10 @@
     inline: {
       type: Boolean,
       default: false,
+    },
+    placeholder: {
+      type: String,
+      default: "",
     },
   });
 

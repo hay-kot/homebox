@@ -66,11 +66,11 @@ func NewControllerV1(svc *services.AllServices, options ...func(*V1Controller)) 
 type ReadyFunc func() bool
 
 // HandleBase godoc
-// @Summary  Retrieves the basic information about the API
-// @Tags     Base
-// @Produce  json
-// @Success  200  {object}  ApiSummary
-// @Router   /v1/status [GET]
+// @Summary Retrieves the basic information about the API
+// @Tags    Base
+// @Produce json
+// @Success 200 {object} ApiSummary
+// @Router  /v1/status [GET]
 func (ctrl *V1Controller) HandleBase(ready ReadyFunc, build Build) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		server.Respond(w, http.StatusOK, ApiSummary{

@@ -11,7 +11,8 @@
       </div>
       <ul
         tabindex="0"
-        class="dropdown-content mb-1 menu shadow border border-gray-400 rounded bg-base-100 w-full z-[9999] max-h-60 overflow-y-scroll scroll-bar"
+        style="display: inline"
+        class="dropdown-content mb-1 menu shadow border border-gray-400 rounded bg-base-100 w-full z-[9999] max-h-60 overflow-y-scroll"
       >
         <li
           v-for="(obj, idx) in items"

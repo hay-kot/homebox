@@ -23,13 +23,13 @@ type (
 )
 
 // HandleUserSelf godoc
-// @Summary   Get the current user
-// @Tags      User
-// @Produce   json
-// @Param     payload  body      GroupInvitationCreate  true  "User Data"
-// @Success   200      {object}  GroupInvitation
-// @Router    /v1/groups/invitations [Post]
-// @Security  Bearer
+// @Summary  Get the current user
+// @Tags     User
+// @Produce  json
+// @Param    payload body     GroupInvitationCreate true "User Data"
+// @Success  200     {object} GroupInvitation
+// @Router   /v1/groups/invitations [Post]
+// @Security Bearer
 func (ctrl *V1Controller) HandleGroupInvitationsCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		data := GroupInvitationCreate{}

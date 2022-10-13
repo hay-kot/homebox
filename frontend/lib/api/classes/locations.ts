@@ -1,6 +1,6 @@
 import { BaseAPI, route } from "../base";
 import { LocationOutCount, LocationCreate, LocationOut } from "../types/data-contracts";
-import { Results } from "./types";
+import { Results } from "../types/non-generated";
 
 export type LocationUpdate = LocationCreate;
 

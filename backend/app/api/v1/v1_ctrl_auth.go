@@ -23,15 +23,15 @@ type (
 )
 
 // HandleAuthLogin godoc
-// @Summary  User Login
-// @Tags     Authentication
-// @Accept   x-www-form-urlencoded
-// @Accept   application/json
-// @Param    username  formData  string  false  "string"  example(admin@admin.com)
-// @Param    password  formData  string  false  "string"  example(admin)
-// @Produce  json
-// @Success  200  {object}  TokenResponse
-// @Router   /v1/users/login [POST]
+// @Summary User Login
+// @Tags    Authentication
+// @Accept  x-www-form-urlencoded
+// @Accept  application/json
+// @Param   username formData string false "string" example(admin@admin.com)
+// @Param   password formData string false "string" example(admin)
+// @Produce json
+// @Success 200 {object} TokenResponse
+// @Router  /v1/users/login [POST]
 func (ctrl *V1Controller) HandleAuthLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		loginForm := &LoginForm{}
@@ -80,11 +80,11 @@ func (ctrl *V1Controller) HandleAuthLogin() http.HandlerFunc {
 }
 
 // HandleAuthLogout godoc
-// @Summary   User Logout
-// @Tags      Authentication
-// @Success   204
-// @Router    /v1/users/logout [POST]
-// @Security  Bearer
+// @Summary  User Logout
+// @Tags     Authentication
+// @Success  204
+// @Router   /v1/users/logout [POST]
+// @Security Bearer
 func (ctrl *V1Controller) HandleAuthLogout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		token := services.UseTokenCtx(r.Context())
@@ -106,13 +106,13 @@ func (ctrl *V1Controller) HandleAuthLogout() http.HandlerFunc {
 }
 
 // HandleAuthLogout godoc
-// @Summary      User Token Refresh
-// @Description  handleAuthRefresh returns a handler that will issue a new token from an existing token.
-// @Description  This does not validate that the user still exists within the database.
-// @Tags         Authentication
-// @Success      200
-// @Router       /v1/users/refresh [GET]
-// @Security     Bearer
+// @Summary     User Token Refresh
+// @Description handleAuthRefresh returns a handler that will issue a new token from an existing token.
+// @Description This does not validate that the user still exists within the database.
+// @Tags        Authentication
+// @Success     200
+// @Router      /v1/users/refresh [GET]
+// @Security    Bearer
 func (ctrl *V1Controller) HandleAuthRefresh() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		requestToken := services.UseTokenCtx(r.Context())

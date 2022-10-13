@@ -11,12 +11,12 @@ import (
 )
 
 // HandleLocationGetAll godoc
-// @Summary   Get All Locations
-// @Tags      Locations
-// @Produce   json
-// @Success   200  {object}  server.Results{items=[]repo.LocationOutCount}
-// @Router    /v1/locations [GET]
-// @Security  Bearer
+// @Summary  Get All Locations
+// @Tags     Locations
+// @Produce  json
+// @Success  200 {object} server.Results{items=[]repo.LocationOutCount}
+// @Router   /v1/locations [GET]
+// @Security Bearer
 func (ctrl *V1Controller) HandleLocationGetAll() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := services.UseUserCtx(r.Context())
@@ -32,13 +32,13 @@ func (ctrl *V1Controller) HandleLocationGetAll() http.HandlerFunc {
 }
 
 // HandleLocationCreate godoc
-// @Summary   Create a new location
-// @Tags      Locations
-// @Produce   json
-// @Param     payload  body      repo.LocationCreate  true  "Location Data"
-// @Success   200      {object}  repo.LocationSummary
-// @Router    /v1/locations [POST]
-// @Security  Bearer
+// @Summary  Create a new location
+// @Tags     Locations
+// @Produce  json
+// @Param    payload body     repo.LocationCreate true "Location Data"
+// @Success  200     {object} repo.LocationSummary
+// @Router   /v1/locations [POST]
+// @Security Bearer
 func (ctrl *V1Controller) HandleLocationCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		createData := repo.LocationCreate{}
@@ -61,13 +61,13 @@ func (ctrl *V1Controller) HandleLocationCreate() http.HandlerFunc {
 }
 
 // HandleLocationDelete godocs
-// @Summary   deletes a location
-// @Tags      Locations
-// @Produce   json
-// @Param     id   path      string  true  "Location ID"
-// @Success   204
-// @Router    /v1/locations/{id} [DELETE]
-// @Security  Bearer
+// @Summary  deletes a location
+// @Tags     Locations
+// @Produce  json
+// @Param    id path string true "Location ID"
+// @Success  204
+// @Router   /v1/locations/{id} [DELETE]
+// @Security Bearer
 func (ctrl *V1Controller) HandleLocationDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		uid, user, err := ctrl.partialParseIdAndUser(w, r)
@@ -86,13 +86,13 @@ func (ctrl *V1Controller) HandleLocationDelete() http.HandlerFunc {
 }
 
 // HandleLocationGet godocs
-// @Summary   Gets a location and fields
-// @Tags      Locations
-// @Produce   json
-// @Param     id   path      string  true  "Location ID"
-// @Success   200  {object}  repo.LocationOut
-// @Router    /v1/locations/{id} [GET]
-// @Security  Bearer
+// @Summary  Gets a location and fields
+// @Tags     Locations
+// @Produce  json
+// @Param    id  path     string true "Location ID"
+// @Success  200 {object} repo.LocationOut
+// @Router   /v1/locations/{id} [GET]
+// @Security Bearer
 func (ctrl *V1Controller) HandleLocationGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		uid, user, err := ctrl.partialParseIdAndUser(w, r)
@@ -123,13 +123,13 @@ func (ctrl *V1Controller) HandleLocationGet() http.HandlerFunc {
 }
 
 // HandleLocationUpdate godocs
-// @Summary   updates a location
-// @Tags      Locations
-// @Produce   json
-// @Param     id  path  string  true  "Location ID"
-// @Success   200  {object}  repo.LocationOut
-// @Router    /v1/locations/{id} [PUT]
-// @Security  Bearer
+// @Summary  updates a location
+// @Tags     Locations
+// @Produce  json
+// @Param    id  path     string true "Location ID"
+// @Success  200 {object} repo.LocationOut
+// @Router   /v1/locations/{id} [PUT]
+// @Security Bearer
 func (ctrl *V1Controller) HandleLocationUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body := repo.LocationUpdate{}

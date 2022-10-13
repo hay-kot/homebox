@@ -21,7 +21,7 @@ func (a *app) SetupDemo() {
 
 	var (
 		registration = services.UserRegistration{
-			Email:    "demo@email.com",
+			Email:    "demo@example.com",
 			Name:     "Demo",
 			Password: "demo",
 		}
