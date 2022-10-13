@@ -33,7 +33,7 @@ func (f *Faker) Path() string {
 }
 
 func (f *Faker) Email() string {
-	return f.Str(10) + "@email.com"
+	return f.Str(10) + "@example.com"
 }
 
 func (f *Faker) Bool() bool {
