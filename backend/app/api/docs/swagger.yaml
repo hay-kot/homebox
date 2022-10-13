@@ -426,6 +426,25 @@ paths:
       - User
   /v1/items:
     get:
+      parameters:
+      - description: search string
+        in: query
+        name: q
+        type: string
+      - collectionFormat: multi
+        description: label Ids
+        in: query
+        items:
+          type: string
+        name: labels
+        type: array
+      - collectionFormat: multi
+        description: location Ids
+        in: query
+        items:
+          type: string
+        name: locations
+        type: array
       produces:
       - application/json
       responses:

@@ -70,6 +70,34 @@ const docTemplate = `{
                     "Items"
                 ],
                 "summary": "Get All Items",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "search string",
+                        "name": "q",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "label Ids",
+                        "name": "labels",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "location Ids",
+                        "name": "locations",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",

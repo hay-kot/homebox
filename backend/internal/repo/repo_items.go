@@ -8,6 +8,8 @@ import (
 	"github.com/hay-kot/homebox/backend/ent"
 	"github.com/hay-kot/homebox/backend/ent/group"
 	"github.com/hay-kot/homebox/backend/ent/item"
+	"github.com/hay-kot/homebox/backend/ent/label"
+	"github.com/hay-kot/homebox/backend/ent/location"
 	"github.com/hay-kot/homebox/backend/ent/predicate"
 )
 
@@ -16,6 +18,12 @@ type ItemsRepository struct {
 }
 
 type (
+	ItemQuery struct {
+		Search      string      `json:"search"`
+		LocationIDs []uuid.UUID `json:"locationIds"`
+		LabelIDs    []uuid.UUID `json:"labelIds"`
+	}
+
 	ItemCreate struct {
 		ImportRef   string `json:"-"`
 		Name        string `json:"name"`
@@ -204,6 +212,40 @@ func (e *ItemsRepository) GetOne(ctx context.Context, id uuid.UUID) (ItemOut, er
 // GetOneByGroup ensures that the item belongs to a specific group.
 func (e *ItemsRepository) GetOneByGroup(ctx context.Context, gid, id uuid.UUID) (ItemOut, error) {
 	return e.getOne(ctx, item.ID(id), item.HasGroupWith(group.ID(gid)))
+}
+
+// QueryByGroup returns a list of items that belong to a specific group based on the provided query.
+func (e *ItemsRepository) QueryByGroup(ctx context.Context, gid uuid.UUID, q ItemQuery) ([]ItemSummary, error) {
+	qb := e.db.Item.Query().Where(item.HasGroupWith(group.ID(gid)))
+
+	if len(q.LabelIDs) > 0 {
+		labels := make([]predicate.Item, 0, len(q.LabelIDs))
+		for _, l := range q.LabelIDs {
+			labels = append(labels, item.HasLabelWith(label.ID(l)))
+		}
+		qb = qb.Where(item.Or(labels...))
+	}
+
+	if len(q.LocationIDs) > 0 {
+		locations := make([]predicate.Item, 0, len(q.LocationIDs))
+		for _, l := range q.LocationIDs {
+			locations = append(locations, item.HasLocationWith(location.ID(l)))
+		}
+		qb = qb.Where(item.Or(locations...))
+	}
+
+	if q.Search != "" {
+		qb.Where(
+			item.Or(
+				item.NameContainsFold(q.Search),
+				item.DescriptionContainsFold(q.Search),
+			),
+		)
+	}
+
+	return mapItemsSummaryErr(qb.WithLabel().
+		WithLocation().
+		All(ctx))
 }
 
 // GetAll returns all the items in the database with the Labels and Locations eager loaded.

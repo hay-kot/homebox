@@ -1,6 +1,6 @@
 import { BaseAPI, route } from "../base";
 import { LabelCreate, LabelOut } from "../types/data-contracts";
-import { Results } from "./types";
+import { Results } from "../types/non-generated";
 
 export class LabelsApi extends BaseAPI {
   getAll() {

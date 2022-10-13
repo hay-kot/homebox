@@ -3,24 +3,51 @@ package v1
 import (
 	"encoding/csv"
 	"net/http"
+	"net/url"
 
+	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/repo"
 	"github.com/hay-kot/homebox/backend/internal/services"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 	"github.com/rs/zerolog/log"
 )
 
+func uuidList(params url.Values, key string) []uuid.UUID {
+	var ids []uuid.UUID
+	for _, id := range params[key] {
+		uid, err := uuid.Parse(id)
+		if err != nil {
+			continue
+		}
+		ids = append(ids, uid)
+	}
+	return ids
+}
+
+func extractQuery(r *http.Request) repo.ItemQuery {
+	params := r.URL.Query()
+
+	return repo.ItemQuery{
+		Search:      params.Get("q"),
+		LocationIDs: uuidList(params, "locations"),
+		LabelIDs:    uuidList(params, "labels"),
+	}
+}
+
 // HandleItemsGetAll godoc
 // @Summary   Get All Items
 // @Tags      Items
 // @Produce   json
-// @Success   200  {object}  server.Results{items=[]repo.ItemSummary}
+// @Param     q          query     string    false  "search string"
+// @Param     labels     query     []string  false  "label Ids"     collectionFormat(multi)
+// @Param     locations  query     []string  false  "location Ids"  collectionFormat(multi)
+// @Success   200        {object}  server.Results{items=[]repo.ItemSummary}
 // @Router    /v1/items [GET]
 // @Security  Bearer
 func (ctrl *V1Controller) HandleItemsGetAll() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		user := services.UseUserCtx(r.Context())
-		items, err := ctrl.svc.Items.GetAll(r.Context(), user.GroupID)
+		ctx := services.NewContext(r.Context())
+		items, err := ctrl.svc.Items.Query(ctx, extractQuery(r))
 		if err != nil {
 			log.Err(err).Msg("failed to get items")
 			server.RespondServerError(w)

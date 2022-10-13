@@ -8,3 +8,7 @@ export enum AttachmentTypes {
 export type Result<T> = {
   item: T;
 };
+
+export type Results<T> = {
+  items: T[];
+};

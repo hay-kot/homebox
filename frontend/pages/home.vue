@@ -158,13 +158,6 @@
       </section>
 
       <section>
-        <BaseSectionHeader class="mb-5"> Labels </BaseSectionHeader>
-        <div class="flex gap-2 flex-wrap">
-          <LabelChip v-for="label in labels" :key="label.id" size="lg" :label="label" />
-        </div>
-      </section>
-
-      <section>
         <BaseSectionHeader class="mb-5"> Storage Locations </BaseSectionHeader>
         <div class="grid grid-cols-1 sm:grid-cols-2 card md:grid-cols-3 gap-4">
           <LocationCard v-for="location in locations" :key="location.id" :location="location" />
@@ -172,9 +165,9 @@
       </section>
 
       <section>
-        <BaseSectionHeader class="mb-5"> Items </BaseSectionHeader>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <ItemCard v-for="item in items" :key="item.id" :item="item" />
+        <BaseSectionHeader class="mb-5"> Labels </BaseSectionHeader>
+        <div class="flex gap-2 flex-wrap">
+          <LabelChip v-for="label in labels" :key="label.id" size="lg" :label="label" />
         </div>
       </section>
     </BaseContainer>

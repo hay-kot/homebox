@@ -8,12 +8,17 @@ import {
   ItemSummary,
   ItemUpdate,
 } from "../types/data-contracts";
-import { AttachmentTypes } from "../types/non-generated";
-import { Results } from "./types";
+import { AttachmentTypes, Results } from "../types/non-generated";
+
+export type ItemsQuery = {
+  locations?: string[];
+  labels?: string[];
+  q?: string;
+};
 
 export class ItemsApi extends BaseAPI {
-  getAll() {
-    return this.http.get<Results<ItemSummary>>({ url: route("/items") });
+  getAll(q: ItemsQuery = {}) {
+    return this.http.get<Results<ItemSummary>>({ url: route("/items", q) });
   }
 
   create(item: ItemCreate) {
