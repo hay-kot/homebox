@@ -110,6 +110,11 @@ func (ctrl *V1Controller) HandleUserUpdatePassword() http.HandlerFunc {
 // @Security Bearer
 func (ctrl *V1Controller) HandleUserSelfDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if ctrl.isDemo {
+			server.RespondError(w, http.StatusForbidden, nil)
+			return
+		}
+
 		actor := services.UseUserCtx(r.Context())
 		if err := ctrl.svc.User.DeleteSelf(r.Context(), actor.ID); err != nil {
 			server.RespondError(w, http.StatusInternalServerError, err)
