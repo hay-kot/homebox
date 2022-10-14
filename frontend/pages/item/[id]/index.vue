@@ -76,7 +76,7 @@
         text: item.value?.serialNumber,
       },
       {
-        name: "Mode Number",
+        name: "Model Number",
         text: item.value?.modelNumber,
       },
       {
