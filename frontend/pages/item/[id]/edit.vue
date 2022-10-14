@@ -30,6 +30,13 @@
       return;
     }
 
+    if (locations) {
+      const location = locations.value.find(l => l.id === data.location.id);
+      if (location) {
+        data.location = location;
+      }
+    }
+
     return data;
   });
   onMounted(() => {
@@ -308,7 +315,7 @@
             </template>
           </BaseSectionHeader>
           <div class="px-5 mb-6 grid md:grid-cols-2 gap-4">
-            <FormSelect v-model="item.location" label="Location" :items="locations ?? []" select-first />
+            <FormSelect v-if="item" v-model="item.location" label="Location" :items="locations ?? []" />
             <FormMultiselect v-model="item.labels" label="Labels" :items="labels ?? []" />
           </div>
 

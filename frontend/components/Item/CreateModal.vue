@@ -2,7 +2,7 @@
   <BaseModal v-model="modal">
     <template #title> Create Item </template>
     <form @submit.prevent="create">
-      <FormSelect v-model="form.location" label="Location" :items="locations ?? []" select-first />
+      <FormSelect v-model="form.location" label="Location" :items="locations ?? []" />
       <FormTextField
         ref="locationNameRef"
         v-model="form.name"
