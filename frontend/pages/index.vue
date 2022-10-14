@@ -147,10 +147,10 @@
           <a href="https://twitter.com/haybytes" class="tooltip" data-tip="Follow The Developer" target="_blank">
             <Icon name="mdi-twitter" class="h-8 w-8" />
           </a>
-          <a href="https://discord.gg/tuncmNrE4z" class="tooltip" data-tip="Join The Discord">
+          <a href="https://discord.gg/tuncmNrE4z" class="tooltip" data-tip="Join The Discord" target="_blank">
             <Icon name="mdi-discord" class="h-8 w-8" />
           </a>
-          <a href="https://hay-kot.github.io/homebox/" class="tooltip" data-tip="Read The Docs">
+          <a href="https://hay-kot.github.io/homebox/" class="tooltip" data-tip="Read The Docs" target="_blank">
             <Icon name="mdi-folder" class="h-8 w-8" />
           </a>
         </div>

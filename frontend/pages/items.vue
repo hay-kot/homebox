@@ -75,7 +75,7 @@
       </template>
       <div class="px-4 pb-4">
         <FormMultiselect v-model="selectedLabels" label="Labels" :items="labels ?? []" />
-        <FormMultiselect v-model="selectedLocations" label="Labels" :items="locations ?? []" />
+        <FormMultiselect v-model="selectedLocations" label="Locations" :items="locations ?? []" />
       </div>
     </BaseCard>
     <section class="mt-10">
