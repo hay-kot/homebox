@@ -42,50 +42,31 @@
       default: null,
       required: false,
     },
-    selectFirst: {
-      type: Boolean,
-      default: false,
-    },
   });
 
-  function syncSelect() {
-    if (!props.modelValue) {
-      if (props.selectFirst) {
-        selectedIdx.value = 0;
-      }
-      return;
-    }
-    // Check if we're already synced
-    if (props.value) {
-      if (props.modelValue[props.value] === props.items[selectedIdx.value][props.value]) {
-        return;
-      }
-    } else if (props.modelValue === props.items[selectedIdx.value]) {
-      return;
-    }
+  const selectedIdx = ref(-1);
+  const internalSelected = useVModel(props, "modelValue", emit);
 
-    const idx = props.items.findIndex(item => {
-      if (props.value) {
-        return item[props.value] === props.modelValue;
-      }
-      return item === props.modelValue;
-    });
+  watch(selectedIdx, newVal => {
+    internalSelected.value = props.items[newVal];
+  });
 
-    selectedIdx.value = idx;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function compare(a: any, b: any): boolean {
+    if (props.value != null) {
+      return a[props.value] === b[props.value];
+    }
+    return a === b;
   }
 
-  watch(() => props.items, syncSelect);
-  watch(() => props.modelValue, syncSelect);
-
-  const selectedIdx = ref(0);
   watch(
-    () => selectedIdx.value,
+    internalSelected,
     () => {
-      if (props.value) {
-        emit("update:modelValue", props.items[selectedIdx.value][props.value]);
-        return;
-      }
-      emit("update:modelValue", props.items[selectedIdx.value]);
+      const idx = props.items.findIndex(item => compare(item, internalSelected.value));
+      selectedIdx.value = idx;
+    },
+    {
+      immediate: true,
     }
   );
 </script>
