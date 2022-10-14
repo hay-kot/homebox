@@ -27,7 +27,7 @@ func (Group) Fields() []ent.Field {
 			NotEmpty(),
 		field.Enum("currency").
 			Default("usd").
-			Values("usd"), // TODO: add more currencies
+			Values("usd", "eur", "gbp", "jpy"), // TODO: add more currencies
 	}
 }
 

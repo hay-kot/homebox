@@ -1,7 +1,8 @@
 <script setup lang="ts">
   import { Detail } from "~~/components/global/DetailsSection/types";
-  import { DaisyTheme } from "~~/composables/use-preferences";
   import { useAuthStore } from "~~/stores/auth";
+  import { themes } from "~~/lib/data/themes";
+  import { currencies, Currency } from "~~/lib/data/currency";
 
   definePageMeta({
     layout: "home",
@@ -18,126 +19,6 @@
   });
 
   const { setTheme } = useTheme();
-
-  type ThemeOption = {
-    label: string;
-    value: DaisyTheme;
-  };
-
-  const themes: ThemeOption[] = [
-    {
-      label: "Garden",
-      value: "garden",
-    },
-    {
-      label: "Light",
-      value: "light",
-    },
-    {
-      label: "Cupcake",
-      value: "cupcake",
-    },
-    {
-      label: "Bumblebee",
-      value: "bumblebee",
-    },
-    {
-      label: "Emerald",
-      value: "emerald",
-    },
-    {
-      label: "Corporate",
-      value: "corporate",
-    },
-    {
-      label: "Synthwave",
-      value: "synthwave",
-    },
-    {
-      label: "Retro",
-      value: "retro",
-    },
-    {
-      label: "Cyberpunk",
-      value: "cyberpunk",
-    },
-    {
-      label: "Valentine",
-      value: "valentine",
-    },
-    {
-      label: "Halloween",
-      value: "halloween",
-    },
-    {
-      label: "Forest",
-      value: "forest",
-    },
-    {
-      label: "Aqua",
-      value: "aqua",
-    },
-    {
-      label: "Lofi",
-      value: "lofi",
-    },
-    {
-      label: "Pastel",
-      value: "pastel",
-    },
-    {
-      label: "Fantasy",
-      value: "fantasy",
-    },
-    {
-      label: "Wireframe",
-      value: "wireframe",
-    },
-    {
-      label: "Black",
-      value: "black",
-    },
-    {
-      label: "Luxury",
-      value: "luxury",
-    },
-    {
-      label: "Dracula",
-      value: "dracula",
-    },
-    {
-      label: "Cmyk",
-      value: "cmyk",
-    },
-    {
-      label: "Autumn",
-      value: "autumn",
-    },
-    {
-      label: "Business",
-      value: "business",
-    },
-    {
-      label: "Acid",
-      value: "acid",
-    },
-    {
-      label: "Lemonade",
-      value: "lemonade",
-    },
-    {
-      label: "Night",
-      value: "night",
-    },
-    {
-      label: "Coffee",
-      value: "coffee",
-    },
-    {
-      label: "Winter",
-      value: "winter",
-    },
-  ];
 
   const auth = useAuthStore();
 
@@ -232,6 +113,18 @@
     passwordChange.current = "";
     passwordChange.loading = false;
   }
+
+  // Currency Selection
+  const currency = ref<Currency>(currencies[1]);
+
+  const currencyExample = computed(() => {
+    const formatter = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency.value ? currency.value.code : "USD",
+    });
+
+    return formatter.format(1000);
+  });
 </script>
 
 <template>
@@ -280,6 +173,21 @@
             <CopyText class="mr-2 btn-primary" :text="token" />
             {{ token }}
           </div>
+        </div>
+      </BaseCard>
+
+      <BaseCard>
+        <template #title>
+          <BaseSectionHeader class="pb-0">
+            <Icon name="mdi-accounts" class="mr-2 -mt-1 text-base-600" />
+            <span class="text-base-600"> Group Settings </span>
+            <template #description> Shared Group Settings </template>
+          </BaseSectionHeader>
+        </template>
+
+        <div class="p-5 pt-0 max-w-lg">
+          <FormSelect v-model="currency" label="Currency Format" :items="currencies" />
+          <p class="m-2 text-sm">Example: {{ currencyExample }}</p>
         </div>
       </BaseCard>
 
