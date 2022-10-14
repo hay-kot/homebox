@@ -187,6 +187,12 @@ export interface LocationSummary {
   updatedAt: Date;
 }
 
+export interface PaginationResultRepoItemSummary {
+  items: ItemSummary[];
+  page: number;
+  pageSize: number;
+  total: number;
+}
 
 export interface UserOut {
   email: string;
