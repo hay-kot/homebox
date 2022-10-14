@@ -15,19 +15,20 @@ docker run --name=homebox \
 
 ```yml
 version: "3.4"
- services:
-   homebox:
-     image: ghcr.io/hay-kot/homebox:latest
-     container_name: homebox
-     restart: always
-     environment:
-      - HBOX_LOG_LEVEL=info
-      - HBOX_LOG_FORMAT=text
-      - HBOX_WEB_MAX_UPLOAD_SIZE=10
-     volumes:
-       - homebox-data:/data/
-     ports:
-       - 3100:7745
+
+services:
+  homebox:
+    image: ghcr.io/hay-kot/homebox:latest
+    container_name: homebox
+    restart: always
+    environment:
+    - HBOX_LOG_LEVEL=info
+    - HBOX_LOG_FORMAT=text
+    - HBOX_WEB_MAX_UPLOAD_SIZE=10
+    volumes:
+      - homebox-data:/data/
+    ports:
+      - 3100:7745
 
 volumes:
    homebox-data:
