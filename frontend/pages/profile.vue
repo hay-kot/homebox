@@ -10,6 +10,13 @@
     title: "Homebox | Profile",
   });
 
+  const pubApi = usePublicApi();
+  const { data: status } = useAsyncData(async () => {
+    const { data } = await pubApi.status();
+
+    return data;
+  });
+
   const { setTheme } = useTheme();
 
   type ThemeOption = {
@@ -341,6 +348,9 @@
         </template>
       </BaseCard>
     </BaseContainer>
+    <footer v-if="status" class="text-center w-full bottom-0 pb-4">
+      <p class="text-center text-sm">Version: {{ status.build.version }} ~ Build: {{ status.build.commit }}</p>
+    </footer>
   </div>
 </template>
 
