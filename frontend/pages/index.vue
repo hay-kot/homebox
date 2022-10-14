@@ -15,7 +15,6 @@
     const { data } = await api.status();
 
     if (data) {
-      console.log(data);
       username.value = "demo@example.com";
       password.value = "demo";
     }
@@ -223,6 +222,9 @@
         </div>
       </div>
     </div>
+    <footer v-if="status" class="absolute text-center w-full bottom-0 pb-4">
+      <p class="text-center text-sm">Version: {{ status.build.version }} ~ Build: {{ status.build.commit }}</p>
+    </footer>
   </div>
 </template>
 
