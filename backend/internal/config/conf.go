@@ -16,13 +16,14 @@ const (
 )
 
 type Config struct {
-	Mode    string      `yaml:"mode" conf:"default:development"` // development or production
-	Web     WebConfig   `yaml:"web"`
-	Storage Storage     `yaml:"storage"`
-	Log     LoggerConf  `yaml:"logger"`
-	Mailer  MailerConf  `yaml:"mailer"`
-	Swagger SwaggerConf `yaml:"swagger"`
-	Demo    bool        `yaml:"demo"`
+	Mode              string      `yaml:"mode" conf:"default:development"` // development or production
+	Web               WebConfig   `yaml:"web"`
+	Storage           Storage     `yaml:"storage"`
+	Log               LoggerConf  `yaml:"logger"`
+	Mailer            MailerConf  `yaml:"mailer"`
+	Swagger           SwaggerConf `yaml:"swagger"`
+	Demo              bool        `yaml:"demo"`
+	AllowRegistration bool        `yaml:"disable_registration" conf:"default:true"`
 }
 
 type SwaggerConf struct {

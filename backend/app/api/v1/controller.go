@@ -19,10 +19,17 @@ func WithDemoStatus(demoStatus bool) func(*V1Controller) {
 	}
 }
 
+func WithRegistration(allowRegistration bool) func(*V1Controller) {
+	return func(ctrl *V1Controller) {
+		ctrl.allowRegistration = allowRegistration
+	}
+}
+
 type V1Controller struct {
-	svc           *services.AllServices
-	maxUploadSize int64
-	isDemo        bool
+	svc               *services.AllServices
+	maxUploadSize     int64
+	isDemo            bool
+	allowRegistration bool
 }
 
 type (
@@ -53,7 +60,8 @@ func BaseUrlFunc(prefix string) func(s string) string {
 
 func NewControllerV1(svc *services.AllServices, options ...func(*V1Controller)) *V1Controller {
 	ctrl := &V1Controller{
-		svc: svc,
+		svc:               svc,
+		allowRegistration: true,
 	}
 
 	for _, opt := range options {

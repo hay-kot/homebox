@@ -27,6 +27,11 @@ func (ctrl *V1Controller) HandleUserRegistration() http.HandlerFunc {
 			return
 		}
 
+		if !ctrl.allowRegistration && regData.GroupToken == "" {
+			server.RespondError(w, http.StatusForbidden, nil)
+			return
+		}
+
 		_, err := ctrl.svc.User.RegisterUser(r.Context(), regData)
 		if err != nil {
 			log.Err(err).Msg("failed to register user")
