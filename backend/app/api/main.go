@@ -20,9 +20,9 @@ import (
 )
 
 var (
-	Version   = "0.1.0"
-	Commit    = "HEAD"
-	BuildTime = "now"
+	version   = "nightly"
+	commit    = "HEAD"
+	buildTime = "now"
 )
 
 // @title                      Go API Templates

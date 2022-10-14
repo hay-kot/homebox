@@ -47,9 +47,9 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 		v1.WithDemoStatus(a.conf.Demo), // Disable Password Change in Demo Mode
 	)
 	r.Get(v1Base("/status"), v1Ctrl.HandleBase(func() bool { return true }, v1.Build{
-		Version:   Version,
-		Commit:    Commit,
-		BuildTime: BuildTime,
+		Version:   version,
+		Commit:    commit,
+		BuildTime: buildTime,
 	}))
 
 	r.Post(v1Base("/users/register"), v1Ctrl.HandleUserRegistration())

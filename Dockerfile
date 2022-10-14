@@ -12,6 +12,7 @@ RUN pnpm build
 FROM golang:alpine AS builder
 ARG BUILD_TIME
 ARG COMMIT
+ARG VERSION
 RUN apk update && \
     apk upgrade && \
     apk add --update git build-base gcc g++
@@ -22,7 +23,7 @@ RUN go get -d -v ./...
 RUN rm -rf ./app/api/public
 COPY --from=frontend-builder /app/.output/public ./app/api/public
 RUN CGO_ENABLED=1 GOOS=linux go build \
-    -ldflags "-s -w -X main.Commit=$COMMIT -X main.BuildTime=$BUILD_TIME" \
+    -ldflags "-s -w -X main.commit=$COMMIT -X main.buildTime=$BUILD_TIME -X main.version=$VERSION"  \
     -o /go/bin/api \
     -v ./app/api/*.go
 
