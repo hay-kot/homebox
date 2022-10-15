@@ -1,6 +1,7 @@
 ---
 name: "Feature Request"
-description: "submit a feature request for the current release"
+description: "Submit a feature request for the current release"
+labels: ["feature-request"]
 body:
   - type: textarea
     id: problem-statement
