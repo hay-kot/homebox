@@ -138,6 +138,14 @@ func run(cfg *config.Config) error {
 				Msg("failed to purge expired tokens")
 		}
 	})
+	go app.startBgTask(time.Duration(24)*time.Hour, func() {
+		_, err := app.repos.Groups.InvitationPurge(context.Background())
+		if err != nil {
+			log.Error().
+				Err(err).
+				Msg("failed to purge expired invitations")
+		}
+	})
 
 	// TODO: Remove through external API that does setup
 	if cfg.Demo {
