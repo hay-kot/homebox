@@ -233,6 +233,7 @@
     loading: false,
 
     // Values
+    obj: {},
     id: "",
     title: "",
     type: "",
@@ -248,11 +249,13 @@
     editState.title = attachment.document.title;
     editState.type = attachment.type;
     editState.modal = true;
+
+    editState.obj = attachmentOpts.find(o => o.value === attachment.type);
   }
 
   async function updateAttachment() {
     editState.loading = true;
-
+    console.log(editState.type);
     const { error, data } = await api.items.updateAttachment(itemId.value, editState.id, {
       title: editState.title,
       type: editState.type,
@@ -282,7 +285,14 @@
       <template #title> Attachment Edit </template>
 
       <FormTextField v-model="editState.title" label="Attachment Title" />
-      <FormSelect v-model="editState.type" label="Attachment Type" value="value" name="text" :items="attachmentOpts" />
+      <FormSelect
+        v-model="editState.obj"
+        v-model:value="editState.type"
+        label="Attachment Type"
+        value-key="value"
+        name="text"
+        :items="attachmentOpts"
+      />
       <div class="modal-action">
         <BaseButton :loading="editState.loading" @click="updateAttachment"> Update </BaseButton>
       </div>
