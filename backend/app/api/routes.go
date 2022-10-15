@@ -72,6 +72,10 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 
 		r.Post(v1Base("/groups/invitations"), v1Ctrl.HandleGroupInvitationsCreate())
 
+		// TODO: I don't like /groups being the URL for users
+		r.Get(v1Base("/groups"), v1Ctrl.HandleGroupGet())
+		r.Put(v1Base("/groups"), v1Ctrl.HandleGroupUpdate())
+
 		r.Get(v1Base("/locations"), v1Ctrl.HandleLocationGetAll())
 		r.Post(v1Base("/locations"), v1Ctrl.HandleLocationCreate())
 		r.Get(v1Base("/locations/{id}"), v1Ctrl.HandleLocationGet())

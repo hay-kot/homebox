@@ -110,7 +110,7 @@ func run(cfg *config.Config) error {
 
 	app.db = c
 	app.repos = repo.New(c, cfg.Storage.Data)
-	app.services = services.NewServices(app.repos)
+	app.services = services.New(app.repos)
 
 	// =========================================================================
 	// Start Server
