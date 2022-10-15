@@ -6,7 +6,7 @@
   import { capitalize } from "~~/lib/strings";
 
   definePageMeta({
-    layout: "home",
+    middleware: ["auth"],
   });
 
   const route = useRoute();

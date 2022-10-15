@@ -5,8 +5,9 @@
   import { useLocationStore } from "~~/stores/locations";
 
   definePageMeta({
-    layout: "home",
+    middleware: ["auth"],
   });
+
   useHead({
     title: "Homebox | Home",
   });
@@ -14,15 +15,6 @@
   const api = useUserApi();
 
   const auth = useAuthStore();
-
-  if (auth.self === null) {
-    const { data, error } = await api.user.self();
-    if (error) {
-      navigateTo("/");
-    }
-
-    auth.$patch({ self: data.item });
-  }
 
   const itemsStore = useItemStore();
   const items = computed(() => itemsStore.items);

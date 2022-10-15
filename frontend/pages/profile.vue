@@ -5,7 +5,7 @@
   import { currencies, Currency } from "~~/lib/data/currency";
 
   definePageMeta({
-    layout: "home",
+    middleware: ["auth"],
   });
   useHead({
     title: "Homebox | Profile",

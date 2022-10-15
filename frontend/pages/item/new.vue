@@ -1,6 +1,6 @@
 <script setup>
   definePageMeta({
-    layout: "home",
+    middleware: ["auth"],
   });
 
   const show = reactive({

@@ -2,7 +2,7 @@
   import { Detail, DateDetail } from "~~/components/global/DetailsSection/types";
 
   definePageMeta({
-    layout: "home",
+    middleware: ["auth"],
   });
 
   const route = useRoute();

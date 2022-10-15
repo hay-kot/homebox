@@ -3,7 +3,7 @@
   import { ItemAttachment } from "~~/lib/api/types/data-contracts";
 
   definePageMeta({
-    layout: "home",
+    middleware: ["auth"],
   });
 
   const route = useRoute();

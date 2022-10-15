@@ -4,8 +4,9 @@
   import { useLocationStore } from "~~/stores/locations";
 
   definePageMeta({
-    layout: "home",
+    middleware: ["auth"],
   });
+
   useHead({
     title: "Homebox | Home",
   });
