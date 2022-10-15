@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"strings"
 	"time"
 
 	"github.com/hay-kot/homebox/backend/internal/repo"
@@ -24,6 +25,8 @@ func (svc *GroupService) UpdateGroup(ctx Context, data repo.GroupUpdate) (repo.G
 	if data.Currency == "" {
 		return repo.Group{}, errors.New("currency cannot be empty")
 	}
+
+	data.Currency = strings.ToLower(data.Currency)
 
 	return svc.repos.Groups.GroupUpdate(ctx.Context, ctx.GID, data)
 }

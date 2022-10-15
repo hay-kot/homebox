@@ -11,6 +11,60 @@
     title: "Homebox | Profile",
   });
 
+  const api = useUserApi();
+  const confirm = useConfirm();
+  const notify = useNotifier();
+
+  // Currency Selection
+  const currency = ref<Currency>(currencies[0]);
+
+  watch(currency, () => {
+    if (group.value) {
+      group.value.currency = currency.value.code;
+    }
+
+    console.log(group.value);
+  });
+
+  const currencyExample = computed(() => {
+    const formatter = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency.value ? currency.value.code : "USD",
+    });
+
+    return formatter.format(1000);
+  });
+
+  const { data: group } = useAsyncData(async () => {
+    const { data } = await api.group.get();
+    return data;
+  });
+
+  // Sync Initial Currency
+  watch(group, () => {
+    if (group.value) {
+      const found = currencies.find(c => c.code === group.value.currency);
+      if (found) {
+        currency.value = found;
+      }
+    }
+  });
+
+  async function updateGroup() {
+    const { data, error } = await api.group.update({
+      name: group.value.name,
+      currency: group.value.currency,
+    });
+
+    if (error) {
+      notify.error("Failed to update group");
+      return;
+    }
+
+    group.value = data;
+    notify.success("Group updated");
+  }
+
   const pubApi = usePublicApi();
   const { data: status } = useAsyncData(async () => {
     const { data } = await pubApi.status();
@@ -34,10 +88,6 @@
       },
     ] as Detail[];
   });
-
-  const api = useUserApi();
-  const confirm = useConfirm();
-  const notify = useNotifier();
 
   async function deleteProfile() {
     const result = await confirm.open(
@@ -113,18 +163,6 @@
     passwordChange.current = "";
     passwordChange.loading = false;
   }
-
-  // Currency Selection
-  const currency = ref<Currency>(currencies[1]);
-
-  const currencyExample = computed(() => {
-    const formatter = new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: currency.value ? currency.value.code : "USD",
-    });
-
-    return formatter.format(1000);
-  });
 </script>
 
 <template>
@@ -185,9 +223,13 @@
           </BaseSectionHeader>
         </template>
 
-        <div class="p-5 pt-0 max-w-lg">
-          <FormSelect v-model="currency" label="Currency Format" :items="currencies" />
+        <div v-if="group" class="p-5 pt-0">
+          <FormSelect v-model="currency" value="code" label="Currency Format" :items="currencies" />
           <p class="m-2 text-sm">Example: {{ currencyExample }}</p>
+
+          <div class="mt-4 flex justify-end">
+            <BaseButton @click="updateGroup"> Update Group </BaseButton>
+          </div>
         </div>
       </BaseCard>
 
