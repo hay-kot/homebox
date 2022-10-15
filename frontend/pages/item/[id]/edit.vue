@@ -118,12 +118,12 @@
     },
     {
       type: "text",
-      label: "Purchased Price",
+      label: "Purchase Price",
       ref: "purchasePrice",
     },
     {
       type: "date",
-      label: "Purchased At",
+      label: "Purchase Date",
       ref: "purchaseTime",
     },
   ];
