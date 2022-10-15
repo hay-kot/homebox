@@ -183,7 +183,7 @@
   const purchaseDetails = computed<Array<Detail | DateDetail>>(() => {
     return [
       {
-        name: "Purchase From",
+        name: "Purchased From",
         text: item.value?.purchaseFrom || "",
       },
       {
@@ -325,17 +325,17 @@
         </BaseCard>
 
         <BaseCard v-if="showPurchase">
-          <template #title> Purchase </template>
+          <template #title> Purchase Details </template>
           <DetailsSection :details="purchaseDetails" />
         </BaseCard>
 
         <BaseCard v-if="showWarranty">
-          <template #title> Warranty </template>
+          <template #title> Warranty Details </template>
           <DetailsSection :details="warrantyDetails" />
         </BaseCard>
 
         <BaseCard v-if="showSold">
-          <template #title> Sold </template>
+          <template #title> Sold Details </template>
           <DetailsSection :details="soldDetails" />
         </BaseCard>
       </div>
