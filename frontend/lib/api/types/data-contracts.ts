@@ -16,6 +16,19 @@ export interface DocumentOut {
   title: string;
 }
 
+export interface Group {
+  createdAt: Date;
+  currency: string;
+  id: string;
+  name: string;
+  updatedAt: Date;
+}
+
+export interface GroupUpdate {
+  currency: string;
+  name: string;
+}
+
 export interface ItemAttachment {
   createdAt: Date;
   document: DocumentOut;

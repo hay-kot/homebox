@@ -25,7 +25,7 @@
     },
     modelValue: {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      type: [Object, String, Boolean] as any,
+      type: [Object, String] as any,
       default: null,
     },
     items: {
@@ -53,10 +53,19 @@
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function compare(a: any, b: any): boolean {
-    if (props.value != null) {
+    if (props.value) {
       return a[props.value] === b[props.value];
     }
-    return a === b;
+
+    if (a === b) {
+      return true;
+    }
+
+    if (!a || !b) {
+      return false;
+    }
+
+    return JSON.stringify(a) === JSON.stringify(b);
   }
 
   watch(

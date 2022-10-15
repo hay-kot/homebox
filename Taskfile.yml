@@ -27,6 +27,7 @@ tasks:
       - "./scripts/process-types.py"
     generates:
       - "./frontend/lib/api/types/data-contracts.ts"
+      - "./backend/ent/schema"
       - "./backend/app/api/docs/swagger.json"
       - "./backend/app/api/docs/swagger.yaml"
 

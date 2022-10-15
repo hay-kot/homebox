@@ -186,21 +186,6 @@ func (svc *UserService) DeleteSelf(ctx context.Context, ID uuid.UUID) error {
 	return svc.repos.Users.Delete(ctx, ID)
 }
 
-func (svc *UserService) NewInvitation(ctx Context, uses int, expiresAt time.Time) (string, error) {
-	token := hasher.GenerateToken()
-
-	_, err := svc.repos.Groups.InvitationCreate(ctx, ctx.GID, repo.GroupInvitationCreate{
-		Token:     token.Hash,
-		Uses:      uses,
-		ExpiresAt: expiresAt,
-	})
-	if err != nil {
-		return "", err
-	}
-
-	return token.Raw, nil
-}
-
 func (svc *UserService) ChangePassword(ctx Context, current string, new string) (ok bool) {
 	usr, err := svc.repos.Users.GetOneId(ctx, ctx.UID)
 	if err != nil {

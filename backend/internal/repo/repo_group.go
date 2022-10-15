@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/ent"
+	"github.com/hay-kot/homebox/backend/ent/group"
 	"github.com/hay-kot/homebox/backend/ent/groupinvitationtoken"
 )
 
@@ -15,11 +16,16 @@ type GroupRepository struct {
 
 type (
 	Group struct {
-		ID        uuid.UUID
-		Name      string
-		CreatedAt time.Time
-		UpdatedAt time.Time
-		Currency  string
+		ID        uuid.UUID `json:"id,omitempty"`
+		Name      string    `json:"name,omitempty"`
+		CreatedAt time.Time `json:"createdAt,omitempty"`
+		UpdatedAt time.Time `json:"updatedAt,omitempty"`
+		Currency  string    `json:"currency,omitempty"`
+	}
+
+	GroupUpdate struct {
+		Name     string `json:"name"`
+		Currency string `json:"currency"`
 	}
 
 	GroupInvitationCreate struct {
@@ -67,6 +73,17 @@ func (r *GroupRepository) GroupCreate(ctx context.Context, name string) (Group, 
 	return mapToGroupErr(r.db.Group.Create().
 		SetName(name).
 		Save(ctx))
+}
+
+func (r *GroupRepository) GroupUpdate(ctx context.Context, ID uuid.UUID, data GroupUpdate) (Group, error) {
+	currency := group.Currency(data.Currency)
+
+	entity, err := r.db.Group.UpdateOneID(ID).
+		SetName(data.Name).
+		SetCurrency(currency).
+		Save(ctx)
+
+	return mapToGroupErr(entity, err)
 }
 
 func (r *GroupRepository) GroupByID(ctx context.Context, id uuid.UUID) (Group, error) {

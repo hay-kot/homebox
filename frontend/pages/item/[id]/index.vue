@@ -1,9 +1,9 @@
 <script setup lang="ts">
-  import { DateDetail, Detail } from "~~/components/global/DetailsSection/types";
+  import { Detail, Details } from "~~/components/global/DetailsSection/types";
   import { ItemAttachment } from "~~/lib/api/types/data-contracts";
 
   definePageMeta({
-    layout: "home",
+    middleware: ["auth"],
   });
 
   const route = useRoute();
@@ -145,7 +145,7 @@
   });
 
   const warrantyDetails = computed(() => {
-    const details: (Detail | DateDetail)[] = [
+    const details: Details = [
       {
         name: "Lifetime Warranty",
         text: item.value?.lifetimeWarranty ? "Yes" : "No",
@@ -180,7 +180,7 @@
     return item.value?.purchaseFrom || item.value?.purchasePrice !== "0";
   });
 
-  const purchaseDetails = computed<Array<Detail | DateDetail>>(() => {
+  const purchaseDetails = computed<Details>(() => {
     return [
       {
         name: "Purchased From",
@@ -188,7 +188,8 @@
       },
       {
         name: "Purchase Price",
-        text: item.value?.purchasePrice ? fmtCurrency(item.value.purchasePrice) : "",
+        text: item.value?.purchasePrice || "",
+        type: "currency",
       },
       {
         name: "Purchase Date",
@@ -205,7 +206,7 @@
     return item.value?.soldTo || item.value?.soldPrice !== "0";
   });
 
-  const soldDetails = computed<Array<Detail | DateDetail>>(() => {
+  const soldDetails = computed<Details>(() => {
     return [
       {
         name: "Sold To",
@@ -213,7 +214,8 @@
       },
       {
         name: "Sold Price",
-        text: item.value?.soldPrice ? fmtCurrency(item.value.soldPrice) : "",
+        text: item.value?.soldPrice || "",
+        type: "currency",
       },
       {
         name: "Sold At",

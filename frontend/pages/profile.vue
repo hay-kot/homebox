@@ -1,14 +1,69 @@
 <script setup lang="ts">
   import { Detail } from "~~/components/global/DetailsSection/types";
-  import { DaisyTheme } from "~~/composables/use-preferences";
   import { useAuthStore } from "~~/stores/auth";
+  import { themes } from "~~/lib/data/themes";
+  import { currencies, Currency } from "~~/lib/data/currency";
 
   definePageMeta({
-    layout: "home",
+    middleware: ["auth"],
   });
   useHead({
     title: "Homebox | Profile",
   });
+
+  const api = useUserApi();
+  const confirm = useConfirm();
+  const notify = useNotifier();
+
+  // Currency Selection
+  const currency = ref<Currency>(currencies[0]);
+
+  watch(currency, () => {
+    if (group.value) {
+      group.value.currency = currency.value.code;
+    }
+
+    console.log(group.value);
+  });
+
+  const currencyExample = computed(() => {
+    const formatter = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency.value ? currency.value.code : "USD",
+    });
+
+    return formatter.format(1000);
+  });
+
+  const { data: group } = useAsyncData(async () => {
+    const { data } = await api.group.get();
+    return data;
+  });
+
+  // Sync Initial Currency
+  watch(group, () => {
+    if (group.value) {
+      const found = currencies.find(c => c.code === group.value.currency);
+      if (found) {
+        currency.value = found;
+      }
+    }
+  });
+
+  async function updateGroup() {
+    const { data, error } = await api.group.update({
+      name: group.value.name,
+      currency: group.value.currency,
+    });
+
+    if (error) {
+      notify.error("Failed to update group");
+      return;
+    }
+
+    group.value = data;
+    notify.success("Group updated");
+  }
 
   const pubApi = usePublicApi();
   const { data: status } = useAsyncData(async () => {
@@ -18,126 +73,6 @@
   });
 
   const { setTheme } = useTheme();
-
-  type ThemeOption = {
-    label: string;
-    value: DaisyTheme;
-  };
-
-  const themes: ThemeOption[] = [
-    {
-      label: "Garden",
-      value: "garden",
-    },
-    {
-      label: "Light",
-      value: "light",
-    },
-    {
-      label: "Cupcake",
-      value: "cupcake",
-    },
-    {
-      label: "Bumblebee",
-      value: "bumblebee",
-    },
-    {
-      label: "Emerald",
-      value: "emerald",
-    },
-    {
-      label: "Corporate",
-      value: "corporate",
-    },
-    {
-      label: "Synthwave",
-      value: "synthwave",
-    },
-    {
-      label: "Retro",
-      value: "retro",
-    },
-    {
-      label: "Cyberpunk",
-      value: "cyberpunk",
-    },
-    {
-      label: "Valentine",
-      value: "valentine",
-    },
-    {
-      label: "Halloween",
-      value: "halloween",
-    },
-    {
-      label: "Forest",
-      value: "forest",
-    },
-    {
-      label: "Aqua",
-      value: "aqua",
-    },
-    {
-      label: "Lofi",
-      value: "lofi",
-    },
-    {
-      label: "Pastel",
-      value: "pastel",
-    },
-    {
-      label: "Fantasy",
-      value: "fantasy",
-    },
-    {
-      label: "Wireframe",
-      value: "wireframe",
-    },
-    {
-      label: "Black",
-      value: "black",
-    },
-    {
-      label: "Luxury",
-      value: "luxury",
-    },
-    {
-      label: "Dracula",
-      value: "dracula",
-    },
-    {
-      label: "Cmyk",
-      value: "cmyk",
-    },
-    {
-      label: "Autumn",
-      value: "autumn",
-    },
-    {
-      label: "Business",
-      value: "business",
-    },
-    {
-      label: "Acid",
-      value: "acid",
-    },
-    {
-      label: "Lemonade",
-      value: "lemonade",
-    },
-    {
-      label: "Night",
-      value: "night",
-    },
-    {
-      label: "Coffee",
-      value: "coffee",
-    },
-    {
-      label: "Winter",
-      value: "winter",
-    },
-  ];
 
   const auth = useAuthStore();
 
@@ -153,10 +88,6 @@
       },
     ] as Detail[];
   });
-
-  const api = useUserApi();
-  const confirm = useConfirm();
-  const notify = useNotifier();
 
   async function deleteProfile() {
     const result = await confirm.open(
@@ -279,6 +210,27 @@
           <div v-if="token" class="pt-4 flex items-center pl-1">
             <CopyText class="mr-2 btn-primary" :text="token" />
             {{ token }}
+          </div>
+        </div>
+      </BaseCard>
+
+      <BaseCard>
+        <template #title>
+          <BaseSectionHeader class="pb-0">
+            <Icon name="mdi-accounts" class="mr-2 -mt-1 text-base-600" />
+            <span class="text-base-600"> Group Settings </span>
+            <template #description>
+              Shared Group Settings. You may need to refresh your browser for some settings to apply.
+            </template>
+          </BaseSectionHeader>
+        </template>
+
+        <div v-if="group" class="p-5 pt-0">
+          <FormSelect v-model="currency" value="code" label="Currency Format" :items="currencies" />
+          <p class="m-2 text-sm">Example: {{ currencyExample }}</p>
+
+          <div class="mt-4 flex justify-end">
+            <BaseButton @click="updateGroup"> Update Group </BaseButton>
           </div>
         </div>
       </BaseCard>

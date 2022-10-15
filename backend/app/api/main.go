@@ -110,7 +110,7 @@ func run(cfg *config.Config) error {
 
 	app.db = c
 	app.repos = repo.New(c, cfg.Storage.Data)
-	app.services = services.NewServices(app.repos)
+	app.services = services.New(app.repos)
 
 	// =========================================================================
 	// Start Server
@@ -136,6 +136,14 @@ func run(cfg *config.Config) error {
 			log.Error().
 				Err(err).
 				Msg("failed to purge expired tokens")
+		}
+	})
+	go app.startBgTask(time.Duration(24)*time.Hour, func() {
+		_, err := app.repos.Groups.InvitationPurge(context.Background())
+		if err != nil {
+			log.Error().
+				Err(err).
+				Msg("failed to purge expired invitations")
 		}
 	})
 

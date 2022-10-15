@@ -9,6 +9,26 @@ definitions:
       title:
         type: string
     type: object
+  repo.Group:
+    properties:
+      createdAt:
+        type: string
+      currency:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  repo.GroupUpdate:
+    properties:
+      currency:
+        type: string
+      name:
+        type: string
+    type: object
   repo.ItemAttachment:
     properties:
       createdAt:
@@ -415,6 +435,40 @@ info:
   title: Go API Templates
   version: "1.0"
 paths:
+  /v1/groups:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/repo.Group'
+      security:
+      - Bearer: []
+      summary: Get the current user's group
+      tags:
+      - Group
+    put:
+      parameters:
+      - description: User Data
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/repo.GroupUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/repo.Group'
+      security:
+      - Bearer: []
+      summary: Updates some fields of the current users group
+      tags:
+      - Group
   /v1/groups/invitations:
     post:
       parameters:
@@ -435,7 +489,7 @@ paths:
       - Bearer: []
       summary: Get the current user
       tags:
-      - User
+      - Group
   /v1/items:
     get:
       parameters:
