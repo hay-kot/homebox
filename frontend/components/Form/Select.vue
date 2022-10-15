@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts" setup>
-  const emit = defineEmits(["update:modelValue"]);
+  const emit = defineEmits(["update:modelValue", "update:value"]);
   const props = defineProps({
     label: {
       type: String,
@@ -37,26 +37,32 @@
       type: String,
       default: "name",
     },
-    value: {
+    valueKey: {
       type: String,
       default: null,
-      required: false,
+    },
+    value: {
+      type: String,
+      default: "",
     },
   });
 
   const selectedIdx = ref(-1);
+
   const internalSelected = useVModel(props, "modelValue", emit);
 
   watch(selectedIdx, newVal => {
     internalSelected.value = props.items[newVal];
   });
 
+  watch(internalSelected, newVal => {
+    if (props.valueKey) {
+      emit("update:value", newVal[props.valueKey]);
+    }
+  });
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function compare(a: any, b: any): boolean {
-    if (props.value) {
-      return a[props.value] === b[props.value];
-    }
-
     if (a === b) {
       return true;
     }

@@ -226,7 +226,7 @@
         </template>
 
         <div v-if="group" class="p-5 pt-0">
-          <FormSelect v-model="currency" value="code" label="Currency Format" :items="currencies" />
+          <FormSelect v-model="currency" label="Currency Format" :items="currencies" />
           <p class="m-2 text-sm">Example: {{ currencyExample }}</p>
 
           <div class="mt-4 flex justify-end">
