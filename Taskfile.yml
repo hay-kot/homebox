@@ -4,6 +4,12 @@ env:
   HBOX_STORAGE_SQLITE_URL: .data/homebox.db?_fk=1
 
 tasks:
+  setup:
+    desc: Install dependencies
+    cmds:
+    - go install github.com/swaggo/swag/cmd/swag@latest
+    - cd backend && go mod tidy
+    - cd frontend && pnpm install --shamefully-hoist
   generate:
     desc: |
       Generates collateral files from the backend project
