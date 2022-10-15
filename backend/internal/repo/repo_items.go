@@ -24,6 +24,7 @@ type (
 		Search      string      `json:"search"`
 		LocationIDs []uuid.UUID `json:"locationIds"`
 		LabelIDs    []uuid.UUID `json:"labelIds"`
+		SortBy      string      `json:"sortBy"`
 	}
 
 	ItemCreate struct {
@@ -252,7 +253,8 @@ func (e *ItemsRepository) QueryByGroup(ctx context.Context, gid uuid.UUID, q Ite
 	}
 
 	items, err := mapItemsSummaryErr(
-		qb.WithLabel().
+		qb.Order(ent.Asc(item.FieldName)).
+			WithLabel().
 			WithLocation().
 			All(ctx),
 	)
