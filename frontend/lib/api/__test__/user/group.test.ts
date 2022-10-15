@@ -25,7 +25,7 @@ describe("first time user workflow (register, login, join group)", () => {
 
     expect(response.status).toBe(200);
     expect(group.name).toBeTruthy();
-    expect(group.currency).toBe("usd");
+    expect(group.currency).toBe("USD");
   });
 
   test("user should be able to join create join token and have user signup", async () => {
