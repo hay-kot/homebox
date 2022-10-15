@@ -94,7 +94,9 @@ func (r *LocationRepository) GetAll(ctx context.Context, groupId uuid.UUID) ([]L
 			locations
 		WHERE
 			locations.group_locations = ?
-	`
+		ORDER BY
+			locations.name ASC
+`
 
 	rows, err := r.db.Sql().QueryContext(ctx, query, groupId)
 	if err != nil {

@@ -84,6 +84,7 @@ func (r *LabelRepository) GetOneByGroup(ctx context.Context, gid, ld uuid.UUID) 
 func (r *LabelRepository) GetAll(ctx context.Context, groupId uuid.UUID) ([]LabelSummary, error) {
 	return mapLabelsOut(r.db.Label.Query().
 		Where(label.HasGroupWith(group.ID(groupId))).
+		Order(ent.Asc(label.FieldName)).
 		WithGroup().
 		All(ctx),
 	)
