@@ -1,5 +1,7 @@
+export type Codes = "USD" | "EUR" | "GBP" | "JPY";
+
 export type Currency = {
-  code: string;
+  code: Codes;
   local: string;
   symbol: string;
   name: string;

@@ -1,15 +1,25 @@
 export type StringLike = string | number | boolean;
 
-export type DateDetail = {
+type BaseDetail = {
   name: string;
-  text: string | Date;
   slot?: string;
-  type: "date";
 };
 
-export type Detail = {
-  name: string;
+type DateDetail = BaseDetail & {
+  type: "date";
+  text: Date | string;
+};
+
+type CurrencyDetail = BaseDetail & {
+  type: "currency";
+  text: string;
+};
+
+export type CustomDetail = DateDetail | CurrencyDetail;
+
+export type Detail = BaseDetail & {
   text: StringLike;
-  slot?: string;
   type?: "text";
 };
+
+export type Details = Array<Detail | CustomDetail>;

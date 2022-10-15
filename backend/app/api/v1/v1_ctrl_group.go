@@ -41,6 +41,7 @@ func (ctrl *V1Controller) HandleGroupGet() http.HandlerFunc {
 			server.RespondError(w, http.StatusInternalServerError, err)
 			return
 		}
+		group.Currency = strings.ToUpper(group.Currency) // TODO: Hack to fix the currency enums being lower caseÍ
 
 		server.Respond(w, http.StatusOK, group)
 

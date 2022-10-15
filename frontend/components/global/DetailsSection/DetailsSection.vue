@@ -7,9 +7,8 @@
         </dt>
         <dd class="mt-1 text-sm text-base-content sm:col-span-2 sm:mt-0">
           <slot :name="detail.slot || detail.name" v-bind="{ detail }">
-            <template v-if="detail.type == 'date'">
-              <DateTime :date="detail.text" />
-            </template>
+            <DateTime v-if="detail.type == 'date'" :date="detail.text" />
+            <Currency v-else-if="detail.type == 'currency'" :amount="detail.text" />
             <template v-else>
               {{ detail.text }}
             </template>
@@ -21,11 +20,11 @@
 </template>
 
 <script setup lang="ts">
-  import type { DateDetail, Detail } from "./types";
+  import type { CustomDetail, Detail } from "./types";
 
   defineProps({
     details: {
-      type: Object as () => (Detail | DateDetail)[],
+      type: Object as () => (Detail | CustomDetail)[],
       required: true,
     },
   });

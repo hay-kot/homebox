@@ -219,7 +219,9 @@
           <BaseSectionHeader class="pb-0">
             <Icon name="mdi-accounts" class="mr-2 -mt-1 text-base-600" />
             <span class="text-base-600"> Group Settings </span>
-            <template #description> Shared Group Settings </template>
+            <template #description>
+              Shared Group Settings. You may need to refresh your browser for some settings to apply.
+            </template>
           </BaseSectionHeader>
         </template>
 

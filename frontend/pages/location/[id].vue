@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { Detail, DateDetail } from "~~/components/global/DetailsSection/types";
+  import { Detail, CustomDetail } from "~~/components/global/DetailsSection/types";
 
   definePageMeta({
     middleware: ["auth"],
@@ -23,7 +23,7 @@
     return data;
   });
 
-  const details = computed<(Detail | DateDetail)[]>(() => {
+  const details = computed<(Detail | CustomDetail)[]>(() => {
     const details = [
       {
         name: "Name",
