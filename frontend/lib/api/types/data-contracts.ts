@@ -51,10 +51,23 @@ export interface ItemCreate {
   name: string;
 }
 
+export interface ItemField {
+  booleanValue: boolean;
+  id: string;
+  name: string;
+  numberValue: number;
+  textValue: string;
+  timeValue: string;
+  type: string;
+}
+
 export interface ItemOut {
   attachments: ItemAttachment[];
   createdAt: Date;
   description: string;
+
+  /** Future */
+  fields: ItemField[];
   id: string;
   insured: boolean;
   labels: LabelSummary[];
@@ -108,6 +121,7 @@ export interface ItemSummary {
 
 export interface ItemUpdate {
   description: string;
+  fields: ItemField[];
   id: string;
   insured: boolean;
   labelIds: string[];

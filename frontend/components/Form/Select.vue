@@ -50,16 +50,39 @@
   const selectedIdx = ref(-1);
 
   const internalSelected = useVModel(props, "modelValue", emit);
+  const internalValue = useVModel(props, "value", emit);
 
   watch(selectedIdx, newVal => {
     internalSelected.value = props.items[newVal];
   });
 
-  watch(internalSelected, newVal => {
+  watch(selectedIdx, newVal => {
     if (props.valueKey) {
-      emit("update:value", newVal[props.valueKey]);
+      internalValue.value = props.items[newVal][props.valueKey];
     }
   });
+
+  watch(
+    internalSelected,
+    () => {
+      const idx = props.items.findIndex(item => compare(item, internalSelected.value));
+      selectedIdx.value = idx;
+    },
+    {
+      immediate: true,
+    }
+  );
+
+  watch(
+    internalValue,
+    () => {
+      const idx = props.items.findIndex(item => compare(item[props.valueKey], internalValue.value));
+      selectedIdx.value = idx;
+    },
+    {
+      immediate: true,
+    }
+  );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function compare(a: any, b: any): boolean {
@@ -73,15 +96,4 @@
 
     return JSON.stringify(a) === JSON.stringify(b);
   }
-
-  watch(
-    internalSelected,
-    () => {
-      const idx = props.items.findIndex(item => compare(item, internalSelected.value));
-      selectedIdx.value = idx;
-    },
-    {
-      immediate: true,
-    }
-  );
 </script>

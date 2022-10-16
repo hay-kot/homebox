@@ -8,6 +8,7 @@ import (
 	"github.com/hay-kot/homebox/backend/ent"
 	"github.com/hay-kot/homebox/backend/ent/group"
 	"github.com/hay-kot/homebox/backend/ent/item"
+	"github.com/hay-kot/homebox/backend/ent/itemfield"
 	"github.com/hay-kot/homebox/backend/ent/label"
 	"github.com/hay-kot/homebox/backend/ent/location"
 	"github.com/hay-kot/homebox/backend/ent/predicate"
@@ -25,6 +26,16 @@ type (
 		LocationIDs []uuid.UUID `json:"locationIds"`
 		LabelIDs    []uuid.UUID `json:"labelIds"`
 		SortBy      string      `json:"sortBy"`
+	}
+
+	ItemField struct {
+		ID           uuid.UUID `json:"id,omitempty"`
+		Type         string    `json:"type"`
+		Name         string    `json:"name"`
+		TextValue    string    `json:"textValue"`
+		NumberValue  int       `json:"numberValue"`
+		BooleanValue bool      `json:"booleanValue"`
+		TimeValue    time.Time `json:"timeValue,omitempty"`
 	}
 
 	ItemCreate struct {
@@ -69,8 +80,8 @@ type (
 		SoldNotes string    `json:"soldNotes"`
 
 		// Extras
-		Notes string `json:"notes"`
-		// Fields []*FieldSummary `json:"fields"`
+		Notes  string      `json:"notes"`
+		Fields []ItemField `json:"fields"`
 	}
 
 	ItemSummary struct {
@@ -116,7 +127,7 @@ type (
 
 		Attachments []ItemAttachment `json:"attachments"`
 		// Future
-		// Fields []*FieldSummary `json:"fields"`
+		Fields []ItemField `json:"fields"`
 	}
 )
 
@@ -156,10 +167,31 @@ var (
 	mapItemOutErr = mapTErrFunc(mapItemOut)
 )
 
+func mapFields(fields []*ent.ItemField) []ItemField {
+	result := make([]ItemField, len(fields))
+	for i, f := range fields {
+		result[i] = ItemField{
+			ID:           f.ID,
+			Type:         f.Type.String(),
+			Name:         f.Name,
+			TextValue:    f.TextValue,
+			NumberValue:  f.NumberValue,
+			BooleanValue: f.BooleanValue,
+			TimeValue:    f.TimeValue,
+		}
+	}
+	return result
+}
+
 func mapItemOut(item *ent.Item) ItemOut {
 	var attachments []ItemAttachment
 	if item.Edges.Attachments != nil {
 		attachments = mapEach(item.Edges.Attachments, ToItemAttachment)
+	}
+
+	var fields []ItemField
+	if item.Edges.Fields != nil {
+		fields = mapFields(item.Edges.Fields)
 	}
 
 	return ItemOut{
@@ -187,6 +219,7 @@ func mapItemOut(item *ent.Item) ItemOut {
 		// Extras
 		Notes:       item.Notes,
 		Attachments: attachments,
+		Fields:      fields,
 	}
 }
 
@@ -368,6 +401,64 @@ func (e *ItemsRepository) UpdateByGroup(ctx context.Context, gid uuid.UUID, data
 	err = q.Exec(ctx)
 	if err != nil {
 		return ItemOut{}, err
+	}
+
+	fields, err := e.db.ItemField.Query().Where(itemfield.HasItemWith(item.ID(data.ID))).All(ctx)
+	if err != nil {
+		return ItemOut{}, err
+	}
+
+	fieldIds := newIDSet(fields)
+
+	// Update Existing Fields
+	for _, f := range data.Fields {
+		if f.ID == uuid.Nil {
+			// Create New Field
+			_, err = e.db.ItemField.Create().
+				SetItemID(data.ID).
+				SetType(itemfield.Type(f.Type)).
+				SetName(f.Name).
+				SetTextValue(f.TextValue).
+				SetNumberValue(f.NumberValue).
+				SetBooleanValue(f.BooleanValue).
+				SetTimeValue(f.TimeValue).
+				Save(ctx)
+			if err != nil {
+				return ItemOut{}, err
+			}
+		}
+
+		opt := e.db.ItemField.Update().
+			Where(
+				itemfield.ID(f.ID),
+				itemfield.HasItemWith(item.ID(data.ID)),
+			).
+			SetType(itemfield.Type(f.Type)).
+			SetName(f.Name).
+			SetTextValue(f.TextValue).
+			SetNumberValue(f.NumberValue).
+			SetBooleanValue(f.BooleanValue).
+			SetTimeValue(f.TimeValue)
+
+		_, err = opt.Save(ctx)
+		if err != nil {
+			return ItemOut{}, err
+		}
+
+		fieldIds.Remove(f.ID)
+		continue
+	}
+
+	// Delete Fields that are no longer present
+	if fieldIds.Len() > 0 {
+		_, err = e.db.ItemField.Delete().
+			Where(
+				itemfield.IDIn(fieldIds.Slice()...),
+				itemfield.HasItemWith(item.ID(data.ID)),
+			).Exec(ctx)
+		if err != nil {
+			return ItemOut{}, err
+		}
 	}
 
 	return e.GetOne(ctx, data.ID)

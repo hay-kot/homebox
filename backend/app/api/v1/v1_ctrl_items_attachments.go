@@ -22,7 +22,7 @@ type (
 
 // HandleItemsImport godocs
 // @Summary  imports items into the database
-// @Tags     Items
+// @Tags     Items Attachments
 // @Produce  json
 // @Param    id   path     string true "Item ID"
 // @Param    file formData file   true "File attachment"
@@ -99,7 +99,7 @@ func (ctrl *V1Controller) HandleItemAttachmentCreate() http.HandlerFunc {
 
 // HandleItemAttachmentGet godocs
 // @Summary  retrieves an attachment for an item
-// @Tags     Items
+// @Tags     Items Attachments
 // @Produce  application/octet-stream
 // @Param    id    path  string true "Item ID"
 // @Param    token query string true "Attachment token"
@@ -126,7 +126,7 @@ func (ctrl *V1Controller) HandleItemAttachmentDownload() http.HandlerFunc {
 
 // HandleItemAttachmentToken godocs
 // @Summary  retrieves an attachment for an item
-// @Tags     Items
+// @Tags     Items Attachments
 // @Produce  application/octet-stream
 // @Param    id            path     string true "Item ID"
 // @Param    attachment_id path     string true "Attachment ID"
@@ -139,7 +139,7 @@ func (ctrl *V1Controller) HandleItemAttachmentToken() http.HandlerFunc {
 
 // HandleItemAttachmentDelete godocs
 // @Summary  retrieves an attachment for an item
-// @Tags     Items
+// @Tags     Items Attachments
 // @Param    id            path string true "Item ID"
 // @Param    attachment_id path string true "Attachment ID"
 // @Success  204
@@ -151,7 +151,7 @@ func (ctrl *V1Controller) HandleItemAttachmentDelete() http.HandlerFunc {
 
 // HandleItemAttachmentUpdate godocs
 // @Summary  retrieves an attachment for an item
-// @Tags     Items
+// @Tags     Items Attachments
 // @Param    id            path     string                    true "Item ID"
 // @Param    attachment_id path     string                    true "Attachment ID"
 // @Param    payload       body     repo.ItemAttachmentUpdate true "Attachment Update"

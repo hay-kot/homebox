@@ -278,6 +278,34 @@
 
     toast.success("Attachment updated");
   }
+
+  // Custom Fields
+  // const fieldTypes = [
+  //   {
+  //     name: "Text",
+  //     value: "text",
+  //   },
+  //   {
+  //     name: "Number",
+  //     value: "number",
+  //   },
+  //   {
+  //     name: "Boolean",
+  //     value: "boolean",
+  //   },
+  // ];
+
+  function addField() {
+    item.value.fields.push({
+      id: null,
+      name: "Field Name",
+      type: "text",
+      textValue: "",
+      numberValue: 0,
+      booleanValue: false,
+      timeValue: null,
+    });
+  }
 </script>
 
 <template>
@@ -363,6 +391,31 @@
             </div>
           </div>
         </div>
+
+        <BaseCard>
+          <template #title> Custom Fields </template>
+          <div class="px-5 divide-y divide-gray-300 space-y-4">
+            <div
+              v-for="(field, idx) in item.fields"
+              :key="`field-${idx}`"
+              class="grid grid-cols-2 md:grid-cols-4 gap-2"
+            >
+              <!-- <FormSelect v-model:value="field.type" label="Field Type" :items="fieldTypes" value-key="value" /> -->
+              <FormTextField v-model="field.name" label="Name" />
+              <div class="flex items-end col-span-3">
+                <FormTextField v-model="field.textValue" label="Value" />
+                <div class="tooltip" data-tip="Delete">
+                  <button class="btn btn-sm btn-square mb-2 ml-2" @click="item.fields.splice(idx, 1)">
+                    <Icon name="mdi-delete" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="px-5 pb-4 mt-4 flex justify-end">
+            <BaseButton size="sm" @click="addField"> Add </BaseButton>
+          </div>
+        </BaseCard>
 
         <div
           v-if="!preferences.editorSimpleView"

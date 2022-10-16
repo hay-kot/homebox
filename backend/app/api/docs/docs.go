@@ -352,7 +352,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Items"
+                    "Items Attachments"
                 ],
                 "summary": "imports items into the database",
                 "parameters": [
@@ -415,7 +415,7 @@ const docTemplate = `{
                     "application/octet-stream"
                 ],
                 "tags": [
-                    "Items"
+                    "Items Attachments"
                 ],
                 "summary": "retrieves an attachment for an item",
                 "parameters": [
@@ -452,7 +452,7 @@ const docTemplate = `{
                     "application/octet-stream"
                 ],
                 "tags": [
-                    "Items"
+                    "Items Attachments"
                 ],
                 "summary": "retrieves an attachment for an item",
                 "parameters": [
@@ -487,7 +487,7 @@ const docTemplate = `{
                     }
                 ],
                 "tags": [
-                    "Items"
+                    "Items Attachments"
                 ],
                 "summary": "retrieves an attachment for an item",
                 "parameters": [
@@ -531,7 +531,7 @@ const docTemplate = `{
                     }
                 ],
                 "tags": [
-                    "Items"
+                    "Items Attachments"
                 ],
                 "summary": "retrieves an attachment for an item",
                 "parameters": [
@@ -1256,6 +1256,32 @@ const docTemplate = `{
                 }
             }
         },
+        "repo.ItemField": {
+            "type": "object",
+            "properties": {
+                "booleanValue": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "numberValue": {
+                    "type": "integer"
+                },
+                "textValue": {
+                    "type": "string"
+                },
+                "timeValue": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
         "repo.ItemOut": {
             "type": "object",
             "properties": {
@@ -1270,6 +1296,13 @@ const docTemplate = `{
                 },
                 "description": {
                     "type": "string"
+                },
+                "fields": {
+                    "description": "Future",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/repo.ItemField"
+                    }
                 },
                 "id": {
                     "type": "string"
@@ -1387,6 +1420,12 @@ const docTemplate = `{
             "properties": {
                 "description": {
                     "type": "string"
+                },
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/repo.ItemField"
+                    }
                 },
                 "id": {
                     "type": "string"

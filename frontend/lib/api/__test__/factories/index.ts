@@ -2,10 +2,22 @@ import { faker } from "@faker-js/faker";
 import { expect } from "vitest";
 import { overrideParts } from "../../base/urls";
 import { PublicApi } from "../../public";
-import { LabelCreate, LocationCreate, UserRegistration } from "../../types/data-contracts";
+import { ItemField, LabelCreate, LocationCreate, UserRegistration } from "../../types/data-contracts";
 import * as config from "../../../../test/config";
 import { UserClient } from "../../user";
 import { Requests } from "../../../requests";
+
+function itemField(id = null): ItemField {
+  return {
+    id,
+    name: faker.lorem.word(),
+    type: "text",
+    textValue: faker.lorem.sentence(),
+    booleanValue: false,
+    numberValue: faker.datatype.number(),
+    timeValue: null,
+  };
+}
 
 /**
  * Returns a random user registration object that can be
@@ -72,6 +84,7 @@ export const factories = {
   user,
   location,
   label,
+  itemField,
   client: {
     public: publicClient,
     user: userClient,

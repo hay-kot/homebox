@@ -96,6 +96,10 @@
         name: "Notes",
         text: item.value?.notes,
       },
+      ...item.value.fields.map(field => ({
+        name: field.name,
+        text: field.textValue,
+      })),
     ];
   });
 

@@ -63,6 +63,23 @@ definitions:
       name:
         type: string
     type: object
+  repo.ItemField:
+    properties:
+      booleanValue:
+        type: boolean
+      id:
+        type: string
+      name:
+        type: string
+      numberValue:
+        type: integer
+      textValue:
+        type: string
+      timeValue:
+        type: string
+      type:
+        type: string
+    type: object
   repo.ItemOut:
     properties:
       attachments:
@@ -73,6 +90,11 @@ definitions:
         type: string
       description:
         type: string
+      fields:
+        description: Future
+        items:
+          $ref: '#/definitions/repo.ItemField'
+        type: array
       id:
         type: string
       insured:
@@ -153,6 +175,10 @@ definitions:
     properties:
       description:
         type: string
+      fields:
+        items:
+          $ref: '#/definitions/repo.ItemField'
+        type: array
       id:
         type: string
       insured:
@@ -653,7 +679,7 @@ paths:
       - Bearer: []
       summary: imports items into the database
       tags:
-      - Items
+      - Items Attachments
   /v1/items/{id}/attachments/{attachment_id}:
     delete:
       parameters:
@@ -674,7 +700,7 @@ paths:
       - Bearer: []
       summary: retrieves an attachment for an item
       tags:
-      - Items
+      - Items Attachments
     get:
       parameters:
       - description: Item ID
@@ -698,7 +724,7 @@ paths:
       - Bearer: []
       summary: retrieves an attachment for an item
       tags:
-      - Items
+      - Items Attachments
     put:
       parameters:
       - description: Item ID
@@ -726,7 +752,7 @@ paths:
       - Bearer: []
       summary: retrieves an attachment for an item
       tags:
-      - Items
+      - Items Attachments
   /v1/items/{id}/attachments/download:
     get:
       parameters:
@@ -749,7 +775,7 @@ paths:
       - Bearer: []
       summary: retrieves an attachment for an item
       tags:
-      - Items
+      - Items Attachments
   /v1/items/import:
     post:
       parameters:

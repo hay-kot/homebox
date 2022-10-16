@@ -344,7 +344,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Items"
+                    "Items Attachments"
                 ],
                 "summary": "imports items into the database",
                 "parameters": [
@@ -407,7 +407,7 @@
                     "application/octet-stream"
                 ],
                 "tags": [
-                    "Items"
+                    "Items Attachments"
                 ],
                 "summary": "retrieves an attachment for an item",
                 "parameters": [
@@ -444,7 +444,7 @@
                     "application/octet-stream"
                 ],
                 "tags": [
-                    "Items"
+                    "Items Attachments"
                 ],
                 "summary": "retrieves an attachment for an item",
                 "parameters": [
@@ -479,7 +479,7 @@
                     }
                 ],
                 "tags": [
-                    "Items"
+                    "Items Attachments"
                 ],
                 "summary": "retrieves an attachment for an item",
                 "parameters": [
@@ -523,7 +523,7 @@
                     }
                 ],
                 "tags": [
-                    "Items"
+                    "Items Attachments"
                 ],
                 "summary": "retrieves an attachment for an item",
                 "parameters": [
@@ -1248,6 +1248,32 @@
                 }
             }
         },
+        "repo.ItemField": {
+            "type": "object",
+            "properties": {
+                "booleanValue": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "numberValue": {
+                    "type": "integer"
+                },
+                "textValue": {
+                    "type": "string"
+                },
+                "timeValue": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
         "repo.ItemOut": {
             "type": "object",
             "properties": {
@@ -1262,6 +1288,13 @@
                 },
                 "description": {
                     "type": "string"
+                },
+                "fields": {
+                    "description": "Future",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/repo.ItemField"
+                    }
                 },
                 "id": {
                     "type": "string"
@@ -1379,6 +1412,12 @@
             "properties": {
                 "description": {
                     "type": "string"
+                },
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/repo.ItemField"
+                    }
                 },
                 "id": {
                     "type": "string"
