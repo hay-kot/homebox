@@ -108,7 +108,8 @@
       attachments.value.photos.length > 0 ||
       attachments.value.attachments.length > 0 ||
       attachments.value.warranty.length > 0 ||
-      attachments.value.manuals.length > 0
+      attachments.value.manuals.length > 0 ||
+      attachments.value.receipts.length > 0
     );
   });
 
