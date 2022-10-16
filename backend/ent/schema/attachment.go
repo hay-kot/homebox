@@ -22,7 +22,7 @@ func (Attachment) Mixin() []ent.Mixin {
 func (Attachment) Fields() []ent.Field {
 	return []ent.Field{
 		field.Enum("type").
-			Values("photo", "manual", "warranty", "attachment").
+			Values("photo", "manual", "warranty", "attachment", "receipt").
 			Default("attachment"),
 	}
 }
