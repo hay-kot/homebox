@@ -211,6 +211,11 @@ func (e *ItemsRepository) GetOne(ctx context.Context, id uuid.UUID) (ItemOut, er
 	return e.getOne(ctx, item.ID(id))
 }
 
+func (e *ItemsRepository) CheckRef(ctx context.Context, GID uuid.UUID, ref string) (bool, error) {
+	q := e.db.Item.Query().Where(item.HasGroupWith(group.ID(GID)))
+	return q.Where(item.ImportRef(ref)).Exist(ctx)
+}
+
 // GetOneByGroup returns a single item by ID. If the item does not exist, an error is returned.
 // GetOneByGroup ensures that the item belongs to a specific group.
 func (e *ItemsRepository) GetOneByGroup(ctx context.Context, gid, id uuid.UUID) (ItemOut, error) {
@@ -287,6 +292,7 @@ func (e *ItemsRepository) GetAll(ctx context.Context, gid uuid.UUID) ([]ItemSumm
 
 func (e *ItemsRepository) Create(ctx context.Context, gid uuid.UUID, data ItemCreate) (ItemOut, error) {
 	q := e.db.Item.Create().
+		SetImportRef(data.ImportRef).
 		SetName(data.Name).
 		SetDescription(data.Description).
 		SetGroupID(gid).

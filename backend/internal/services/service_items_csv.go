@@ -97,3 +97,22 @@ func (c csvRow) getLabels() []string {
 
 	return split
 }
+
+func (c csvRow) validate() []error {
+	var errs []error
+
+	add := func(err error) {
+		errs = append(errs, err)
+	}
+
+	required := func(s string, name string) {
+		if s == "" {
+			add(errors.New(name + " is required"))
+		}
+	}
+
+	required(c.Location, "Location")
+	required(c.Item.Name, "Name")
+
+	return errs
+}
