@@ -220,7 +220,7 @@ func (ctrl *V1Controller) HandleItemsImport() http.HandlerFunc {
 
 		user := services.UseUserCtx(r.Context())
 
-		err = ctrl.svc.Items.CsvImport(r.Context(), user.GroupID, data)
+		_, err = ctrl.svc.Items.CsvImport(r.Context(), user.GroupID, data)
 		if err != nil {
 			log.Err(err).Msg("failed to import items")
 			server.RespondServerError(w)
