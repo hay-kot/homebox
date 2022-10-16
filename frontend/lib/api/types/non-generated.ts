@@ -3,6 +3,7 @@ export enum AttachmentTypes {
   Manual = "manual",
   Warranty = "warranty",
   Attachment = "attachment",
+  Receipt = "receipt",
 }
 
 export type Result<T> = {

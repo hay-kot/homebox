@@ -31,6 +31,7 @@
     attachments: ItemAttachment[];
     warranty: ItemAttachment[];
     manuals: ItemAttachment[];
+    receipts: ItemAttachment[];
   };
 
   const attachments = computed<FilteredAttachments>(() => {
@@ -40,6 +41,7 @@
         attachments: [],
         manuals: [],
         warranty: [],
+        receipts: [],
       };
     }
 
@@ -51,6 +53,8 @@
           acc.warranty.push(attachment);
         } else if (attachment.type === "manual") {
           acc.manuals.push(attachment);
+        } else if (attachment.type === "receipt") {
+          acc.receipts.push(attachment);
         } else {
           acc.attachments.push(attachment);
         }
@@ -61,6 +65,7 @@
         attachments: [] as ItemAttachment[],
         warranty: [] as ItemAttachment[],
         manuals: [] as ItemAttachment[],
+        receipts: [] as ItemAttachment[],
       }
     );
   });
@@ -132,6 +137,10 @@
 
     if (attachments.value.manuals.length > 0) {
       push("Manuals");
+    }
+
+    if (attachments.value.receipts.length > 0) {
+      push("Receipts");
     }
 
     return details;
@@ -320,6 +329,13 @@
               <ItemAttachmentsList
                 v-if="attachments.photos.length > 0"
                 :attachments="attachments.photos"
+                :item-id="item.id"
+              />
+            </template>
+            <template #receipts>
+              <ItemAttachmentsList
+                v-if="attachments.receipts.length > 0"
+                :attachments="attachments.receipts"
                 :item-id="item.id"
               />
             </template>

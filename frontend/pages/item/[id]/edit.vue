@@ -190,6 +190,7 @@
   const dropAttachment = (files: File[] | null) => uploadAttachment(files, AttachmentTypes.Attachment);
   const dropWarranty = (files: File[] | null) => uploadAttachment(files, AttachmentTypes.Warranty);
   const dropManual = (files: File[] | null) => uploadAttachment(files, AttachmentTypes.Manual);
+  const dropReceipt = (files: File[] | null) => uploadAttachment(files, AttachmentTypes.Receipt);
 
   async function uploadAttachment(files: File[] | null, type: AttachmentTypes) {
     if (!files && files.length === 0) {
@@ -378,6 +379,7 @@
               <DropZone @drop="dropWarranty"> Warranty </DropZone>
               <DropZone @drop="dropManual"> Manual </DropZone>
               <DropZone @drop="dropAttachment"> Attachment </DropZone>
+              <DropZone @drop="dropReceipt"> Receipt </DropZone>
             </div>
             <button
               v-else
