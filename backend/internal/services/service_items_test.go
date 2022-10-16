@@ -13,7 +13,13 @@ func TestItemService_CsvImport(t *testing.T) {
 	svc := &ItemService{
 		repo: tRepos,
 	}
-	err := svc.CsvImport(context.Background(), tGroup.ID, data)
+	count, err := svc.CsvImport(context.Background(), tGroup.ID, data)
+	assert.Equal(t, 6, count)
+	assert.NoError(t, err)
+
+	// Check import refs are deduplicated
+	count, err = svc.CsvImport(context.Background(), tGroup.ID, data)
+	assert.Equal(t, 0, count)
 	assert.NoError(t, err)
 
 	items, err := svc.GetAll(context.Background(), tGroup.ID)

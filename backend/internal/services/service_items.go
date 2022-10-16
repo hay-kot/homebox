@@ -3,7 +3,6 @@ package services
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/repo"
@@ -48,7 +47,7 @@ func (svc *ItemService) Update(ctx context.Context, gid uuid.UUID, data repo.Ite
 	return svc.repo.Items.UpdateByGroup(ctx, gid, data)
 }
 
-func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]string) error {
+func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]string) (int, error) {
 	loaded := []csvRow{}
 
 	// Skip first row
@@ -59,18 +58,41 @@ func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]s
 		}
 
 		if len(row) != NumOfCols {
-			return ErrInvalidCsv
+			return 0, ErrInvalidCsv
 		}
 
 		r := newCsvRow(row)
 		loaded = append(loaded, r)
 	}
 
+	// validate rows
+	var errMap = map[int][]error{}
+	var hasErr bool
+	for i, r := range loaded {
+
+		errs := r.validate()
+
+		if len(errs) > 0 {
+			hasErr = true
+			lineNum := i + 2
+
+			errMap[lineNum] = errs
+		}
+	}
+
+	if hasErr {
+		for lineNum, errs := range errMap {
+			for _, err := range errs {
+				log.Error().Err(err).Int("line", lineNum).Msg("csv import error")
+			}
+		}
+	}
+
 	// Bootstrap the locations and labels so we can reuse the created IDs for the items
 	locations := map[string]uuid.UUID{}
 	existingLocation, err := svc.repo.Locations.GetAll(ctx, gid)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	for _, loc := range existingLocation {
 		locations[loc.Name] = loc.ID
@@ -79,7 +101,7 @@ func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]s
 	labels := map[string]uuid.UUID{}
 	existingLabels, err := svc.repo.Labels.GetAll(ctx, gid)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	for _, label := range existingLabels {
 		labels[label.Name] = label.ID
@@ -88,25 +110,21 @@ func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]s
 	for _, row := range loaded {
 
 		// Locations
-		if _, ok := locations[row.Location]; ok {
-			continue
+		if _, exists := locations[row.Location]; !exists {
+			result, err := svc.repo.Locations.Create(ctx, gid, repo.LocationCreate{
+				Name:        row.Location,
+				Description: "",
+			})
+			if err != nil {
+				return 0, err
+			}
+			locations[row.Location] = result.ID
 		}
-
-		fmt.Println("Creating Location: ", row.Location)
-
-		result, err := svc.repo.Locations.Create(ctx, gid, repo.LocationCreate{
-			Name:        row.Location,
-			Description: "",
-		})
-		if err != nil {
-			return err
-		}
-		locations[row.Location] = result.ID
 
 		// Labels
 
 		for _, label := range row.getLabels() {
-			if _, ok := labels[label]; ok {
+			if _, exists := labels[label]; exists {
 				continue
 			}
 			result, err := svc.repo.Labels.Create(ctx, gid, repo.LabelCreate{
@@ -114,14 +132,26 @@ func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]s
 				Description: "",
 			})
 			if err != nil {
-				return err
+				return 0, err
 			}
 			labels[label] = result.ID
 		}
 	}
 
 	// Create the items
+	var count int
 	for _, row := range loaded {
+		// Check Import Ref
+		if row.Item.ImportRef != "" {
+			exists, err := svc.repo.Items.CheckRef(ctx, gid, row.Item.ImportRef)
+			if exists {
+				continue
+			}
+			if err != nil {
+				log.Err(err).Msg("error checking import ref")
+			}
+		}
+
 		locationID := locations[row.Location]
 		labelIDs := []uuid.UUID{}
 		for _, label := range row.getLabels() {
@@ -131,8 +161,6 @@ func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]s
 		log.Info().
 			Str("name", row.Item.Name).
 			Str("location", row.Location).
-			Strs("labels", row.getLabels()).
-			Str("locationId", locationID.String()).
 			Msgf("Creating Item: %s", row.Item.Name)
 
 		result, err := svc.repo.Items.Create(ctx, gid, repo.ItemCreate{
@@ -144,7 +172,7 @@ func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]s
 		})
 
 		if err != nil {
-			return err
+			return count, err
 		}
 
 		// Update the item with the rest of the data
@@ -183,8 +211,10 @@ func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]s
 		})
 
 		if err != nil {
-			return err
+			return count, err
 		}
+
+		count++
 	}
-	return nil
+	return count, nil
 }

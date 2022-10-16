@@ -52,7 +52,7 @@ func (a *app) SetupDemo() {
 		log.Fatal().Msg("Failed to setup demo")
 	}
 
-	err = a.services.Items.CsvImport(context.Background(), self.GroupID, records)
+	_, err = a.services.Items.CsvImport(context.Background(), self.GroupID, records)
 	if err != nil {
 		log.Err(err).Msg("Failed to import CSV")
 		log.Fatal().Msg("Failed to setup demo")
