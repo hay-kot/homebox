@@ -1138,18 +1138,6 @@ paths:
       summary: Update the current user
       tags:
       - User
-  /v1/users/self/password:
-    put:
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-      security:
-      - Bearer: []
-      summary: 'Update the current user''s password // TODO:'
-      tags:
-      - User
 securityDefinitions:
   Bearer:
     description: '"Type ''Bearer TOKEN'' to correctly set the API Key"'
