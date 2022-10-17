@@ -69,20 +69,7 @@ func (ctrl *V1Controller) HandleLocationCreate() http.HandlerFunc {
 // @Router   /v1/locations/{id} [DELETE]
 // @Security Bearer
 func (ctrl *V1Controller) HandleLocationDelete() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		uid, user, err := ctrl.partialParseIdAndUser(w, r)
-		if err != nil {
-			return
-		}
-
-		err = ctrl.svc.Location.Delete(r.Context(), user.GroupID, uid)
-		if err != nil {
-			log.Err(err).Msg("failed to delete location")
-			server.RespondServerError(w)
-			return
-		}
-		server.Respond(w, http.StatusNoContent, nil)
-	}
+	return ctrl.handleLocationGeneral()
 }
 
 // HandleLocationGet godocs
@@ -94,32 +81,7 @@ func (ctrl *V1Controller) HandleLocationDelete() http.HandlerFunc {
 // @Router   /v1/locations/{id} [GET]
 // @Security Bearer
 func (ctrl *V1Controller) HandleLocationGet() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		uid, user, err := ctrl.partialParseIdAndUser(w, r)
-		if err != nil {
-			return
-		}
-
-		location, err := ctrl.svc.Location.GetOne(r.Context(), user.GroupID, uid)
-		if err != nil {
-			if ent.IsNotFound(err) {
-				log.Err(err).
-					Str("id", uid.String()).
-					Str("gid", user.GroupID.String()).
-					Msg("location not found")
-				server.RespondError(w, http.StatusNotFound, err)
-				return
-			}
-
-			log.Err(err).
-				Str("id", uid.String()).
-				Str("gid", user.GroupID.String()).
-				Msg("failed to get location")
-			server.RespondServerError(w)
-			return
-		}
-		server.Respond(w, http.StatusOK, location)
-	}
+	return ctrl.handleLocationGeneral()
 }
 
 // HandleLocationUpdate godocs
@@ -131,27 +93,61 @@ func (ctrl *V1Controller) HandleLocationGet() http.HandlerFunc {
 // @Router   /v1/locations/{id} [PUT]
 // @Security Bearer
 func (ctrl *V1Controller) HandleLocationUpdate() http.HandlerFunc {
+	return ctrl.handleLocationGeneral()
+}
+
+func (ctrl *V1Controller) handleLocationGeneral() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		body := repo.LocationUpdate{}
-		if err := server.Decode(r, &body); err != nil {
-			log.Err(err).Msg("failed to decode location update data")
-			server.RespondError(w, http.StatusInternalServerError, err)
-			return
-		}
-
-		uid, user, err := ctrl.partialParseIdAndUser(w, r)
+		ctx := services.NewContext(r.Context())
+		ID, err := ctrl.routeID(w, r)
 		if err != nil {
 			return
 		}
 
-		body.ID = uid
+		switch r.Method {
+		case http.MethodGet:
+			location, err := ctrl.svc.Location.GetOne(r.Context(), ctx.GID, ID)
+			if err != nil {
+				l := log.Err(err).
+					Str("ID", ID.String()).
+					Str("GID", ctx.GID.String())
 
-		result, err := ctrl.svc.Location.Update(r.Context(), user.GroupID, body)
-		if err != nil {
-			log.Err(err).Msg("failed to update location")
-			server.RespondServerError(w)
-			return
+				if ent.IsNotFound(err) {
+					l.Msg("location not found")
+					server.RespondError(w, http.StatusNotFound, err)
+					return
+				}
+
+				l.Msg("failed to get location")
+				server.RespondServerError(w)
+				return
+			}
+			server.Respond(w, http.StatusOK, location)
+		case http.MethodPut:
+			body := repo.LocationUpdate{}
+			if err := server.Decode(r, &body); err != nil {
+				log.Err(err).Msg("failed to decode location update data")
+				server.RespondError(w, http.StatusInternalServerError, err)
+				return
+			}
+
+			body.ID = ID
+
+			result, err := ctrl.svc.Location.Update(r.Context(), ctx.GID, body)
+			if err != nil {
+				log.Err(err).Msg("failed to update location")
+				server.RespondServerError(w)
+				return
+			}
+			server.Respond(w, http.StatusOK, result)
+		case http.MethodDelete:
+			err = ctrl.svc.Location.Delete(r.Context(), ctx.GID, ID)
+			if err != nil {
+				log.Err(err).Msg("failed to delete location")
+				server.RespondServerError(w)
+				return
+			}
+			server.Respond(w, http.StatusNoContent, nil)
 		}
-		server.Respond(w, http.StatusOK, result)
 	}
 }

@@ -32,20 +32,7 @@ type (
 // @Router   /v1/groups [Get]
 // @Security Bearer
 func (ctrl *V1Controller) HandleGroupGet() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		ctx := services.NewContext(r.Context())
-
-		group, err := ctrl.svc.Group.Get(ctx)
-		if err != nil {
-			log.Err(err).Msg("failed to get group")
-			server.RespondError(w, http.StatusInternalServerError, err)
-			return
-		}
-		group.Currency = strings.ToUpper(group.Currency) // TODO: Hack to fix the currency enums being lower caseÍ
-
-		server.Respond(w, http.StatusOK, group)
-
-	}
+	return ctrl.handleGroupGeneral()
 }
 
 // HandleGroupUpdate godoc
@@ -57,24 +44,41 @@ func (ctrl *V1Controller) HandleGroupGet() http.HandlerFunc {
 // @Router   /v1/groups [Put]
 // @Security Bearer
 func (ctrl *V1Controller) HandleGroupUpdate() http.HandlerFunc {
+	return ctrl.handleGroupGeneral()
+}
+
+func (ctrl *V1Controller) handleGroupGeneral() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		data := repo.GroupUpdate{}
-
-		if err := server.Decode(r, &data); err != nil {
-			server.RespondError(w, http.StatusBadRequest, err)
-			return
-		}
-
 		ctx := services.NewContext(r.Context())
 
-		group, err := ctrl.svc.Group.UpdateGroup(ctx, data)
-		if err != nil {
-			log.Err(err).Msg("failed to update group")
-			server.RespondError(w, http.StatusInternalServerError, err)
-			return
+		switch r.Method {
+		case http.MethodGet:
+			group, err := ctrl.svc.Group.Get(ctx)
+			if err != nil {
+				log.Err(err).Msg("failed to get group")
+				server.RespondError(w, http.StatusInternalServerError, err)
+				return
+			}
+
+			group.Currency = strings.ToUpper(group.Currency) // TODO: Hack to fix the currency enums being lower caseÍ
+			server.Respond(w, http.StatusOK, group)
+
+		case http.MethodPut:
+			data := repo.GroupUpdate{}
+			if err := server.Decode(r, &data); err != nil {
+				server.RespondError(w, http.StatusBadRequest, err)
+				return
+			}
+
+			group, err := ctrl.svc.Group.UpdateGroup(ctx, data)
+			if err != nil {
+				log.Err(err).Msg("failed to update group")
+				server.RespondError(w, http.StatusInternalServerError, err)
+				return
+			}
+			group.Currency = strings.ToUpper(group.Currency) // TODO: Hack to fix the currency enums being lower case
+			server.Respond(w, http.StatusOK, group)
 		}
-		group.Currency = strings.ToUpper(group.Currency) // TODO: Hack to fix the currency enums being lower case
-		server.Respond(w, http.StatusOK, group)
 	}
 }
 
@@ -89,7 +93,6 @@ func (ctrl *V1Controller) HandleGroupUpdate() http.HandlerFunc {
 func (ctrl *V1Controller) HandleGroupInvitationsCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		data := GroupInvitationCreate{}
-
 		if err := server.Decode(r, &data); err != nil {
 			log.Err(err).Msg("failed to decode user registration data")
 			server.RespondError(w, http.StatusBadRequest, err)

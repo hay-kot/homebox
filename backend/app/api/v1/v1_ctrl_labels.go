@@ -56,7 +56,6 @@ func (ctrl *V1Controller) HandleLabelsCreate() http.HandlerFunc {
 		}
 
 		server.Respond(w, http.StatusCreated, label)
-
 	}
 }
 
@@ -69,20 +68,7 @@ func (ctrl *V1Controller) HandleLabelsCreate() http.HandlerFunc {
 // @Router   /v1/labels/{id} [DELETE]
 // @Security Bearer
 func (ctrl *V1Controller) HandleLabelDelete() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		uid, user, err := ctrl.partialParseIdAndUser(w, r)
-		if err != nil {
-			return
-		}
-
-		err = ctrl.svc.Labels.Delete(r.Context(), user.GroupID, uid)
-		if err != nil {
-			log.Err(err).Msg("error deleting label")
-			server.RespondServerError(w)
-			return
-		}
-		server.Respond(w, http.StatusNoContent, nil)
-	}
+	return ctrl.handleLabelsGeneral()
 }
 
 // HandleLabelGet godocs
@@ -94,27 +80,7 @@ func (ctrl *V1Controller) HandleLabelDelete() http.HandlerFunc {
 // @Router   /v1/labels/{id} [GET]
 // @Security Bearer
 func (ctrl *V1Controller) HandleLabelGet() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		uid, user, err := ctrl.partialParseIdAndUser(w, r)
-		if err != nil {
-			return
-		}
-
-		labels, err := ctrl.svc.Labels.Get(r.Context(), user.GroupID, uid)
-		if err != nil {
-			if ent.IsNotFound(err) {
-				log.Err(err).
-					Str("id", uid.String()).
-					Msg("label not found")
-				server.RespondError(w, http.StatusNotFound, err)
-				return
-			}
-			log.Err(err).Msg("error getting label")
-			server.RespondServerError(w)
-			return
-		}
-		server.Respond(w, http.StatusOK, labels)
-	}
+	return ctrl.handleLabelsGeneral()
 }
 
 // HandleLabelUpdate godocs
@@ -126,25 +92,59 @@ func (ctrl *V1Controller) HandleLabelGet() http.HandlerFunc {
 // @Router   /v1/labels/{id} [PUT]
 // @Security Bearer
 func (ctrl *V1Controller) HandleLabelUpdate() http.HandlerFunc {
+	return ctrl.handleLabelsGeneral()
+}
+
+func (ctrl *V1Controller) handleLabelsGeneral() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		body := repo.LabelUpdate{}
-		if err := server.Decode(r, &body); err != nil {
-			log.Err(err).Msg("error decoding label update data")
-			server.RespondError(w, http.StatusInternalServerError, err)
-			return
-		}
-		uid, user, err := ctrl.partialParseIdAndUser(w, r)
+		ctx := services.NewContext(r.Context())
+		ID, err := ctrl.routeID(w, r)
 		if err != nil {
 			return
 		}
 
-		body.ID = uid
-		result, err := ctrl.svc.Labels.Update(r.Context(), user.GroupID, body)
-		if err != nil {
-			log.Err(err).Msg("error updating label")
-			server.RespondServerError(w)
-			return
+		switch r.Method {
+		case http.MethodGet:
+			labels, err := ctrl.svc.Labels.Get(r.Context(), ctx.GID, ID)
+			if err != nil {
+				if ent.IsNotFound(err) {
+					log.Err(err).
+						Str("id", ID.String()).
+						Msg("label not found")
+					server.RespondError(w, http.StatusNotFound, err)
+					return
+				}
+				log.Err(err).Msg("error getting label")
+				server.RespondServerError(w)
+				return
+			}
+			server.Respond(w, http.StatusOK, labels)
+
+		case http.MethodDelete:
+			err = ctrl.svc.Labels.Delete(r.Context(), ctx.GID, ID)
+			if err != nil {
+				log.Err(err).Msg("error deleting label")
+				server.RespondServerError(w)
+				return
+			}
+			server.Respond(w, http.StatusNoContent, nil)
+
+		case http.MethodPut:
+			body := repo.LabelUpdate{}
+			if err := server.Decode(r, &body); err != nil {
+				log.Err(err).Msg("error decoding label update data")
+				server.RespondError(w, http.StatusInternalServerError, err)
+				return
+			}
+
+			body.ID = ID
+			result, err := ctrl.svc.Labels.Update(r.Context(), ctx.GID, body)
+			if err != nil {
+				log.Err(err).Msg("error updating label")
+				server.RespondServerError(w)
+				return
+			}
+			server.Respond(w, http.StatusOK, result)
 		}
-		server.Respond(w, http.StatusOK, result)
 	}
 }

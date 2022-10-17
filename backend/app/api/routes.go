@@ -65,7 +65,6 @@ func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {
 		r.Get(v1Base("/users/self"), v1Ctrl.HandleUserSelf())
 		r.Put(v1Base("/users/self"), v1Ctrl.HandleUserSelfUpdate())
 		r.Delete(v1Base("/users/self"), v1Ctrl.HandleUserSelfDelete())
-		r.Put(v1Base("/users/self/password"), v1Ctrl.HandleUserUpdatePassword())
 		r.Post(v1Base("/users/logout"), v1Ctrl.HandleAuthLogout())
 		r.Get(v1Base("/users/refresh"), v1Ctrl.HandleAuthRefresh())
 		r.Put(v1Base("/users/self/change-password"), v1Ctrl.HandleUserSelfChangePassword())

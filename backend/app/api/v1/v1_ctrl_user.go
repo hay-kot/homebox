@@ -85,24 +85,11 @@ func (ctrl *V1Controller) HandleUserSelfUpdate() http.HandlerFunc {
 		newData, err := ctrl.svc.User.UpdateSelf(r.Context(), actor.ID, updateData)
 
 		if err != nil {
-
 			server.RespondError(w, http.StatusInternalServerError, err)
 			return
 		}
 
 		server.Respond(w, http.StatusOK, server.Wrap(newData))
-	}
-}
-
-// HandleUserUpdatePassword godoc
-// @Summary  Update the current user's password // TODO:
-// @Tags     User
-// @Produce  json
-// @Success  204
-// @Router   /v1/users/self/password [PUT]
-// @Security Bearer
-func (ctrl *V1Controller) HandleUserUpdatePassword() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 

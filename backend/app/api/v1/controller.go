@@ -33,6 +33,8 @@ type V1Controller struct {
 }
 
 type (
+	ReadyFunc func() bool
+
 	Build struct {
 		Version   string `json:"version"`
 		Commit    string `json:"commit"`
@@ -50,12 +52,9 @@ type (
 )
 
 func BaseUrlFunc(prefix string) func(s string) string {
-	v1Base := prefix + "/v1"
-	prefixFunc := func(s string) string {
-		return v1Base + s
+	return func(s string) string {
+		return prefix + "/v1" + s
 	}
-
-	return prefixFunc
 }
 
 func NewControllerV1(svc *services.AllServices, options ...func(*V1Controller)) *V1Controller {
@@ -70,8 +69,6 @@ func NewControllerV1(svc *services.AllServices, options ...func(*V1Controller)) 
 
 	return ctrl
 }
-
-type ReadyFunc func() bool
 
 // HandleBase godoc
 // @Summary Retrieves the basic information about the API

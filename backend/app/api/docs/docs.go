@@ -1135,27 +1135,6 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/v1/users/self/password": {
-            "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Update the current user's password // TODO:",
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    }
-                }
-            }
         }
     },
     "definitions": {

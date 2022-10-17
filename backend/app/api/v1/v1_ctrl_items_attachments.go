@@ -72,7 +72,7 @@ func (ctrl *V1Controller) HandleItemAttachmentCreate() http.HandlerFunc {
 			attachmentType = attachment.TypeAttachment.String()
 		}
 
-		id, _, err := ctrl.partialParseIdAndUser(w, r)
+		id, err := ctrl.routeID(w, r)
 		if err != nil {
 			return
 		}
@@ -163,7 +163,7 @@ func (ctrl *V1Controller) HandleItemAttachmentUpdate() http.HandlerFunc {
 }
 
 func (ctrl *V1Controller) handleItemAttachmentsHandler(w http.ResponseWriter, r *http.Request) {
-	uid, user, err := ctrl.partialParseIdAndUser(w, r)
+	ID, err := ctrl.routeID(w, r)
 	if err != nil {
 		return
 	}
@@ -181,7 +181,7 @@ func (ctrl *V1Controller) handleItemAttachmentsHandler(w http.ResponseWriter, r 
 
 	// Token Handler
 	case http.MethodGet:
-		token, err := ctrl.svc.Items.AttachmentToken(ctx, uid, attachmentId)
+		token, err := ctrl.svc.Items.AttachmentToken(ctx, ID, attachmentId)
 		if err != nil {
 			switch err {
 			case services.ErrNotFound:
@@ -210,7 +210,7 @@ func (ctrl *V1Controller) handleItemAttachmentsHandler(w http.ResponseWriter, r 
 
 	// Delete Attachment Handler
 	case http.MethodDelete:
-		err = ctrl.svc.Items.AttachmentDelete(r.Context(), user.GroupID, uid, attachmentId)
+		err = ctrl.svc.Items.AttachmentDelete(r.Context(), ctx.GID, ID, attachmentId)
 		if err != nil {
 			log.Err(err).Msg("failed to delete attachment")
 			server.RespondServerError(w)
@@ -230,7 +230,7 @@ func (ctrl *V1Controller) handleItemAttachmentsHandler(w http.ResponseWriter, r 
 		}
 
 		attachment.ID = attachmentId
-		val, err := ctrl.svc.Items.AttachmentUpdate(ctx, uid, &attachment)
+		val, err := ctrl.svc.Items.AttachmentUpdate(ctx, ID, &attachment)
 		if err != nil {
 			log.Err(err).Msg("failed to delete attachment")
 			server.RespondServerError(w)
