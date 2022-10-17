@@ -70,7 +70,6 @@ func (ctrl *V1Controller) HandleLocationCreate() http.HandlerFunc {
 // @Security Bearer
 func (ctrl *V1Controller) HandleLocationDelete() http.HandlerFunc {
 	return ctrl.handleLocationGeneral()
-
 }
 
 // HandleLocationGet godocs
