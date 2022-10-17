@@ -72,7 +72,7 @@ func (ctrl *V1Controller) HandleItemAttachmentCreate() http.HandlerFunc {
 			attachmentType = attachment.TypeAttachment.String()
 		}
 
-		id, err := ctrl.partialRouteID(w, r)
+		id, err := ctrl.routeID(w, r)
 		if err != nil {
 			return
 		}
@@ -163,7 +163,7 @@ func (ctrl *V1Controller) HandleItemAttachmentUpdate() http.HandlerFunc {
 }
 
 func (ctrl *V1Controller) handleItemAttachmentsHandler(w http.ResponseWriter, r *http.Request) {
-	ID, err := ctrl.partialRouteID(w, r)
+	ID, err := ctrl.routeID(w, r)
 	if err != nil {
 		return
 	}

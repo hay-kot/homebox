@@ -98,7 +98,7 @@ func (ctrl *V1Controller) HandleLabelUpdate() http.HandlerFunc {
 func (ctrl *V1Controller) handleLabelsGeneral() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := services.NewContext(r.Context())
-		ID, err := ctrl.partialRouteID(w, r)
+		ID, err := ctrl.routeID(w, r)
 		if err != nil {
 			return
 		}

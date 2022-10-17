@@ -139,7 +139,7 @@ func (ctrl *V1Controller) HandleItemUpdate() http.HandlerFunc {
 func (ctrl *V1Controller) handleItemsGeneral() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := services.NewContext(r.Context())
-		ID, err := ctrl.partialRouteID(w, r)
+		ID, err := ctrl.routeID(w, r)
 		if err != nil {
 			return
 		}
