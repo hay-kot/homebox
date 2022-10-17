@@ -70,12 +70,13 @@ func (ctrl *V1Controller) HandleLocationCreate() http.HandlerFunc {
 // @Security Bearer
 func (ctrl *V1Controller) HandleLocationDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		uid, user, err := ctrl.partialParseIdAndUser(w, r)
+		ctx := services.NewContext(r.Context())
+		ID, err := ctrl.partialRouteID(w, r)
 		if err != nil {
 			return
 		}
 
-		err = ctrl.svc.Location.Delete(r.Context(), user.GroupID, uid)
+		err = ctrl.svc.Location.Delete(r.Context(), ctx.GID, ID)
 		if err != nil {
 			log.Err(err).Msg("failed to delete location")
 			server.RespondServerError(w)
@@ -95,25 +96,26 @@ func (ctrl *V1Controller) HandleLocationDelete() http.HandlerFunc {
 // @Security Bearer
 func (ctrl *V1Controller) HandleLocationGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		uid, user, err := ctrl.partialParseIdAndUser(w, r)
+		ctx := services.NewContext(r.Context())
+		ID, err := ctrl.partialRouteID(w, r)
 		if err != nil {
 			return
 		}
 
-		location, err := ctrl.svc.Location.GetOne(r.Context(), user.GroupID, uid)
+		location, err := ctrl.svc.Location.GetOne(r.Context(), ctx.GID, ID)
 		if err != nil {
 			if ent.IsNotFound(err) {
 				log.Err(err).
-					Str("id", uid.String()).
-					Str("gid", user.GroupID.String()).
+					Str("id", ID.String()).
+					Str("gid", ctx.GID.String()).
 					Msg("location not found")
 				server.RespondError(w, http.StatusNotFound, err)
 				return
 			}
 
 			log.Err(err).
-				Str("id", uid.String()).
-				Str("gid", user.GroupID.String()).
+				Str("id", ID.String()).
+				Str("gid", ctx.GID.String()).
 				Msg("failed to get location")
 			server.RespondServerError(w)
 			return
@@ -139,14 +141,15 @@ func (ctrl *V1Controller) HandleLocationUpdate() http.HandlerFunc {
 			return
 		}
 
-		uid, user, err := ctrl.partialParseIdAndUser(w, r)
+		ctx := services.NewContext(r.Context())
+		ID, err := ctrl.partialRouteID(w, r)
 		if err != nil {
 			return
 		}
 
-		body.ID = uid
+		body.ID = ID
 
-		result, err := ctrl.svc.Location.Update(r.Context(), user.GroupID, body)
+		result, err := ctrl.svc.Location.Update(r.Context(), ctx.GID, body)
 		if err != nil {
 			log.Err(err).Msg("failed to update location")
 			server.RespondServerError(w)
