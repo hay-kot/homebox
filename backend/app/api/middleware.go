@@ -63,22 +63,6 @@ func (a *app) mwAuthToken(next http.Handler) http.Handler {
 	})
 }
 
-// mwAdminOnly is a middleware that extends the mwAuthToken middleware to only allow
-// requests from superusers.
-// func (a *app) mwAdminOnly(next http.Handler) http.Handler {
-// 	mw := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 		usr := services.UseUserCtx(r.Context())
-
-// 		if !usr.IsSuperuser {
-// 			server.RespondUnauthorized(w)
-// 			return
-// 		}
-
-// 		next.ServeHTTP(w, r)
-// 	})
-// 	return a.mwAuthToken(mw)
-// }
-
 // mqStripTrailingSlash is a middleware that will strip trailing slashes from the request path.
 func mwStripTrailingSlash(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -111,7 +95,6 @@ func (a *app) mwStructLogger(next http.Handler) http.Handler {
 
 		log.Info().
 			Str("id", middleware.GetReqID(r.Context())).
-			Str("url", url).
 			Str("method", r.Method).
 			Str("remote_addr", r.RemoteAddr).
 			Int("status", record.Status).
