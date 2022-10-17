@@ -32,3 +32,14 @@ func (ctrl *V1Controller) partialParseIdAndUser(w http.ResponseWriter, r *http.R
 	user := services.UseUserCtx(r.Context())
 	return uid, user, nil
 }
+
+func (ctrl *V1Controller) partialRouteID(w http.ResponseWriter, r *http.Request) (uuid.UUID, error) {
+	ID, err := uuid.Parse(chi.URLParam(r, "id"))
+	if err != nil {
+		log.Err(err).Msg("failed to parse id")
+		server.RespondError(w, http.StatusBadRequest, err)
+		return uuid.Nil, err
+	}
+
+	return ID, nil
+}

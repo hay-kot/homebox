@@ -13,41 +13,6 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func uuidList(params url.Values, key string) []uuid.UUID {
-	var ids []uuid.UUID
-	for _, id := range params[key] {
-		uid, err := uuid.Parse(id)
-		if err != nil {
-			continue
-		}
-		ids = append(ids, uid)
-	}
-	return ids
-}
-
-func intOrNegativeOne(s string) int {
-	i, err := strconv.Atoi(s)
-	if err != nil {
-		return -1
-	}
-	return i
-}
-
-func extractQuery(r *http.Request) repo.ItemQuery {
-	params := r.URL.Query()
-
-	page := intOrNegativeOne(params.Get("page"))
-	perPage := intOrNegativeOne(params.Get("perPage"))
-
-	return repo.ItemQuery{
-		Page:        page,
-		PageSize:    perPage,
-		Search:      params.Get("q"),
-		LocationIDs: uuidList(params, "locations"),
-		LabelIDs:    uuidList(params, "labels"),
-	}
-}
-
 // HandleItemsGetAll godoc
 // @Summary  Get All Items
 // @Tags     Items
@@ -61,6 +26,38 @@ func extractQuery(r *http.Request) repo.ItemQuery {
 // @Router   /v1/items [GET]
 // @Security Bearer
 func (ctrl *V1Controller) HandleItemsGetAll() http.HandlerFunc {
+	uuidList := func(params url.Values, key string) []uuid.UUID {
+		var ids []uuid.UUID
+		for _, id := range params[key] {
+			uid, err := uuid.Parse(id)
+			if err != nil {
+				continue
+			}
+			ids = append(ids, uid)
+		}
+		return ids
+	}
+
+	intOrNegativeOne := func(s string) int {
+		i, err := strconv.Atoi(s)
+		if err != nil {
+			return -1
+		}
+		return i
+	}
+
+	extractQuery := func(r *http.Request) repo.ItemQuery {
+		params := r.URL.Query()
+
+		return repo.ItemQuery{
+			Page:        intOrNegativeOne(params.Get("page")),
+			PageSize:    intOrNegativeOne(params.Get("perPage")),
+			Search:      params.Get("q"),
+			LocationIDs: uuidList(params, "locations"),
+			LabelIDs:    uuidList(params, "labels"),
+		}
+	}
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := services.NewContext(r.Context())
 		items, err := ctrl.svc.Items.Query(ctx, extractQuery(r))
@@ -102,31 +99,6 @@ func (ctrl *V1Controller) HandleItemsCreate() http.HandlerFunc {
 	}
 }
 
-// HandleItemDelete godocs
-// @Summary  deletes a item
-// @Tags     Items
-// @Produce  json
-// @Param    id path string true "Item ID"
-// @Success  204
-// @Router   /v1/items/{id} [DELETE]
-// @Security Bearer
-func (ctrl *V1Controller) HandleItemDelete() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		uid, user, err := ctrl.partialParseIdAndUser(w, r)
-		if err != nil {
-			return
-		}
-
-		err = ctrl.svc.Items.Delete(r.Context(), user.GroupID, uid)
-		if err != nil {
-			log.Err(err).Msg("failed to delete item")
-			server.RespondServerError(w)
-			return
-		}
-		server.Respond(w, http.StatusNoContent, nil)
-	}
-}
-
 // HandleItemGet godocs
 // @Summary  Gets a item and fields
 // @Tags     Items
@@ -136,20 +108,19 @@ func (ctrl *V1Controller) HandleItemDelete() http.HandlerFunc {
 // @Router   /v1/items/{id} [GET]
 // @Security Bearer
 func (ctrl *V1Controller) HandleItemGet() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		uid, user, err := ctrl.partialParseIdAndUser(w, r)
-		if err != nil {
-			return
-		}
+	return ctrl.handleItemsGeneral()
+}
 
-		items, err := ctrl.svc.Items.GetOne(r.Context(), user.GroupID, uid)
-		if err != nil {
-			log.Err(err).Msg("failed to get item")
-			server.RespondServerError(w)
-			return
-		}
-		server.Respond(w, http.StatusOK, items)
-	}
+// HandleItemDelete godocs
+// @Summary  deletes a item
+// @Tags     Items
+// @Produce  json
+// @Param    id path string true "Item ID"
+// @Success  204
+// @Router   /v1/items/{id} [DELETE]
+// @Security Bearer
+func (ctrl *V1Controller) HandleItemDelete() http.HandlerFunc {
+	return ctrl.handleItemsGeneral()
 }
 
 // HandleItemUpdate godocs
@@ -162,26 +133,53 @@ func (ctrl *V1Controller) HandleItemGet() http.HandlerFunc {
 // @Router   /v1/items/{id} [PUT]
 // @Security Bearer
 func (ctrl *V1Controller) HandleItemUpdate() http.HandlerFunc {
+	return ctrl.handleItemsGeneral()
+}
+
+func (ctrl *V1Controller) handleItemsGeneral() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		body := repo.ItemUpdate{}
-		if err := server.Decode(r, &body); err != nil {
-			log.Err(err).Msg("failed to decode request body")
-			server.RespondError(w, http.StatusInternalServerError, err)
-			return
-		}
-		uid, user, err := ctrl.partialParseIdAndUser(w, r)
+		ctx := services.NewContext(r.Context())
+		ID, err := ctrl.partialRouteID(w, r)
 		if err != nil {
 			return
 		}
 
-		body.ID = uid
-		result, err := ctrl.svc.Items.Update(r.Context(), user.GroupID, body)
-		if err != nil {
-			log.Err(err).Msg("failed to update item")
-			server.RespondServerError(w)
+		switch r.Method {
+		case http.MethodGet:
+			items, err := ctrl.svc.Items.GetOne(r.Context(), ctx.GID, ID)
+			if err != nil {
+				log.Err(err).Msg("failed to get item")
+				server.RespondServerError(w)
+				return
+			}
+			server.Respond(w, http.StatusOK, items)
 			return
+		case http.MethodDelete:
+			err = ctrl.svc.Items.Delete(r.Context(), ctx.GID, ID)
+			if err != nil {
+				log.Err(err).Msg("failed to delete item")
+				server.RespondServerError(w)
+				return
+			}
+			server.Respond(w, http.StatusNoContent, nil)
+			return
+		case http.MethodPut:
+			body := repo.ItemUpdate{}
+			if err := server.Decode(r, &body); err != nil {
+				log.Err(err).Msg("failed to decode request body")
+				server.RespondError(w, http.StatusInternalServerError, err)
+				return
+			}
+			body.ID = ID
+			result, err := ctrl.svc.Items.Update(r.Context(), ctx.GID, body)
+			if err != nil {
+				log.Err(err).Msg("failed to update item")
+				server.RespondServerError(w)
+				return
+			}
+			server.Respond(w, http.StatusOK, result)
 		}
-		server.Respond(w, http.StatusOK, result)
+
 	}
 }
 
