@@ -13,7 +13,7 @@ docker run --name=homebox \
 
 ## Docker-Compose
 
-```yml
+```yaml
 version: "3.4"
 
 services:
