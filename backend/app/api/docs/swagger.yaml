@@ -62,6 +62,9 @@ definitions:
         type: string
       name:
         type: string
+      parentId:
+        type: string
+        x-nullable: true
     type: object
   repo.ItemField:
     properties:
@@ -86,12 +89,15 @@ definitions:
         items:
           $ref: '#/definitions/repo.ItemAttachment'
         type: array
+      children:
+        items:
+          $ref: '#/definitions/repo.ItemSummary'
+        type: array
       createdAt:
         type: string
       description:
         type: string
       fields:
-        description: Future
         items:
           $ref: '#/definitions/repo.ItemField'
         type: array
@@ -118,6 +124,10 @@ definitions:
       notes:
         description: Extras
         type: string
+      parent:
+        $ref: '#/definitions/repo.ItemSummary'
+        x-nullable: true
+        x-omitempty: true
       purchaseFrom:
         type: string
       purchasePrice:
@@ -202,6 +212,9 @@ definitions:
       notes:
         description: Extras
         type: string
+      parentId:
+        type: string
+        x-nullable: true
       purchaseFrom:
         type: string
       purchasePrice:

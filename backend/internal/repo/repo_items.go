@@ -40,7 +40,7 @@ type (
 
 	ItemCreate struct {
 		ImportRef   string    `json:"-"`
-		ParentID    uuid.UUID `json:"parentId"`
+		ParentID    uuid.UUID `json:"parentId" extensions:"x-nullable"`
 		Name        string    `json:"name"`
 		Description string    `json:"description"`
 
@@ -49,7 +49,7 @@ type (
 		LabelIDs   []uuid.UUID `json:"labelIds"`
 	}
 	ItemUpdate struct {
-		ParentID    uuid.UUID `json:"parentId"`
+		ParentID    uuid.UUID `json:"parentId" extensions:"x-nullable"`
 		ID          uuid.UUID `json:"id"`
 		Name        string    `json:"name"`
 		Description string    `json:"description"`
@@ -102,7 +102,7 @@ type (
 	}
 
 	ItemOut struct {
-		Parent ItemSummary `json:"parent,omitempty"`
+		Parent *ItemSummary `json:"parent,omitempty" extensions:"x-nullable,x-omitempty"`
 		ItemSummary
 
 		SerialNumber string `json:"serialNumber"`
@@ -202,9 +202,10 @@ func mapItemOut(item *ent.Item) ItemOut {
 		children = mapEach(item.Edges.Children, mapItemSummary)
 	}
 
-	var parent ItemSummary
+	var parent *ItemSummary
 	if item.Edges.Parent != nil {
-		parent = mapItemSummary(item.Edges.Parent)
+		v := mapItemSummary(item.Edges.Parent)
+		parent = &v
 	}
 
 	return ItemOut{

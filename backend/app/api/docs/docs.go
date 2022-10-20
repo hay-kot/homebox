@@ -1232,6 +1232,10 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "parentId": {
+                    "type": "string",
+                    "x-nullable": true
                 }
             }
         },
@@ -1270,6 +1274,12 @@ const docTemplate = `{
                         "$ref": "#/definitions/repo.ItemAttachment"
                     }
                 },
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/repo.ItemSummary"
+                    }
+                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -1277,7 +1287,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "fields": {
-                    "description": "Future",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/repo.ItemField"
@@ -1315,6 +1324,11 @@ const docTemplate = `{
                 "notes": {
                     "description": "Extras",
                     "type": "string"
+                },
+                "parent": {
+                    "x-nullable": true,
+                    "x-omitempty": true,
+                    "$ref": "#/definitions/repo.ItemSummary"
                 },
                 "purchaseFrom": {
                     "type": "string"
@@ -1438,6 +1452,10 @@ const docTemplate = `{
                 "notes": {
                     "description": "Extras",
                     "type": "string"
+                },
+                "parentId": {
+                    "type": "string",
+                    "x-nullable": true
                 },
                 "purchaseFrom": {
                     "type": "string"

@@ -1224,6 +1224,10 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "parentId": {
+                    "type": "string",
+                    "x-nullable": true
                 }
             }
         },
@@ -1262,6 +1266,12 @@
                         "$ref": "#/definitions/repo.ItemAttachment"
                     }
                 },
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/repo.ItemSummary"
+                    }
+                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -1269,7 +1279,6 @@
                     "type": "string"
                 },
                 "fields": {
-                    "description": "Future",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/repo.ItemField"
@@ -1307,6 +1316,11 @@
                 "notes": {
                     "description": "Extras",
                     "type": "string"
+                },
+                "parent": {
+                    "x-nullable": true,
+                    "x-omitempty": true,
+                    "$ref": "#/definitions/repo.ItemSummary"
                 },
                 "purchaseFrom": {
                     "type": "string"
@@ -1430,6 +1444,10 @@
                 "notes": {
                     "description": "Extras",
                     "type": "string"
+                },
+                "parentId": {
+                    "type": "string",
+                    "x-nullable": true
                 },
                 "purchaseFrom": {
                     "type": "string"
