@@ -49,6 +49,7 @@ export interface ItemCreate {
   /** Edges */
   locationId: string;
   name: string;
+  parentId: string | null;
 }
 
 export interface ItemField {
@@ -63,10 +64,9 @@ export interface ItemField {
 
 export interface ItemOut {
   attachments: ItemAttachment[];
+  children: ItemSummary[];
   createdAt: Date;
   description: string;
-
-  /** Future */
   fields: ItemField[];
   id: string;
   insured: boolean;
@@ -83,6 +83,7 @@ export interface ItemOut {
 
   /** Extras */
   notes: string;
+  parent: ItemSummary | null;
   purchaseFrom: string;
 
   /** @example 0 */
@@ -137,6 +138,7 @@ export interface ItemUpdate {
 
   /** Extras */
   notes: string;
+  parentId: string | null;
   purchaseFrom: string;
 
   /** @example 0 */

@@ -39,6 +39,7 @@
 
     return data;
   });
+
   onMounted(() => {
     refresh();
   });
@@ -48,6 +49,7 @@
       ...item.value,
       locationId: item.value.location?.id,
       labelIds: item.value.labels.map(l => l.id),
+      parentId: null,
     };
 
     const { error } = await api.items.update(itemId.value, payload);
@@ -314,8 +316,8 @@
       <template #title> Attachment Edit </template>
 
       <FormTextField v-model="editState.title" label="Attachment Title" />
+      {{ editState.type }}
       <FormSelect
-        v-model="editState.obj"
         v-model:value="editState.type"
         label="Attachment Type"
         value-key="value"
@@ -354,7 +356,13 @@
             </template>
           </BaseSectionHeader>
           <div class="px-5 mb-6 grid md:grid-cols-2 gap-4">
-            <FormSelect v-if="item" v-model="item.location" label="Location" :items="locations ?? []" />
+            <FormSelect
+              v-if="item"
+              v-model="item.location"
+              label="Location"
+              :items="locations ?? []"
+              compare-key="id"
+            />
             <FormMultiselect v-model="item.labels" label="Labels" :items="labels ?? []" />
           </div>
 
