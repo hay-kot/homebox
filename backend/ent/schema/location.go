@@ -27,6 +27,9 @@ func (Location) Fields() []ent.Field {
 // Edges of the Location.
 func (Location) Edges() []ent.Edge {
 	return []ent.Edge{
+		edge.To("children", Location.Type).
+			From("parent").
+			Unique(),
 		edge.From("group", Group.Type).
 			Ref("locations").
 			Unique().

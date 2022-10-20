@@ -94,6 +94,9 @@ func (Item) Fields() []ent.Field {
 // Edges of the Item.
 func (Item) Edges() []ent.Edge {
 	return []ent.Edge{
+		edge.To("children", Item.Type).
+			From("parent").
+			Unique(),
 		edge.From("group", Group.Type).
 			Ref("items").
 			Required().
