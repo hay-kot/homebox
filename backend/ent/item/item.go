@@ -55,6 +55,10 @@ const (
 	FieldSoldPrice = "sold_price"
 	// FieldSoldNotes holds the string denoting the sold_notes field in the database.
 	FieldSoldNotes = "sold_notes"
+	// EdgeParent holds the string denoting the parent edge name in mutations.
+	EdgeParent = "parent"
+	// EdgeChildren holds the string denoting the children edge name in mutations.
+	EdgeChildren = "children"
 	// EdgeGroup holds the string denoting the group edge name in mutations.
 	EdgeGroup = "group"
 	// EdgeLabel holds the string denoting the label edge name in mutations.
@@ -67,6 +71,14 @@ const (
 	EdgeAttachments = "attachments"
 	// Table holds the table name of the item in the database.
 	Table = "items"
+	// ParentTable is the table that holds the parent relation/edge.
+	ParentTable = "items"
+	// ParentColumn is the table column denoting the parent relation/edge.
+	ParentColumn = "item_children"
+	// ChildrenTable is the table that holds the children relation/edge.
+	ChildrenTable = "items"
+	// ChildrenColumn is the table column denoting the children relation/edge.
+	ChildrenColumn = "item_children"
 	// GroupTable is the table that holds the group relation/edge.
 	GroupTable = "items"
 	// GroupInverseTable is the table name for the Group entity.
@@ -132,6 +144,7 @@ var Columns = []string{
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
 	"group_items",
+	"item_children",
 	"location_items",
 }
 

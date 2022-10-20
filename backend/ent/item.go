@@ -65,11 +65,16 @@ type Item struct {
 	// The values are being populated by the ItemQuery when eager-loading is set.
 	Edges          ItemEdges `json:"edges"`
 	group_items    *uuid.UUID
+	item_children  *uuid.UUID
 	location_items *uuid.UUID
 }
 
 // ItemEdges holds the relations/edges for other nodes in the graph.
 type ItemEdges struct {
+	// Parent holds the value of the parent edge.
+	Parent *Item `json:"parent,omitempty"`
+	// Children holds the value of the children edge.
+	Children []*Item `json:"children,omitempty"`
 	// Group holds the value of the group edge.
 	Group *Group `json:"group,omitempty"`
 	// Label holds the value of the label edge.
@@ -82,13 +87,35 @@ type ItemEdges struct {
 	Attachments []*Attachment `json:"attachments,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [7]bool
+}
+
+// ParentOrErr returns the Parent value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ItemEdges) ParentOrErr() (*Item, error) {
+	if e.loadedTypes[0] {
+		if e.Parent == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: item.Label}
+		}
+		return e.Parent, nil
+	}
+	return nil, &NotLoadedError{edge: "parent"}
+}
+
+// ChildrenOrErr returns the Children value or an error if the edge
+// was not loaded in eager-loading.
+func (e ItemEdges) ChildrenOrErr() ([]*Item, error) {
+	if e.loadedTypes[1] {
+		return e.Children, nil
+	}
+	return nil, &NotLoadedError{edge: "children"}
 }
 
 // GroupOrErr returns the Group value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ItemEdges) GroupOrErr() (*Group, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[2] {
 		if e.Group == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: group.Label}
@@ -101,7 +128,7 @@ func (e ItemEdges) GroupOrErr() (*Group, error) {
 // LabelOrErr returns the Label value or an error if the edge
 // was not loaded in eager-loading.
 func (e ItemEdges) LabelOrErr() ([]*Label, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[3] {
 		return e.Label, nil
 	}
 	return nil, &NotLoadedError{edge: "label"}
@@ -110,7 +137,7 @@ func (e ItemEdges) LabelOrErr() ([]*Label, error) {
 // LocationOrErr returns the Location value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ItemEdges) LocationOrErr() (*Location, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[4] {
 		if e.Location == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: location.Label}
@@ -123,7 +150,7 @@ func (e ItemEdges) LocationOrErr() (*Location, error) {
 // FieldsOrErr returns the Fields value or an error if the edge
 // was not loaded in eager-loading.
 func (e ItemEdges) FieldsOrErr() ([]*ItemField, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[5] {
 		return e.Fields, nil
 	}
 	return nil, &NotLoadedError{edge: "fields"}
@@ -132,7 +159,7 @@ func (e ItemEdges) FieldsOrErr() ([]*ItemField, error) {
 // AttachmentsOrErr returns the Attachments value or an error if the edge
 // was not loaded in eager-loading.
 func (e ItemEdges) AttachmentsOrErr() ([]*Attachment, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[6] {
 		return e.Attachments, nil
 	}
 	return nil, &NotLoadedError{edge: "attachments"}
@@ -157,7 +184,9 @@ func (*Item) scanValues(columns []string) ([]any, error) {
 			values[i] = new(uuid.UUID)
 		case item.ForeignKeys[0]: // group_items
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
-		case item.ForeignKeys[1]: // location_items
+		case item.ForeignKeys[1]: // item_children
+			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
+		case item.ForeignKeys[2]: // location_items
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Item", columns[i])
@@ -315,6 +344,13 @@ func (i *Item) assignValues(columns []string, values []any) error {
 			}
 		case item.ForeignKeys[1]:
 			if value, ok := values[j].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field item_children", values[j])
+			} else if value.Valid {
+				i.item_children = new(uuid.UUID)
+				*i.item_children = *value.S.(*uuid.UUID)
+			}
+		case item.ForeignKeys[2]:
+			if value, ok := values[j].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field location_items", values[j])
 			} else if value.Valid {
 				i.location_items = new(uuid.UUID)
@@ -323,6 +359,16 @@ func (i *Item) assignValues(columns []string, values []any) error {
 		}
 	}
 	return nil
+}
+
+// QueryParent queries the "parent" edge of the Item entity.
+func (i *Item) QueryParent() *ItemQuery {
+	return (&ItemClient{config: i.config}).QueryParent(i)
+}
+
+// QueryChildren queries the "children" edge of the Item entity.
+func (i *Item) QueryChildren() *ItemQuery {
+	return (&ItemClient{config: i.config}).QueryChildren(i)
 }
 
 // QueryGroup queries the "group" edge of the Item entity.

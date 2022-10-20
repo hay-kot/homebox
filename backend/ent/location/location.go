@@ -21,12 +21,24 @@ const (
 	FieldName = "name"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
+	// EdgeParent holds the string denoting the parent edge name in mutations.
+	EdgeParent = "parent"
+	// EdgeChildren holds the string denoting the children edge name in mutations.
+	EdgeChildren = "children"
 	// EdgeGroup holds the string denoting the group edge name in mutations.
 	EdgeGroup = "group"
 	// EdgeItems holds the string denoting the items edge name in mutations.
 	EdgeItems = "items"
 	// Table holds the table name of the location in the database.
 	Table = "locations"
+	// ParentTable is the table that holds the parent relation/edge.
+	ParentTable = "locations"
+	// ParentColumn is the table column denoting the parent relation/edge.
+	ParentColumn = "location_children"
+	// ChildrenTable is the table that holds the children relation/edge.
+	ChildrenTable = "locations"
+	// ChildrenColumn is the table column denoting the children relation/edge.
+	ChildrenColumn = "location_children"
 	// GroupTable is the table that holds the group relation/edge.
 	GroupTable = "locations"
 	// GroupInverseTable is the table name for the Group entity.
@@ -56,6 +68,7 @@ var Columns = []string{
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
 	"group_locations",
+	"location_children",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

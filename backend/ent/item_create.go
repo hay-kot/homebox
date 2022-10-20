@@ -326,6 +326,40 @@ func (ic *ItemCreate) SetNillableID(u *uuid.UUID) *ItemCreate {
 	return ic
 }
 
+// SetParentID sets the "parent" edge to the Item entity by ID.
+func (ic *ItemCreate) SetParentID(id uuid.UUID) *ItemCreate {
+	ic.mutation.SetParentID(id)
+	return ic
+}
+
+// SetNillableParentID sets the "parent" edge to the Item entity by ID if the given value is not nil.
+func (ic *ItemCreate) SetNillableParentID(id *uuid.UUID) *ItemCreate {
+	if id != nil {
+		ic = ic.SetParentID(*id)
+	}
+	return ic
+}
+
+// SetParent sets the "parent" edge to the Item entity.
+func (ic *ItemCreate) SetParent(i *Item) *ItemCreate {
+	return ic.SetParentID(i.ID)
+}
+
+// AddChildIDs adds the "children" edge to the Item entity by IDs.
+func (ic *ItemCreate) AddChildIDs(ids ...uuid.UUID) *ItemCreate {
+	ic.mutation.AddChildIDs(ids...)
+	return ic
+}
+
+// AddChildren adds the "children" edges to the Item entity.
+func (ic *ItemCreate) AddChildren(i ...*Item) *ItemCreate {
+	ids := make([]uuid.UUID, len(i))
+	for j := range i {
+		ids[j] = i[j].ID
+	}
+	return ic.AddChildIDs(ids...)
+}
+
 // SetGroupID sets the "group" edge to the Group entity by ID.
 func (ic *ItemCreate) SetGroupID(id uuid.UUID) *ItemCreate {
 	ic.mutation.SetGroupID(id)
@@ -789,6 +823,45 @@ func (ic *ItemCreate) createSpec() (*Item, *sqlgraph.CreateSpec) {
 			Column: item.FieldSoldNotes,
 		})
 		_node.SoldNotes = value
+	}
+	if nodes := ic.mutation.ParentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   item.ParentTable,
+			Columns: []string{item.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: item.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.item_children = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ic.mutation.ChildrenIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   item.ChildrenTable,
+			Columns: []string{item.ChildrenColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: item.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ic.mutation.GroupIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

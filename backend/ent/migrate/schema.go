@@ -184,6 +184,7 @@ var (
 		{Name: "sold_price", Type: field.TypeFloat64, Default: 0},
 		{Name: "sold_notes", Type: field.TypeString, Nullable: true, Size: 1000},
 		{Name: "group_items", Type: field.TypeUUID},
+		{Name: "item_children", Type: field.TypeUUID, Nullable: true},
 		{Name: "location_items", Type: field.TypeUUID, Nullable: true},
 	}
 	// ItemsTable holds the schema information for the "items" table.
@@ -199,8 +200,14 @@ var (
 				OnDelete:   schema.Cascade,
 			},
 			{
-				Symbol:     "items_locations_items",
+				Symbol:     "items_items_children",
 				Columns:    []*schema.Column{ItemsColumns[23]},
+				RefColumns: []*schema.Column{ItemsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "items_locations_items",
+				Columns:    []*schema.Column{ItemsColumns[24]},
 				RefColumns: []*schema.Column{LocationsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -288,6 +295,7 @@ var (
 		{Name: "name", Type: field.TypeString, Size: 255},
 		{Name: "description", Type: field.TypeString, Nullable: true, Size: 1000},
 		{Name: "group_locations", Type: field.TypeUUID},
+		{Name: "location_children", Type: field.TypeUUID, Nullable: true},
 	}
 	// LocationsTable holds the schema information for the "locations" table.
 	LocationsTable = &schema.Table{
@@ -300,6 +308,12 @@ var (
 				Columns:    []*schema.Column{LocationsColumns[5]},
 				RefColumns: []*schema.Column{GroupsColumns[0]},
 				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "locations_locations_children",
+				Columns:    []*schema.Column{LocationsColumns[6]},
+				RefColumns: []*schema.Column{LocationsColumns[0]},
+				OnDelete:   schema.SetNull,
 			},
 		},
 	}
@@ -381,10 +395,12 @@ func init() {
 	DocumentTokensTable.ForeignKeys[0].RefTable = DocumentsTable
 	GroupInvitationTokensTable.ForeignKeys[0].RefTable = GroupsTable
 	ItemsTable.ForeignKeys[0].RefTable = GroupsTable
-	ItemsTable.ForeignKeys[1].RefTable = LocationsTable
+	ItemsTable.ForeignKeys[1].RefTable = ItemsTable
+	ItemsTable.ForeignKeys[2].RefTable = LocationsTable
 	ItemFieldsTable.ForeignKeys[0].RefTable = ItemsTable
 	LabelsTable.ForeignKeys[0].RefTable = GroupsTable
 	LocationsTable.ForeignKeys[0].RefTable = GroupsTable
+	LocationsTable.ForeignKeys[1].RefTable = LocationsTable
 	UsersTable.ForeignKeys[0].RefTable = GroupsTable
 	LabelItemsTable.ForeignKeys[0].RefTable = LabelsTable
 	LabelItemsTable.ForeignKeys[1].RefTable = ItemsTable
