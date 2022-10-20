@@ -72,7 +72,7 @@ func TestItemsRepository_RecursiveRelationships(t *testing.T) {
 		// Check Parent ID
 		updated, err = tRepos.Items.GetOne(context.Background(), child.ID)
 		assert.NoError(t, err)
-		assert.Equal(t, uuid.Nil, updated.Parent.ID)
+		assert.Nil(t, updated.Parent)
 
 	}
 }
