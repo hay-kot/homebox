@@ -9,6 +9,14 @@
           <slot :name="detail.slot || detail.name" v-bind="{ detail }">
             <DateTime v-if="detail.type == 'date'" :date="detail.text" />
             <Currency v-else-if="detail.type == 'currency'" :amount="detail.text" />
+            <template v-else-if="detail.type === 'link'">
+              <div class="tooltip tooltip-primary tooltip-right" :data-tip="detail.href">
+                <a class="badge p-3 badge-primary hover:bg-primary/80" :href="detail.href" target="_blank">
+                  <Icon name="mdi-open-in-new" class="mr-2 swap-on"></Icon>
+                  {{ detail.text }}
+                </a>
+              </div>
+            </template>
             <template v-else>
               {{ detail.text }}
             </template>

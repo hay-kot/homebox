@@ -15,7 +15,13 @@ type CurrencyDetail = BaseDetail & {
   text: string;
 };
 
-export type CustomDetail = DateDetail | CurrencyDetail;
+type LinkDetail = BaseDetail & {
+  type: "link";
+  text: string;
+  href: string;
+};
+
+export type CustomDetail = DateDetail | CurrencyDetail | LinkDetail;
 
 export type Detail = BaseDetail & {
   text: StringLike;
