@@ -33,3 +33,35 @@ export function fmtCurrency(value: number | string, currency = "USD", locale = "
   });
   return formatter.format(value);
 }
+
+export type MaybeUrlResult = {
+  isUrl: boolean;
+  url: string;
+  text: string;
+};
+
+export function maybeUrl(str: string): MaybeUrlResult {
+  const result: MaybeUrlResult = {
+    isUrl: str.startsWith("http://") || str.startsWith("https://"),
+    url: "",
+    text: "",
+  };
+
+  if (!result.isUrl && !str.startsWith("[")) {
+    return result;
+  }
+
+  if (str.startsWith("[")) {
+    const match = str.match(/\[(.*)\]\((.*)\)/);
+    if (match && match.length === 3) {
+      result.isUrl = true;
+      result.text = match[1];
+      result.url = match[2];
+    }
+  } else {
+    result.url = str;
+    result.text = "Link";
+  }
+
+  return result;
+}

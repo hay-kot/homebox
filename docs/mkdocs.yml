@@ -47,5 +47,6 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Quick Start: quick-start.md
+  - Tips and Tricks: tips-tricks.md
   - Importing Data: import-csv.md
   - Building The Binary: build.md

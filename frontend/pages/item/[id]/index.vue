@@ -96,10 +96,25 @@
         name: "Notes",
         text: item.value?.notes,
       },
-      ...item.value.fields.map(field => ({
-        name: field.name,
-        text: field.textValue,
-      })),
+      ...item.value.fields.map(field => {
+        /**
+         * Support Special URL Syntax
+         */
+        const url = maybeUrl(field.textValue);
+        if (url.isUrl) {
+          return {
+            name: field.name,
+            text: url.text,
+            type: "link",
+            href: url.url,
+          };
+        }
+
+        return {
+          name: field.name,
+          text: field.textValue,
+        };
+      }),
     ];
   });
 
