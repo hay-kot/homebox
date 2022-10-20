@@ -39,15 +39,17 @@ type (
 	}
 
 	ItemCreate struct {
-		ImportRef   string `json:"-"`
-		Name        string `json:"name"`
-		Description string `json:"description"`
+		ImportRef   string    `json:"-"`
+		ParentID    uuid.UUID `json:"parentId"`
+		Name        string    `json:"name"`
+		Description string    `json:"description"`
 
 		// Edges
 		LocationID uuid.UUID   `json:"locationId"`
 		LabelIDs   []uuid.UUID `json:"labelIds"`
 	}
 	ItemUpdate struct {
+		ParentID    uuid.UUID `json:"parentId"`
 		ID          uuid.UUID `json:"id"`
 		Name        string    `json:"name"`
 		Description string    `json:"description"`
@@ -100,6 +102,7 @@ type (
 	}
 
 	ItemOut struct {
+		Parent ItemSummary `json:"parent,omitempty"`
 		ItemSummary
 
 		SerialNumber string `json:"serialNumber"`
@@ -126,8 +129,8 @@ type (
 		Notes string `json:"notes"`
 
 		Attachments []ItemAttachment `json:"attachments"`
-		// Future
-		Fields []ItemField `json:"fields"`
+		Fields      []ItemField      `json:"fields"`
+		Children    []ItemSummary    `json:"children"`
 	}
 )
 
@@ -194,7 +197,18 @@ func mapItemOut(item *ent.Item) ItemOut {
 		fields = mapFields(item.Edges.Fields)
 	}
 
+	var children []ItemSummary
+	if item.Edges.Children != nil {
+		children = mapEach(item.Edges.Children, mapItemSummary)
+	}
+
+	var parent ItemSummary
+	if item.Edges.Parent != nil {
+		parent = mapItemSummary(item.Edges.Parent)
+	}
+
 	return ItemOut{
+		Parent:           parent,
 		ItemSummary:      mapItemSummary(item),
 		LifetimeWarranty: item.LifetimeWarranty,
 		WarrantyExpires:  item.WarrantyExpires,
@@ -220,6 +234,7 @@ func mapItemOut(item *ent.Item) ItemOut {
 		Notes:       item.Notes,
 		Attachments: attachments,
 		Fields:      fields,
+		Children:    children,
 	}
 }
 
@@ -231,6 +246,8 @@ func (e *ItemsRepository) getOne(ctx context.Context, where ...predicate.Item) (
 		WithLabel().
 		WithLocation().
 		WithGroup().
+		WithChildren().
+		WithParent().
 		WithAttachments(func(aq *ent.AttachmentQuery) {
 			aq.WithDocument()
 		}).
@@ -396,6 +413,12 @@ func (e *ItemsRepository) UpdateByGroup(ctx context.Context, gid uuid.UUID, data
 
 	if set.Len() > 0 {
 		q.RemoveLabelIDs(set.Slice()...)
+	}
+
+	if data.ParentID != uuid.Nil {
+		q.SetParentID(data.ParentID)
+	} else {
+		q.ClearParent()
 	}
 
 	err = q.Exec(ctx)
