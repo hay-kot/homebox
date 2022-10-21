@@ -40,8 +40,8 @@ volumes:
 | Variable                 | Default                | Description                                                                        |
 | ------------------------ | ---------------------- | ---------------------------------------------------------------------------------- |
 | HBOX_MODE                | production             | application mode used for runtime behavior  can be one of: development, production |
-| HBOX_WEB_PORT            | 7745                   | port to run the web server on, in you're using docker do not change this           |
-| HBOX_WEB_HOST            |                        | host to run the web server on, in you're using docker do not change this           |
+| HBOX_WEB_PORT            | 7745                   | port to run the web server on, if you're using docker do not change this           |
+| HBOX_WEB_HOST            |                        | host to run the web server on, if you're using docker do not change this           |
 | HBOX_ALLOW_REGISTRATION  | true                   | allow users to register themselves                                                 |
 | HBOX_WEB_MAX_UPLOAD_SIZE | 10                     | maximum file upload size supported in MB                                           |
 | HBOX_STORAGE_DATA        | /data/                 | path to the data directory, do not change this if you're using docker              |
