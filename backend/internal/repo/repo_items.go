@@ -97,8 +97,8 @@ type (
 		UpdatedAt   time.Time `json:"updatedAt"`
 
 		// Edges
-		Location LocationSummary `json:"location"`
-		Labels   []LabelSummary  `json:"labels"`
+		Location *LocationSummary `json:"location,omitempty" extensions:"x-nullable,x-omitempty"`
+		Labels   []LabelSummary   `json:"labels"`
 	}
 
 	ItemOut struct {
@@ -139,12 +139,13 @@ var (
 )
 
 func mapItemSummary(item *ent.Item) ItemSummary {
-	var location LocationSummary
+	var location *LocationSummary
 	if item.Edges.Location != nil {
-		location = mapLocationSummary(item.Edges.Location)
+		loc := mapLocationSummary(item.Edges.Location)
+		location = &loc
 	}
 
-	var labels []LabelSummary
+	labels := make([]LabelSummary, len(item.Edges.Label))
 	if item.Edges.Label != nil {
 		labels = mapEach(item.Edges.Label, mapLabelSummary)
 	}
