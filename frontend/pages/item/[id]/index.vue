@@ -77,6 +77,10 @@
         text: item.value?.description,
       },
       {
+        name: "Quantity",
+        text: item.value?.quantity,
+      },
+      {
         name: "Serial Number",
         text: item.value?.serialNumber,
       },
@@ -272,12 +276,23 @@
               <span class="text-base-content">
                 {{ item ? item.name : "" }}
               </span>
+              <div v-if="item.parent" class="text-sm breadcrumbs pb-0">
+                <ul class="text-base-content/70">
+                  <li>
+                    <NuxtLink :to="`/item/${item.parent.id}`"> {{ item.parent.name }}</NuxtLink>
+                  </li>
+                  <li>{{ item.name }}</li>
+                </ul>
+              </div>
               <template #description>
-                <p class="text-sm text-base-content font-bold pb-0 mb-0">
-                  {{ item.location.name }} - Quantity {{ item.quantity }}
-                </p>
-                <div v-if="item.labels && item.labels.length > 0" class="flex flex-wrap gap-3 mt-3">
-                  <LabelChip v-for="label in item.labels" :key="label.id" class="badge-primary" :label="label" />
+                <div class="flex flex-wrap gap-2 mt-3">
+                  <NuxtLink ref="badge" class="badge p-3" :to="`/location/${item.location.id}`">
+                    <Icon name="heroicons-map-pin" class="mr-2 swap-on"></Icon>
+                    {{ item.location.name }}
+                  </NuxtLink>
+                  <template v-if="item.labels && item.labels.length > 0">
+                    <LabelChip v-for="label in item.labels" :key="label.id" class="badge-primary" :label="label" />
+                  </template>
                 </div>
               </template>
             </BaseSectionHeader>
@@ -361,6 +376,13 @@
           <template #title> Sold Details </template>
           <DetailsSection :details="soldDetails" />
         </BaseCard>
+      </div>
+    </section>
+
+    <section class="my-6 px-3">
+      <BaseSectionHeader v-if="item && item.children && item.children.length > 0"> Child Items </BaseSectionHeader>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <ItemCard v-for="child in item.children" :key="child.id" :item="child" />
       </div>
     </section>
   </BaseContainer>

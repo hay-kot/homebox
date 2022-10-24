@@ -4,6 +4,7 @@
   import { useLabelStore } from "~~/stores/labels";
   import { useLocationStore } from "~~/stores/locations";
   import { capitalize } from "~~/lib/strings";
+  import Autocomplete from "~~/components/Form/Autocomplete.vue";
 
   definePageMeta({
     middleware: ["auth"],
@@ -37,6 +38,10 @@
       }
     }
 
+    if (data.parent) {
+      parent.value = data.parent;
+    }
+
     return data;
   });
 
@@ -49,7 +54,7 @@
       ...item.value,
       locationId: item.value.location?.id,
       labelIds: item.value.labels.map(l => l.id),
-      parentId: null,
+      parentId: parent.value ? parent.value.id : null,
     };
 
     const { error } = await api.items.update(itemId.value, payload);
@@ -258,7 +263,6 @@
 
   async function updateAttachment() {
     editState.loading = true;
-    console.log(editState.type);
     const { error, data } = await api.items.updateAttachment(itemId.value, editState.id, {
       title: editState.title,
       type: editState.type,
@@ -308,6 +312,9 @@
       timeValue: null,
     });
   }
+
+  const { query, results } = useItemSearch(api, { immediate: false });
+  const parent = ref();
 </script>
 
 <template>
@@ -364,6 +371,16 @@
               compare-key="id"
             />
             <FormMultiselect v-model="item.labels" label="Labels" :items="labels ?? []" />
+
+            <Autocomplete
+              v-if="!preferences.editorSimpleView"
+              v-model="parent"
+              v-model:search="query"
+              :items="results"
+              item-text="name"
+              label="Parent Item"
+              no-results-text="Type to search..."
+            />
           </div>
 
           <div class="border-t border-gray-300 sm:p-0">
