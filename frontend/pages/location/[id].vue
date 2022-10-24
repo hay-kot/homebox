@@ -69,7 +69,7 @@
 
   async function confirmDelete() {
     const { isCanceled } = await confirm.open(
-      "Are you sure you want to delete this location? This action cannot be undone."
+      "Are you sure you want to delete this location and all of its items? This action cannot be undone."
     );
     if (isCanceled) {
       return;
