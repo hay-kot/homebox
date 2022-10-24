@@ -22,6 +22,7 @@ type (
 	}
 
 	LocationUpdate struct {
+		ParentID    uuid.UUID `json:"parentId" extensions:"x-nullable"`
 		ID          uuid.UUID `json:"id"`
 		Name        string    `json:"name"`
 		Description string    `json:"description"`
@@ -41,8 +42,10 @@ type (
 	}
 
 	LocationOut struct {
+		Parent *LocationSummary `json:"parent,omitempty"`
 		LocationSummary
-		Items []ItemSummary `json:"items"`
+		Items    []ItemSummary     `json:"items"`
+		Children []LocationSummary `json:"children"`
 	}
 )
 
@@ -61,7 +64,20 @@ var (
 )
 
 func mapLocationOut(location *ent.Location) LocationOut {
+	var parent *LocationSummary
+	if location.Edges.Parent != nil {
+		p := mapLocationSummary(location.Edges.Parent)
+		parent = &p
+	}
+
+	children := make([]LocationSummary, 0, len(location.Edges.Children))
+	for _, c := range location.Edges.Children {
+		children = append(children, mapLocationSummary(c))
+	}
+
 	return LocationOut{
+		Parent:   parent,
+		Children: children,
 		LocationSummary: LocationSummary{
 			ID:          location.ID,
 			Name:        location.Name,
@@ -125,6 +141,8 @@ func (r *LocationRepository) getOne(ctx context.Context, where ...predicate.Loca
 		WithItems(func(iq *ent.ItemQuery) {
 			iq.WithLabel()
 		}).
+		WithParent().
+		WithChildren().
 		Only(ctx))
 }
 
@@ -152,10 +170,17 @@ func (r *LocationRepository) Create(ctx context.Context, gid uuid.UUID, data Loc
 }
 
 func (r *LocationRepository) Update(ctx context.Context, data LocationUpdate) (LocationOut, error) {
-	_, err := r.db.Location.UpdateOneID(data.ID).
+	q := r.db.Location.UpdateOneID(data.ID).
 		SetName(data.Name).
-		SetDescription(data.Description).
-		Save(ctx)
+		SetDescription(data.Description)
+
+	if data.ParentID != uuid.Nil {
+		q.SetParentID(data.ParentID)
+	} else {
+		q.ClearParent()
+	}
+
+	_, err := q.Save(ctx)
 
 	if err != nil {
 		return LocationOut{}, err

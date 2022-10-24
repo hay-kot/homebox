@@ -88,8 +88,9 @@ func (ctrl *V1Controller) HandleLocationGet() http.HandlerFunc {
 // @Summary  updates a location
 // @Tags     Locations
 // @Produce  json
-// @Param    id  path     string true "Location ID"
-// @Success  200 {object} repo.LocationOut
+// @Param    id      path     string              true "Location ID"
+// @Param    payload body     repo.LocationUpdate true "Location Data"
+// @Success  200     {object} repo.LocationOut
 // @Router   /v1/locations/{id} [PUT]
 // @Security Bearer
 func (ctrl *V1Controller) HandleLocationUpdate() http.HandlerFunc {
