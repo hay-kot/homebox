@@ -1,5 +1,7 @@
 <script setup lang="ts">
   import { Detail, CustomDetail } from "~~/components/global/DetailsSection/types";
+  import { LocationSummary, LocationUpdate } from "~~/lib/api/types/data-contracts";
+  import { useLocationStore } from "~~/stores/locations";
 
   definePageMeta({
     middleware: ["auth"],
@@ -20,6 +22,11 @@
       navigateTo("/home");
       return;
     }
+
+    if (data.parent) {
+      parent.value = locations.value.find(l => l.id === data.parent.id);
+    }
+
     return data;
   });
 
@@ -62,7 +69,7 @@
 
   async function confirmDelete() {
     const { isCanceled } = await confirm.open(
-      "Are you sure you want to delete this location? This action cannot be undone."
+      "Are you sure you want to delete this location and all of its items? This action cannot be undone."
     );
     if (isCanceled) {
       return;
@@ -80,9 +87,11 @@
 
   const updateModal = ref(false);
   const updating = ref(false);
-  const updateData = reactive({
+  const updateData = reactive<LocationUpdate>({
+    id: locationId.value,
     name: "",
     description: "",
+    parentId: null,
   });
 
   function openUpdate() {
@@ -93,6 +102,7 @@
 
   async function update() {
     updating.value = true;
+    updateData.parentId = parent.value?.id || null;
     const { error, data } = await api.locations.update(locationId.value, updateData);
 
     if (error) {
@@ -105,6 +115,12 @@
     updateModal.value = false;
     updating.value = false;
   }
+
+  const locationStore = useLocationStore();
+  const locations = computed(() => locationStore.locations);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const parent = ref<LocationSummary | any>({});
 </script>
 
 <template>
@@ -114,6 +130,7 @@
       <form v-if="location" @submit.prevent="update">
         <FormTextField v-model="updateData.name" :autofocus="true" label="Location Name" />
         <FormTextArea v-model="updateData.description" label="Location Description" />
+        <FormAutocomplete v-model="parent" :items="locations" item-text="name" item-value="id" label="Parent" />
         <div class="modal-action">
           <BaseButton type="submit" :loading="updating"> Update </BaseButton>
         </div>
@@ -127,6 +144,14 @@
           <span class="text-base-content">
             {{ location ? location.name : "" }}
           </span>
+          <div v-if="location && location.parent" class="text-sm breadcrumbs pb-0">
+            <ul class="text-base-content/70">
+              <li>
+                <NuxtLink :to="`/location/${location.parent.id}`"> {{ location.parent.name }}</NuxtLink>
+              </li>
+              <li>{{ location.name }}</li>
+            </ul>
+          </div>
         </BaseSectionHeader>
       </template>
 
@@ -152,10 +177,17 @@
       <DetailsSection :details="details" />
     </BaseCard>
 
-    <section v-if="location">
+    <section v-if="location && location.items.length > 0">
       <BaseSectionHeader class="mb-5"> Items </BaseSectionHeader>
       <div class="grid gap-2 grid-cols-1 sm:grid-cols-2">
         <ItemCard v-for="item in location.items" :key="item.id" :item="item" />
+      </div>
+    </section>
+
+    <section v-if="location && location.children.length > 0">
+      <BaseSectionHeader class="mb-5"> Child Locations </BaseSectionHeader>
+      <div class="grid gap-2 grid-cols-1 sm:grid-cols-3">
+        <LocationCard v-for="item in location.children" :key="item.id" :location="item" />
       </div>
     </section>
   </BaseContainer>

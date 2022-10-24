@@ -85,6 +85,40 @@ func (lc *LocationCreate) SetNillableID(u *uuid.UUID) *LocationCreate {
 	return lc
 }
 
+// SetParentID sets the "parent" edge to the Location entity by ID.
+func (lc *LocationCreate) SetParentID(id uuid.UUID) *LocationCreate {
+	lc.mutation.SetParentID(id)
+	return lc
+}
+
+// SetNillableParentID sets the "parent" edge to the Location entity by ID if the given value is not nil.
+func (lc *LocationCreate) SetNillableParentID(id *uuid.UUID) *LocationCreate {
+	if id != nil {
+		lc = lc.SetParentID(*id)
+	}
+	return lc
+}
+
+// SetParent sets the "parent" edge to the Location entity.
+func (lc *LocationCreate) SetParent(l *Location) *LocationCreate {
+	return lc.SetParentID(l.ID)
+}
+
+// AddChildIDs adds the "children" edge to the Location entity by IDs.
+func (lc *LocationCreate) AddChildIDs(ids ...uuid.UUID) *LocationCreate {
+	lc.mutation.AddChildIDs(ids...)
+	return lc
+}
+
+// AddChildren adds the "children" edges to the Location entity.
+func (lc *LocationCreate) AddChildren(l ...*Location) *LocationCreate {
+	ids := make([]uuid.UUID, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return lc.AddChildIDs(ids...)
+}
+
 // SetGroupID sets the "group" edge to the Group entity by ID.
 func (lc *LocationCreate) SetGroupID(id uuid.UUID) *LocationCreate {
 	lc.mutation.SetGroupID(id)
@@ -293,6 +327,45 @@ func (lc *LocationCreate) createSpec() (*Location, *sqlgraph.CreateSpec) {
 			Column: location.FieldDescription,
 		})
 		_node.Description = value
+	}
+	if nodes := lc.mutation.ParentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   location.ParentTable,
+			Columns: []string{location.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: location.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.location_children = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := lc.mutation.ChildrenIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   location.ChildrenTable,
+			Columns: []string{location.ChildrenColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: location.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := lc.mutation.GroupIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

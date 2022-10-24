@@ -845,6 +845,15 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Location Data",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/repo.LocationUpdate"
+                        }
                     }
                 ],
                 "responses": {
@@ -1232,6 +1241,10 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "parentId": {
+                    "type": "string",
+                    "x-nullable": true
                 }
             }
         },
@@ -1270,6 +1283,12 @@ const docTemplate = `{
                         "$ref": "#/definitions/repo.ItemAttachment"
                     }
                 },
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/repo.ItemSummary"
+                    }
+                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -1277,7 +1296,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "fields": {
-                    "description": "Future",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/repo.ItemField"
@@ -1301,6 +1319,8 @@ const docTemplate = `{
                 },
                 "location": {
                     "description": "Edges",
+                    "x-nullable": true,
+                    "x-omitempty": true,
                     "$ref": "#/definitions/repo.LocationSummary"
                 },
                 "manufacturer": {
@@ -1315,6 +1335,11 @@ const docTemplate = `{
                 "notes": {
                     "description": "Extras",
                     "type": "string"
+                },
+                "parent": {
+                    "x-nullable": true,
+                    "x-omitempty": true,
+                    "$ref": "#/definitions/repo.ItemSummary"
                 },
                 "purchaseFrom": {
                     "type": "string"
@@ -1381,6 +1406,8 @@ const docTemplate = `{
                 },
                 "location": {
                     "description": "Edges",
+                    "x-nullable": true,
+                    "x-omitempty": true,
                     "$ref": "#/definitions/repo.LocationSummary"
                 },
                 "name": {
@@ -1438,6 +1465,11 @@ const docTemplate = `{
                 "notes": {
                     "description": "Extras",
                     "type": "string"
+                },
+                "parentId": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "x-omitempty": true
                 },
                 "purchaseFrom": {
                     "type": "string"
@@ -1553,6 +1585,12 @@ const docTemplate = `{
         "repo.LocationOut": {
             "type": "object",
             "properties": {
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/repo.LocationSummary"
+                    }
+                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -1570,6 +1608,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "parent": {
+                    "$ref": "#/definitions/repo.LocationSummary"
                 },
                 "updatedAt": {
                     "type": "string"
@@ -1616,6 +1657,24 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
+                }
+            }
+        },
+        "repo.LocationUpdate": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parentId": {
+                    "type": "string",
+                    "x-nullable": true
                 }
             }
         },

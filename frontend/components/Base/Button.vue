@@ -3,7 +3,6 @@
     v-if="to"
     v-bind="attributes"
     ref="submitBtn"
-    :to="to"
     class="btn"
     :class="{
       loading: loading,
@@ -64,7 +63,7 @@
   const attributes = computed(() => {
     if (props.to) {
       return {
-        href: props.to,
+        to: props.to,
       };
     }
     return {

@@ -41,6 +41,42 @@ func useItems(t *testing.T, len int) []ItemOut {
 	return items
 }
 
+func TestItemsRepository_RecursiveRelationships(t *testing.T) {
+	parent := useItems(t, 1)[0]
+
+	children := useItems(t, 3)
+
+	for _, child := range children {
+		update := ItemUpdate{
+			ID:          child.ID,
+			ParentID:    parent.ID,
+			Name:        "note-important",
+			Description: "This is a note",
+			LocationID:  child.Location.ID,
+		}
+
+		// Append Parent ID
+		_, err := tRepos.Items.UpdateByGroup(context.Background(), tGroup.ID, update)
+		assert.NoError(t, err)
+
+		// Check Parent ID
+		updated, err := tRepos.Items.GetOne(context.Background(), child.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, parent.ID, updated.Parent.ID)
+
+		// Remove Parent ID
+		update.ParentID = uuid.Nil
+		_, err = tRepos.Items.UpdateByGroup(context.Background(), tGroup.ID, update)
+		assert.NoError(t, err)
+
+		// Check Parent ID
+		updated, err = tRepos.Items.GetOne(context.Background(), child.ID)
+		assert.NoError(t, err)
+		assert.Nil(t, updated.Parent)
+
+	}
+}
+
 func TestItemsRepository_GetOne(t *testing.T) {
 	entity := useItems(t, 3)
 

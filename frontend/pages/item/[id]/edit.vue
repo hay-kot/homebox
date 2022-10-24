@@ -4,6 +4,7 @@
   import { useLabelStore } from "~~/stores/labels";
   import { useLocationStore } from "~~/stores/locations";
   import { capitalize } from "~~/lib/strings";
+  import Autocomplete from "~~/components/Form/Autocomplete.vue";
 
   definePageMeta({
     middleware: ["auth"],
@@ -37,8 +38,13 @@
       }
     }
 
+    if (data.parent) {
+      parent.value = data.parent;
+    }
+
     return data;
   });
+
   onMounted(() => {
     refresh();
   });
@@ -48,6 +54,7 @@
       ...item.value,
       locationId: item.value.location?.id,
       labelIds: item.value.labels.map(l => l.id),
+      parentId: parent.value ? parent.value.id : null,
     };
 
     const { error } = await api.items.update(itemId.value, payload);
@@ -256,7 +263,6 @@
 
   async function updateAttachment() {
     editState.loading = true;
-    console.log(editState.type);
     const { error, data } = await api.items.updateAttachment(itemId.value, editState.id, {
       title: editState.title,
       type: editState.type,
@@ -306,6 +312,9 @@
       timeValue: null,
     });
   }
+
+  const { query, results } = useItemSearch(api, { immediate: false });
+  const parent = ref();
 </script>
 
 <template>
@@ -314,8 +323,8 @@
       <template #title> Attachment Edit </template>
 
       <FormTextField v-model="editState.title" label="Attachment Title" />
+      {{ editState.type }}
       <FormSelect
-        v-model="editState.obj"
         v-model:value="editState.type"
         label="Attachment Type"
         value-key="value"
@@ -354,8 +363,24 @@
             </template>
           </BaseSectionHeader>
           <div class="px-5 mb-6 grid md:grid-cols-2 gap-4">
-            <FormSelect v-if="item" v-model="item.location" label="Location" :items="locations ?? []" />
+            <FormSelect
+              v-if="item"
+              v-model="item.location"
+              label="Location"
+              :items="locations ?? []"
+              compare-key="id"
+            />
             <FormMultiselect v-model="item.labels" label="Labels" :items="labels ?? []" />
+
+            <Autocomplete
+              v-if="!preferences.editorSimpleView"
+              v-model="parent"
+              v-model:search="query"
+              :items="results"
+              item-text="name"
+              label="Parent Item"
+              no-results-text="Type to search..."
+            />
           </div>
 
           <div class="border-t border-gray-300 sm:p-0">

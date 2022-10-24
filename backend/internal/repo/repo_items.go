@@ -39,15 +39,17 @@ type (
 	}
 
 	ItemCreate struct {
-		ImportRef   string `json:"-"`
-		Name        string `json:"name"`
-		Description string `json:"description"`
+		ImportRef   string    `json:"-"`
+		ParentID    uuid.UUID `json:"parentId" extensions:"x-nullable"`
+		Name        string    `json:"name"`
+		Description string    `json:"description"`
 
 		// Edges
 		LocationID uuid.UUID   `json:"locationId"`
 		LabelIDs   []uuid.UUID `json:"labelIds"`
 	}
 	ItemUpdate struct {
+		ParentID    uuid.UUID `json:"parentId" extensions:"x-nullable,x-omitempty"`
 		ID          uuid.UUID `json:"id"`
 		Name        string    `json:"name"`
 		Description string    `json:"description"`
@@ -95,11 +97,12 @@ type (
 		UpdatedAt   time.Time `json:"updatedAt"`
 
 		// Edges
-		Location LocationSummary `json:"location"`
-		Labels   []LabelSummary  `json:"labels"`
+		Location *LocationSummary `json:"location,omitempty" extensions:"x-nullable,x-omitempty"`
+		Labels   []LabelSummary   `json:"labels"`
 	}
 
 	ItemOut struct {
+		Parent *ItemSummary `json:"parent,omitempty" extensions:"x-nullable,x-omitempty"`
 		ItemSummary
 
 		SerialNumber string `json:"serialNumber"`
@@ -126,8 +129,8 @@ type (
 		Notes string `json:"notes"`
 
 		Attachments []ItemAttachment `json:"attachments"`
-		// Future
-		Fields []ItemField `json:"fields"`
+		Fields      []ItemField      `json:"fields"`
+		Children    []ItemSummary    `json:"children"`
 	}
 )
 
@@ -136,12 +139,13 @@ var (
 )
 
 func mapItemSummary(item *ent.Item) ItemSummary {
-	var location LocationSummary
+	var location *LocationSummary
 	if item.Edges.Location != nil {
-		location = mapLocationSummary(item.Edges.Location)
+		loc := mapLocationSummary(item.Edges.Location)
+		location = &loc
 	}
 
-	var labels []LabelSummary
+	labels := make([]LabelSummary, len(item.Edges.Label))
 	if item.Edges.Label != nil {
 		labels = mapEach(item.Edges.Label, mapLabelSummary)
 	}
@@ -194,7 +198,19 @@ func mapItemOut(item *ent.Item) ItemOut {
 		fields = mapFields(item.Edges.Fields)
 	}
 
+	var children []ItemSummary
+	if item.Edges.Children != nil {
+		children = mapEach(item.Edges.Children, mapItemSummary)
+	}
+
+	var parent *ItemSummary
+	if item.Edges.Parent != nil {
+		v := mapItemSummary(item.Edges.Parent)
+		parent = &v
+	}
+
 	return ItemOut{
+		Parent:           parent,
 		ItemSummary:      mapItemSummary(item),
 		LifetimeWarranty: item.LifetimeWarranty,
 		WarrantyExpires:  item.WarrantyExpires,
@@ -220,6 +236,7 @@ func mapItemOut(item *ent.Item) ItemOut {
 		Notes:       item.Notes,
 		Attachments: attachments,
 		Fields:      fields,
+		Children:    children,
 	}
 }
 
@@ -231,6 +248,8 @@ func (e *ItemsRepository) getOne(ctx context.Context, where ...predicate.Item) (
 		WithLabel().
 		WithLocation().
 		WithGroup().
+		WithChildren().
+		WithParent().
 		WithAttachments(func(aq *ent.AttachmentQuery) {
 			aq.WithDocument()
 		}).
@@ -396,6 +415,12 @@ func (e *ItemsRepository) UpdateByGroup(ctx context.Context, gid uuid.UUID, data
 
 	if set.Len() > 0 {
 		q.RemoveLabelIDs(set.Slice()...)
+	}
+
+	if data.ParentID != uuid.Nil {
+		q.SetParentID(data.ParentID)
+	} else {
+		q.ClearParent()
 	}
 
 	err = q.Exec(ctx)

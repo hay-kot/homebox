@@ -62,6 +62,9 @@ definitions:
         type: string
       name:
         type: string
+      parentId:
+        type: string
+        x-nullable: true
     type: object
   repo.ItemField:
     properties:
@@ -86,12 +89,15 @@ definitions:
         items:
           $ref: '#/definitions/repo.ItemAttachment'
         type: array
+      children:
+        items:
+          $ref: '#/definitions/repo.ItemSummary'
+        type: array
       createdAt:
         type: string
       description:
         type: string
       fields:
-        description: Future
         items:
           $ref: '#/definitions/repo.ItemField'
         type: array
@@ -109,6 +115,8 @@ definitions:
       location:
         $ref: '#/definitions/repo.LocationSummary'
         description: Edges
+        x-nullable: true
+        x-omitempty: true
       manufacturer:
         type: string
       modelNumber:
@@ -118,6 +126,10 @@ definitions:
       notes:
         description: Extras
         type: string
+      parent:
+        $ref: '#/definitions/repo.ItemSummary'
+        x-nullable: true
+        x-omitempty: true
       purchaseFrom:
         type: string
       purchasePrice:
@@ -164,6 +176,8 @@ definitions:
       location:
         $ref: '#/definitions/repo.LocationSummary'
         description: Edges
+        x-nullable: true
+        x-omitempty: true
       name:
         type: string
       quantity:
@@ -202,6 +216,10 @@ definitions:
       notes:
         description: Extras
         type: string
+      parentId:
+        type: string
+        x-nullable: true
+        x-omitempty: true
       purchaseFrom:
         type: string
       purchasePrice:
@@ -278,6 +296,10 @@ definitions:
     type: object
   repo.LocationOut:
     properties:
+      children:
+        items:
+          $ref: '#/definitions/repo.LocationSummary'
+        type: array
       createdAt:
         type: string
       description:
@@ -290,6 +312,8 @@ definitions:
         type: array
       name:
         type: string
+      parent:
+        $ref: '#/definitions/repo.LocationSummary'
       updatedAt:
         type: string
     type: object
@@ -320,6 +344,18 @@ definitions:
         type: string
       updatedAt:
         type: string
+    type: object
+  repo.LocationUpdate:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      parentId:
+        type: string
+        x-nullable: true
     type: object
   repo.PaginationResult-repo_ItemSummary:
     properties:
@@ -976,6 +1012,12 @@ paths:
         name: id
         required: true
         type: string
+      - description: Location Data
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/repo.LocationUpdate'
       produces:
       - application/json
       responses:

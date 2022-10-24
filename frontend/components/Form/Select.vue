@@ -45,6 +45,10 @@
       type: String,
       default: "",
     },
+    compareKey: {
+      type: String,
+      default: null,
+    },
   });
 
   const selectedIdx = ref(-1);
@@ -52,36 +56,34 @@
   const internalSelected = useVModel(props, "modelValue", emit);
   const internalValue = useVModel(props, "value", emit);
 
-  watch(selectedIdx, newVal => {
-    internalSelected.value = props.items[newVal];
-  });
-
-  watch(selectedIdx, newVal => {
-    if (props.valueKey) {
-      internalValue.value = props.items[newVal][props.valueKey];
-    }
-  });
-
   watch(
-    internalSelected,
-    () => {
-      const idx = props.items.findIndex(item => compare(item, internalSelected.value));
-      selectedIdx.value = idx;
+    selectedIdx,
+    newVal => {
+      if (newVal === -1) {
+        return;
+      }
+
+      if (props.value) {
+        internalValue.value = props.items[newVal][props.valueKey];
+      }
+
+      internalSelected.value = props.items[newVal];
     },
-    {
-      immediate: true,
-    }
+    { immediate: true }
   );
 
   watch(
-    internalValue,
+    [internalSelected, () => props.value],
     () => {
-      const idx = props.items.findIndex(item => compare(item[props.valueKey], internalValue.value));
+      if (props.valueKey) {
+        const idx = props.items.findIndex(item => compare(item, internalValue.value));
+        selectedIdx.value = idx;
+        return;
+      }
+      const idx = props.items.findIndex(item => compare(item, internalSelected.value));
       selectedIdx.value = idx;
     },
-    {
-      immediate: true,
-    }
+    { immediate: true }
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -90,8 +92,13 @@
       return true;
     }
 
-    if (!a || !b) {
-      return false;
+    if (props.valueKey) {
+      return a[props.valueKey] === b;
+    }
+
+    // Try compare key
+    if (props.compareKey && a && b) {
+      return a[props.compareKey] === b[props.compareKey];
     }
 
     return JSON.stringify(a) === JSON.stringify(b);
