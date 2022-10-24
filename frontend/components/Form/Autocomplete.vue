@@ -50,7 +50,7 @@
   interface Props {
     label: string;
     modelValue: string | ItemsObject;
-    items: string[] | ItemsObject[];
+    items: ItemsObject[] | Record<string, unknown>[] | string[];
     itemText?: keyof ItemsObject;
     itemValue?: keyof ItemsObject;
     search?: string;

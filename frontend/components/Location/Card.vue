@@ -17,26 +17,34 @@
           <Icon name="heroicons-map-pin" class="swap-off" />
         </label>
         {{ location.name }}
-        <span v-if="location.itemCount" class="badge badge-secondary badge-lg ml-auto text-secondary-content">
-          {{ location.itemCount }}</span
-        >
+        <span v-if="hasCount" class="badge badge-secondary badge-lg ml-auto text-secondary-content"> {{ count }}</span>
       </h2>
     </div>
   </NuxtLink>
 </template>
 
 <script lang="ts" setup>
-  import { LocationOutCount } from "~~/lib/api/types/data-contracts";
+  import { LocationOut, LocationOutCount, LocationSummary } from "~~/lib/api/types/data-contracts";
 
-  defineProps({
+  const props = defineProps({
     location: {
-      type: Object as () => LocationOutCount,
+      type: Object as () => LocationOutCount | LocationOut | LocationSummary,
       required: true,
     },
     dense: {
       type: Boolean,
       default: false,
     },
+  });
+
+  const hasCount = computed(() => {
+    return !!(props.location as LocationOutCount).itemCount;
+  });
+
+  const count = computed(() => {
+    if (hasCount.value) {
+      return (props.location as LocationOutCount).itemCount;
+    }
   });
 
   const card = ref(null);

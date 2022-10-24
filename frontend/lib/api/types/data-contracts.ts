@@ -191,11 +191,13 @@ export interface LocationCreate {
 }
 
 export interface LocationOut {
+  children: LocationSummary[];
   createdAt: Date;
   description: string;
   id: string;
   items: ItemSummary[];
   name: string;
+  parent: LocationSummary;
   updatedAt: Date;
 }
 
@@ -214,6 +216,13 @@ export interface LocationSummary {
   id: string;
   name: string;
   updatedAt: Date;
+}
+
+export interface LocationUpdate {
+  description: string;
+  id: string;
+  name: string;
+  parentId: string | null;
 }
 
 export interface PaginationResultRepoItemSummary {
