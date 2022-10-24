@@ -76,7 +76,7 @@ export interface ItemOut {
   lifetimeWarranty: boolean;
 
   /** Edges */
-  location: LocationSummary;
+  location: LocationSummary | null;
   manufacturer: string;
   modelNumber: string;
   name: string;
@@ -114,7 +114,7 @@ export interface ItemSummary {
   labels: LabelSummary[];
 
   /** Edges */
-  location: LocationSummary;
+  location: LocationSummary | null;
   name: string;
   quantity: number;
   updatedAt: Date;
