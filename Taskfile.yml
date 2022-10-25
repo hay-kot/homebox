@@ -23,7 +23,7 @@ tasks:
         npx swagger-typescript-api \
           --no-client \
           --modular \
-          --path ./backend/app/api/docs/swagger.json \
+          --path ./backend/app/api/static/docs/swagger.json \
           --output ./frontend/lib/api/types
       - python3 ./scripts/process-types.py ./frontend/lib/api/types/data-contracts.ts
     sources:

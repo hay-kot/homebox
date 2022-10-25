@@ -2,13 +2,14 @@ package main
 
 import (
 	"context"
+	"net/http"
 	"os"
 	"path/filepath"
 	"time"
 
 	atlas "ariga.io/atlas/sql/migrate"
 	"entgo.io/ent/dialect/sql/schema"
-	"github.com/hay-kot/homebox/backend/app/api/docs"
+	"github.com/hay-kot/homebox/backend/app/api/static/docs"
 	"github.com/hay-kot/homebox/backend/ent"
 	"github.com/hay-kot/homebox/backend/internal/config"
 	"github.com/hay-kot/homebox/backend/internal/migrations"
@@ -151,6 +152,15 @@ func run(cfg *config.Config) error {
 	if cfg.Demo {
 		log.Info().Msg("Running in demo mode, creating demo data")
 		app.SetupDemo()
+	}
+
+	if cfg.Debug.Enabled {
+		debugrouter := app.debugRouter()
+		go func() {
+			if err := http.ListenAndServe(":"+cfg.Debug.Port, debugrouter); err != nil {
+				log.Fatal().Err(err).Msg("failed to start debug server")
+			}
+		}()
 	}
 
 	return app.server.Start(routes)

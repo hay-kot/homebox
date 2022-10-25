@@ -24,6 +24,12 @@ type Config struct {
 	Swagger           SwaggerConf `yaml:"swagger"`
 	Demo              bool        `yaml:"demo"`
 	AllowRegistration bool        `yaml:"disable_registration" conf:"default:true"`
+	Debug             DebugConf   `yaml:"debug"`
+}
+
+type DebugConf struct {
+	Enabled bool   `yaml:"enabled" conf:"default:false"`
+	Port    string `yaml:"port" conf:"default:4000"`
 }
 
 type SwaggerConf struct {
