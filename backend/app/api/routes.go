@@ -11,8 +11,9 @@ import (
 	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
-	_ "github.com/hay-kot/homebox/backend/app/api/docs"
-	v1 "github.com/hay-kot/homebox/backend/app/api/v1"
+	"github.com/hay-kot/homebox/backend/app/api/handlers/debughandlers"
+	v1 "github.com/hay-kot/homebox/backend/app/api/handlers/v1"
+	_ "github.com/hay-kot/homebox/backend/app/api/static/docs"
 	"github.com/hay-kot/homebox/backend/internal/repo"
 	"github.com/rs/zerolog/log"
 	httpSwagger "github.com/swaggo/http-swagger" // http-swagger middleware
@@ -23,9 +24,16 @@ const prefix = "/api"
 var (
 	ErrDir = errors.New("path is dir")
 
-	//go:embed all:public/*
+	//go:embed all:static/public/*
 	public embed.FS
 )
+
+func (a *app) debugRouter() *http.ServeMux {
+	dbg := http.NewServeMux()
+	debughandlers.New(dbg)
+
+	return dbg
+}
 
 // registerRoutes registers all the routes for the API
 func (a *app) newRouter(repos *repo.AllRepos) *chi.Mux {

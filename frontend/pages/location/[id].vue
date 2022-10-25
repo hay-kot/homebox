@@ -124,7 +124,7 @@
 </script>
 
 <template>
-  <BaseContainer>
+  <div>
     <BaseModal v-model="updateModal">
       <template #title> Update Location </template>
       <form v-if="location" @submit.prevent="update">
@@ -136,59 +136,60 @@
         </div>
       </form>
     </BaseModal>
+    <BaseContainer class="space-y-10 mb-16">
+      <BaseCard>
+        <template #title>
+          <BaseSectionHeader>
+            <Icon name="mdi-map-marker" class="mr-2 -mt-1 text-base-content" />
+            <span class="text-base-content">
+              {{ location ? location.name : "" }}
+            </span>
+            <div v-if="location && location.parent" class="text-sm breadcrumbs pb-0">
+              <ul class="text-base-content/70">
+                <li>
+                  <NuxtLink :to="`/location/${location.parent.id}`"> {{ location.parent.name }}</NuxtLink>
+                </li>
+                <li>{{ location.name }}</li>
+              </ul>
+            </div>
+          </BaseSectionHeader>
+        </template>
 
-    <BaseCard class="mb-16">
-      <template #title>
-        <BaseSectionHeader>
-          <Icon name="mdi-map-marker" class="mr-2 -mt-1 text-base-content" />
-          <span class="text-base-content">
-            {{ location ? location.name : "" }}
-          </span>
-          <div v-if="location && location.parent" class="text-sm breadcrumbs pb-0">
-            <ul class="text-base-content/70">
-              <li>
-                <NuxtLink :to="`/location/${location.parent.id}`"> {{ location.parent.name }}</NuxtLink>
-              </li>
-              <li>{{ location.name }}</li>
-            </ul>
+        <template #title-actions>
+          <div class="flex mt-2 gap-2">
+            <div class="form-control max-w-[160px]">
+              <label class="label cursor-pointer">
+                <input v-model="preferences.showDetails" type="checkbox" class="toggle toggle-primary" />
+                <span class="label-text ml-2"> Detailed View </span>
+              </label>
+            </div>
+            <BaseButton class="ml-auto" size="sm" @click="openUpdate">
+              <Icon class="mr-1" name="mdi-pencil" />
+              Edit
+            </BaseButton>
+            <BaseButton size="sm" @click="confirmDelete">
+              <Icon class="mr-1" name="mdi-delete" />
+              Delete
+            </BaseButton>
           </div>
-        </BaseSectionHeader>
-      </template>
+        </template>
 
-      <template #title-actions>
-        <div class="flex mt-2 gap-2">
-          <div class="form-control max-w-[160px]">
-            <label class="label cursor-pointer">
-              <input v-model="preferences.showDetails" type="checkbox" class="toggle toggle-primary" />
-              <span class="label-text ml-2"> Detailed View </span>
-            </label>
-          </div>
-          <BaseButton class="ml-auto" size="sm" @click="openUpdate">
-            <Icon class="mr-1" name="mdi-pencil" />
-            Edit
-          </BaseButton>
-          <BaseButton size="sm" @click="confirmDelete">
-            <Icon class="mr-1" name="mdi-delete" />
-            Delete
-          </BaseButton>
+        <DetailsSection :details="details" />
+      </BaseCard>
+
+      <section v-if="location && location.items.length > 0">
+        <BaseSectionHeader class="mb-5"> Items </BaseSectionHeader>
+        <div class="grid gap-2 grid-cols-1 sm:grid-cols-2">
+          <ItemCard v-for="item in location.items" :key="item.id" :item="item" />
         </div>
-      </template>
+      </section>
 
-      <DetailsSection :details="details" />
-    </BaseCard>
-
-    <section v-if="location && location.items.length > 0">
-      <BaseSectionHeader class="mb-5"> Items </BaseSectionHeader>
-      <div class="grid gap-2 grid-cols-1 sm:grid-cols-2">
-        <ItemCard v-for="item in location.items" :key="item.id" :item="item" />
-      </div>
-    </section>
-
-    <section v-if="location && location.children.length > 0">
-      <BaseSectionHeader class="mb-5"> Child Locations </BaseSectionHeader>
-      <div class="grid gap-2 grid-cols-1 sm:grid-cols-3">
-        <LocationCard v-for="item in location.children" :key="item.id" :location="item" />
-      </div>
-    </section>
-  </BaseContainer>
+      <section v-if="location && location.children.length > 0">
+        <BaseSectionHeader class="mb-5"> Child Locations </BaseSectionHeader>
+        <div class="grid gap-2 grid-cols-1 sm:grid-cols-3">
+          <LocationCard v-for="item in location.children" :key="item.id" :location="item" />
+        </div>
+      </section>
+    </BaseContainer>
+  </div>
 </template>

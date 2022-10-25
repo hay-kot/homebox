@@ -17,13 +17,13 @@ tasks:
     deps:
       - db:generate
     cmds:
-      - cd backend/app/api/ && swag fmt
-      - cd backend/app/api/ && swag init --dir=./,../../internal,../../pkgs
+      - cd backend/app/api/static && swag fmt --dir=../
+      - cd backend/app/api/static && swag init --dir=../,../../../internal,../../../pkgs
       - |
         npx swagger-typescript-api \
           --no-client \
           --modular \
-          --path ./backend/app/api/docs/swagger.json \
+          --path ./backend/app/api/static/docs/swagger.json \
           --output ./frontend/lib/api/types
       - python3 ./scripts/process-types.py ./frontend/lib/api/types/data-contracts.ts
     sources:
@@ -34,8 +34,8 @@ tasks:
     generates:
       - "./frontend/lib/api/types/data-contracts.ts"
       - "./backend/ent/schema"
-      - "./backend/app/api/docs/swagger.json"
-      - "./backend/app/api/docs/swagger.yaml"
+      - "./backend/app/api/static/docs/swagger.json"
+      - "./backend/app/api/static/docs/swagger.yaml"
 
   api:
     desc: Starts the backend api server (depends on generate task)
