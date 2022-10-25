@@ -15,7 +15,6 @@ import (
 	v1 "github.com/hay-kot/homebox/backend/app/api/handlers/v1"
 	_ "github.com/hay-kot/homebox/backend/app/api/static/docs"
 	"github.com/hay-kot/homebox/backend/internal/repo"
-	"github.com/rs/zerolog/log"
 	httpSwagger "github.com/swaggo/http-swagger" // http-swagger middleware
 )
 
@@ -167,14 +166,11 @@ func notFoundHandler() http.HandlerFunc {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		err := tryRead(public, "public", r.URL.Path, w)
+		err := tryRead(public, "static/public", r.URL.Path, w)
 		if err == nil {
 			return
 		}
-		log.Debug().
-			Str("path", r.URL.Path).
-			Msg("served from embed not found - serving index.html")
-		err = tryRead(public, "public", "index.html", w)
+		err = tryRead(public, "static/public", "index.html", w)
 		if err != nil {
 			panic(err)
 		}
