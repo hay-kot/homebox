@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@iconify/vue": "^3.2.1",
-    "@nuxtjs/tailwindcss": "^5.3.2",
+    "@nuxtjs/tailwindcss": "^6.1.1",
     "@pinia/nuxt": "^0.4.1",
     "@tailwindcss/aspect-ratio": "^0.4.0",
     "@tailwindcss/forms": "^0.5.2",
