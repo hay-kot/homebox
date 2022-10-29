@@ -98,7 +98,7 @@ func (ctrl *V1Controller) HandleLocationUpdate() server.HandlerFunc {
 func (ctrl *V1Controller) handleLocationGeneral() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := services.NewContext(r.Context())
-		ID, err := ctrl.routeID(w, r)
+		ID, err := ctrl.routeID(r)
 		if err != nil {
 			return err
 		}

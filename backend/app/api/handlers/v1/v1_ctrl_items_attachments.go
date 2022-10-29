@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/ent/attachment"
 	"github.com/hay-kot/homebox/backend/internal/repo"
 	"github.com/hay-kot/homebox/backend/internal/services"
@@ -71,7 +69,7 @@ func (ctrl *V1Controller) HandleItemAttachmentCreate() server.HandlerFunc {
 			attachmentType = attachment.TypeAttachment.String()
 		}
 
-		id, err := ctrl.routeID(w, r)
+		id, err := ctrl.routeID(r)
 		if err != nil {
 			return err
 		}
@@ -161,36 +159,33 @@ func (ctrl *V1Controller) HandleItemAttachmentUpdate() server.HandlerFunc {
 }
 
 func (ctrl *V1Controller) handleItemAttachmentsHandler(w http.ResponseWriter, r *http.Request) error {
-	ID, err := ctrl.routeID(w, r)
+	ID, err := ctrl.routeID(r)
 	if err != nil {
 		return err
 	}
 
-	attachmentId, err := uuid.Parse(chi.URLParam(r, "attachment_id"))
+	attachmentID, err := ctrl.routeUUID(r, "attachment_id")
 	if err != nil {
-		log.Err(err).Msg("failed to parse attachment_id param")
-		return validate.NewRequestError(err, http.StatusBadRequest)
+		return err
 	}
 
 	ctx := services.NewContext(r.Context())
-
 	switch r.Method {
-
 	// Token Handler
 	case http.MethodGet:
-		token, err := ctrl.svc.Items.AttachmentToken(ctx, ID, attachmentId)
+		token, err := ctrl.svc.Items.AttachmentToken(ctx, ID, attachmentID)
 		if err != nil {
 			switch err {
 			case services.ErrNotFound:
 				log.Err(err).
-					Str("id", attachmentId.String()).
+					Str("id", attachmentID.String()).
 					Msg("failed to find attachment with id")
 
 				return validate.NewRequestError(err, http.StatusNotFound)
 
 			case services.ErrFileNotFound:
 				log.Err(err).
-					Str("id", attachmentId.String()).
+					Str("id", attachmentID.String()).
 					Msg("failed to find file path for attachment with id")
 				log.Warn().Msg("attachment with no file path removed from database")
 
@@ -206,7 +201,7 @@ func (ctrl *V1Controller) handleItemAttachmentsHandler(w http.ResponseWriter, r 
 
 	// Delete Attachment Handler
 	case http.MethodDelete:
-		err = ctrl.svc.Items.AttachmentDelete(r.Context(), ctx.GID, ID, attachmentId)
+		err = ctrl.svc.Items.AttachmentDelete(r.Context(), ctx.GID, ID, attachmentID)
 		if err != nil {
 			log.Err(err).Msg("failed to delete attachment")
 			return validate.NewRequestError(err, http.StatusInternalServerError)
@@ -223,7 +218,7 @@ func (ctrl *V1Controller) handleItemAttachmentsHandler(w http.ResponseWriter, r 
 			return validate.NewRequestError(err, http.StatusBadRequest)
 		}
 
-		attachment.ID = attachmentId
+		attachment.ID = attachmentID
 		val, err := ctrl.svc.Items.AttachmentUpdate(ctx, ID, &attachment)
 		if err != nil {
 			log.Err(err).Msg("failed to delete attachment")
