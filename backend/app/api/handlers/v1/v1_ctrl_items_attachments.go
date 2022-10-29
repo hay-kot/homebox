@@ -10,6 +10,7 @@ import (
 	"github.com/hay-kot/homebox/backend/ent/attachment"
 	"github.com/hay-kot/homebox/backend/internal/repo"
 	"github.com/hay-kot/homebox/backend/internal/services"
+	"github.com/hay-kot/homebox/backend/internal/sys/validate"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 	"github.com/rs/zerolog/log"
 )
@@ -32,13 +33,13 @@ type (
 // @Failure  422  {object} []server.ValidationError
 // @Router   /v1/items/{id}/attachments [POST]
 // @Security Bearer
-func (ctrl *V1Controller) HandleItemAttachmentCreate() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (ctrl *V1Controller) HandleItemAttachmentCreate() server.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		err := r.ParseMultipartForm(ctrl.maxUploadSize << 20)
 		if err != nil {
 			log.Err(err).Msg("failed to parse multipart form")
-			server.RespondError(w, http.StatusBadRequest, errors.New("failed to parse multipart form"))
-			return
+			return validate.NewRequestError(errors.New("failed to parse multipart form"), http.StatusBadRequest)
+
 		}
 
 		errs := make(server.ValidationErrors, 0)
@@ -51,8 +52,7 @@ func (ctrl *V1Controller) HandleItemAttachmentCreate() http.HandlerFunc {
 				errs = errs.Append("file", "file is required")
 			default:
 				log.Err(err).Msg("failed to get file from form")
-				server.RespondServerError(w)
-				return
+				return validate.NewRequestError(err, http.StatusInternalServerError)
 			}
 		}
 
@@ -63,8 +63,7 @@ func (ctrl *V1Controller) HandleItemAttachmentCreate() http.HandlerFunc {
 		}
 
 		if errs.HasErrors() {
-			server.Respond(w, http.StatusUnprocessableEntity, errs)
-			return
+			return server.Respond(w, http.StatusUnprocessableEntity, errs)
 		}
 
 		attachmentType := r.FormValue("type")
@@ -74,7 +73,6 @@ func (ctrl *V1Controller) HandleItemAttachmentCreate() http.HandlerFunc {
 
 		id, err := ctrl.routeID(w, r)
 		if err != nil {
-			return
 		}
 
 		ctx := services.NewContext(r.Context())
@@ -89,11 +87,10 @@ func (ctrl *V1Controller) HandleItemAttachmentCreate() http.HandlerFunc {
 
 		if err != nil {
 			log.Err(err).Msg("failed to add attachment")
-			server.RespondServerError(w)
-			return
+			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		server.Respond(w, http.StatusCreated, item)
+		return server.Respond(w, http.StatusCreated, item)
 	}
 }
 
@@ -106,21 +103,21 @@ func (ctrl *V1Controller) HandleItemAttachmentCreate() http.HandlerFunc {
 // @Success  200
 // @Router   /v1/items/{id}/attachments/download [GET]
 // @Security Bearer
-func (ctrl *V1Controller) HandleItemAttachmentDownload() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (ctrl *V1Controller) HandleItemAttachmentDownload() server.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		token := server.GetParam(r, "token", "")
 
 		doc, err := ctrl.svc.Items.AttachmentPath(r.Context(), token)
 
 		if err != nil {
 			log.Err(err).Msg("failed to get attachment")
-			server.RespondServerError(w)
-			return
+			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
 		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", doc.Title))
 		w.Header().Set("Content-Type", "application/octet-stream")
 		http.ServeFile(w, r, doc.Path)
+		return nil
 	}
 }
 
@@ -133,7 +130,7 @@ func (ctrl *V1Controller) HandleItemAttachmentDownload() http.HandlerFunc {
 // @Success  200           {object} ItemAttachmentToken
 // @Router   /v1/items/{id}/attachments/{attachment_id} [GET]
 // @Security Bearer
-func (ctrl *V1Controller) HandleItemAttachmentToken() http.HandlerFunc {
+func (ctrl *V1Controller) HandleItemAttachmentToken() server.HandlerFunc {
 	return ctrl.handleItemAttachmentsHandler
 }
 
@@ -145,7 +142,7 @@ func (ctrl *V1Controller) HandleItemAttachmentToken() http.HandlerFunc {
 // @Success  204
 // @Router   /v1/items/{id}/attachments/{attachment_id} [DELETE]
 // @Security Bearer
-func (ctrl *V1Controller) HandleItemAttachmentDelete() http.HandlerFunc {
+func (ctrl *V1Controller) HandleItemAttachmentDelete() server.HandlerFunc {
 	return ctrl.handleItemAttachmentsHandler
 }
 
@@ -158,21 +155,19 @@ func (ctrl *V1Controller) HandleItemAttachmentDelete() http.HandlerFunc {
 // @Success  200           {object} repo.ItemOut
 // @Router   /v1/items/{id}/attachments/{attachment_id} [PUT]
 // @Security Bearer
-func (ctrl *V1Controller) HandleItemAttachmentUpdate() http.HandlerFunc {
+func (ctrl *V1Controller) HandleItemAttachmentUpdate() server.HandlerFunc {
 	return ctrl.handleItemAttachmentsHandler
 }
 
-func (ctrl *V1Controller) handleItemAttachmentsHandler(w http.ResponseWriter, r *http.Request) {
+func (ctrl *V1Controller) handleItemAttachmentsHandler(w http.ResponseWriter, r *http.Request) error {
 	ID, err := ctrl.routeID(w, r)
 	if err != nil {
-		return
 	}
 
 	attachmentId, err := uuid.Parse(chi.URLParam(r, "attachment_id"))
 	if err != nil {
 		log.Err(err).Msg("failed to parse attachment_id param")
-		server.RespondError(w, http.StatusBadRequest, err)
-		return
+		return validate.NewRequestError(err, http.StatusBadRequest)
 	}
 
 	ctx := services.NewContext(r.Context())
@@ -189,7 +184,7 @@ func (ctrl *V1Controller) handleItemAttachmentsHandler(w http.ResponseWriter, r 
 					Str("id", attachmentId.String()).
 					Msg("failed to find attachment with id")
 
-				server.RespondError(w, http.StatusNotFound, err)
+				return validate.NewRequestError(err, http.StatusNotFound)
 
 			case services.ErrFileNotFound:
 				log.Err(err).
@@ -197,27 +192,25 @@ func (ctrl *V1Controller) handleItemAttachmentsHandler(w http.ResponseWriter, r 
 					Msg("failed to find file path for attachment with id")
 				log.Warn().Msg("attachment with no file path removed from database")
 
-				server.RespondError(w, http.StatusNotFound, err)
+				return validate.NewRequestError(err, http.StatusNotFound)
 
 			default:
 				log.Err(err).Msg("failed to get attachment")
-				server.RespondServerError(w)
-				return
+				return validate.NewRequestError(err, http.StatusInternalServerError)
 			}
 		}
 
-		server.Respond(w, http.StatusOK, ItemAttachmentToken{Token: token})
+		return server.Respond(w, http.StatusOK, ItemAttachmentToken{Token: token})
 
 	// Delete Attachment Handler
 	case http.MethodDelete:
 		err = ctrl.svc.Items.AttachmentDelete(r.Context(), ctx.GID, ID, attachmentId)
 		if err != nil {
 			log.Err(err).Msg("failed to delete attachment")
-			server.RespondServerError(w)
-			return
+			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		server.Respond(w, http.StatusNoContent, nil)
+		return server.Respond(w, http.StatusNoContent, nil)
 
 	// Update Attachment Handler
 	case http.MethodPut:
@@ -225,18 +218,18 @@ func (ctrl *V1Controller) handleItemAttachmentsHandler(w http.ResponseWriter, r 
 		err = server.Decode(r, &attachment)
 		if err != nil {
 			log.Err(err).Msg("failed to decode attachment")
-			server.RespondError(w, http.StatusBadRequest, err)
-			return
+			return validate.NewRequestError(err, http.StatusBadRequest)
 		}
 
 		attachment.ID = attachmentId
 		val, err := ctrl.svc.Items.AttachmentUpdate(ctx, ID, &attachment)
 		if err != nil {
 			log.Err(err).Msg("failed to delete attachment")
-			server.RespondServerError(w)
-			return
+			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		server.Respond(w, http.StatusOK, val)
+		return server.Respond(w, http.StatusOK, val)
 	}
+
+	return nil
 }

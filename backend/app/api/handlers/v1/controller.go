@@ -76,9 +76,9 @@ func NewControllerV1(svc *services.AllServices, options ...func(*V1Controller)) 
 // @Produce json
 // @Success 200 {object} ApiSummary
 // @Router  /v1/status [GET]
-func (ctrl *V1Controller) HandleBase(ready ReadyFunc, build Build) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		server.Respond(w, http.StatusOK, ApiSummary{
+func (ctrl *V1Controller) HandleBase(ready ReadyFunc, build Build) server.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) error {
+		return server.Respond(w, http.StatusOK, ApiSummary{
 			Healthy: ready(),
 			Title:   "Go API Template",
 			Message: "Welcome to the Go API Template Application!",

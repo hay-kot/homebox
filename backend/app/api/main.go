@@ -15,6 +15,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/migrations"
 	"github.com/hay-kot/homebox/backend/internal/repo"
 	"github.com/hay-kot/homebox/backend/internal/services"
+	"github.com/hay-kot/homebox/backend/internal/web/mid"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/rs/zerolog/log"
@@ -114,17 +115,25 @@ func run(cfg *config.Config) error {
 	app.services = services.New(app.repos)
 
 	// =========================================================================
-	// Start Server
+	// Start Server\
+	logger := log.With().Caller().Logger()
+
+	mwLogger := mid.Logger(logger)
+	if app.conf.Mode == config.ModeDevelopment {
+		mwLogger = mid.SugarLogger(logger)
+	}
+
 	app.server = server.NewServer(
 		server.WithHost(app.conf.Web.Host),
 		server.WithPort(app.conf.Web.Port),
+		server.WithMiddleware(
+			mwLogger,
+			mid.Errors(logger),
+			mid.Panic(app.conf.Mode == config.ModeDevelopment),
+		),
 	)
 
-	routes := app.newRouter(app.repos)
-
-	if app.conf.Mode != config.ModeDevelopment {
-		app.logRoutes(routes)
-	}
+	app.mountRoutes(app.repos)
 
 	log.Info().Msgf("Starting HTTP Server on %s:%s", app.server.Host, app.server.Port)
 
@@ -163,5 +172,5 @@ func run(cfg *config.Config) error {
 		}()
 	}
 
-	return app.server.Start(routes)
+	return app.server.Start()
 }

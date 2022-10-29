@@ -10,6 +10,8 @@ import (
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/go-chi/chi/v5"
 )
 
 var (
@@ -22,7 +24,11 @@ type Server struct {
 	Port   string
 	Worker Worker
 
-	wg sync.WaitGroup
+	wg  sync.WaitGroup
+	mux *chi.Mux
+
+	// mw is the global middleware chain for the server.
+	mw []Middleware
 
 	started      bool
 	activeServer *http.Server
@@ -36,6 +42,7 @@ func NewServer(opts ...Option) *Server {
 	s := &Server{
 		Host:         "localhost",
 		Port:         "8080",
+		mux:          chi.NewRouter(),
 		Worker:       NewSimpleWorker(),
 		idleTimeout:  30 * time.Second,
 		readTimeout:  10 * time.Second,
@@ -75,14 +82,14 @@ func (s *Server) Shutdown(sig string) error {
 
 }
 
-func (s *Server) Start(router http.Handler) error {
+func (s *Server) Start() error {
 	if s.started {
 		return ErrServerAlreadyStarted
 	}
 
 	s.activeServer = &http.Server{
 		Addr:         s.Host + ":" + s.Port,
-		Handler:      router,
+		Handler:      s.mux,
 		IdleTimeout:  s.idleTimeout,
 		ReadTimeout:  s.readTimeout,
 		WriteTimeout: s.writeTimeout,

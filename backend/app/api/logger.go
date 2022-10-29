@@ -15,7 +15,7 @@ func (a *app) setupLogger() {
 	// Logger Init
 	// zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	if a.conf.Log.Format != config.LogFormatJSON {
-		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr}).With().Caller().Logger()
 	}
 
 	log.Level(getLevel(a.conf.Log.Level))

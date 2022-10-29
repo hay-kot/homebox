@@ -12,8 +12,12 @@ import (
 func testServer(t *testing.T, r http.Handler) *Server {
 	svr := NewServer(WithHost("127.0.0.1"), WithPort("19245"))
 
+	if r != nil {
+		svr.mux.Handle("/", r)
+	}
+
 	go func() {
-		err := svr.Start(r)
+		err := svr.Start()
 		assert.NoError(t, err)
 	}()
 
@@ -42,7 +46,7 @@ func Test_ServerShutdown_Error(t *testing.T) {
 func Test_ServerStarts_Error(t *testing.T) {
 	svr := testServer(t, nil)
 
-	err := svr.Start(nil)
+	err := svr.Start()
 	assert.ErrorIs(t, err, ErrServerAlreadyStarted)
 
 	err = svr.Shutdown("test")
