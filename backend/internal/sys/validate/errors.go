@@ -51,6 +51,17 @@ type FieldError struct {
 // FieldErrors represents a collection of field errors.
 type FieldErrors []FieldError
 
+func (fe FieldErrors) Append(field, reason string) FieldErrors {
+	return append(fe, FieldError{
+		Field: field,
+		Error: reason,
+	})
+}
+
+func (fe FieldErrors) Nil() bool {
+	return len(fe) == 0
+}
+
 // Error implments the error interface.
 func (fe FieldErrors) Error() string {
 	d, err := json.Marshal(fe)

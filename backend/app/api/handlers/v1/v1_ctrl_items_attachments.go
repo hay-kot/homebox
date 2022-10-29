@@ -42,7 +42,7 @@ func (ctrl *V1Controller) HandleItemAttachmentCreate() server.HandlerFunc {
 
 		}
 
-		errs := make(server.ValidationErrors, 0)
+		errs := validate.NewFieldErrors()
 
 		file, _, err := r.FormFile("file")
 		if err != nil {
@@ -62,7 +62,7 @@ func (ctrl *V1Controller) HandleItemAttachmentCreate() server.HandlerFunc {
 			errs = errs.Append("name", "name is required")
 		}
 
-		if errs.HasErrors() {
+		if !errs.Nil() {
 			return server.Respond(w, http.StatusUnprocessableEntity, errs)
 		}
 

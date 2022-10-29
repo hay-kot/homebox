@@ -26,6 +26,8 @@ func wrapMiddleware(mw []Middleware, handler Handler) Handler {
 }
 
 // StripTrailingSlash is a middleware that will strip trailing slashes from the request path.
+//
+// Example: /api/v1/ -> /api/v1
 func StripTrailingSlash() Middleware {
 	return func(h Handler) Handler {
 		return HandlerFunc(func(w http.ResponseWriter, r *http.Request) error {
