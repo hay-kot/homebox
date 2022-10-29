@@ -394,6 +394,15 @@ definitions:
       name:
         type: string
     type: object
+  server.ErrorResponse:
+    properties:
+      error:
+        type: string
+      fields:
+        additionalProperties:
+          type: string
+        type: object
+    type: object
   server.Result:
     properties:
       details: {}
@@ -406,13 +415,6 @@ definitions:
   server.Results:
     properties:
       items: {}
-    type: object
-  server.ValidationError:
-    properties:
-      field:
-        type: string
-      reason:
-        type: string
     type: object
   services.UserRegistration:
     properties:
@@ -708,9 +710,7 @@ paths:
         "422":
           description: Unprocessable Entity
           schema:
-            items:
-              $ref: '#/definitions/server.ValidationError'
-            type: array
+            $ref: '#/definitions/server.ErrorResponse'
       security:
       - Bearer: []
       summary: imports items into the database
