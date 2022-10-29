@@ -8,8 +8,8 @@ on:
 jobs:
   backend-tests:
     name: "Backend Server Tests"
-    uses: hay-kot/homebox/.github/workflows/partial-backend.yaml@main
+    uses: hay-kot/homebox/.github/workflows/partial-backend.yaml
 
   frontend-tests:
     name: "Frontend and End-to-End Tests"
-    uses: hay-kot/homebox/.github/workflows/partial-frontend.yaml@main
+    uses: hay-kot/homebox/.github/workflows/partial-frontend.yaml
