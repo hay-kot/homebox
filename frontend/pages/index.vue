@@ -14,7 +14,7 @@
   const { data: status } = useAsyncData(async () => {
     const { data } = await api.status();
 
-    if (data) {
+    if (data.demo) {
       username.value = "demo@example.com";
       password.value = "demo";
     }
