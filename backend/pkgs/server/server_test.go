@@ -13,9 +13,8 @@ func testServer(t *testing.T, r http.Handler) *Server {
 	svr := NewServer(WithHost("127.0.0.1"), WithPort("19245"))
 
 	if r != nil {
-		svr.mux.Handle("/", r)
+		svr.mux.Mount("/", r)
 	}
-
 	go func() {
 		err := svr.Start()
 		assert.NoError(t, err)
