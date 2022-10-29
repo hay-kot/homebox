@@ -42,8 +42,6 @@ func (ctrl *V1Controller) HandleAuthLogin() server.HandlerFunc {
 			err := r.ParseForm()
 			if err != nil {
 				return server.Respond(w, http.StatusBadRequest, server.Wrap(err))
-				log.Error().Err(err).Msg("failed to parse form")
-				return nil
 			}
 
 			loginForm.Username = r.PostFormValue("username")
@@ -53,12 +51,9 @@ func (ctrl *V1Controller) HandleAuthLogin() server.HandlerFunc {
 
 			if err != nil {
 				log.Err(err).Msg("failed to decode login form")
-				return server.Respond(w, http.StatusBadRequest, server.Wrap(err))
-				return nil
 			}
 		default:
 			return server.Respond(w, http.StatusBadRequest, errors.New("invalid content type"))
-			return nil
 		}
 
 		if loginForm.Username == "" || loginForm.Password == "" {

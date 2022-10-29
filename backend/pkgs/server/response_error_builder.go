@@ -72,5 +72,5 @@ func (eb *ErrorBuilder) AddError(err error) {
 // Respond sends a JSON response with the ErrorBuilder's errors. If there are no errors, then
 // the errors field will be an empty array.
 func (eb *ErrorBuilder) Respond(w http.ResponseWriter, statusCode int) {
-	Respond(w, statusCode, Wrap(nil).AddError(http.StatusText(statusCode), eb.errs))
+	_ = Respond(w, statusCode, Wrap(nil).AddError(http.StatusText(statusCode), eb.errs))
 }

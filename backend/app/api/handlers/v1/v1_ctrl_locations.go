@@ -100,6 +100,7 @@ func (ctrl *V1Controller) handleLocationGeneral() server.HandlerFunc {
 		ctx := services.NewContext(r.Context())
 		ID, err := ctrl.routeID(w, r)
 		if err != nil {
+			return err
 		}
 
 		switch r.Method {

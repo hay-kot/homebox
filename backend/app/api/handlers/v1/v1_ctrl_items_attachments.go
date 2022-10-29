@@ -73,6 +73,7 @@ func (ctrl *V1Controller) HandleItemAttachmentCreate() server.HandlerFunc {
 
 		id, err := ctrl.routeID(w, r)
 		if err != nil {
+			return err
 		}
 
 		ctx := services.NewContext(r.Context())
@@ -162,6 +163,7 @@ func (ctrl *V1Controller) HandleItemAttachmentUpdate() server.HandlerFunc {
 func (ctrl *V1Controller) handleItemAttachmentsHandler(w http.ResponseWriter, r *http.Request) error {
 	ID, err := ctrl.routeID(w, r)
 	if err != nil {
+		return err
 	}
 
 	attachmentId, err := uuid.Parse(chi.URLParam(r, "attachment_id"))

@@ -16,7 +16,8 @@ func Test_Respond_NoContent(t *testing.T) {
 		Name: "dummy",
 	}
 
-	Respond(recorder, http.StatusNoContent, dummystruct)
+	err := Respond(recorder, http.StatusNoContent, dummystruct)
+	assert.NoError(t, err)
 
 	assert.Equal(t, http.StatusNoContent, recorder.Code)
 	assert.Empty(t, recorder.Body.String())
@@ -30,7 +31,8 @@ func Test_Respond_JSON(t *testing.T) {
 		Name: "dummy",
 	}
 
-	Respond(recorder, http.StatusCreated, dummystruct)
+	err := Respond(recorder, http.StatusCreated, dummystruct)
+	assert.NoError(t, err)
 
 	assert.Equal(t, http.StatusCreated, recorder.Code)
 	assert.JSONEq(t, recorder.Body.String(), `{"name":"dummy"}`)

@@ -10,7 +10,6 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/hay-kot/homebox/backend/app/api/handlers/debughandlers"
 	v1 "github.com/hay-kot/homebox/backend/app/api/handlers/v1"
 	_ "github.com/hay-kot/homebox/backend/app/api/static/docs"
@@ -106,27 +105,6 @@ func (a *app) mountRoutes(repos *repo.AllRepos) {
 	a.server.Delete(v1Base("/items/{id}/attachments/{attachment_id}"), v1Ctrl.HandleItemAttachmentDelete(), a.mwAuthToken)
 
 	a.server.NotFound(notFoundHandler())
-}
-
-// logRoutes logs the routes of the server that are registered within Server.registerRoutes(). This is useful for debugging.
-// See https://github.com/go-chi/chi/issues/332 for details and inspiration.
-func (a *app) logRoutes(r *chi.Mux) {
-	desiredSpaces := 10
-
-	walkFunc := func(method string, route string, handler http.Handler, middleware ...func(http.Handler) http.Handler) error {
-		text := "[" + method + "]"
-
-		for len(text) < desiredSpaces {
-			text = text + " "
-		}
-
-		fmt.Printf("Registered Route: %s%s\n", text, route)
-		return nil
-	}
-
-	if err := chi.Walk(r, walkFunc); err != nil {
-		fmt.Printf("Logging err: %s\n", err.Error())
-	}
 }
 
 func registerMimes() {
