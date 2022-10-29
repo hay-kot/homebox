@@ -8,12 +8,12 @@ import (
 	"github.com/rs/zerolog"
 )
 
-type StatusRecorder struct {
+type statusRecorder struct {
 	http.ResponseWriter
 	Status int
 }
 
-func (r *StatusRecorder) WriteHeader(status int) {
+func (r *statusRecorder) WriteHeader(status int) {
 	r.Status = status
 	r.ResponseWriter.WriteHeader(status)
 }
@@ -21,20 +21,21 @@ func (r *StatusRecorder) WriteHeader(status int) {
 func Logger(log zerolog.Logger) server.Middleware {
 	return func(next server.Handler) server.Handler {
 		return server.HandlerFunc(func(w http.ResponseWriter, r *http.Request) error {
+			traceId := server.GetTraceID(r.Context())
 
 			log.Info().
-				Str("trace_id", "TODO").
+				Str("trace_id", traceId).
 				Str("method", r.Method).
 				Str("path", r.URL.Path).
 				Str("remove_address", r.RemoteAddr).
 				Msg("request started")
 
-			record := &StatusRecorder{ResponseWriter: w, Status: http.StatusOK}
+			record := &statusRecorder{ResponseWriter: w, Status: http.StatusOK}
 
 			err := next.ServeHTTP(record, r)
 
 			log.Info().
-				Str("trave_id", "TODO").
+				Str("trace_id", traceId).
 				Str("method", r.Method).
 				Str("url", r.URL.Path).
 				Str("remote_address", r.RemoteAddr).
@@ -42,7 +43,6 @@ func Logger(log zerolog.Logger) server.Middleware {
 				Msg("request completed")
 
 			return err
-
 		})
 	}
 }
@@ -70,19 +70,15 @@ func SugarLogger(log zerolog.Logger) server.Middleware {
 	return func(next server.Handler) server.Handler {
 		return server.HandlerFunc(func(w http.ResponseWriter, r *http.Request) error {
 
-			record := &StatusRecorder{ResponseWriter: w, Status: http.StatusOK}
+			record := &statusRecorder{ResponseWriter: w, Status: http.StatusOK}
 
 			err := next.ServeHTTP(record, r) // Blocks until the next handler returns.
 
-			scheme := "http"
-			if r.TLS != nil {
-				scheme = "https"
-			}
-
-			url := fmt.Sprintf("%s://%s%s %s", scheme, r.Host, r.RequestURI, r.Proto)
+			url := fmt.Sprintf("%s %s", r.RequestURI, r.Proto)
 
 			log.Info().
-				Msgf("%s  %s  %s",
+				Str("trace_id", server.GetTraceID(r.Context())).
+				Msgf("%s %s  %s",
 					bold(fmtCode(record.Status)),
 					bold(orange(""+r.Method+"")),
 					aqua(url),

@@ -3,6 +3,8 @@ package server
 import (
 	"context"
 	"net/http"
+
+	"github.com/google/uuid"
 )
 
 type vkey int
@@ -16,6 +18,14 @@ type Values struct {
 	TraceID string
 }
 
+func GetTraceID(ctx context.Context) string {
+	v, ok := ctx.Value(key).(Values)
+	if !ok {
+		return ""
+	}
+	return v.TraceID
+}
+
 func (s *Server) toHttpHandler(handler Handler, mw ...Middleware) http.HandlerFunc {
 	handler = wrapMiddleware(mw, handler)
 
@@ -26,8 +36,7 @@ func (s *Server) toHttpHandler(handler Handler, mw ...Middleware) http.HandlerFu
 
 		// Add the trace ID to the context
 		ctx = context.WithValue(ctx, key, Values{
-			// TODO: Initialize a new trace ID
-			TraceID: "00000000-0000-0000-0000-000000000000",
+			TraceID: uuid.NewString(),
 		})
 
 		err := handler.ServeHTTP(w, r.WithContext(ctx))
@@ -59,10 +68,6 @@ func (s *Server) handle(method, pattern string, handler Handler, mw ...Middlewar
 	case http.MethodOptions:
 		s.mux.Options(pattern, h)
 	}
-}
-
-func (s *Server) Handler(pattern string, handler Handler, mw ...Middleware) {
-	s.mux.Handle(pattern, s.toHttpHandler(handler, mw...))
 }
 
 func (s *Server) Get(pattern string, handler Handler, mw ...Middleware) {

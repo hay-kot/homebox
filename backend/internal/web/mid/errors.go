@@ -20,7 +20,7 @@ func Errors(log zerolog.Logger) server.Middleware {
 				var code int
 
 				log.Err(err).
-					Str("trace_id", "TODO").
+					Str("trace_id", server.GetTraceID(r.Context())).
 					Msg("ERROR occurred")
 
 				switch {
