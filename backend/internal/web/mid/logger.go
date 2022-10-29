@@ -67,6 +67,13 @@ func SugarLogger(log zerolog.Logger) server.Middleware {
 	}
 	bold := func(s string) string { return "\033[1m" + s + "\033[0m" }
 
+	atLeast6 := func(s string) string {
+		for len(s) <= 6 {
+			s += " "
+		}
+		return s
+	}
+
 	return func(next server.Handler) server.Handler {
 		return server.HandlerFunc(func(w http.ResponseWriter, r *http.Request) error {
 
@@ -78,9 +85,9 @@ func SugarLogger(log zerolog.Logger) server.Middleware {
 
 			log.Info().
 				Str("trace_id", server.GetTraceID(r.Context())).
-				Msgf("%s %s  %s",
+				Msgf("%s %s %s",
 					bold(fmtCode(record.Status)),
-					bold(orange(""+r.Method+"")),
+					bold(orange(atLeast6(r.Method))),
 					aqua(url),
 				)
 
