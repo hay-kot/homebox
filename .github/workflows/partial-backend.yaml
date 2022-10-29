@@ -28,7 +28,7 @@ jobs:
           args: --timeout=6m
 
       - name: Build API
-        run: task api:build
+        run: task go:build
 
       - name: Test
-        run: task api:coverage
+        run: task go:coverage
