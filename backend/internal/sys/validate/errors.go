@@ -5,12 +5,38 @@ import (
 	"errors"
 )
 
-func UnauthorizedError() error {
-	return errors.New("unauthorized")
+type UnauthorizedError struct {
 }
 
-// ErrInvalidID occurs when an ID is not in a valid form.
-var ErrInvalidID = errors.New("ID is not in its proper form")
+func (err *UnauthorizedError) Error() string {
+	return "unauthorized"
+}
+
+func IsUnauthorizedError(err error) bool {
+	var re *UnauthorizedError
+	return errors.As(err, &re)
+}
+
+func NewUnauthorizedError() error {
+	return &UnauthorizedError{}
+}
+
+type InvalidRouteKeyError struct {
+	key string
+}
+
+func (err *InvalidRouteKeyError) Error() string {
+	return "invalid route key: " + err.key
+}
+
+func NewInvalidRouteKeyError(key string) error {
+	return &InvalidRouteKeyError{key}
+}
+
+func IsInvalidRouteKeyError(err error) bool {
+	var re *InvalidRouteKeyError
+	return errors.As(err, &re)
+}
 
 // ErrorResponse is the form used for API responses from failures in the API.
 type ErrorResponse struct {

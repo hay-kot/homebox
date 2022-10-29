@@ -121,7 +121,7 @@ func (ctrl *V1Controller) HandleAuthRefresh() server.HandlerFunc {
 
 		newToken, err := ctrl.svc.User.RenewToken(r.Context(), requestToken)
 		if err != nil {
-			return validate.UnauthorizedError()
+			return validate.NewUnauthorizedError()
 		}
 
 		return server.Respond(w, http.StatusOK, newToken)

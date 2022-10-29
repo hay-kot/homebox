@@ -6,7 +6,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/sys/validate"
-	"github.com/rs/zerolog/log"
 )
 
 // routeID extracts the ID from the request URL. If the ID is not in a valid
@@ -22,8 +21,7 @@ func (ctrl *V1Controller) routeID(r *http.Request) (uuid.UUID, error) {
 func (ctrl *V1Controller) routeUUID(r *http.Request, key string) (uuid.UUID, error) {
 	ID, err := uuid.Parse(chi.URLParam(r, key))
 	if err != nil {
-		log.Err(err).Msg("failed to parse id")
-		return uuid.Nil, validate.ErrInvalidID
+		return uuid.Nil, validate.NewInvalidRouteKeyError(key)
 	}
 	return ID, nil
 }

@@ -1,7 +1,6 @@
 package mid
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/hay-kot/homebox/backend/ent"
@@ -24,10 +23,15 @@ func Errors(log zerolog.Logger) server.Middleware {
 					Msg("ERROR occurred")
 
 				switch {
-				case errors.Is(err, validate.ErrInvalidID):
+				case validate.IsUnauthorizedError(err):
+					code = http.StatusUnauthorized
+					resp = server.ErrorResponse{
+						Error: "unauthorized",
+					}
+				case validate.IsInvalidRouteKeyError(err):
 					code = http.StatusBadRequest
 					resp = server.ErrorResponse{
-						Error: "invalid id parameter",
+						Error: err.Error(),
 					}
 				case validate.IsFieldError(err):
 					fieldErrors := err.(validate.FieldErrors)
