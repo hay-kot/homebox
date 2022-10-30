@@ -247,6 +247,11 @@ export interface UserUpdate {
   name: string;
 }
 
+export interface ServerErrorResponse {
+  error: string;
+  fields: Record<string, string>;
+}
+
 export interface ServerResult {
   details: any;
   error: boolean;
@@ -256,11 +261,6 @@ export interface ServerResult {
 
 export interface ServerResults {
   items: any;
-}
-
-export interface ServerValidationError {
-  field: string;
-  reason: string;
 }
 
 export interface UserRegistration {

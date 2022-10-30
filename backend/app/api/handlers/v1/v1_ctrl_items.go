@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/repo"
 	"github.com/hay-kot/homebox/backend/internal/services"
+	"github.com/hay-kot/homebox/backend/internal/sys/validate"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 	"github.com/rs/zerolog/log"
 )
@@ -25,7 +26,7 @@ import (
 // @Success  200       {object} repo.PaginationResult[repo.ItemSummary]{}
 // @Router   /v1/items [GET]
 // @Security Bearer
-func (ctrl *V1Controller) HandleItemsGetAll() http.HandlerFunc {
+func (ctrl *V1Controller) HandleItemsGetAll() server.HandlerFunc {
 	uuidList := func(params url.Values, key string) []uuid.UUID {
 		var ids []uuid.UUID
 		for _, id := range params[key] {
@@ -58,15 +59,14 @@ func (ctrl *V1Controller) HandleItemsGetAll() http.HandlerFunc {
 		}
 	}
 
-	return func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := services.NewContext(r.Context())
 		items, err := ctrl.svc.Items.Query(ctx, extractQuery(r))
 		if err != nil {
 			log.Err(err).Msg("failed to get items")
-			server.RespondServerError(w)
-			return
+			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
-		server.Respond(w, http.StatusOK, items)
+		return server.Respond(w, http.StatusOK, items)
 	}
 }
 
@@ -78,24 +78,22 @@ func (ctrl *V1Controller) HandleItemsGetAll() http.HandlerFunc {
 // @Success  200     {object} repo.ItemSummary
 // @Router   /v1/items [POST]
 // @Security Bearer
-func (ctrl *V1Controller) HandleItemsCreate() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (ctrl *V1Controller) HandleItemsCreate() server.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		createData := repo.ItemCreate{}
 		if err := server.Decode(r, &createData); err != nil {
 			log.Err(err).Msg("failed to decode request body")
-			server.RespondError(w, http.StatusInternalServerError, err)
-			return
+			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
 		user := services.UseUserCtx(r.Context())
 		item, err := ctrl.svc.Items.Create(r.Context(), user.GroupID, createData)
 		if err != nil {
 			log.Err(err).Msg("failed to create item")
-			server.RespondServerError(w)
-			return
+			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		server.Respond(w, http.StatusCreated, item)
+		return server.Respond(w, http.StatusCreated, item)
 	}
 }
 
@@ -107,7 +105,7 @@ func (ctrl *V1Controller) HandleItemsCreate() http.HandlerFunc {
 // @Success  200 {object} repo.ItemOut
 // @Router   /v1/items/{id} [GET]
 // @Security Bearer
-func (ctrl *V1Controller) HandleItemGet() http.HandlerFunc {
+func (ctrl *V1Controller) HandleItemGet() server.HandlerFunc {
 	return ctrl.handleItemsGeneral()
 }
 
@@ -119,7 +117,7 @@ func (ctrl *V1Controller) HandleItemGet() http.HandlerFunc {
 // @Success  204
 // @Router   /v1/items/{id} [DELETE]
 // @Security Bearer
-func (ctrl *V1Controller) HandleItemDelete() http.HandlerFunc {
+func (ctrl *V1Controller) HandleItemDelete() server.HandlerFunc {
 	return ctrl.handleItemsGeneral()
 }
 
@@ -132,16 +130,16 @@ func (ctrl *V1Controller) HandleItemDelete() http.HandlerFunc {
 // @Success  200     {object} repo.ItemOut
 // @Router   /v1/items/{id} [PUT]
 // @Security Bearer
-func (ctrl *V1Controller) HandleItemUpdate() http.HandlerFunc {
+func (ctrl *V1Controller) HandleItemUpdate() server.HandlerFunc {
 	return ctrl.handleItemsGeneral()
 }
 
-func (ctrl *V1Controller) handleItemsGeneral() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (ctrl *V1Controller) handleItemsGeneral() server.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := services.NewContext(r.Context())
-		ID, err := ctrl.routeID(w, r)
+		ID, err := ctrl.routeID(r)
 		if err != nil {
-			return
+			return err
 		}
 
 		switch r.Method {
@@ -149,37 +147,32 @@ func (ctrl *V1Controller) handleItemsGeneral() http.HandlerFunc {
 			items, err := ctrl.svc.Items.GetOne(r.Context(), ctx.GID, ID)
 			if err != nil {
 				log.Err(err).Msg("failed to get item")
-				server.RespondServerError(w)
-				return
+				return validate.NewRequestError(err, http.StatusInternalServerError)
 			}
-			server.Respond(w, http.StatusOK, items)
-			return
+			return server.Respond(w, http.StatusOK, items)
 		case http.MethodDelete:
 			err = ctrl.svc.Items.Delete(r.Context(), ctx.GID, ID)
 			if err != nil {
 				log.Err(err).Msg("failed to delete item")
-				server.RespondServerError(w)
-				return
+				return validate.NewRequestError(err, http.StatusInternalServerError)
 			}
-			server.Respond(w, http.StatusNoContent, nil)
-			return
+			return server.Respond(w, http.StatusNoContent, nil)
 		case http.MethodPut:
 			body := repo.ItemUpdate{}
 			if err := server.Decode(r, &body); err != nil {
 				log.Err(err).Msg("failed to decode request body")
-				server.RespondError(w, http.StatusInternalServerError, err)
-				return
+				return validate.NewRequestError(err, http.StatusInternalServerError)
 			}
 			body.ID = ID
 			result, err := ctrl.svc.Items.Update(r.Context(), ctx.GID, body)
 			if err != nil {
 				log.Err(err).Msg("failed to update item")
-				server.RespondServerError(w)
-				return
+				return validate.NewRequestError(err, http.StatusInternalServerError)
 			}
-			server.Respond(w, http.StatusOK, result)
+			return server.Respond(w, http.StatusOK, result)
 		}
 
+		return nil
 	}
 }
 
@@ -191,29 +184,26 @@ func (ctrl *V1Controller) handleItemsGeneral() http.HandlerFunc {
 // @Param    csv formData file true "Image to upload"
 // @Router   /v1/items/import [Post]
 // @Security Bearer
-func (ctrl *V1Controller) HandleItemsImport() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (ctrl *V1Controller) HandleItemsImport() server.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) error {
 
 		err := r.ParseMultipartForm(ctrl.maxUploadSize << 20)
 		if err != nil {
 			log.Err(err).Msg("failed to parse multipart form")
-			server.RespondServerError(w)
-			return
+			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
 		file, _, err := r.FormFile("csv")
 		if err != nil {
 			log.Err(err).Msg("failed to get file from form")
-			server.RespondServerError(w)
-			return
+			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
 		reader := csv.NewReader(file)
 		data, err := reader.ReadAll()
 		if err != nil {
 			log.Err(err).Msg("failed to read csv")
-			server.RespondServerError(w)
-			return
+			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
 		user := services.UseUserCtx(r.Context())
@@ -221,10 +211,9 @@ func (ctrl *V1Controller) HandleItemsImport() http.HandlerFunc {
 		_, err = ctrl.svc.Items.CsvImport(r.Context(), user.GroupID, data)
 		if err != nil {
 			log.Err(err).Msg("failed to import items")
-			server.RespondServerError(w)
-			return
+			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		server.Respond(w, http.StatusNoContent, nil)
+		return server.Respond(w, http.StatusNoContent, nil)
 	}
 }

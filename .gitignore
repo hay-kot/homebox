@@ -3,7 +3,6 @@ backend/.data/*
 config.yml
 homebox.db
 .idea
-
 .DS_Store
 test-mailer.json
 node_modules
@@ -32,6 +31,7 @@ node_modules
 go.work
 .task/
 backend/.env
+build/*
 
 # Output Directory for Nuxt/Frontend during build step
 backend/app/api/public/*

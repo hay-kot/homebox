@@ -4,6 +4,13 @@ import "time"
 
 type Option = func(s *Server) error
 
+func WithMiddleware(mw ...Middleware) Option {
+	return func(s *Server) error {
+		s.mw = append(s.mw, mw...)
+		return nil
+	}
+}
+
 func WithWorker(w Worker) Option {
 	return func(s *Server) error {
 		s.Worker = w

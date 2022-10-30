@@ -395,10 +395,7 @@ const docTemplate = `{
                     "422": {
                         "description": "Unprocessable Entity",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/server.ValidationError"
-                            }
+                            "$ref": "#/definitions/server.ErrorResponse"
                         }
                     }
                 }
@@ -1735,6 +1732,20 @@ const docTemplate = `{
                 }
             }
         },
+        "server.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "fields": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "server.Result": {
             "type": "object",
             "properties": {
@@ -1752,17 +1763,6 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "items": {}
-            }
-        },
-        "server.ValidationError": {
-            "type": "object",
-            "properties": {
-                "field": {
-                    "type": "string"
-                },
-                "reason": {
-                    "type": "string"
-                }
             }
         },
         "services.UserRegistration": {

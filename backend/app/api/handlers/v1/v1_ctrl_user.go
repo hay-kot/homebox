@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/repo"
 	"github.com/hay-kot/homebox/backend/internal/services"
+	"github.com/hay-kot/homebox/backend/internal/sys/validate"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 	"github.com/rs/zerolog/log"
 )
@@ -17,29 +18,26 @@ import (
 // @Param   payload body services.UserRegistration true "User Data"
 // @Success 204
 // @Router  /v1/users/register [Post]
-func (ctrl *V1Controller) HandleUserRegistration() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (ctrl *V1Controller) HandleUserRegistration() server.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		regData := services.UserRegistration{}
 
 		if err := server.Decode(r, &regData); err != nil {
 			log.Err(err).Msg("failed to decode user registration data")
-			server.RespondError(w, http.StatusInternalServerError, err)
-			return
+			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
 		if !ctrl.allowRegistration && regData.GroupToken == "" {
-			server.RespondError(w, http.StatusForbidden, nil)
-			return
+			return validate.NewRequestError(nil, http.StatusForbidden)
 		}
 
 		_, err := ctrl.svc.User.RegisterUser(r.Context(), regData)
 		if err != nil {
 			log.Err(err).Msg("failed to register user")
-			server.RespondError(w, http.StatusInternalServerError, err)
-			return
+			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		server.Respond(w, http.StatusNoContent, nil)
+		return server.Respond(w, http.StatusNoContent, nil)
 	}
 }
 
@@ -50,17 +48,16 @@ func (ctrl *V1Controller) HandleUserRegistration() http.HandlerFunc {
 // @Success  200 {object} server.Result{item=repo.UserOut}
 // @Router   /v1/users/self [GET]
 // @Security Bearer
-func (ctrl *V1Controller) HandleUserSelf() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (ctrl *V1Controller) HandleUserSelf() server.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		token := services.UseTokenCtx(r.Context())
 		usr, err := ctrl.svc.User.GetSelf(r.Context(), token)
 		if usr.ID == uuid.Nil || err != nil {
 			log.Err(err).Msg("failed to get user")
-			server.RespondServerError(w)
-			return
+			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		server.Respond(w, http.StatusOK, server.Wrap(usr))
+		return server.Respond(w, http.StatusOK, server.Wrap(usr))
 	}
 }
 
@@ -72,24 +69,22 @@ func (ctrl *V1Controller) HandleUserSelf() http.HandlerFunc {
 // @Success  200     {object} server.Result{item=repo.UserUpdate}
 // @Router   /v1/users/self [PUT]
 // @Security Bearer
-func (ctrl *V1Controller) HandleUserSelfUpdate() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (ctrl *V1Controller) HandleUserSelfUpdate() server.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		updateData := repo.UserUpdate{}
 		if err := server.Decode(r, &updateData); err != nil {
 			log.Err(err).Msg("failed to decode user update data")
-			server.RespondError(w, http.StatusBadRequest, err)
-			return
+			return validate.NewRequestError(err, http.StatusBadRequest)
 		}
 
 		actor := services.UseUserCtx(r.Context())
 		newData, err := ctrl.svc.User.UpdateSelf(r.Context(), actor.ID, updateData)
 
 		if err != nil {
-			server.RespondError(w, http.StatusInternalServerError, err)
-			return
+			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		server.Respond(w, http.StatusOK, server.Wrap(newData))
+		return server.Respond(w, http.StatusOK, server.Wrap(newData))
 	}
 }
 
@@ -100,20 +95,18 @@ func (ctrl *V1Controller) HandleUserSelfUpdate() http.HandlerFunc {
 // @Success  204
 // @Router   /v1/users/self [DELETE]
 // @Security Bearer
-func (ctrl *V1Controller) HandleUserSelfDelete() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (ctrl *V1Controller) HandleUserSelfDelete() server.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		if ctrl.isDemo {
-			server.RespondError(w, http.StatusForbidden, nil)
-			return
+			return validate.NewRequestError(nil, http.StatusForbidden)
 		}
 
 		actor := services.UseUserCtx(r.Context())
 		if err := ctrl.svc.User.DeleteSelf(r.Context(), actor.ID); err != nil {
-			server.RespondError(w, http.StatusInternalServerError, err)
-			return
+			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		server.Respond(w, http.StatusNoContent, nil)
+		return server.Respond(w, http.StatusNoContent, nil)
 	}
 }
 
@@ -131,11 +124,10 @@ type (
 // @Param    payload body ChangePassword true "Password Payload"
 // @Router   /v1/users/change-password [PUT]
 // @Security Bearer
-func (ctrl *V1Controller) HandleUserSelfChangePassword() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (ctrl *V1Controller) HandleUserSelfChangePassword() server.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		if ctrl.isDemo {
-			server.RespondError(w, http.StatusForbidden, nil)
-			return
+			return validate.NewRequestError(nil, http.StatusForbidden)
 		}
 
 		var cp ChangePassword
@@ -148,10 +140,9 @@ func (ctrl *V1Controller) HandleUserSelfChangePassword() http.HandlerFunc {
 
 		ok := ctrl.svc.User.ChangePassword(ctx, cp.Current, cp.New)
 		if !ok {
-			server.RespondError(w, http.StatusInternalServerError, err)
-			return
+			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		server.Respond(w, http.StatusNoContent, nil)
+		return server.Respond(w, http.StatusNoContent, nil)
 	}
 }

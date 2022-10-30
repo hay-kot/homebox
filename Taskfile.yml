@@ -5,11 +5,12 @@ env:
   UNSAFE_DISABLE_PASSWORD_PROJECTION: "yes_i_am_sure"
 tasks:
   setup:
-    desc: Install dependencies
+    desc: Install development dependencies
     cmds:
       - go install github.com/swaggo/swag/cmd/swag@latest
       - cd backend && go mod tidy
       - cd frontend && pnpm install --shamefully-hoist
+
   generate:
     desc: |
       Generates collateral files from the backend project
@@ -37,7 +38,7 @@ tasks:
       - "./backend/app/api/static/docs/swagger.json"
       - "./backend/app/api/static/docs/swagger.yaml"
 
-  api:
+  go:run:
     desc: Starts the backend api server (depends on generate task)
     deps:
       - generate
@@ -45,42 +46,38 @@ tasks:
       - cd backend && go run ./app/api/ {{ .CLI_ARGS }}
     silent: false
 
-  api:build:
+  go:test:
+    desc: Runs all go tests using gotestsum - supports passing gotestsum args
     cmds:
-      - cd backend && go build ./app/api/
-    silent: true
+      - cd backend && gotestsum {{ .CLI_ARGS }} ./...
 
-  api:test:
-    cmds:
-      - cd backend && go test ./app/api/
-    silent: true
-
-  api:watch:
-    cmds:
-      - cd backend && gotestsum --watch ./...
-
-  api:coverage:
+  go:coverage:
+    desc: Runs all go tests with -race flag and generates a coverage report
     cmds:
       - cd backend && go test -race -coverprofile=coverage.out -covermode=atomic ./app/... ./internal/... ./pkgs/... -v -cover
     silent: true
 
-  test:ci:
+  go:tidy:
+    desc: Runs go mod tidy on the backend
     cmds:
-      - cd backend && go build ./app/api
-      - backend/api &
-      - sleep 5
-      - cd frontend && pnpm run test:ci
-    silent: true
+      - cd backend && go mod tidy
 
-  frontend:watch:
-    desc: Starts the vitest test runner in watch mode
+  go:lint:
+    desc: Runs golangci-lint
     cmds:
-      - cd frontend && pnpm vitest --watch
+      - cd backend && golangci-lint run ./...
 
-  frontend:
-    desc: Run frontend development server
+  go:all:
+    desc: Runs all go test and lint related tasks
     cmds:
-      - cd frontend && pnpm dev
+      - task: go:tidy
+      - task: go:lint
+      - task: go:test
+
+  go:build:
+    desc: Builds the backend binary
+    cmds:
+      - cd backend && go build -o ../build/backend ./app/api
 
   db:generate:
     desc: Run Entgo.io Code Generation
@@ -99,3 +96,22 @@ tasks:
       - db:generate
     cmds:
       - cd backend && go run app/migrations/main.go {{ .CLI_ARGS }}
+
+  ui:watch:
+    desc: Starts the vitest test runner in watch mode
+    cmds:
+      - cd frontend && pnpm vitest --watch
+
+  ui:dev:
+    desc: Run frontend development server
+    cmds:
+      - cd frontend && pnpm dev
+
+  test:ci:
+    desc: Runs end-to-end test on a live server (only for use in CI)
+    cmds:
+      - cd backend && go build ./app/api
+      - backend/api &
+      - sleep 5
+      - cd frontend && pnpm run test:ci
+    silent: true

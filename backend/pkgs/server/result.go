@@ -17,15 +17,3 @@ func Wrap(data interface{}) Result {
 		Item: data,
 	}
 }
-
-func (r Result) AddMessage(message string) Result {
-	r.Message = message
-	return r
-}
-
-func (r Result) AddError(err string, details interface{}) Result {
-	r.Message = err
-	r.Details = details
-	r.Error = true
-	return r
-}

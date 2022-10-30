@@ -7,6 +7,7 @@ import (
 
 	"github.com/hay-kot/homebox/backend/internal/repo"
 	"github.com/hay-kot/homebox/backend/internal/services"
+	"github.com/hay-kot/homebox/backend/internal/sys/validate"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 	"github.com/rs/zerolog/log"
 )
@@ -31,7 +32,7 @@ type (
 // @Success  200 {object} repo.Group
 // @Router   /v1/groups [Get]
 // @Security Bearer
-func (ctrl *V1Controller) HandleGroupGet() http.HandlerFunc {
+func (ctrl *V1Controller) HandleGroupGet() server.HandlerFunc {
 	return ctrl.handleGroupGeneral()
 }
 
@@ -43,12 +44,12 @@ func (ctrl *V1Controller) HandleGroupGet() http.HandlerFunc {
 // @Success  200     {object} repo.Group
 // @Router   /v1/groups [Put]
 // @Security Bearer
-func (ctrl *V1Controller) HandleGroupUpdate() http.HandlerFunc {
+func (ctrl *V1Controller) HandleGroupUpdate() server.HandlerFunc {
 	return ctrl.handleGroupGeneral()
 }
 
-func (ctrl *V1Controller) handleGroupGeneral() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (ctrl *V1Controller) handleGroupGeneral() server.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := services.NewContext(r.Context())
 
 		switch r.Method {
@@ -56,29 +57,28 @@ func (ctrl *V1Controller) handleGroupGeneral() http.HandlerFunc {
 			group, err := ctrl.svc.Group.Get(ctx)
 			if err != nil {
 				log.Err(err).Msg("failed to get group")
-				server.RespondError(w, http.StatusInternalServerError, err)
-				return
+				return validate.NewRequestError(err, http.StatusInternalServerError)
 			}
 
 			group.Currency = strings.ToUpper(group.Currency) // TODO: Hack to fix the currency enums being lower caseÍ
-			server.Respond(w, http.StatusOK, group)
+			return server.Respond(w, http.StatusOK, group)
 
 		case http.MethodPut:
 			data := repo.GroupUpdate{}
 			if err := server.Decode(r, &data); err != nil {
-				server.RespondError(w, http.StatusBadRequest, err)
-				return
+				return validate.NewRequestError(err, http.StatusBadRequest)
 			}
 
 			group, err := ctrl.svc.Group.UpdateGroup(ctx, data)
 			if err != nil {
 				log.Err(err).Msg("failed to update group")
-				server.RespondError(w, http.StatusInternalServerError, err)
-				return
+				return validate.NewRequestError(err, http.StatusInternalServerError)
 			}
 			group.Currency = strings.ToUpper(group.Currency) // TODO: Hack to fix the currency enums being lower case
-			server.Respond(w, http.StatusOK, group)
+			return server.Respond(w, http.StatusOK, group)
 		}
+
+		return nil
 	}
 }
 
@@ -90,13 +90,12 @@ func (ctrl *V1Controller) handleGroupGeneral() http.HandlerFunc {
 // @Success  200     {object} GroupInvitation
 // @Router   /v1/groups/invitations [Post]
 // @Security Bearer
-func (ctrl *V1Controller) HandleGroupInvitationsCreate() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (ctrl *V1Controller) HandleGroupInvitationsCreate() server.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		data := GroupInvitationCreate{}
 		if err := server.Decode(r, &data); err != nil {
 			log.Err(err).Msg("failed to decode user registration data")
-			server.RespondError(w, http.StatusBadRequest, err)
-			return
+			return validate.NewRequestError(err, http.StatusBadRequest)
 		}
 
 		if data.ExpiresAt.IsZero() {
@@ -108,11 +107,10 @@ func (ctrl *V1Controller) HandleGroupInvitationsCreate() http.HandlerFunc {
 		token, err := ctrl.svc.Group.NewInvitation(ctx, data.Uses, data.ExpiresAt)
 		if err != nil {
 			log.Err(err).Msg("failed to create new token")
-			server.RespondError(w, http.StatusInternalServerError, err)
-			return
+			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		server.Respond(w, http.StatusCreated, GroupInvitation{
+		return server.Respond(w, http.StatusCreated, GroupInvitation{
 			Token:     token,
 			ExpiresAt: data.ExpiresAt,
 			Uses:      data.Uses,
