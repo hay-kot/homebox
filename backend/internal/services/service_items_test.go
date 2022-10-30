@@ -22,7 +22,7 @@ func TestItemService_CsvImport(t *testing.T) {
 	assert.Equal(t, 0, count)
 	assert.NoError(t, err)
 
-	items, err := svc.GetAll(context.Background(), tGroup.ID)
+	items, err := svc.repo.Items.GetAll(context.Background(), tGroup.ID)
 	assert.NoError(t, err)
 	t.Cleanup(func() {
 		for _, item := range items {
@@ -38,22 +38,14 @@ func TestItemService_CsvImport(t *testing.T) {
 		dataCsv = append(dataCsv, newCsvRow(item))
 	}
 
-	locationService := &LocationService{
-		repos: tRepos,
-	}
-
-	LabelService := &LabelService{
-		repos: tRepos,
-	}
-
-	allLocation, err := locationService.GetAll(context.Background(), tGroup.ID)
+	allLocation, err := tRepos.Locations.GetAll(context.Background(), tGroup.ID)
 	assert.NoError(t, err)
 	locNames := []string{}
 	for _, loc := range allLocation {
 		locNames = append(locNames, loc.Name)
 	}
 
-	allLabels, err := LabelService.GetAll(context.Background(), tGroup.ID)
+	allLabels, err := tRepos.Labels.GetAll(context.Background(), tGroup.ID)
 	assert.NoError(t, err)
 	labelNames := []string{}
 	for _, label := range allLabels {

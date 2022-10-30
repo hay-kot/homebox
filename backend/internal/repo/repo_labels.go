@@ -106,13 +106,30 @@ func (r *LabelRepository) Create(ctx context.Context, groupdId uuid.UUID, data L
 	return mapLabelOut(label), err
 }
 
-func (r *LabelRepository) Update(ctx context.Context, data LabelUpdate) (LabelOut, error) {
-	_, err := r.db.Label.UpdateOneID(data.ID).
+func (r *LabelRepository) update(ctx context.Context, data LabelUpdate, where ...predicate.Label) (int, error) {
+	if len(where) == 0 {
+		panic("empty where not supported empty")
+	}
+
+	return r.db.Label.Update().
+		Where(where...).
 		SetName(data.Name).
 		SetDescription(data.Description).
 		SetColor(data.Color).
 		Save(ctx)
+}
 
+func (r *LabelRepository) Update(ctx context.Context, data LabelUpdate) (LabelOut, error) {
+	_, err := r.update(ctx, data, label.ID(data.ID))
+	if err != nil {
+		return LabelOut{}, err
+	}
+
+	return r.GetOne(ctx, data.ID)
+}
+
+func (r *LabelRepository) UpdateByGroup(ctx context.Context, GID uuid.UUID, data LabelUpdate) (LabelOut, error) {
+	_, err := r.update(ctx, data, label.ID(data.ID), label.HasGroupWith(group.ID(GID)))
 	if err != nil {
 		return LabelOut{}, err
 	}
@@ -122,4 +139,14 @@ func (r *LabelRepository) Update(ctx context.Context, data LabelUpdate) (LabelOu
 
 func (r *LabelRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	return r.db.Label.DeleteOneID(id).Exec(ctx)
+}
+
+func (r *LabelRepository) DeleteByGroup(ctx context.Context, gid, id uuid.UUID) error {
+	_, err := r.db.Label.Delete().
+		Where(
+			label.ID(id),
+			label.HasGroupWith(group.ID(gid)),
+		).Exec(ctx)
+
+	return err
 }

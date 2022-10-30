@@ -49,6 +49,7 @@ func (a *app) mountRoutes(repos *repo.AllRepos) {
 
 	v1Ctrl := v1.NewControllerV1(
 		a.services,
+		a.repos,
 		v1.WithMaxUploadSize(a.conf.Web.MaxUploadSize),
 		v1.WithRegistration(a.conf.AllowRegistration),
 		v1.WithDemoStatus(a.conf.Demo), // Disable Password Change in Demo Mode

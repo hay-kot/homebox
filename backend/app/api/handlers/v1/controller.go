@@ -3,6 +3,7 @@ package v1
 import (
 	"net/http"
 
+	"github.com/hay-kot/homebox/backend/internal/repo"
 	"github.com/hay-kot/homebox/backend/internal/services"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 )
@@ -26,6 +27,7 @@ func WithRegistration(allowRegistration bool) func(*V1Controller) {
 }
 
 type V1Controller struct {
+	repo              *repo.AllRepos
 	svc               *services.AllServices
 	maxUploadSize     int64
 	isDemo            bool
@@ -57,8 +59,9 @@ func BaseUrlFunc(prefix string) func(s string) string {
 	}
 }
 
-func NewControllerV1(svc *services.AllServices, options ...func(*V1Controller)) *V1Controller {
+func NewControllerV1(svc *services.AllServices, repos *repo.AllRepos, options ...func(*V1Controller)) *V1Controller {
 	ctrl := &V1Controller{
+		repo:              repos,
 		svc:               svc,
 		allowRegistration: true,
 	}

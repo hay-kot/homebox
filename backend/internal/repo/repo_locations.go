@@ -154,23 +154,24 @@ func (r *LocationRepository) GetOneByGroup(ctx context.Context, GID, ID uuid.UUI
 	return r.getOne(ctx, location.ID(ID), location.HasGroupWith(group.ID(GID)))
 }
 
-func (r *LocationRepository) Create(ctx context.Context, gid uuid.UUID, data LocationCreate) (LocationOut, error) {
+func (r *LocationRepository) Create(ctx context.Context, GID uuid.UUID, data LocationCreate) (LocationOut, error) {
 	location, err := r.db.Location.Create().
 		SetName(data.Name).
 		SetDescription(data.Description).
-		SetGroupID(gid).
+		SetGroupID(GID).
 		Save(ctx)
 
 	if err != nil {
 		return LocationOut{}, err
 	}
 
-	location.Edges.Group = &ent.Group{ID: gid} // bootstrap group ID
+	location.Edges.Group = &ent.Group{ID: GID} // bootstrap group ID
 	return mapLocationOut(location), nil
 }
 
-func (r *LocationRepository) Update(ctx context.Context, data LocationUpdate) (LocationOut, error) {
-	q := r.db.Location.UpdateOneID(data.ID).
+func (r *LocationRepository) update(ctx context.Context, data LocationUpdate, where ...predicate.Location) (LocationOut, error) {
+	q := r.db.Location.Update().
+		Where(where...).
 		SetName(data.Name).
 		SetDescription(data.Description)
 
@@ -181,7 +182,6 @@ func (r *LocationRepository) Update(ctx context.Context, data LocationUpdate) (L
 	}
 
 	_, err := q.Save(ctx)
-
 	if err != nil {
 		return LocationOut{}, err
 	}
@@ -189,6 +189,19 @@ func (r *LocationRepository) Update(ctx context.Context, data LocationUpdate) (L
 	return r.Get(ctx, data.ID)
 }
 
-func (r *LocationRepository) Delete(ctx context.Context, id uuid.UUID) error {
-	return r.db.Location.DeleteOneID(id).Exec(ctx)
+func (r *LocationRepository) Update(ctx context.Context, data LocationUpdate) (LocationOut, error) {
+	return r.update(ctx, data, location.ID(data.ID))
+}
+
+func (r *LocationRepository) UpdateOneByGroup(ctx context.Context, GID, ID uuid.UUID, data LocationUpdate) (LocationOut, error) {
+	return r.update(ctx, data, location.ID(ID), location.HasGroupWith(group.ID(GID)))
+}
+
+func (r *LocationRepository) Delete(ctx context.Context, ID uuid.UUID) error {
+	return r.db.Location.DeleteOneID(ID).Exec(ctx)
+}
+
+func (r *LocationRepository) DeleteByGroup(ctx context.Context, GID, ID uuid.UUID) error {
+	_, err := r.db.Location.Delete().Where(location.ID(ID), location.HasGroupWith(group.ID(GID))).Exec(ctx)
+	return err
 }

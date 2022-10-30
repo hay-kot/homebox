@@ -23,30 +23,6 @@ type ItemService struct {
 	at attachmentTokens
 }
 
-func (svc *ItemService) GetOne(ctx context.Context, gid uuid.UUID, id uuid.UUID) (repo.ItemOut, error) {
-	return svc.repo.Items.GetOneByGroup(ctx, gid, id)
-}
-
-func (svc *ItemService) Query(ctx Context, q repo.ItemQuery) (repo.PaginationResult[repo.ItemSummary], error) {
-	return svc.repo.Items.QueryByGroup(ctx, ctx.GID, q)
-}
-
-func (svc *ItemService) GetAll(ctx context.Context, gid uuid.UUID) ([]repo.ItemSummary, error) {
-	return svc.repo.Items.GetAll(ctx, gid)
-}
-
-func (svc *ItemService) Create(ctx context.Context, gid uuid.UUID, data repo.ItemCreate) (repo.ItemOut, error) {
-	return svc.repo.Items.Create(ctx, gid, data)
-}
-
-func (svc *ItemService) Delete(ctx context.Context, gid uuid.UUID, id uuid.UUID) error {
-	return svc.repo.Items.DeleteByGroup(ctx, gid, id)
-}
-
-func (svc *ItemService) Update(ctx context.Context, gid uuid.UUID, data repo.ItemUpdate) (repo.ItemOut, error) {
-	return svc.repo.Items.UpdateByGroup(ctx, gid, data)
-}
-
 func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]string) (int, error) {
 	loaded := []csvRow{}
 

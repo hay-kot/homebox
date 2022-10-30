@@ -19,7 +19,7 @@ func TestItemService_AddAttachment(t *testing.T) {
 		filepath: temp,
 	}
 
-	loc, err := tSvc.Location.Create(context.Background(), tGroup.ID, repo.LocationCreate{
+	loc, err := tRepos.Locations.Create(context.Background(), tGroup.ID, repo.LocationCreate{
 		Description: "test",
 		Name:        "test",
 	})
@@ -32,7 +32,7 @@ func TestItemService_AddAttachment(t *testing.T) {
 		LocationID:  loc.ID,
 	}
 
-	itm, err := svc.Create(context.Background(), tGroup.ID, itmC)
+	itm, err := svc.repo.Items.Create(context.Background(), tGroup.ID, itmC)
 	assert.NoError(t, err)
 	assert.NotNil(t, itm)
 	t.Cleanup(func() {

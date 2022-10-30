@@ -91,7 +91,7 @@ func (svc *ItemService) AttachmentUpdate(ctx Context, itemId uuid.UUID, data *re
 		return repo.ItemOut{}, err
 	}
 
-	return svc.GetOne(ctx, ctx.GID, itemId)
+	return svc.repo.Items.GetOneByGroup(ctx, ctx.GID, itemId)
 }
 
 // AttachmentAdd adds an attachment to an item by creating an entry in the Documents table and linking it to the Attachment
@@ -118,7 +118,7 @@ func (svc *ItemService) AttachmentAdd(ctx Context, itemId uuid.UUID, filename st
 		return repo.ItemOut{}, err
 	}
 
-	return svc.GetOne(ctx, ctx.GID, itemId)
+	return svc.repo.Items.GetOneByGroup(ctx, ctx.GID, itemId)
 }
 
 func (svc *ItemService) AttachmentDelete(ctx context.Context, gid, itemId, attachmentId uuid.UUID) error {
