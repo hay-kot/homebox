@@ -77,7 +77,7 @@ tasks:
   go:build:
     desc: Builds the backend binary
     cmds:
-      - cd backend && go build -o ../bin/backend ./app/api
+      - cd backend && go build -o ../build/backend ./app/api
 
   db:generate:
     desc: Run Entgo.io Code Generation
