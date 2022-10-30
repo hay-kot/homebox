@@ -7,8 +7,8 @@ import (
 	"strconv"
 
 	"github.com/google/uuid"
-	"github.com/hay-kot/homebox/backend/internal/repo"
-	"github.com/hay-kot/homebox/backend/internal/services"
+	"github.com/hay-kot/homebox/backend/internal/core/services"
+	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/sys/validate"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 	"github.com/rs/zerolog/log"
@@ -61,7 +61,7 @@ func (ctrl *V1Controller) HandleItemsGetAll() server.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := services.NewContext(r.Context())
-		items, err := ctrl.svc.Items.Query(ctx, extractQuery(r))
+		items, err := ctrl.repo.Items.QueryByGroup(ctx, ctx.GID, extractQuery(r))
 		if err != nil {
 			log.Err(err).Msg("failed to get items")
 			return validate.NewRequestError(err, http.StatusInternalServerError)
@@ -87,7 +87,7 @@ func (ctrl *V1Controller) HandleItemsCreate() server.HandlerFunc {
 		}
 
 		user := services.UseUserCtx(r.Context())
-		item, err := ctrl.svc.Items.Create(r.Context(), user.GroupID, createData)
+		item, err := ctrl.repo.Items.Create(r.Context(), user.GroupID, createData)
 		if err != nil {
 			log.Err(err).Msg("failed to create item")
 			return validate.NewRequestError(err, http.StatusInternalServerError)
@@ -144,14 +144,14 @@ func (ctrl *V1Controller) handleItemsGeneral() server.HandlerFunc {
 
 		switch r.Method {
 		case http.MethodGet:
-			items, err := ctrl.svc.Items.GetOne(r.Context(), ctx.GID, ID)
+			items, err := ctrl.repo.Items.GetOneByGroup(r.Context(), ctx.GID, ID)
 			if err != nil {
 				log.Err(err).Msg("failed to get item")
 				return validate.NewRequestError(err, http.StatusInternalServerError)
 			}
 			return server.Respond(w, http.StatusOK, items)
 		case http.MethodDelete:
-			err = ctrl.svc.Items.Delete(r.Context(), ctx.GID, ID)
+			err = ctrl.repo.Items.DeleteByGroup(r.Context(), ctx.GID, ID)
 			if err != nil {
 				log.Err(err).Msg("failed to delete item")
 				return validate.NewRequestError(err, http.StatusInternalServerError)
@@ -164,7 +164,7 @@ func (ctrl *V1Controller) handleItemsGeneral() server.HandlerFunc {
 				return validate.NewRequestError(err, http.StatusInternalServerError)
 			}
 			body.ID = ID
-			result, err := ctrl.svc.Items.Update(r.Context(), ctx.GID, body)
+			result, err := ctrl.repo.Items.UpdateByGroup(r.Context(), ctx.GID, body)
 			if err != nil {
 				log.Err(err).Msg("failed to update item")
 				return validate.NewRequestError(err, http.StatusInternalServerError)

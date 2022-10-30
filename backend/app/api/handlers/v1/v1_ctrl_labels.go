@@ -3,9 +3,9 @@ package v1
 import (
 	"net/http"
 
-	"github.com/hay-kot/homebox/backend/ent"
-	"github.com/hay-kot/homebox/backend/internal/repo"
-	"github.com/hay-kot/homebox/backend/internal/services"
+	"github.com/hay-kot/homebox/backend/internal/core/services"
+	"github.com/hay-kot/homebox/backend/internal/data/ent"
+	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/sys/validate"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 	"github.com/rs/zerolog/log"
@@ -21,7 +21,7 @@ import (
 func (ctrl *V1Controller) HandleLabelsGetAll() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		user := services.UseUserCtx(r.Context())
-		labels, err := ctrl.svc.Labels.GetAll(r.Context(), user.GroupID)
+		labels, err := ctrl.repo.Labels.GetAll(r.Context(), user.GroupID)
 		if err != nil {
 			log.Err(err).Msg("error getting labels")
 			return validate.NewRequestError(err, http.StatusInternalServerError)
@@ -47,7 +47,7 @@ func (ctrl *V1Controller) HandleLabelsCreate() server.HandlerFunc {
 		}
 
 		user := services.UseUserCtx(r.Context())
-		label, err := ctrl.svc.Labels.Create(r.Context(), user.GroupID, createData)
+		label, err := ctrl.repo.Labels.Create(r.Context(), user.GroupID, createData)
 		if err != nil {
 			log.Err(err).Msg("error creating label")
 			return validate.NewRequestError(err, http.StatusInternalServerError)
@@ -103,7 +103,7 @@ func (ctrl *V1Controller) handleLabelsGeneral() server.HandlerFunc {
 
 		switch r.Method {
 		case http.MethodGet:
-			labels, err := ctrl.svc.Labels.Get(r.Context(), ctx.GID, ID)
+			labels, err := ctrl.repo.Labels.GetOneByGroup(r.Context(), ctx.GID, ID)
 			if err != nil {
 				if ent.IsNotFound(err) {
 					log.Err(err).
@@ -117,7 +117,7 @@ func (ctrl *V1Controller) handleLabelsGeneral() server.HandlerFunc {
 			return server.Respond(w, http.StatusOK, labels)
 
 		case http.MethodDelete:
-			err = ctrl.svc.Labels.Delete(r.Context(), ctx.GID, ID)
+			err = ctrl.repo.Labels.DeleteByGroup(ctx, ctx.GID, ID)
 			if err != nil {
 				log.Err(err).Msg("error deleting label")
 				return validate.NewRequestError(err, http.StatusInternalServerError)
@@ -127,14 +127,12 @@ func (ctrl *V1Controller) handleLabelsGeneral() server.HandlerFunc {
 		case http.MethodPut:
 			body := repo.LabelUpdate{}
 			if err := server.Decode(r, &body); err != nil {
-				log.Err(err).Msg("error decoding label update data")
 				return validate.NewRequestError(err, http.StatusInternalServerError)
 			}
 
 			body.ID = ID
-			result, err := ctrl.svc.Labels.Update(r.Context(), ctx.GID, body)
+			result, err := ctrl.repo.Labels.UpdateByGroup(ctx, ctx.GID, body)
 			if err != nil {
-				log.Err(err).Msg("error updating label")
 				return validate.NewRequestError(err, http.StatusInternalServerError)
 			}
 			return server.Respond(w, http.StatusOK, result)

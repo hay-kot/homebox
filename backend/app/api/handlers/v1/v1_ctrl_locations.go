@@ -3,9 +3,9 @@ package v1
 import (
 	"net/http"
 
-	"github.com/hay-kot/homebox/backend/ent"
-	"github.com/hay-kot/homebox/backend/internal/repo"
-	"github.com/hay-kot/homebox/backend/internal/services"
+	"github.com/hay-kot/homebox/backend/internal/core/services"
+	"github.com/hay-kot/homebox/backend/internal/data/ent"
+	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/sys/validate"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 	"github.com/rs/zerolog/log"
@@ -21,7 +21,7 @@ import (
 func (ctrl *V1Controller) HandleLocationGetAll() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		user := services.UseUserCtx(r.Context())
-		locations, err := ctrl.svc.Location.GetAll(r.Context(), user.GroupID)
+		locations, err := ctrl.repo.Locations.GetAll(r.Context(), user.GroupID)
 		if err != nil {
 			log.Err(err).Msg("failed to get locations")
 			return validate.NewRequestError(err, http.StatusInternalServerError)
@@ -48,7 +48,7 @@ func (ctrl *V1Controller) HandleLocationCreate() server.HandlerFunc {
 		}
 
 		user := services.UseUserCtx(r.Context())
-		location, err := ctrl.svc.Location.Create(r.Context(), user.GroupID, createData)
+		location, err := ctrl.repo.Locations.Create(r.Context(), user.GroupID, createData)
 		if err != nil {
 			log.Err(err).Msg("failed to create location")
 			return validate.NewRequestError(err, http.StatusInternalServerError)
@@ -105,7 +105,7 @@ func (ctrl *V1Controller) handleLocationGeneral() server.HandlerFunc {
 
 		switch r.Method {
 		case http.MethodGet:
-			location, err := ctrl.svc.Location.GetOne(r.Context(), ctx.GID, ID)
+			location, err := ctrl.repo.Locations.GetOneByGroup(r.Context(), ctx.GID, ID)
 			if err != nil {
 				l := log.Err(err).
 					Str("ID", ID.String()).
@@ -129,14 +129,14 @@ func (ctrl *V1Controller) handleLocationGeneral() server.HandlerFunc {
 
 			body.ID = ID
 
-			result, err := ctrl.svc.Location.Update(r.Context(), ctx.GID, body)
+			result, err := ctrl.repo.Locations.UpdateOneByGroup(r.Context(), ctx.GID, ID, body)
 			if err != nil {
 				log.Err(err).Msg("failed to update location")
 				return validate.NewRequestError(err, http.StatusInternalServerError)
 			}
 			return server.Respond(w, http.StatusOK, result)
 		case http.MethodDelete:
-			err = ctrl.svc.Location.Delete(r.Context(), ctx.GID, ID)
+			err = ctrl.repo.Locations.DeleteByGroup(r.Context(), ctx.GID, ID)
 			if err != nil {
 				log.Err(err).Msg("failed to delete location")
 				return validate.NewRequestError(err, http.StatusInternalServerError)

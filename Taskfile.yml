@@ -29,12 +29,12 @@ tasks:
       - python3 ./scripts/process-types.py ./frontend/lib/api/types/data-contracts.ts
     sources:
       - "./backend/app/api/**/*"
-      - "./backend/internal/repo/**/*"
+      - "./backend/internal/data/**"
       - "./backend/internal/services/**/*"
       - "./scripts/process-types.py"
     generates:
       - "./frontend/lib/api/types/data-contracts.ts"
-      - "./backend/ent/schema"
+      - "./backend/internal/data/ent/schema"
       - "./backend/app/api/static/docs/swagger.json"
       - "./backend/app/api/static/docs/swagger.yaml"
 
@@ -83,19 +83,19 @@ tasks:
     desc: Run Entgo.io Code Generation
     cmds:
       - |
-        cd backend && go generate ./... \
-        --template=ent/schema/templates/has_id.tmpl
+        cd backend/internal/ && go generate ./... \
+        --template=./data/ent/schema/templates/has_id.tmpl
     sources:
-      - "./backend/ent/schema/**/*"
+      - "./backend/internal/data/ent/schema/**/*"
     generates:
-      - "./backend/ent/"
+      - "./backend/internal/ent/"
 
   db:migration:
     desc: Runs the database diff engine to generate a SQL migration files
     deps:
       - db:generate
     cmds:
-      - cd backend && go run app/migrations/main.go {{ .CLI_ARGS }}
+      - cd backend && go run app/tools/migrations/main.go {{ .CLI_ARGS }}
 
   ui:watch:
     desc: Starts the vitest test runner in watch mode

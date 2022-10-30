@@ -5,7 +5,7 @@ import (
 	"encoding/csv"
 	"strings"
 
-	"github.com/hay-kot/homebox/backend/internal/services"
+	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/rs/zerolog/log"
 )
 

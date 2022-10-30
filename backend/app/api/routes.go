@@ -13,7 +13,7 @@ import (
 	"github.com/hay-kot/homebox/backend/app/api/handlers/debughandlers"
 	v1 "github.com/hay-kot/homebox/backend/app/api/handlers/v1"
 	_ "github.com/hay-kot/homebox/backend/app/api/static/docs"
-	"github.com/hay-kot/homebox/backend/internal/repo"
+	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 	httpSwagger "github.com/swaggo/http-swagger" // http-swagger middleware
 )
@@ -49,6 +49,7 @@ func (a *app) mountRoutes(repos *repo.AllRepos) {
 
 	v1Ctrl := v1.NewControllerV1(
 		a.services,
+		a.repos,
 		v1.WithMaxUploadSize(a.conf.Web.MaxUploadSize),
 		v1.WithRegistration(a.conf.AllowRegistration),
 		v1.WithDemoStatus(a.conf.Demo), // Disable Password Change in Demo Mode

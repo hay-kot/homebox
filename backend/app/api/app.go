@@ -3,10 +3,10 @@ package main
 import (
 	"time"
 
-	"github.com/hay-kot/homebox/backend/ent"
-	"github.com/hay-kot/homebox/backend/internal/config"
-	"github.com/hay-kot/homebox/backend/internal/repo"
-	"github.com/hay-kot/homebox/backend/internal/services"
+	"github.com/hay-kot/homebox/backend/internal/core/services"
+	"github.com/hay-kot/homebox/backend/internal/data/ent"
+	"github.com/hay-kot/homebox/backend/internal/data/repo"
+	"github.com/hay-kot/homebox/backend/internal/sys/config"
 	"github.com/hay-kot/homebox/backend/pkgs/mailer"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 )
