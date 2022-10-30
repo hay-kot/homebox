@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -52,7 +53,7 @@ func mapToGroup(g *ent.Group) Group {
 		Name:      g.Name,
 		CreatedAt: g.CreatedAt,
 		UpdatedAt: g.UpdatedAt,
-		Currency:  g.Currency.String(),
+		Currency:  strings.ToUpper(g.Currency.String()),
 	}
 }
 
@@ -76,7 +77,7 @@ func (r *GroupRepository) GroupCreate(ctx context.Context, name string) (Group, 
 }
 
 func (r *GroupRepository) GroupUpdate(ctx context.Context, ID uuid.UUID, data GroupUpdate) (Group, error) {
-	currency := group.Currency(data.Currency)
+	currency := group.Currency(strings.ToLower(data.Currency))
 
 	entity, err := r.db.Group.UpdateOneID(ID).
 		SetName(data.Name).

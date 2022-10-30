@@ -2,7 +2,6 @@ package v1
 
 import (
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/hay-kot/homebox/backend/internal/repo"
@@ -54,13 +53,12 @@ func (ctrl *V1Controller) handleGroupGeneral() server.HandlerFunc {
 
 		switch r.Method {
 		case http.MethodGet:
-			group, err := ctrl.svc.Group.Get(ctx)
+			group, err := ctrl.repo.Groups.GroupByID(ctx, ctx.GID)
 			if err != nil {
 				log.Err(err).Msg("failed to get group")
 				return validate.NewRequestError(err, http.StatusInternalServerError)
 			}
 
-			group.Currency = strings.ToUpper(group.Currency) // TODO: Hack to fix the currency enums being lower caseÍ
 			return server.Respond(w, http.StatusOK, group)
 
 		case http.MethodPut:
@@ -74,7 +72,7 @@ func (ctrl *V1Controller) handleGroupGeneral() server.HandlerFunc {
 				log.Err(err).Msg("failed to update group")
 				return validate.NewRequestError(err, http.StatusInternalServerError)
 			}
-			group.Currency = strings.ToUpper(group.Currency) // TODO: Hack to fix the currency enums being lower case
+			
 			return server.Respond(w, http.StatusOK, group)
 		}
 
