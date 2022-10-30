@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/hay-kot/homebox/backend/internal/repo"
-	"github.com/hay-kot/homebox/backend/internal/services"
+	"github.com/hay-kot/homebox/backend/internal/core/services"
+	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/sys/validate"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 	"github.com/rs/zerolog/log"
@@ -72,7 +72,7 @@ func (ctrl *V1Controller) handleGroupGeneral() server.HandlerFunc {
 				log.Err(err).Msg("failed to update group")
 				return validate.NewRequestError(err, http.StatusInternalServerError)
 			}
-			
+
 			return server.Respond(w, http.StatusOK, group)
 		}
 
