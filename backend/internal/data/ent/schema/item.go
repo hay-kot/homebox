@@ -28,6 +28,7 @@ func (Item) Indexes() []ent.Index {
 		index.Fields("manufacturer"),
 		index.Fields("model_number"),
 		index.Fields("serial_number"),
+		index.Fields("archived"),
 	}
 }
 
@@ -44,6 +45,8 @@ func (Item) Fields() []ent.Field {
 		field.Int("quantity").
 			Default(1),
 		field.Bool("insured").
+			Default(false),
+		field.Bool("archived").
 			Default(false),
 
 		// ------------------------------------
