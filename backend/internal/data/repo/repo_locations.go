@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/item"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/location"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/predicate"
 )
@@ -105,6 +106,7 @@ func (r *LocationRepository) GetAll(ctx context.Context, groupId uuid.UUID) ([]L
 					items
 				WHERE
 					items.location_items = locations.id
+					AND items.archived = false
 			) as item_count
 		FROM
 			locations
@@ -139,7 +141,7 @@ func (r *LocationRepository) getOne(ctx context.Context, where ...predicate.Loca
 		Where(where...).
 		WithGroup().
 		WithItems(func(iq *ent.ItemQuery) {
-			iq.WithLabel()
+			iq.Where(item.Archived(false)).WithLabel()
 		}).
 		WithParent().
 		WithChildren().
