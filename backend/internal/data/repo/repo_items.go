@@ -285,7 +285,6 @@ func (e *ItemsRepository) QueryByGroup(ctx context.Context, gid uuid.UUID, q Ite
 	)
 
 	if q.IncludeArchived {
-		println("include archived")
 		qb = qb.Where(
 			item.Or(
 				item.Archived(true),
