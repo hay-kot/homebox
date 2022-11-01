@@ -1266,6 +1266,9 @@
         "repo.ItemOut": {
             "type": "object",
             "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
                 "attachments": {
                     "type": "array",
                     "items": {
@@ -1375,6 +1378,9 @@
         "repo.ItemSummary": {
             "type": "object",
             "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -1413,6 +1419,9 @@
         "repo.ItemUpdate": {
             "type": "object",
             "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
                 "description": {
                     "type": "string"
                 },

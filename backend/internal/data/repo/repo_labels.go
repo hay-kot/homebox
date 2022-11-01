@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/item"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/label"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/predicate"
 )
@@ -68,7 +69,9 @@ func (r *LabelRepository) getOne(ctx context.Context, where ...predicate.Label) 
 	return mapLabelOutErr(r.db.Label.Query().
 		Where(where...).
 		WithGroup().
-		WithItems().
+		WithItems(func(iq *ent.ItemQuery) {
+			iq.Where(item.Archived(false))
+		}).
 		Only(ctx),
 	)
 }

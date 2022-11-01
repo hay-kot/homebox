@@ -35,6 +35,8 @@ type Item struct {
 	Quantity int `json:"quantity,omitempty"`
 	// Insured holds the value of the "insured" field.
 	Insured bool `json:"insured,omitempty"`
+	// Archived holds the value of the "archived" field.
+	Archived bool `json:"archived,omitempty"`
 	// SerialNumber holds the value of the "serial_number" field.
 	SerialNumber string `json:"serial_number,omitempty"`
 	// ModelNumber holds the value of the "model_number" field.
@@ -170,7 +172,7 @@ func (*Item) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case item.FieldInsured, item.FieldLifetimeWarranty:
+		case item.FieldInsured, item.FieldArchived, item.FieldLifetimeWarranty:
 			values[i] = new(sql.NullBool)
 		case item.FieldPurchasePrice, item.FieldSoldPrice:
 			values[i] = new(sql.NullFloat64)
@@ -256,6 +258,12 @@ func (i *Item) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field insured", values[j])
 			} else if value.Valid {
 				i.Insured = value.Bool
+			}
+		case item.FieldArchived:
+			if value, ok := values[j].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field archived", values[j])
+			} else if value.Valid {
+				i.Archived = value.Bool
 			}
 		case item.FieldSerialNumber:
 			if value, ok := values[j].(*sql.NullString); !ok {
@@ -442,6 +450,9 @@ func (i *Item) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("insured=")
 	builder.WriteString(fmt.Sprintf("%v", i.Insured))
+	builder.WriteString(", ")
+	builder.WriteString("archived=")
+	builder.WriteString(fmt.Sprintf("%v", i.Archived))
 	builder.WriteString(", ")
 	builder.WriteString("serial_number=")
 	builder.WriteString(i.SerialNumber)

@@ -47,15 +47,24 @@ func (ctrl *V1Controller) HandleItemsGetAll() server.HandlerFunc {
 		return i
 	}
 
+	getBool := func(s string) bool {
+		b, err := strconv.ParseBool(s)
+		if err != nil {
+			return false
+		}
+		return b
+	}
+
 	extractQuery := func(r *http.Request) repo.ItemQuery {
 		params := r.URL.Query()
 
 		return repo.ItemQuery{
-			Page:        intOrNegativeOne(params.Get("page")),
-			PageSize:    intOrNegativeOne(params.Get("perPage")),
-			Search:      params.Get("q"),
-			LocationIDs: uuidList(params, "locations"),
-			LabelIDs:    uuidList(params, "labels"),
+			Page:            intOrNegativeOne(params.Get("page")),
+			PageSize:        intOrNegativeOne(params.Get("perPage")),
+			Search:          params.Get("q"),
+			LocationIDs:     uuidList(params, "locations"),
+			LabelIDs:        uuidList(params, "labels"),
+			IncludeArchived: getBool(params.Get("includeArchived")),
 		}
 	}
 

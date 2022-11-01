@@ -115,6 +115,11 @@
       label: "Insured",
       ref: "insured",
     },
+    {
+      type: "checkbox",
+      label: "Archived",
+      ref: "archived",
+    },
   ];
 
   const purchaseFields: FormField[] = [

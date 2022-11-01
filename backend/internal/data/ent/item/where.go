@@ -138,6 +138,13 @@ func Insured(v bool) predicate.Item {
 	})
 }
 
+// Archived applies equality check predicate on the "archived" field. It's identical to ArchivedEQ.
+func Archived(v bool) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldArchived), v))
+	})
+}
+
 // SerialNumber applies equality check predicate on the "serial_number" field. It's identical to SerialNumberEQ.
 func SerialNumber(v string) predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
@@ -870,6 +877,20 @@ func InsuredEQ(v bool) predicate.Item {
 func InsuredNEQ(v bool) predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldInsured), v))
+	})
+}
+
+// ArchivedEQ applies the EQ predicate on the "archived" field.
+func ArchivedEQ(v bool) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldArchived), v))
+	})
+}
+
+// ArchivedNEQ applies the NEQ predicate on the "archived" field.
+func ArchivedNEQ(v bool) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldArchived), v))
 	})
 }
 

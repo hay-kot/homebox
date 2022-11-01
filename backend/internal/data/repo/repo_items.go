@@ -20,12 +20,13 @@ type ItemsRepository struct {
 
 type (
 	ItemQuery struct {
-		Page        int
-		PageSize    int
-		Search      string      `json:"search"`
-		LocationIDs []uuid.UUID `json:"locationIds"`
-		LabelIDs    []uuid.UUID `json:"labelIds"`
-		SortBy      string      `json:"sortBy"`
+		Page            int
+		PageSize        int
+		Search          string      `json:"search"`
+		LocationIDs     []uuid.UUID `json:"locationIds"`
+		LabelIDs        []uuid.UUID `json:"labelIds"`
+		SortBy          string      `json:"sortBy"`
+		IncludeArchived bool        `json:"includeArchived"`
 	}
 
 	ItemField struct {
@@ -55,6 +56,7 @@ type (
 		Description string    `json:"description"`
 		Quantity    int       `json:"quantity"`
 		Insured     bool      `json:"insured"`
+		Archived    bool      `json:"archived"`
 
 		// Edges
 		LocationID uuid.UUID   `json:"locationId"`
@@ -93,6 +95,7 @@ type (
 		Description string    `json:"description"`
 		Quantity    int       `json:"quantity"`
 		Insured     bool      `json:"insured"`
+		Archived    bool      `json:"archived"`
 		CreatedAt   time.Time `json:"createdAt"`
 		UpdatedAt   time.Time `json:"updatedAt"`
 
@@ -157,6 +160,7 @@ func mapItemSummary(item *ent.Item) ItemSummary {
 		Quantity:    item.Quantity,
 		CreatedAt:   item.CreatedAt,
 		UpdatedAt:   item.UpdatedAt,
+		Archived:    item.Archived,
 
 		// Edges
 		Location: location,
@@ -276,7 +280,20 @@ func (e *ItemsRepository) GetOneByGroup(ctx context.Context, gid, id uuid.UUID) 
 
 // QueryByGroup returns a list of items that belong to a specific group based on the provided query.
 func (e *ItemsRepository) QueryByGroup(ctx context.Context, gid uuid.UUID, q ItemQuery) (PaginationResult[ItemSummary], error) {
-	qb := e.db.Item.Query().Where(item.HasGroupWith(group.ID(gid)))
+	qb := e.db.Item.Query().Where(
+		item.HasGroupWith(group.ID(gid)),
+	)
+
+	if q.IncludeArchived {
+		qb = qb.Where(
+			item.Or(
+				item.Archived(true),
+				item.Archived(false),
+			),
+		)
+	} else {
+		qb = qb.Where(item.Archived(false))
+	}
 
 	if len(q.LabelIDs) > 0 {
 		labels := make([]predicate.Item, 0, len(q.LabelIDs))
@@ -384,6 +401,7 @@ func (e *ItemsRepository) UpdateByGroup(ctx context.Context, gid uuid.UUID, data
 		SetSerialNumber(data.SerialNumber).
 		SetModelNumber(data.ModelNumber).
 		SetManufacturer(data.Manufacturer).
+		SetArchived(data.Archived).
 		SetPurchaseTime(data.PurchaseTime).
 		SetPurchaseFrom(data.PurchaseFrom).
 		SetPurchasePrice(data.PurchasePrice).

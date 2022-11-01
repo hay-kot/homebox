@@ -23,7 +23,12 @@
     const locations = selectedLocations.value.map(l => l.id);
     const labels = selectedLabels.value.map(l => l.id);
 
-    const { data, error } = await api.items.getAll({ q: query.value, locations, labels });
+    const { data, error } = await api.items.getAll({
+      q: query.value,
+      locations,
+      labels,
+      includeArchived: includeArchived.value,
+    });
     if (error) {
       loading.value = false;
       return;
@@ -46,6 +51,7 @@
   const advanced = ref(false);
   const selectedLocations = ref([]);
   const selectedLabels = ref([]);
+  const includeArchived = ref(false);
 
   watchEffect(() => {
     if (!advanced.value) {
@@ -57,6 +63,7 @@
   watchDebounced(query, search, { debounce: 250, maxWait: 1000 });
   watchDebounced(selectedLocations, search, { debounce: 250, maxWait: 1000 });
   watchDebounced(selectedLabels, search, { debounce: 250, maxWait: 1000 });
+  watch(includeArchived, search);
 </script>
 
 <template>
@@ -77,6 +84,13 @@
       <div class="px-4 pb-4">
         <FormMultiselect v-model="selectedLabels" label="Labels" :items="labels ?? []" />
         <FormMultiselect v-model="selectedLocations" label="Locations" :items="locations ?? []" />
+        <div class="flex pb-2 pt-5">
+          <label class="label cursor-pointer mr-auto">
+            <input v-model="includeArchived" type="checkbox" class="toggle toggle-primary" />
+            <span class="label-text ml-4"> Include Archived Items </span>
+          </label>
+          <Spacer />
+        </div>
       </div>
     </BaseCard>
     <section class="mt-10">

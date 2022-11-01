@@ -4133,6 +4133,7 @@ type ItemMutation struct {
 	quantity           *int
 	addquantity        *int
 	insured            *bool
+	archived           *bool
 	serial_number      *string
 	model_number       *string
 	manufacturer       *string
@@ -4621,6 +4622,42 @@ func (m *ItemMutation) OldInsured(ctx context.Context) (v bool, err error) {
 // ResetInsured resets all changes to the "insured" field.
 func (m *ItemMutation) ResetInsured() {
 	m.insured = nil
+}
+
+// SetArchived sets the "archived" field.
+func (m *ItemMutation) SetArchived(b bool) {
+	m.archived = &b
+}
+
+// Archived returns the value of the "archived" field in the mutation.
+func (m *ItemMutation) Archived() (r bool, exists bool) {
+	v := m.archived
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldArchived returns the old "archived" field's value of the Item entity.
+// If the Item object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ItemMutation) OldArchived(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldArchived is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldArchived requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldArchived: %w", err)
+	}
+	return oldValue.Archived, nil
+}
+
+// ResetArchived resets all changes to the "archived" field.
+func (m *ItemMutation) ResetArchived() {
+	m.archived = nil
 }
 
 // SetSerialNumber sets the "serial_number" field.
@@ -5613,7 +5650,7 @@ func (m *ItemMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ItemMutation) Fields() []string {
-	fields := make([]string, 0, 21)
+	fields := make([]string, 0, 22)
 	if m.created_at != nil {
 		fields = append(fields, item.FieldCreatedAt)
 	}
@@ -5637,6 +5674,9 @@ func (m *ItemMutation) Fields() []string {
 	}
 	if m.insured != nil {
 		fields = append(fields, item.FieldInsured)
+	}
+	if m.archived != nil {
+		fields = append(fields, item.FieldArchived)
 	}
 	if m.serial_number != nil {
 		fields = append(fields, item.FieldSerialNumber)
@@ -5701,6 +5741,8 @@ func (m *ItemMutation) Field(name string) (ent.Value, bool) {
 		return m.Quantity()
 	case item.FieldInsured:
 		return m.Insured()
+	case item.FieldArchived:
+		return m.Archived()
 	case item.FieldSerialNumber:
 		return m.SerialNumber()
 	case item.FieldModelNumber:
@@ -5752,6 +5794,8 @@ func (m *ItemMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldQuantity(ctx)
 	case item.FieldInsured:
 		return m.OldInsured(ctx)
+	case item.FieldArchived:
+		return m.OldArchived(ctx)
 	case item.FieldSerialNumber:
 		return m.OldSerialNumber(ctx)
 	case item.FieldModelNumber:
@@ -5842,6 +5886,13 @@ func (m *ItemMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetInsured(v)
+		return nil
+	case item.FieldArchived:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetArchived(v)
 		return nil
 	case item.FieldSerialNumber:
 		v, ok := value.(string)
@@ -6126,6 +6177,9 @@ func (m *ItemMutation) ResetField(name string) error {
 		return nil
 	case item.FieldInsured:
 		m.ResetInsured()
+		return nil
+	case item.FieldArchived:
+		m.ResetArchived()
 		return nil
 	case item.FieldSerialNumber:
 		m.ResetSerialNumber()

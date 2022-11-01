@@ -121,6 +121,20 @@ func (iu *ItemUpdate) SetNillableInsured(b *bool) *ItemUpdate {
 	return iu
 }
 
+// SetArchived sets the "archived" field.
+func (iu *ItemUpdate) SetArchived(b bool) *ItemUpdate {
+	iu.mutation.SetArchived(b)
+	return iu
+}
+
+// SetNillableArchived sets the "archived" field if the given value is not nil.
+func (iu *ItemUpdate) SetNillableArchived(b *bool) *ItemUpdate {
+	if b != nil {
+		iu.SetArchived(*b)
+	}
+	return iu
+}
+
 // SetSerialNumber sets the "serial_number" field.
 func (iu *ItemUpdate) SetSerialNumber(s string) *ItemUpdate {
 	iu.mutation.SetSerialNumber(s)
@@ -795,6 +809,13 @@ func (iu *ItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: item.FieldInsured,
 		})
 	}
+	if value, ok := iu.mutation.Archived(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: item.FieldArchived,
+		})
+	}
 	if value, ok := iu.mutation.SerialNumber(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -1383,6 +1404,20 @@ func (iuo *ItemUpdateOne) SetInsured(b bool) *ItemUpdateOne {
 func (iuo *ItemUpdateOne) SetNillableInsured(b *bool) *ItemUpdateOne {
 	if b != nil {
 		iuo.SetInsured(*b)
+	}
+	return iuo
+}
+
+// SetArchived sets the "archived" field.
+func (iuo *ItemUpdateOne) SetArchived(b bool) *ItemUpdateOne {
+	iuo.mutation.SetArchived(b)
+	return iuo
+}
+
+// SetNillableArchived sets the "archived" field if the given value is not nil.
+func (iuo *ItemUpdateOne) SetNillableArchived(b *bool) *ItemUpdateOne {
+	if b != nil {
+		iuo.SetArchived(*b)
 	}
 	return iuo
 }
@@ -2089,6 +2124,13 @@ func (iuo *ItemUpdateOne) sqlSave(ctx context.Context) (_node *Item, err error) 
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: item.FieldInsured,
+		})
+	}
+	if value, ok := iuo.mutation.Archived(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: item.FieldArchived,
 		})
 	}
 	if value, ok := iuo.mutation.SerialNumber(); ok {
