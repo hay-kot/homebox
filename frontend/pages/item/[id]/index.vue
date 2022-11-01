@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { Detail, Details } from "~~/components/global/DetailsSection/types";
+  import { CustomDetail, Detail, Details } from "~~/components/global/DetailsSection/types";
   import { ItemAttachment } from "~~/lib/api/types/data-contracts";
 
   definePageMeta({
@@ -70,7 +70,7 @@
     );
   });
 
-  const itemDetails = computed(() => {
+  const itemDetails = computed<Details>(() => {
     return [
       {
         name: "Description",
@@ -107,11 +107,11 @@
         const url = maybeUrl(field.textValue);
         if (url.isUrl) {
           return {
+            type: "link",
             name: field.name,
             text: url.text,
-            type: "link",
             href: url.url,
-          };
+          } as CustomDetail;
         }
 
         return {
