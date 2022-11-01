@@ -313,6 +313,18 @@
     });
   }
 
+  async function archiveItem() {
+    const { isCanceled } = await confirm.open("Are you sure you want to archive this item?");
+
+    if (isCanceled) {
+      return;
+    }
+
+    console.log("archiving");
+
+    // TODO: Set item.archived = true
+  }
+
   const { query, results } = useItemSearch(api, { immediate: false });
   const parent = ref();
 </script>
@@ -413,6 +425,11 @@
                   inline
                 />
               </div>
+            </div>
+          </div>
+          <div class="p-4 flex justify-end">
+            <div class="tooltip" data-tip="Hide item from main view">
+              <BaseButton class="btn-error" size="sm" @click="archiveItem"> Archive Item </BaseButton>
             </div>
           </div>
         </div>
