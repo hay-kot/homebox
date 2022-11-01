@@ -52,5 +52,5 @@ Import RefLocation	Labels	Quantity	Name	Description	Insured	Serial Number	Model 
 | Type    | Format                                              |
 | ------- | --------------------------------------------------- |
 | String  | Max 255 Characters unless otherwise specified       |
-| Date    | YYYY-MM-DD                                          |
+| Date    | MM/DD/YYYY                                          |
 | Boolean | true or false, yes or no, 1 or 0 - case insensitive |

@@ -1,16 +1,10 @@
 import { Requests } from "../../requests";
-//  <
-// 	TGetResult,
-// 	TPostData,
-// 	TPostResult,
-// 	TPutData = TPostData,
-// 	TPutResult = TPostResult,
-// 	TDeleteResult = void
-// >
 
 type BaseApiType = {
   createdAt: string;
   updatedAt: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
 };
 
 export function hasKey(obj: object, key: string): obj is Required<BaseApiType> {
@@ -20,10 +14,11 @@ export function hasKey(obj: object, key: string): obj is Required<BaseApiType> {
 export function parseDate<T>(obj: T, keys: Array<keyof T> = []): T {
   const result = { ...obj };
   [...keys, "createdAt", "updatedAt"].forEach(key => {
-    // @ts-ignore - we are checking for the key above
+    // @ts-ignore - TS doesn't know that we're checking for the key above
     if (hasKey(result, key)) {
-      // @ts-ignore - we are guarding against this above
-      result[key] = new Date(result[key]);
+      // Ensure date like format YYYY/MM/DD - otherwise results will be 1 day off
+      const dateStr: string = result[key].split("T")[0].replace(/-/g, "/");
+      result[key] = new Date(dateStr);
     }
   });
 

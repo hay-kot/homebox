@@ -27,9 +27,9 @@
       case DateTimeFormat.RELATIVE:
         return useTimeAgo(dt).value + useDateFormat(dt, " (MM-DD-YYYY)").value;
       case DateTimeFormat.LONG:
-        return useDateFormat(dt, "YYYY-MM-DD (dddd)").value;
+        return useDateFormat(dt, "MM-DD-YYYY (dddd)").value;
       case DateTimeFormat.SHORT:
-        return useDateFormat(dt, "YYYY-MM-DD").value;
+        return useDateFormat(dt, "MM-DD-YYYY").value;
       default:
         return "";
     }
