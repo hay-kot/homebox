@@ -54,7 +54,7 @@
   const toast = useNotifier();
 
   async function create() {
-    const { error } = await api.labels.create(form);
+    const { error, data } = await api.labels.create(form);
     if (error) {
       toast.error("Couldn't create label");
       return;
@@ -62,5 +62,6 @@
 
     toast.success("Label created");
     reset();
+    navigateTo(`/label/${data.id}`);
   }
 </script>
