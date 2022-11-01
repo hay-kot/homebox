@@ -7,6 +7,7 @@
       <h2 class="card-title">
         <Icon name="mdi-package-variant" />
         {{ item.name }}
+        <Icon v-if="item.archived" class="ml-auto" name="mdi-archive-outline" />
       </h2>
       <p>{{ description }}</p>
       <div class="flex gap-2 flex-wrap justify-end">
