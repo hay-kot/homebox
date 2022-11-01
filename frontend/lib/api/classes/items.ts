@@ -11,6 +11,7 @@ import {
 import { AttachmentTypes, PaginationResult } from "../types/non-generated";
 
 export type ItemsQuery = {
+  includeArchived?: boolean;
   page?: number;
   pageSize?: number;
   locations?: string[];

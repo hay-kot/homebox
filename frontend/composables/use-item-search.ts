@@ -10,13 +10,19 @@ export function useItemSearch(client: UserClient, opts?: SearchOptions) {
   const locations = ref<LocationSummary[]>([]);
   const labels = ref<LabelSummary[]>([]);
   const results = ref<ItemSummary[]>([]);
+  const includeArchived = ref(false);
 
   watchDebounced(query, search, { debounce: 250, maxWait: 1000 });
   async function search() {
     const locIds = locations.value.map(l => l.id);
     const labelIds = labels.value.map(l => l.id);
 
-    const { data, error } = await client.items.getAll({ q: query.value, locations: locIds, labels: labelIds });
+    const { data, error } = await client.items.getAll({
+      q: query.value,
+      locations: locIds,
+      labels: labelIds,
+      includeArchived: includeArchived.value,
+    });
     if (error) {
       return;
     }
