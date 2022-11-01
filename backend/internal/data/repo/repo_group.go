@@ -85,9 +85,13 @@ func (r *GroupRepository) GroupStatistics(ctx context.Context, GID uuid.UUID) (G
 			(SELECT COUNT(*) FROM labels WHERE group_labels = ?) AS total_labels
 `
 	var stats GroupStatistics
-
 	row := r.db.Sql().QueryRowContext(ctx, q, GID, GID, GID, GID)
-	row.Scan(&stats.TotalUsers, &stats.TotalItems, &stats.TotalLocations, &stats.TotalLabels)
+
+	err := row.Scan(&stats.TotalUsers, &stats.TotalItems, &stats.TotalLocations, &stats.TotalLabels)
+	if err != nil {
+		return GroupStatistics{}, err
+	}
+
 	return stats, nil
 }
 
