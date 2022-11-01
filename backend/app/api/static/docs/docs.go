@@ -1274,6 +1274,9 @@ const docTemplate = `{
         "repo.ItemOut": {
             "type": "object",
             "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
                 "attachments": {
                     "type": "array",
                     "items": {
@@ -1383,6 +1386,9 @@ const docTemplate = `{
         "repo.ItemSummary": {
             "type": "object",
             "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -1421,6 +1427,9 @@ const docTemplate = `{
         "repo.ItemUpdate": {
             "type": "object",
             "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
                 "description": {
                     "type": "string"
                 },

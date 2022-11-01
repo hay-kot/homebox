@@ -63,6 +63,7 @@ export interface ItemField {
 }
 
 export interface ItemOut {
+  archived: boolean;
   attachments: ItemAttachment[];
   children: ItemSummary[];
   createdAt: Date;
@@ -107,6 +108,7 @@ export interface ItemOut {
 }
 
 export interface ItemSummary {
+  archived: boolean;
   createdAt: Date;
   description: string;
   id: string;
@@ -121,6 +123,7 @@ export interface ItemSummary {
 }
 
 export interface ItemUpdate {
+  archived: boolean;
   description: string;
   fields: ItemField[];
   id: string;

@@ -85,6 +85,8 @@ definitions:
     type: object
   repo.ItemOut:
     properties:
+      archived:
+        type: boolean
       attachments:
         items:
           $ref: '#/definitions/repo.ItemAttachment'
@@ -161,6 +163,8 @@ definitions:
     type: object
   repo.ItemSummary:
     properties:
+      archived:
+        type: boolean
       createdAt:
         type: string
       description:
@@ -187,6 +191,8 @@ definitions:
     type: object
   repo.ItemUpdate:
     properties:
+      archived:
+        type: boolean
       description:
         type: string
       fields:
