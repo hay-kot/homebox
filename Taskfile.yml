@@ -100,7 +100,7 @@ tasks:
   ui:watch:
     desc: Starts the vitest test runner in watch mode
     cmds:
-      - cd frontend && pnpm vitest --watch
+      - cd frontend && pnpm run test:watch
 
   ui:dev:
     desc: Run frontend development server
