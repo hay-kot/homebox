@@ -22,6 +22,17 @@ definitions:
       updatedAt:
         type: string
     type: object
+  repo.GroupStatistics:
+    properties:
+      totalItems:
+        type: integer
+      totalLabels:
+        type: integer
+      totalLocations:
+        type: integer
+      totalUsers:
+        type: integer
+    type: object
   repo.GroupUpdate:
     properties:
       currency:
@@ -558,6 +569,20 @@ paths:
       security:
       - Bearer: []
       summary: Get the current user
+      tags:
+      - Group
+  /v1/groups/statistics:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/repo.GroupStatistics'
+      security:
+      - Bearer: []
+      summary: Get the current user's group
       tags:
       - Group
   /v1/items:

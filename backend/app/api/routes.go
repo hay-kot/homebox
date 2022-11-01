@@ -76,6 +76,7 @@ func (a *app) mountRoutes(repos *repo.AllRepos) {
 	a.server.Put(v1Base("/users/self/change-password"), v1Ctrl.HandleUserSelfChangePassword(), a.mwAuthToken)
 
 	a.server.Post(v1Base("/groups/invitations"), v1Ctrl.HandleGroupInvitationsCreate(), a.mwAuthToken)
+	a.server.Get(v1Base("/groups/statistics"), v1Ctrl.HandleGroupStatistics(), a.mwAuthToken)
 
 	// TODO: I don't like /groups being the URL for users
 	a.server.Get(v1Base("/groups"), v1Ctrl.HandleGroupGet(), a.mwAuthToken)

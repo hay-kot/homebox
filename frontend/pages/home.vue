@@ -1,6 +1,5 @@
 <script setup lang="ts">
   import { useAuthStore } from "~~/stores/auth";
-  import { useItemStore } from "~~/stores/items";
   import { useLabelStore } from "~~/stores/labels";
   import { useLocationStore } from "~~/stores/locations";
 
@@ -16,33 +15,33 @@
 
   const auth = useAuthStore();
 
-  const itemsStore = useItemStore();
-  const items = computed(() => itemsStore.items);
-
   const locationStore = useLocationStore();
   const locations = computed(() => locationStore.locations);
 
   const labelsStore = useLabelStore();
   const labels = computed(() => labelsStore.labels);
 
-  const totalItems = computed(() => items.value?.length || 0);
-  const totalLocations = computed(() => locations.value?.length || 0);
-  const totalLabels = computed(() => labels.value?.length || 0);
+  const { data: statistics } = useAsyncData(async () => {
+    const { data } = await api.group.statistics();
+    return data;
+  });
 
-  const stats = [
-    {
-      label: "Locations",
-      value: totalLocations,
-    },
-    {
-      label: "Items",
-      value: totalItems,
-    },
-    {
-      label: "Labels",
-      value: totalLabels,
-    },
-  ];
+  const stats = computed(() => {
+    return [
+      {
+        label: "Locations",
+        value: statistics.value?.totalLocations || 0,
+      },
+      {
+        label: "Items",
+        value: statistics.value?.totalItems || 0,
+      },
+      {
+        label: "Labels",
+        value: statistics.value?.totalLabels || 0,
+      },
+    ];
+  });
 
   const importDialog = ref(false);
   const importCsv = ref(null);
@@ -141,7 +140,7 @@
             class="grid grid-cols-1 divide-y divide-base-300 border-t border-base-300 sm:grid-cols-3 sm:divide-y-0 sm:divide-x"
           >
             <div v-for="stat in stats" :key="stat.label" class="px-6 py-5 text-center text-sm font-medium">
-              <span class="text-base-900 font-bold">{{ stat.value.value }}</span>
+              <span class="text-base-900 font-bold">{{ stat.value }}</span>
               {{ " " }}
               <span class="text-base-600">{{ stat.label }}</span>
             </div>
