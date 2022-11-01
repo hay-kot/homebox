@@ -41,6 +41,12 @@ type (
 		Uses      int       `json:"uses"`
 		Group     Group     `json:"group"`
 	}
+	GroupStatistics struct {
+		TotalUsers     int `json:"totalUsers"`
+		TotalItems     int `json:"totalItems"`
+		TotalLocations int `json:"totalLocations"`
+		TotalLabels    int `json:"totalLabels"`
+	}
 )
 
 var (
@@ -68,6 +74,21 @@ func mapToGroupInvitation(g *ent.GroupInvitationToken) GroupInvitation {
 		Uses:      g.Uses,
 		Group:     mapToGroup(g.Edges.Group),
 	}
+}
+
+func (r *GroupRepository) GroupStatistics(ctx context.Context, GID uuid.UUID) (GroupStatistics, error) {
+	q := `
+		SELECT
+			(SELECT COUNT(*) FROM users WHERE group_users = ?) AS total_users,
+			(SELECT COUNT(*) FROM items WHERE group_items = ? AND items.archived = false) AS total_items,
+			(SELECT COUNT(*) FROM locations WHERE group_locations = ?) AS total_locations,
+			(SELECT COUNT(*) FROM labels WHERE group_labels = ?) AS total_labels
+`
+	var stats GroupStatistics
+
+	row := r.db.Sql().QueryRowContext(ctx, q, GID, GID, GID, GID)
+	row.Scan(&stats.TotalUsers, &stats.TotalItems, &stats.TotalLocations, &stats.TotalLabels)
+	return stats, nil
 }
 
 func (r *GroupRepository) GroupCreate(ctx context.Context, name string) (Group, error) {

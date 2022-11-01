@@ -24,6 +24,13 @@ export interface Group {
   updatedAt: Date;
 }
 
+export interface GroupStatistics {
+  totalItems: number;
+  totalLabels: number;
+  totalLocations: number;
+  totalUsers: number;
+}
+
 export interface GroupUpdate {
   currency: string;
   name: string;

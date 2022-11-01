@@ -113,6 +113,30 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/groups/statistics": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Group"
+                ],
+                "summary": "Get the current user's group",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/repo.GroupStatistics"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/items": {
             "get": {
                 "security": [
@@ -1175,6 +1199,23 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
+                }
+            }
+        },
+        "repo.GroupStatistics": {
+            "type": "object",
+            "properties": {
+                "totalItems": {
+                    "type": "integer"
+                },
+                "totalLabels": {
+                    "type": "integer"
+                },
+                "totalLocations": {
+                    "type": "integer"
+                },
+                "totalUsers": {
+                    "type": "integer"
                 }
             }
         },
