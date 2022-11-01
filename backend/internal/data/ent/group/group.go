@@ -124,6 +124,8 @@ const (
 	CurrencyEur Currency = "eur"
 	CurrencyGbp Currency = "gbp"
 	CurrencyJpy Currency = "jpy"
+	CurrencyZar Currency = "zar"
+	CurrencyAud Currency = "aud"
 )
 
 func (c Currency) String() string {
@@ -133,7 +135,7 @@ func (c Currency) String() string {
 // CurrencyValidator is a validator for the "currency" field enum values. It is called by the builders before save.
 func CurrencyValidator(c Currency) error {
 	switch c {
-	case CurrencyUsd, CurrencyEur, CurrencyGbp, CurrencyJpy:
+	case CurrencyUsd, CurrencyEur, CurrencyGbp, CurrencyJpy, CurrencyZar, CurrencyAud:
 		return nil
 	default:
 		return fmt.Errorf("group: invalid enum value for currency field: %q", c)
