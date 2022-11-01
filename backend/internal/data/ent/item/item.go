@@ -29,6 +29,8 @@ const (
 	FieldQuantity = "quantity"
 	// FieldInsured holds the string denoting the insured field in the database.
 	FieldInsured = "insured"
+	// FieldArchived holds the string denoting the archived field in the database.
+	FieldArchived = "archived"
 	// FieldSerialNumber holds the string denoting the serial_number field in the database.
 	FieldSerialNumber = "serial_number"
 	// FieldModelNumber holds the string denoting the model_number field in the database.
@@ -125,6 +127,7 @@ var Columns = []string{
 	FieldNotes,
 	FieldQuantity,
 	FieldInsured,
+	FieldArchived,
 	FieldSerialNumber,
 	FieldModelNumber,
 	FieldManufacturer,
@@ -188,6 +191,8 @@ var (
 	DefaultQuantity int
 	// DefaultInsured holds the default value on creation for the "insured" field.
 	DefaultInsured bool
+	// DefaultArchived holds the default value on creation for the "archived" field.
+	DefaultArchived bool
 	// SerialNumberValidator is a validator for the "serial_number" field. It is called by the builders before save.
 	SerialNumberValidator func(string) error
 	// ModelNumberValidator is a validator for the "model_number" field. It is called by the builders before save.

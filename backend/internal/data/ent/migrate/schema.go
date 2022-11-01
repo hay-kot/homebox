@@ -170,6 +170,7 @@ var (
 		{Name: "notes", Type: field.TypeString, Nullable: true, Size: 1000},
 		{Name: "quantity", Type: field.TypeInt, Default: 1},
 		{Name: "insured", Type: field.TypeBool, Default: false},
+		{Name: "archived", Type: field.TypeBool, Default: false},
 		{Name: "serial_number", Type: field.TypeString, Nullable: true, Size: 255},
 		{Name: "model_number", Type: field.TypeString, Nullable: true, Size: 255},
 		{Name: "manufacturer", Type: field.TypeString, Nullable: true, Size: 255},
@@ -195,19 +196,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "items_groups_items",
-				Columns:    []*schema.Column{ItemsColumns[22]},
+				Columns:    []*schema.Column{ItemsColumns[23]},
 				RefColumns: []*schema.Column{GroupsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "items_items_children",
-				Columns:    []*schema.Column{ItemsColumns[23]},
+				Columns:    []*schema.Column{ItemsColumns[24]},
 				RefColumns: []*schema.Column{ItemsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "items_locations_items",
-				Columns:    []*schema.Column{ItemsColumns[24]},
+				Columns:    []*schema.Column{ItemsColumns[25]},
 				RefColumns: []*schema.Column{LocationsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -221,15 +222,20 @@ var (
 			{
 				Name:    "item_manufacturer",
 				Unique:  false,
-				Columns: []*schema.Column{ItemsColumns[11]},
+				Columns: []*schema.Column{ItemsColumns[12]},
 			},
 			{
 				Name:    "item_model_number",
 				Unique:  false,
-				Columns: []*schema.Column{ItemsColumns[10]},
+				Columns: []*schema.Column{ItemsColumns[11]},
 			},
 			{
 				Name:    "item_serial_number",
+				Unique:  false,
+				Columns: []*schema.Column{ItemsColumns[10]},
+			},
+			{
+				Name:    "item_archived",
 				Unique:  false,
 				Columns: []*schema.Column{ItemsColumns[9]},
 			},

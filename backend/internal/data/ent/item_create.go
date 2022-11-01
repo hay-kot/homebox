@@ -130,6 +130,20 @@ func (ic *ItemCreate) SetNillableInsured(b *bool) *ItemCreate {
 	return ic
 }
 
+// SetArchived sets the "archived" field.
+func (ic *ItemCreate) SetArchived(b bool) *ItemCreate {
+	ic.mutation.SetArchived(b)
+	return ic
+}
+
+// SetNillableArchived sets the "archived" field if the given value is not nil.
+func (ic *ItemCreate) SetNillableArchived(b *bool) *ItemCreate {
+	if b != nil {
+		ic.SetArchived(*b)
+	}
+	return ic
+}
+
 // SetSerialNumber sets the "serial_number" field.
 func (ic *ItemCreate) SetSerialNumber(s string) *ItemCreate {
 	ic.mutation.SetSerialNumber(s)
@@ -528,6 +542,10 @@ func (ic *ItemCreate) defaults() {
 		v := item.DefaultInsured
 		ic.mutation.SetInsured(v)
 	}
+	if _, ok := ic.mutation.Archived(); !ok {
+		v := item.DefaultArchived
+		ic.mutation.SetArchived(v)
+	}
 	if _, ok := ic.mutation.LifetimeWarranty(); !ok {
 		v := item.DefaultLifetimeWarranty
 		ic.mutation.SetLifetimeWarranty(v)
@@ -582,6 +600,9 @@ func (ic *ItemCreate) check() error {
 	}
 	if _, ok := ic.mutation.Insured(); !ok {
 		return &ValidationError{Name: "insured", err: errors.New(`ent: missing required field "Item.insured"`)}
+	}
+	if _, ok := ic.mutation.Archived(); !ok {
+		return &ValidationError{Name: "archived", err: errors.New(`ent: missing required field "Item.archived"`)}
 	}
 	if v, ok := ic.mutation.SerialNumber(); ok {
 		if err := item.SerialNumberValidator(v); err != nil {
@@ -719,6 +740,14 @@ func (ic *ItemCreate) createSpec() (*Item, *sqlgraph.CreateSpec) {
 			Column: item.FieldInsured,
 		})
 		_node.Insured = value
+	}
+	if value, ok := ic.mutation.Archived(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: item.FieldArchived,
+		})
+		_node.Archived = value
 	}
 	if value, ok := ic.mutation.SerialNumber(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
