@@ -10,7 +10,7 @@
         :autofocus="true"
         label="Item Name"
       />
-      <FormTextField v-model="form.description" label="Item Description" />
+      <FormTextArea v-model="form.description" label="Item Description" />
       <FormMultiselect v-model="form.labels" label="Labels" :items="labels ?? []" />
       <div class="modal-action">
         <BaseButton ref="submitBtn" type="submit" :loading="loading">
