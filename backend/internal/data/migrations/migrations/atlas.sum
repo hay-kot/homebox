@@ -1,5 +1,6 @@
-h1:mYTnmyrnBDST/r93NGJM33mIJqhp/U9qR440zI99eqQ=
+h1:i76VRMDIPdcmQtXTe9bzrgITAzLGjjVy9y8XaXIchAs=
 20220929052825_init.sql h1:ZlCqm1wzjDmofeAcSX3jE4h4VcdTNGpRg2eabztDy9Q=
 20221001210956_group_invitations.sql h1:YQKJFtE39wFOcRNbZQ/d+ZlHwrcfcsZlcv/pLEYdpjw=
 20221009173029_add_user_roles.sql h1:vWmzAfgEWQeGk0Vn70zfVPCcfEZth3E0JcvyKTjpYyU=
 20221020043305_allow_nesting_types.sql h1:4AyJpZ7l7SSJtJAQETYY802FHJ64ufYPJTqvwdiGn3M=
+20221101041931_add_archived_field.sql h1:L2WxiOh1svRn817cNURgqnEQg6DIcodZ1twK4tvxW94=
