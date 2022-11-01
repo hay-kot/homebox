@@ -112,6 +112,7 @@ func (r *LocationRepository) GetAll(ctx context.Context, groupId uuid.UUID) ([]L
 			locations
 		WHERE
 			locations.group_locations = ?
+			AND locations.location_children IS NULL
 		ORDER BY
 			locations.name ASC
 `
