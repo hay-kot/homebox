@@ -10,7 +10,7 @@
         :autofocus="true"
         label="Item Name"
       />
-      <FormTextField v-model="form.description" label="Item Description" />
+      <FormTextArea v-model="form.description" label="Item Description" />
       <FormMultiselect v-model="form.labels" label="Labels" :items="labels ?? []" />
       <div class="modal-action">
         <BaseButton ref="submitBtn" type="submit" :loading="loading">
@@ -81,13 +81,14 @@
     }
 
     const out: ItemCreate = {
+      parentId: undefined,
       name: form.name,
       description: form.description,
       locationId: form.location.id as string,
       labelIds: form.labels.map(l => l.id) as string[],
     };
 
-    const { error } = await api.items.create(out);
+    const { error, data } = await api.items.create(out);
     if (error) {
       toast.error("Couldn't create item");
       return;
@@ -95,5 +96,6 @@
 
     toast.success("Item created");
     reset();
+    navigateTo(`/item/${data.id}`);
   }
 </script>
