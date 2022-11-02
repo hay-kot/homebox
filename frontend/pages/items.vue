@@ -1,5 +1,6 @@
 <script setup lang="ts">
-  import { ItemSummary } from "~~/lib/api/types/data-contracts";
+  import { watchPostEffect } from "vue";
+  import { ItemSummary, LabelSummary, LocationOutCount } from "~~/lib/api/types/data-contracts";
   import { useLabelStore } from "~~/stores/labels";
   import { useLocationStore } from "~~/stores/locations";
 
@@ -11,13 +12,21 @@
     title: "Homebox | Home",
   });
 
-  const api = useUserApi();
+  const searchLocked = ref(false);
 
-  const query = ref("");
+  const api = useUserApi();
   const loading = useMinLoader(2000);
   const results = ref<ItemSummary[]>([]);
 
+  const query = useRouteQuery("q", "");
+  const advanced = useRouteQuery("advanced", false);
+  const includeArchived = useRouteQuery("archived", false);
+
   async function search() {
+    if (searchLocked.value) {
+      return;
+    }
+
     loading.value = true;
 
     const locations = selectedLocations.value.map(l => l.id);
@@ -38,8 +47,38 @@
     loading.value = false;
   }
 
-  onMounted(() => {
-    search();
+  const route = useRoute();
+  const router = useRouter();
+
+  const queryParamsInitialized = ref(false);
+
+  onMounted(async () => {
+    // Wait until locations and labels are loaded
+    let maxRetry = 10;
+    while (!labels.value || !locations.value) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      if (maxRetry-- < 0) {
+        break;
+      }
+    }
+    searchLocked.value = true;
+    const qLoc = route.query.loc as string[];
+    if (qLoc) {
+      selectedLocations.value = locations.value.filter(l => qLoc.includes(l.id));
+    }
+
+    const qLab = route.query.lab as string[];
+    if (qLab) {
+      selectedLabels.value = labels.value.filter(l => qLab.includes(l.id));
+    }
+
+    queryParamsInitialized.value = true;
+    searchLocked.value = false;
+
+    // trigger search if no changes
+    if (!qLab && !qLoc) {
+      search();
+    }
   });
 
   const locationsStore = useLocationStore();
@@ -48,10 +87,36 @@
   const labelStore = useLabelStore();
   const labels = computed(() => labelStore.labels);
 
-  const advanced = ref(false);
-  const selectedLocations = ref([]);
-  const selectedLabels = ref([]);
-  const includeArchived = ref(false);
+  const selectedLocations = ref<LocationOutCount[]>([]);
+  const selectedLabels = ref<LabelSummary[]>([]);
+
+  watchPostEffect(() => {
+    if (!queryParamsInitialized.value) {
+      return;
+    }
+
+    const labelIds = selectedLabels.value.map(l => l.id);
+    router.push({
+      query: {
+        ...router.currentRoute.value.query,
+        lab: labelIds,
+      },
+    });
+  });
+
+  watchPostEffect(() => {
+    if (!queryParamsInitialized.value) {
+      return;
+    }
+
+    const locIds = selectedLocations.value.map(l => l.id);
+    router.push({
+      query: {
+        ...router.currentRoute.value.query,
+        loc: locIds,
+      },
+    });
+  });
 
   watchEffect(() => {
     if (!advanced.value) {
@@ -60,9 +125,7 @@
     }
   });
 
-  watchDebounced(query, search, { debounce: 250, maxWait: 1000 });
-  watchDebounced(selectedLocations, search, { debounce: 250, maxWait: 1000 });
-  watchDebounced(selectedLabels, search, { debounce: 250, maxWait: 1000 });
+  watchDebounced([selectedLocations, selectedLabels, query], search, { debounce: 250, maxWait: 1000 });
   watch(includeArchived, search);
 </script>
 
