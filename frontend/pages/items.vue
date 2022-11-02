@@ -33,7 +33,7 @@
     const labels = selectedLabels.value.map(l => l.id);
 
     const { data, error } = await api.items.getAll({
-      q: query.value,
+      q: query.value || "",
       locations,
       labels,
       includeArchived: includeArchived.value,
