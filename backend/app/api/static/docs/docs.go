@@ -756,6 +756,14 @@ const docTemplate = `{
                     "Locations"
                 ],
                 "summary": "Get All Locations",
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "description": "Filter locations with parents",
+                        "name": "filterChildren",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",

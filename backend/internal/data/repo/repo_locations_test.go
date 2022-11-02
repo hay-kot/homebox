@@ -43,7 +43,7 @@ func TestLocationRepositoryGetAllWithCount(t *testing.T) {
 
 	assert.NoError(t, err)
 
-	results, err := tRepos.Locations.GetAll(context.Background(), tGroup.ID)
+	results, err := tRepos.Locations.GetAll(context.Background(), tGroup.ID, LocationQuery{})
 	assert.NoError(t, err)
 
 	for _, loc := range results {

@@ -16,7 +16,7 @@
   const auth = useAuthStore();
 
   const locationStore = useLocationStore();
-  const locations = computed(() => locationStore.locations);
+  const locations = computed(() => locationStore.parentLocations);
 
   const labelsStore = useLabelStore();
   const labels = computed(() => labelsStore.labels);

@@ -18,7 +18,7 @@
   const itemId = computed<string>(() => route.params.id as string);
 
   const locationStore = useLocationStore();
-  const locations = computed(() => locationStore.locations);
+  const locations = computed(() => locationStore.allLocations);
 
   const labelStore = useLabelStore();
   const labels = computed(() => labelStore.labels);

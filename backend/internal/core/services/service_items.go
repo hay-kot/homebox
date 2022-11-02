@@ -23,7 +23,7 @@ type ItemService struct {
 	at attachmentTokens
 }
 
-func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]string) (int, error) {
+func (svc *ItemService) CsvImport(ctx context.Context, GID uuid.UUID, data [][]string) (int, error) {
 	loaded := []csvRow{}
 
 	// Skip first row
@@ -66,7 +66,7 @@ func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]s
 
 	// Bootstrap the locations and labels so we can reuse the created IDs for the items
 	locations := map[string]uuid.UUID{}
-	existingLocation, err := svc.repo.Locations.GetAll(ctx, gid)
+	existingLocation, err := svc.repo.Locations.GetAll(ctx, GID, repo.LocationQuery{})
 	if err != nil {
 		return 0, err
 	}
@@ -75,7 +75,7 @@ func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]s
 	}
 
 	labels := map[string]uuid.UUID{}
-	existingLabels, err := svc.repo.Labels.GetAll(ctx, gid)
+	existingLabels, err := svc.repo.Labels.GetAll(ctx, GID)
 	if err != nil {
 		return 0, err
 	}
@@ -87,7 +87,7 @@ func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]s
 
 		// Locations
 		if _, exists := locations[row.Location]; !exists {
-			result, err := svc.repo.Locations.Create(ctx, gid, repo.LocationCreate{
+			result, err := svc.repo.Locations.Create(ctx, GID, repo.LocationCreate{
 				Name:        row.Location,
 				Description: "",
 			})
@@ -103,7 +103,7 @@ func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]s
 			if _, exists := labels[label]; exists {
 				continue
 			}
-			result, err := svc.repo.Labels.Create(ctx, gid, repo.LabelCreate{
+			result, err := svc.repo.Labels.Create(ctx, GID, repo.LabelCreate{
 				Name:        label,
 				Description: "",
 			})
@@ -119,7 +119,7 @@ func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]s
 	for _, row := range loaded {
 		// Check Import Ref
 		if row.Item.ImportRef != "" {
-			exists, err := svc.repo.Items.CheckRef(ctx, gid, row.Item.ImportRef)
+			exists, err := svc.repo.Items.CheckRef(ctx, GID, row.Item.ImportRef)
 			if exists {
 				continue
 			}
@@ -139,7 +139,7 @@ func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]s
 			Str("location", row.Location).
 			Msgf("Creating Item: %s", row.Item.Name)
 
-		result, err := svc.repo.Items.Create(ctx, gid, repo.ItemCreate{
+		result, err := svc.repo.Items.Create(ctx, GID, repo.ItemCreate{
 			ImportRef:   row.Item.ImportRef,
 			Name:        row.Item.Name,
 			Description: row.Item.Description,
@@ -152,7 +152,7 @@ func (svc *ItemService) CsvImport(ctx context.Context, gid uuid.UUID, data [][]s
 		}
 
 		// Update the item with the rest of the data
-		_, err = svc.repo.Items.UpdateByGroup(ctx, gid, repo.ItemUpdate{
+		_, err = svc.repo.Items.UpdateByGroup(ctx, GID, repo.ItemUpdate{
 			// Edges
 			LocationID: locationID,
 			LabelIDs:   labelIDs,

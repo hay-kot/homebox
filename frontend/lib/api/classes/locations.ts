@@ -2,9 +2,13 @@ import { BaseAPI, route } from "../base";
 import { LocationOutCount, LocationCreate, LocationOut, LocationUpdate } from "../types/data-contracts";
 import { Results } from "../types/non-generated";
 
+export type LocationsQuery = {
+  filterChildren: boolean;
+};
+
 export class LocationsApi extends BaseAPI {
-  getAll() {
-    return this.http.get<Results<LocationOutCount>>({ url: route("/locations") });
+  getAll(q: LocationsQuery = { filterChildren: false }) {
+    return this.http.get<Results<LocationOutCount>>({ url: route("/locations", q) });
   }
 
   create(body: LocationCreate) {

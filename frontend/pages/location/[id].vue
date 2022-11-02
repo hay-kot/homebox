@@ -117,7 +117,7 @@
   }
 
   const locationStore = useLocationStore();
-  const locations = computed(() => locationStore.locations);
+  const locations = computed(() => locationStore.allLocations);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const parent = ref<LocationSummary | any>({});

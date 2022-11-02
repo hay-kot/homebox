@@ -3,10 +3,7 @@ package v1
 import (
 	"encoding/csv"
 	"net/http"
-	"net/url"
-	"strconv"
 
-	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/sys/validate"
@@ -27,44 +24,17 @@ import (
 // @Router   /v1/items [GET]
 // @Security Bearer
 func (ctrl *V1Controller) HandleItemsGetAll() server.HandlerFunc {
-	uuidList := func(params url.Values, key string) []uuid.UUID {
-		var ids []uuid.UUID
-		for _, id := range params[key] {
-			uid, err := uuid.Parse(id)
-			if err != nil {
-				continue
-			}
-			ids = append(ids, uid)
-		}
-		return ids
-	}
-
-	intOrNegativeOne := func(s string) int {
-		i, err := strconv.Atoi(s)
-		if err != nil {
-			return -1
-		}
-		return i
-	}
-
-	getBool := func(s string) bool {
-		b, err := strconv.ParseBool(s)
-		if err != nil {
-			return false
-		}
-		return b
-	}
 
 	extractQuery := func(r *http.Request) repo.ItemQuery {
 		params := r.URL.Query()
 
 		return repo.ItemQuery{
-			Page:            intOrNegativeOne(params.Get("page")),
-			PageSize:        intOrNegativeOne(params.Get("perPage")),
+			Page:            queryIntOrNegativeOne(params.Get("page")),
+			PageSize:        queryIntOrNegativeOne(params.Get("perPage")),
 			Search:          params.Get("q"),
-			LocationIDs:     uuidList(params, "locations"),
-			LabelIDs:        uuidList(params, "labels"),
-			IncludeArchived: getBool(params.Get("includeArchived")),
+			LocationIDs:     queryUUIDList(params, "locations"),
+			LabelIDs:        queryUUIDList(params, "labels"),
+			IncludeArchived: queryBool(params.Get("includeArchived")),
 		}
 	}
 
