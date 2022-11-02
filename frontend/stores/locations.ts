@@ -3,7 +3,8 @@ import { LocationOutCount } from "~~/lib/api/types/data-contracts";
 
 export const useLocationStore = defineStore("locations", {
   state: () => ({
-    allLocations: null as LocationOutCount[] | null,
+    parents: null as LocationOutCount[] | null,
+    Locations: null as LocationOutCount[] | null,
     client: useUserApi(),
   }),
   getters: {
@@ -12,21 +13,36 @@ export const useLocationStore = defineStore("locations", {
      * synched with the server by intercepting the API calls and updating on the
      * response
      */
-    locations(state): LocationOutCount[] {
-      if (state.allLocations === null) {
-        Promise.resolve(this.refresh());
+    parentLocations(state): LocationOutCount[] {
+      if (state.parents === null) {
+        Promise.resolve(this.refreshParents());
       }
-      return state.allLocations;
+      return state.parents;
+    },
+    allLocations(state): LocationOutCount[] {
+      if (state.Locations === null) {
+        Promise.resolve(this.refreshChildren());
+      }
+      return state.Locations;
     },
   },
   actions: {
-    async refresh(): Promise<LocationOutCount[]> {
-      const result = await this.client.locations.getAll();
+    async refreshParents(): Promise<LocationOutCount[]> {
+      const result = await this.client.locations.getAll({ filterChildren: true });
       if (result.error) {
         return result;
       }
 
-      this.allLocations = result.data.items;
+      this.parents = result.data.items;
+      return result;
+    },
+    async refreshChildren(): Promise<LocationOutCount[]> {
+      const result = await this.client.locations.getAll({ filterChildren: false });
+      if (result.error) {
+        return result;
+      }
+
+      this.Locations = result.data.items;
       return result;
     },
   },

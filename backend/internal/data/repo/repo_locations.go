@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -90,8 +91,12 @@ func mapLocationOut(location *ent.Location) LocationOut {
 	}
 }
 
+type LocationQuery struct {
+	FilterChildren bool `json:"filterChildren"`
+}
+
 // GetALlWithCount returns all locations with item count field populated
-func (r *LocationRepository) GetAll(ctx context.Context, groupId uuid.UUID) ([]LocationOutCount, error) {
+func (r *LocationRepository) GetAll(ctx context.Context, GID uuid.UUID, filter LocationQuery) ([]LocationOutCount, error) {
 	query := `--sql
 		SELECT
 			id,
@@ -111,13 +116,18 @@ func (r *LocationRepository) GetAll(ctx context.Context, groupId uuid.UUID) ([]L
 		FROM
 			locations
 		WHERE
-			locations.group_locations = ?
-			AND locations.location_children IS NULL
+			locations.group_locations = ? {{ FILTER_CHILDREN }}
 		ORDER BY
 			locations.name ASC
 `
 
-	rows, err := r.db.Sql().QueryContext(ctx, query, groupId)
+	if filter.FilterChildren {
+		query = strings.Replace(query, "{{ FILTER_CHILDREN }}", "AND locations.location_children IS NULL", 1)
+	} else {
+		query = strings.Replace(query, "{{ FILTER_CHILDREN }}", "", 1)
+	}
+
+	rows, err := r.db.Sql().QueryContext(ctx, query, GID)
 	if err != nil {
 		return nil, err
 	}

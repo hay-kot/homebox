@@ -41,7 +41,7 @@
   const toast = useNotifier();
 
   const locationsStore = useLocationStore();
-  const locations = computed(() => locationsStore.locations);
+  const locations = computed(() => locationsStore.allLocations);
 
   const labelStore = useLabelStore();
   const labels = computed(() => labelStore.labels);

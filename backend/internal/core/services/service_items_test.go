@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -38,7 +39,7 @@ func TestItemService_CsvImport(t *testing.T) {
 		dataCsv = append(dataCsv, newCsvRow(item))
 	}
 
-	allLocation, err := tRepos.Locations.GetAll(context.Background(), tGroup.ID)
+	allLocation, err := tRepos.Locations.GetAll(context.Background(), tGroup.ID, repo.LocationQuery{})
 	assert.NoError(t, err)
 	locNames := []string{}
 	for _, loc := range allLocation {

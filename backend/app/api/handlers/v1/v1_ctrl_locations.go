@@ -15,13 +15,21 @@ import (
 // @Summary  Get All Locations
 // @Tags     Locations
 // @Produce  json
+// @Param    filterChildren query bool false "Filter locations with parents"
 // @Success  200 {object} server.Results{items=[]repo.LocationOutCount}
 // @Router   /v1/locations [GET]
 // @Security Bearer
 func (ctrl *V1Controller) HandleLocationGetAll() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		user := services.UseUserCtx(r.Context())
-		locations, err := ctrl.repo.Locations.GetAll(r.Context(), user.GroupID)
+
+		q := r.URL.Query()
+
+		filter := repo.LocationQuery{
+			FilterChildren: queryBool(q.Get("filterChildren")),
+		}
+
+		locations, err := ctrl.repo.Locations.GetAll(r.Context(), user.GroupID, filter)
 		if err != nil {
 			log.Err(err).Msg("failed to get locations")
 			return validate.NewRequestError(err, http.StatusInternalServerError)

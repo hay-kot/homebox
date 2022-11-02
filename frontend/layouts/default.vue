@@ -32,7 +32,8 @@
   const rmLocationStoreObserver = defineObserver("locationStore", {
     handler: r => {
       if (r.status === 201 || r.url.match(reLocation)) {
-        locationStore.refresh();
+        locationStore.refreshChildren();
+        locationStore.refreshParents();
       }
       console.debug("locationStore handler called by observer");
     },
@@ -43,7 +44,8 @@
     EventTypes.ClearStores,
     () => {
       labelStore.refresh();
-      locationStore.refresh();
+      locationStore.refreshChildren();
+      locationStore.refreshParents();
     },
     "stores"
   );

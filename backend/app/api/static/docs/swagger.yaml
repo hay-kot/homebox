@@ -960,6 +960,11 @@ paths:
       - Labels
   /v1/locations:
     get:
+      parameters:
+      - description: Filter locations with parents
+        in: query
+        name: filterChildren
+        type: boolean
       produces:
       - application/json
       responses:
