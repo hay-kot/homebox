@@ -98,6 +98,9 @@ definitions:
     properties:
       archived:
         type: boolean
+      assetId:
+        example: "0"
+        type: string
       attachments:
         items:
           $ref: '#/definitions/repo.ItemAttachment'
@@ -204,6 +207,8 @@ definitions:
     properties:
       archived:
         type: boolean
+      assetId:
+        type: string
       description:
         type: string
       fields:
@@ -477,6 +482,11 @@ definitions:
       new:
         type: string
     type: object
+  v1.EnsureAssetIDResult:
+    properties:
+      completed:
+        type: integer
+    type: object
   v1.GroupInvitation:
     properties:
       expiresAt:
@@ -516,6 +526,20 @@ info:
   title: Go API Templates
   version: "1.0"
 paths:
+  /v1/actions/ensure-asset-ids:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.EnsureAssetIDResult'
+      security:
+      - Bearer: []
+      summary: Get the current user
+      tags:
+      - Group
   /v1/groups:
     get:
       produces:

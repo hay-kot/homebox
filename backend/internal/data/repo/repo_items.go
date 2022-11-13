@@ -2,6 +2,9 @@ package repo
 
 import (
 	"context"
+	"fmt"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -16,6 +19,30 @@ import (
 
 type ItemsRepository struct {
 	db *ent.Client
+}
+
+type AssetID int
+
+func (aid AssetID) MarshalJSON() ([]byte, error) {
+	str := fmt.Sprintf("%d", aid)
+
+	for len(str) < 6 {
+		str = "0" + str
+	}
+
+	return []byte(fmt.Sprintf(`"%s"`, str)), nil
+}
+
+func (aid *AssetID) UnmarshalJSON(data []byte) error {
+	str := string(strings.Replace(string(data), `"`, "", -1))
+	aidInt, err := strconv.Atoi(str)
+	if err != nil {
+		return err
+	}
+
+	*aid = AssetID(aidInt)
+	return nil
+
 }
 
 type (
@@ -52,6 +79,7 @@ type (
 	ItemUpdate struct {
 		ParentID    uuid.UUID `json:"parentId" extensions:"x-nullable,x-omitempty"`
 		ID          uuid.UUID `json:"id"`
+		AssetID     AssetID   `json:"assetId"`
 		Name        string    `json:"name"`
 		Description string    `json:"description"`
 		Quantity    int       `json:"quantity"`
@@ -107,6 +135,7 @@ type (
 	ItemOut struct {
 		Parent *ItemSummary `json:"parent,omitempty" extensions:"x-nullable,x-omitempty"`
 		ItemSummary
+		AssetID AssetID `json:"assetId,string"`
 
 		SerialNumber string `json:"serialNumber"`
 		ModelNumber  string `json:"modelNumber"`
@@ -215,6 +244,7 @@ func mapItemOut(item *ent.Item) ItemOut {
 
 	return ItemOut{
 		Parent:           parent,
+		AssetID:          AssetID(item.AssetID),
 		ItemSummary:      mapItemSummary(item),
 		LifetimeWarranty: item.LifetimeWarranty,
 		WarrantyExpires:  item.WarrantyExpires,
@@ -359,6 +389,42 @@ func (e *ItemsRepository) GetAll(ctx context.Context, gid uuid.UUID) ([]ItemSumm
 		All(ctx))
 }
 
+func (e *ItemsRepository) GetAllZeroAssetID(ctx context.Context, GID uuid.UUID) ([]ItemSummary, error) {
+	q := e.db.Item.Query().Where(
+		item.HasGroupWith(group.ID(GID)),
+		item.AssetID(0),
+	).Order(
+		ent.Asc(item.FieldCreatedAt),
+	)
+
+	return mapItemsSummaryErr(q.All(ctx))
+}
+
+func (e *ItemsRepository) GetHighestAssetID(ctx context.Context, GID uuid.UUID) (AssetID, error) {
+	q := e.db.Item.Query().Where(
+		item.HasGroupWith(group.ID(GID)),
+	).Order(
+		ent.Desc(item.FieldAssetID),
+	).Limit(1)
+
+	result, err := q.First(ctx)
+	if err != nil {
+		return 0, err
+	}
+
+	return AssetID(result.AssetID), nil
+}
+
+func (e *ItemsRepository) SetAssetID(ctx context.Context, GID uuid.UUID, ID uuid.UUID, assetID AssetID) error {
+	q := e.db.Item.Update().Where(
+		item.HasGroupWith(group.ID(GID)),
+		item.ID(ID),
+	)
+
+	_, err := q.SetAssetID(int(assetID)).Save(ctx)
+	return err
+}
+
 func (e *ItemsRepository) Create(ctx context.Context, gid uuid.UUID, data ItemCreate) (ItemOut, error) {
 	q := e.db.Item.Create().
 		SetImportRef(data.ImportRef).
@@ -414,7 +480,8 @@ func (e *ItemsRepository) UpdateByGroup(ctx context.Context, gid uuid.UUID, data
 		SetInsured(data.Insured).
 		SetWarrantyExpires(data.WarrantyExpires).
 		SetWarrantyDetails(data.WarrantyDetails).
-		SetQuantity(data.Quantity)
+		SetQuantity(data.Quantity).
+		SetAssetID(int(data.AssetID))
 
 	currentLabels, err := e.db.Item.Query().Where(item.ID(data.ID)).QueryLabel().All(ctx)
 	if err != nil {

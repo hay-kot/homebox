@@ -82,6 +82,8 @@ func (a *app) mountRoutes(repos *repo.AllRepos) {
 	a.server.Get(v1Base("/groups"), v1Ctrl.HandleGroupGet(), a.mwAuthToken)
 	a.server.Put(v1Base("/groups"), v1Ctrl.HandleGroupUpdate(), a.mwAuthToken)
 
+	a.server.Post(v1Base("/actions/ensure-asset-ids"), v1Ctrl.HandleEnsureAssetID(), a.mwAuthToken)
+
 	a.server.Get(v1Base("/locations"), v1Ctrl.HandleLocationGetAll(), a.mwAuthToken)
 	a.server.Post(v1Base("/locations"), v1Ctrl.HandleLocationCreate(), a.mwAuthToken)
 	a.server.Get(v1Base("/locations/{id}"), v1Ctrl.HandleLocationGet(), a.mwAuthToken)

@@ -163,6 +163,25 @@
     passwordChange.current = "";
     passwordChange.loading = false;
   }
+
+  async function ensureAssetIDs() {
+    const { isCanceled } = await confirm.open(
+      "Are you sure you want to ensure all assets have an ID? This will take a while and cannot be undone."
+    );
+
+    if (isCanceled) {
+      return;
+    }
+
+    const result = await api.actions.ensureAssetIDs();
+
+    if (result.error) {
+      notify.error("Failed to ensure asset IDs.");
+      return;
+    }
+
+    notify.success(`${result.data.completed} assets have been updated.`);
+  }
 </script>
 
 <template>
@@ -284,6 +303,32 @@
             </div>
           </div>
         </div>
+      </BaseCard>
+
+      <BaseCard>
+        <template #title>
+          <BaseSectionHeader>
+            <Icon name="mdi-warning" class="mr-2 -mt-1 text-base-600" />
+            <span class="text-base-600"> Actions </span>
+            <template #description>
+              Apply Actions to your inventory in bulk. These are irreversible actions. Be careful.
+            </template>
+          </BaseSectionHeader>
+
+          <div class="py-4 border-t-2 border-gray-300">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+              <div class="col-span-3">
+                <h4>Manage Asset IDs</h4>
+                <p class="text-sm">
+                  Ensures that all items in your inventory have a valid asset_id field. This is done by finding the
+                  highest current asset_id field in the database and applying the next value to each item that has an
+                  unset asset_id field. This is done in order of the created_at field.
+                </p>
+              </div>
+              <BaseButton class="btn-primary mt-auto" @click="ensureAssetIDs"> Ensure Asset IDs </BaseButton>
+            </div>
+          </div>
+        </template>
       </BaseCard>
 
       <BaseCard>

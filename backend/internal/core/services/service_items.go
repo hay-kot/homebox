@@ -23,6 +23,32 @@ type ItemService struct {
 	at attachmentTokens
 }
 
+func (svc *ItemService) EnsureAssetID(ctx context.Context, GID uuid.UUID) (int, error) {
+	items, err := svc.repo.Items.GetAllZeroAssetID(ctx, GID)
+
+	if err != nil {
+		return 0, err
+	}
+
+	highest, err := svc.repo.Items.GetHighestAssetID(ctx, GID)
+	if err != nil {
+		return 0, err
+	}
+
+	finished := 0
+	for _, item := range items {
+		highest++
+
+		err = svc.repo.Items.SetAssetID(ctx, GID, item.ID, repo.AssetID(highest))
+		if err != nil {
+			return 0, err
+		}
+
+		finished++
+	}
+
+	return finished, nil
+}
 func (svc *ItemService) CsvImport(ctx context.Context, GID uuid.UUID, data [][]string) (int, error) {
 	loaded := []csvRow{}
 

@@ -71,6 +71,9 @@ export interface ItemField {
 
 export interface ItemOut {
   archived: boolean;
+
+  /** @example 0 */
+  assetId: string;
   attachments: ItemAttachment[];
   children: ItemSummary[];
   createdAt: Date;
@@ -131,6 +134,7 @@ export interface ItemSummary {
 
 export interface ItemUpdate {
   archived: boolean;
+  assetId: string;
   description: string;
   fields: ItemField[];
   id: string;
@@ -298,6 +302,10 @@ export interface Build {
 export interface ChangePassword {
   current: string;
   new: string;
+}
+
+export interface EnsureAssetIDResult {
+  completed: number;
 }
 
 export interface GroupInvitation {

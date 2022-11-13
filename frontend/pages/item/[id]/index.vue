@@ -100,6 +100,10 @@
         name: "Notes",
         text: item.value?.notes,
       },
+      {
+        name: "Asset ID",
+        text: item.value?.assetId,
+      },
       ...item.value.fields.map(field => {
         /**
          * Support Special URL Syntax
