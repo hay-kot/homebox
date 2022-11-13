@@ -112,7 +112,10 @@ func run(cfg *config.Config) error {
 
 	app.db = c
 	app.repos = repo.New(c, cfg.Storage.Data)
-	app.services = services.New(app.repos)
+	app.services = services.New(
+		app.repos,
+		services.WithAutoIncrementAssetID(cfg.Options.AutoIncrementAssetID),
+	)
 
 	// =========================================================================
 	// Start Server\

@@ -51,7 +51,7 @@ func (a *app) mountRoutes(repos *repo.AllRepos) {
 		a.services,
 		a.repos,
 		v1.WithMaxUploadSize(a.conf.Web.MaxUploadSize),
-		v1.WithRegistration(a.conf.AllowRegistration),
+		v1.WithRegistration(a.conf.Options.AllowRegistration),
 		v1.WithDemoStatus(a.conf.Demo), // Disable Password Change in Demo Mode
 	)
 

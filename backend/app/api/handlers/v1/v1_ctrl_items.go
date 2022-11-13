@@ -65,8 +65,8 @@ func (ctrl *V1Controller) HandleItemsCreate() server.HandlerFunc {
 			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		user := services.UseUserCtx(r.Context())
-		item, err := ctrl.repo.Items.Create(r.Context(), user.GroupID, createData)
+		ctx := services.NewContext(r.Context())
+		item, err := ctrl.svc.Items.Create(ctx, createData)
 		if err != nil {
 			log.Err(err).Msg("failed to create item")
 			return validate.NewRequestError(err, http.StatusInternalServerError)
