@@ -212,6 +212,7 @@ func (svc *ItemService) CsvImport(ctx context.Context, GID uuid.UUID, data [][]s
 			// Edges
 			LocationID: locationID,
 			LabelIDs:   labelIDs,
+			AssetID:    data.AssetID,
 
 			// General Fields
 			ID:          result.ID,
