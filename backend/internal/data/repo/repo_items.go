@@ -2,9 +2,6 @@ package repo
 
 import (
 	"context"
-	"fmt"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -19,30 +16,6 @@ import (
 
 type ItemsRepository struct {
 	db *ent.Client
-}
-
-type AssetID int
-
-func (aid AssetID) MarshalJSON() ([]byte, error) {
-	str := fmt.Sprintf("%d", aid)
-
-	for len(str) < 6 {
-		str = "0" + str
-	}
-
-	return []byte(fmt.Sprintf(`"%s"`, str)), nil
-}
-
-func (aid *AssetID) UnmarshalJSON(data []byte) error {
-	str := string(strings.Replace(string(data), `"`, "", -1))
-	aidInt, err := strconv.Atoi(str)
-	if err != nil {
-		return err
-	}
-
-	*aid = AssetID(aidInt)
-	return nil
-
 }
 
 type (
@@ -410,6 +383,9 @@ func (e *ItemsRepository) GetHighestAssetID(ctx context.Context, GID uuid.UUID) 
 
 	result, err := q.First(ctx)
 	if err != nil {
+		if ent.IsNotFound(err) {
+			return 0, nil
+		}
 		return 0, err
 	}
 

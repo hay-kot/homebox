@@ -2,40 +2,12 @@ package repo
 
 import (
 	"context"
-	"encoding/json"
 	"testing"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
-
-func TestAssetID_UnmarshalJSON(t *testing.T) {
-	rawjson := `{"aid":"000123"}`
-
-	st := struct {
-		AID AssetID `json:"aid"`
-	}{
-		AID: AssetID(0),
-	}
-
-	err := json.Unmarshal([]byte(rawjson), &st)
-	assert.NoError(t, err)
-	assert.Equal(t, AssetID(123), st.AID)
-}
-
-func TestAssetID_MarshalJSON(t *testing.T) {
-	st := struct {
-		AID AssetID `json:"aid"`
-	}{
-		AID: AssetID(123),
-	}
-
-	b, err := json.Marshal(st)
-
-	assert.NoError(t, err)
-	assert.JSONEq(t, `{"aid":"000123"}`, string(b))
-}
 
 func itemFactory() ItemCreate {
 	return ItemCreate{
