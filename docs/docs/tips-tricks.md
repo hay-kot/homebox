@@ -14,3 +14,21 @@ Custom fields are appended to the main details section of your item.
 !!! tip
     Homebox Custom Fields also have special support for URLs. Provide a URL (`https://google.com`) and it will be automatically converted to a clickable link in the UI. Optionally, you can also use markdown syntax to add a custom text to the button. `[Google](https://google.com)`
 
+## Managing Asset IDs
+
+Homebox provides the option to auto-set asset IDs, this is the default behavior. These can be used for tracking assets with printable tags or labels. You can disable this behavior via a command line flag or ENV variable. See [configuration](../quick-start#env-variables-configuration) for more details.
+
+Example ID: `000-001`
+
+Asset IDs are partially managed by Homebox, but have a flexible implementation to allow for unique use cases. ID's are non-unique at the database level so there is nothing stopping a user from manually setting duplicate IDs for various items. There are two recommended approaches to manage Asset IDs
+
+### 1. Auto Incrementing IDs
+
+This is the default behavior and likely to one to experience the most consistent behavior. Whenever creating or importing an item, that items receives the next available ID. This is the most consistent approach and is recommended for most users.
+
+### 2. Auto Incrementing ID's with Reset
+
+In some cases you may want to skip some items such as consumables, or items that are loosely tracked. In this case, we recommend that you leave auto-incrementing ID's enabled _however_ when you create a new item that you want to skip, you can go to that item and reset the ID to 0. This will remove it from the auto-incrementing sequence and the next item will receive the next available ID.
+
+!!! tip
+    If you're migrating from an older version there is a action on the users profile page to assign IDs to all items. This will assign the next available ID to all items in the order of creation. You should _only_ do this once during the migration process. You should be especially cautious of this action if you're using the reset feature described in option number 2
