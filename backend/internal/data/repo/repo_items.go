@@ -71,6 +71,7 @@ type (
 		ParentID    uuid.UUID `json:"parentId" extensions:"x-nullable"`
 		Name        string    `json:"name"`
 		Description string    `json:"description"`
+		AssetID     AssetID   `json:"-"`
 
 		// Edges
 		LocationID uuid.UUID   `json:"locationId"`
@@ -431,7 +432,8 @@ func (e *ItemsRepository) Create(ctx context.Context, gid uuid.UUID, data ItemCr
 		SetName(data.Name).
 		SetDescription(data.Description).
 		SetGroupID(gid).
-		SetLocationID(data.LocationID)
+		SetLocationID(data.LocationID).
+		SetAssetID(int(data.AssetID))
 
 	if data.LabelIDs != nil && len(data.LabelIDs) > 0 {
 		q.AddLabelIDs(data.LabelIDs...)

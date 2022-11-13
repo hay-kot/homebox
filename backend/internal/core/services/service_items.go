@@ -21,6 +21,21 @@ type ItemService struct {
 	// at is a map of tokens to attachment IDs. This is used to store the attachment ID
 	// for issued URLs
 	at attachmentTokens
+
+	autoIncrementAssetID bool
+}
+
+func (svc *ItemService) Create(ctx Context, item repo.ItemCreate) (repo.ItemOut, error) {
+	if svc.autoIncrementAssetID {
+		highest, err := svc.repo.Items.GetHighestAssetID(ctx, ctx.GID)
+		if err != nil {
+			return repo.ItemOut{}, err
+		}
+
+		item.AssetID = repo.AssetID(highest + 1)
+	}
+
+	return svc.repo.Items.Create(ctx, ctx.GID, item)
 }
 
 func (svc *ItemService) EnsureAssetID(ctx context.Context, GID uuid.UUID) (int, error) {
@@ -140,6 +155,14 @@ func (svc *ItemService) CsvImport(ctx context.Context, GID uuid.UUID, data [][]s
 		}
 	}
 
+	highest := repo.AssetID(-1)
+	if svc.autoIncrementAssetID {
+		highest, err = svc.repo.Items.GetHighestAssetID(ctx, GID)
+		if err != nil {
+			return 0, err
+		}
+	}
+
 	// Create the items
 	var count int
 	for _, row := range loaded {
@@ -165,13 +188,20 @@ func (svc *ItemService) CsvImport(ctx context.Context, GID uuid.UUID, data [][]s
 			Str("location", row.Location).
 			Msgf("Creating Item: %s", row.Item.Name)
 
-		result, err := svc.repo.Items.Create(ctx, GID, repo.ItemCreate{
+		data := repo.ItemCreate{
 			ImportRef:   row.Item.ImportRef,
 			Name:        row.Item.Name,
 			Description: row.Item.Description,
 			LabelIDs:    labelIDs,
 			LocationID:  locationID,
-		})
+		}
+
+		if svc.autoIncrementAssetID {
+			highest++
+			data.AssetID = highest
+		}
+
+		result, err := svc.repo.Items.Create(ctx, GID, data)
 
 		if err != nil {
 			return count, err
