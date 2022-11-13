@@ -21,6 +21,30 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/v1/actions/ensure-asset-ids": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Group"
+                ],
+                "summary": "Get the current user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.EnsureAssetIDResult"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/groups": {
             "get": {
                 "security": [
@@ -1326,6 +1350,10 @@ const docTemplate = `{
                 "archived": {
                     "type": "boolean"
                 },
+                "assetId": {
+                    "type": "string",
+                    "example": "0"
+                },
                 "attachments": {
                     "type": "array",
                     "items": {
@@ -1478,6 +1506,9 @@ const docTemplate = `{
             "properties": {
                 "archived": {
                     "type": "boolean"
+                },
+                "assetId": {
+                    "type": "string"
                 },
                 "description": {
                     "type": "string"
@@ -1888,6 +1919,14 @@ const docTemplate = `{
                 },
                 "new": {
                     "type": "string"
+                }
+            }
+        },
+        "v1.EnsureAssetIDResult": {
+            "type": "object",
+            "properties": {
+                "completed": {
+                    "type": "integer"
                 }
             }
         },

@@ -4134,6 +4134,8 @@ type ItemMutation struct {
 	addquantity        *int
 	insured            *bool
 	archived           *bool
+	asset_id           *int
+	addasset_id        *int
 	serial_number      *string
 	model_number       *string
 	manufacturer       *string
@@ -4658,6 +4660,62 @@ func (m *ItemMutation) OldArchived(ctx context.Context) (v bool, err error) {
 // ResetArchived resets all changes to the "archived" field.
 func (m *ItemMutation) ResetArchived() {
 	m.archived = nil
+}
+
+// SetAssetID sets the "asset_id" field.
+func (m *ItemMutation) SetAssetID(i int) {
+	m.asset_id = &i
+	m.addasset_id = nil
+}
+
+// AssetID returns the value of the "asset_id" field in the mutation.
+func (m *ItemMutation) AssetID() (r int, exists bool) {
+	v := m.asset_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAssetID returns the old "asset_id" field's value of the Item entity.
+// If the Item object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ItemMutation) OldAssetID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAssetID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAssetID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAssetID: %w", err)
+	}
+	return oldValue.AssetID, nil
+}
+
+// AddAssetID adds i to the "asset_id" field.
+func (m *ItemMutation) AddAssetID(i int) {
+	if m.addasset_id != nil {
+		*m.addasset_id += i
+	} else {
+		m.addasset_id = &i
+	}
+}
+
+// AddedAssetID returns the value that was added to the "asset_id" field in this mutation.
+func (m *ItemMutation) AddedAssetID() (r int, exists bool) {
+	v := m.addasset_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetAssetID resets all changes to the "asset_id" field.
+func (m *ItemMutation) ResetAssetID() {
+	m.asset_id = nil
+	m.addasset_id = nil
 }
 
 // SetSerialNumber sets the "serial_number" field.
@@ -5650,7 +5708,7 @@ func (m *ItemMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ItemMutation) Fields() []string {
-	fields := make([]string, 0, 22)
+	fields := make([]string, 0, 23)
 	if m.created_at != nil {
 		fields = append(fields, item.FieldCreatedAt)
 	}
@@ -5677,6 +5735,9 @@ func (m *ItemMutation) Fields() []string {
 	}
 	if m.archived != nil {
 		fields = append(fields, item.FieldArchived)
+	}
+	if m.asset_id != nil {
+		fields = append(fields, item.FieldAssetID)
 	}
 	if m.serial_number != nil {
 		fields = append(fields, item.FieldSerialNumber)
@@ -5743,6 +5804,8 @@ func (m *ItemMutation) Field(name string) (ent.Value, bool) {
 		return m.Insured()
 	case item.FieldArchived:
 		return m.Archived()
+	case item.FieldAssetID:
+		return m.AssetID()
 	case item.FieldSerialNumber:
 		return m.SerialNumber()
 	case item.FieldModelNumber:
@@ -5796,6 +5859,8 @@ func (m *ItemMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldInsured(ctx)
 	case item.FieldArchived:
 		return m.OldArchived(ctx)
+	case item.FieldAssetID:
+		return m.OldAssetID(ctx)
 	case item.FieldSerialNumber:
 		return m.OldSerialNumber(ctx)
 	case item.FieldModelNumber:
@@ -5893,6 +5958,13 @@ func (m *ItemMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetArchived(v)
+		return nil
+	case item.FieldAssetID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAssetID(v)
 		return nil
 	case item.FieldSerialNumber:
 		v, ok := value.(string)
@@ -5996,6 +6068,9 @@ func (m *ItemMutation) AddedFields() []string {
 	if m.addquantity != nil {
 		fields = append(fields, item.FieldQuantity)
 	}
+	if m.addasset_id != nil {
+		fields = append(fields, item.FieldAssetID)
+	}
 	if m.addpurchase_price != nil {
 		fields = append(fields, item.FieldPurchasePrice)
 	}
@@ -6012,6 +6087,8 @@ func (m *ItemMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case item.FieldQuantity:
 		return m.AddedQuantity()
+	case item.FieldAssetID:
+		return m.AddedAssetID()
 	case item.FieldPurchasePrice:
 		return m.AddedPurchasePrice()
 	case item.FieldSoldPrice:
@@ -6031,6 +6108,13 @@ func (m *ItemMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddQuantity(v)
+		return nil
+	case item.FieldAssetID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddAssetID(v)
 		return nil
 	case item.FieldPurchasePrice:
 		v, ok := value.(float64)
@@ -6180,6 +6264,9 @@ func (m *ItemMutation) ResetField(name string) error {
 		return nil
 	case item.FieldArchived:
 		m.ResetArchived()
+		return nil
+	case item.FieldAssetID:
+		m.ResetAssetID()
 		return nil
 	case item.FieldSerialNumber:
 		m.ResetSerialNumber()

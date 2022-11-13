@@ -4,6 +4,7 @@ import { LabelsApi } from "./classes/labels";
 import { LocationsApi } from "./classes/locations";
 import { GroupApi } from "./classes/group";
 import { UserApi } from "./classes/users";
+import { ActionsAPI } from "./classes/actions";
 import { Requests } from "~~/lib/requests";
 
 export class UserClient extends BaseAPI {
@@ -12,6 +13,7 @@ export class UserClient extends BaseAPI {
   items: ItemsApi;
   group: GroupApi;
   user: UserApi;
+  actions: ActionsAPI;
 
   constructor(requests: Requests) {
     super(requests);
@@ -21,6 +23,7 @@ export class UserClient extends BaseAPI {
     this.items = new ItemsApi(requests);
     this.group = new GroupApi(requests);
     this.user = new UserApi(requests);
+    this.actions = new ActionsAPI(requests);
 
     Object.freeze(this);
   }

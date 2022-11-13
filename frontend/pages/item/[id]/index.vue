@@ -70,6 +70,19 @@
     );
   });
 
+  const assetID = computed<Details>(() => {
+    if (item.value?.assetId === "000-000") {
+      return [];
+    }
+
+    return [
+      {
+        name: "Asset ID",
+        text: item.value?.assetId,
+      },
+    ];
+  });
+
   const itemDetails = computed<Details>(() => {
     return [
       {
@@ -100,6 +113,7 @@
         name: "Notes",
         text: item.value?.notes,
       },
+      ...assetID.value,
       ...item.value.fields.map(field => {
         /**
          * Support Special URL Syntax

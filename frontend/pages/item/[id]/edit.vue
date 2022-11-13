@@ -120,6 +120,11 @@
       label: "Archived",
       ref: "archived",
     },
+    {
+      type: "text",
+      label: "Asset ID",
+      ref: "assetId",
+    },
   ];
 
   const purchaseFields: FormField[] = [

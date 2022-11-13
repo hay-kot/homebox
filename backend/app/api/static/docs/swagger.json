@@ -13,6 +13,30 @@
     },
     "basePath": "/api",
     "paths": {
+        "/v1/actions/ensure-asset-ids": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Group"
+                ],
+                "summary": "Get the current user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.EnsureAssetIDResult"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/groups": {
             "get": {
                 "security": [
@@ -1318,6 +1342,10 @@
                 "archived": {
                     "type": "boolean"
                 },
+                "assetId": {
+                    "type": "string",
+                    "example": "0"
+                },
                 "attachments": {
                     "type": "array",
                     "items": {
@@ -1470,6 +1498,9 @@
             "properties": {
                 "archived": {
                     "type": "boolean"
+                },
+                "assetId": {
+                    "type": "string"
                 },
                 "description": {
                     "type": "string"
@@ -1880,6 +1911,14 @@
                 },
                 "new": {
                     "type": "string"
+                }
+            }
+        },
+        "v1.EnsureAssetIDResult": {
+            "type": "object",
+            "properties": {
+                "completed": {
+                    "type": "integer"
                 }
             }
         },

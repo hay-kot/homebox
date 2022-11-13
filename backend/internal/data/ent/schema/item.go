@@ -29,6 +29,7 @@ func (Item) Indexes() []ent.Index {
 		index.Fields("model_number"),
 		index.Fields("serial_number"),
 		index.Fields("archived"),
+		index.Fields("asset_id"),
 	}
 }
 
@@ -48,6 +49,8 @@ func (Item) Fields() []ent.Field {
 			Default(false),
 		field.Bool("archived").
 			Default(false),
+		field.Int("asset_id").
+			Default(0),
 
 		// ------------------------------------
 		// item identification
