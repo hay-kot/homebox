@@ -29,7 +29,7 @@ func (Item) Indexes() []ent.Index {
 		index.Fields("model_number"),
 		index.Fields("serial_number"),
 		index.Fields("archived"),
-		index.Fields("group_id", "asset_id"),
+		index.Fields("asset_id"),
 	}
 }
 

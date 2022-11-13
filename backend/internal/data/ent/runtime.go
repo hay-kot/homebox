@@ -275,36 +275,40 @@ func init() {
 	itemDescArchived := itemFields[4].Descriptor()
 	// item.DefaultArchived holds the default value on creation for the archived field.
 	item.DefaultArchived = itemDescArchived.Default.(bool)
+	// itemDescAssetID is the schema descriptor for asset_id field.
+	itemDescAssetID := itemFields[5].Descriptor()
+	// item.DefaultAssetID holds the default value on creation for the asset_id field.
+	item.DefaultAssetID = itemDescAssetID.Default.(int)
 	// itemDescSerialNumber is the schema descriptor for serial_number field.
-	itemDescSerialNumber := itemFields[5].Descriptor()
+	itemDescSerialNumber := itemFields[6].Descriptor()
 	// item.SerialNumberValidator is a validator for the "serial_number" field. It is called by the builders before save.
 	item.SerialNumberValidator = itemDescSerialNumber.Validators[0].(func(string) error)
 	// itemDescModelNumber is the schema descriptor for model_number field.
-	itemDescModelNumber := itemFields[6].Descriptor()
+	itemDescModelNumber := itemFields[7].Descriptor()
 	// item.ModelNumberValidator is a validator for the "model_number" field. It is called by the builders before save.
 	item.ModelNumberValidator = itemDescModelNumber.Validators[0].(func(string) error)
 	// itemDescManufacturer is the schema descriptor for manufacturer field.
-	itemDescManufacturer := itemFields[7].Descriptor()
+	itemDescManufacturer := itemFields[8].Descriptor()
 	// item.ManufacturerValidator is a validator for the "manufacturer" field. It is called by the builders before save.
 	item.ManufacturerValidator = itemDescManufacturer.Validators[0].(func(string) error)
 	// itemDescLifetimeWarranty is the schema descriptor for lifetime_warranty field.
-	itemDescLifetimeWarranty := itemFields[8].Descriptor()
+	itemDescLifetimeWarranty := itemFields[9].Descriptor()
 	// item.DefaultLifetimeWarranty holds the default value on creation for the lifetime_warranty field.
 	item.DefaultLifetimeWarranty = itemDescLifetimeWarranty.Default.(bool)
 	// itemDescWarrantyDetails is the schema descriptor for warranty_details field.
-	itemDescWarrantyDetails := itemFields[10].Descriptor()
+	itemDescWarrantyDetails := itemFields[11].Descriptor()
 	// item.WarrantyDetailsValidator is a validator for the "warranty_details" field. It is called by the builders before save.
 	item.WarrantyDetailsValidator = itemDescWarrantyDetails.Validators[0].(func(string) error)
 	// itemDescPurchasePrice is the schema descriptor for purchase_price field.
-	itemDescPurchasePrice := itemFields[13].Descriptor()
+	itemDescPurchasePrice := itemFields[14].Descriptor()
 	// item.DefaultPurchasePrice holds the default value on creation for the purchase_price field.
 	item.DefaultPurchasePrice = itemDescPurchasePrice.Default.(float64)
 	// itemDescSoldPrice is the schema descriptor for sold_price field.
-	itemDescSoldPrice := itemFields[16].Descriptor()
+	itemDescSoldPrice := itemFields[17].Descriptor()
 	// item.DefaultSoldPrice holds the default value on creation for the sold_price field.
 	item.DefaultSoldPrice = itemDescSoldPrice.Default.(float64)
 	// itemDescSoldNotes is the schema descriptor for sold_notes field.
-	itemDescSoldNotes := itemFields[17].Descriptor()
+	itemDescSoldNotes := itemFields[18].Descriptor()
 	// item.SoldNotesValidator is a validator for the "sold_notes" field. It is called by the builders before save.
 	item.SoldNotesValidator = itemDescSoldNotes.Validators[0].(func(string) error)
 	// itemDescID is the schema descriptor for id field.

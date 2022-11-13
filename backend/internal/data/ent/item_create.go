@@ -144,6 +144,20 @@ func (ic *ItemCreate) SetNillableArchived(b *bool) *ItemCreate {
 	return ic
 }
 
+// SetAssetID sets the "asset_id" field.
+func (ic *ItemCreate) SetAssetID(i int) *ItemCreate {
+	ic.mutation.SetAssetID(i)
+	return ic
+}
+
+// SetNillableAssetID sets the "asset_id" field if the given value is not nil.
+func (ic *ItemCreate) SetNillableAssetID(i *int) *ItemCreate {
+	if i != nil {
+		ic.SetAssetID(*i)
+	}
+	return ic
+}
+
 // SetSerialNumber sets the "serial_number" field.
 func (ic *ItemCreate) SetSerialNumber(s string) *ItemCreate {
 	ic.mutation.SetSerialNumber(s)
@@ -546,6 +560,10 @@ func (ic *ItemCreate) defaults() {
 		v := item.DefaultArchived
 		ic.mutation.SetArchived(v)
 	}
+	if _, ok := ic.mutation.AssetID(); !ok {
+		v := item.DefaultAssetID
+		ic.mutation.SetAssetID(v)
+	}
 	if _, ok := ic.mutation.LifetimeWarranty(); !ok {
 		v := item.DefaultLifetimeWarranty
 		ic.mutation.SetLifetimeWarranty(v)
@@ -603,6 +621,9 @@ func (ic *ItemCreate) check() error {
 	}
 	if _, ok := ic.mutation.Archived(); !ok {
 		return &ValidationError{Name: "archived", err: errors.New(`ent: missing required field "Item.archived"`)}
+	}
+	if _, ok := ic.mutation.AssetID(); !ok {
+		return &ValidationError{Name: "asset_id", err: errors.New(`ent: missing required field "Item.asset_id"`)}
 	}
 	if v, ok := ic.mutation.SerialNumber(); ok {
 		if err := item.SerialNumberValidator(v); err != nil {
@@ -748,6 +769,14 @@ func (ic *ItemCreate) createSpec() (*Item, *sqlgraph.CreateSpec) {
 			Column: item.FieldArchived,
 		})
 		_node.Archived = value
+	}
+	if value, ok := ic.mutation.AssetID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: item.FieldAssetID,
+		})
+		_node.AssetID = value
 	}
 	if value, ok := ic.mutation.SerialNumber(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

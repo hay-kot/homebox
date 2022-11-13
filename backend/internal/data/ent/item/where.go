@@ -145,6 +145,13 @@ func Archived(v bool) predicate.Item {
 	})
 }
 
+// AssetID applies equality check predicate on the "asset_id" field. It's identical to AssetIDEQ.
+func AssetID(v int) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAssetID), v))
+	})
+}
+
 // SerialNumber applies equality check predicate on the "serial_number" field. It's identical to SerialNumberEQ.
 func SerialNumber(v string) predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
@@ -891,6 +898,70 @@ func ArchivedEQ(v bool) predicate.Item {
 func ArchivedNEQ(v bool) predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldArchived), v))
+	})
+}
+
+// AssetIDEQ applies the EQ predicate on the "asset_id" field.
+func AssetIDEQ(v int) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAssetID), v))
+	})
+}
+
+// AssetIDNEQ applies the NEQ predicate on the "asset_id" field.
+func AssetIDNEQ(v int) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAssetID), v))
+	})
+}
+
+// AssetIDIn applies the In predicate on the "asset_id" field.
+func AssetIDIn(vs ...int) predicate.Item {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldAssetID), v...))
+	})
+}
+
+// AssetIDNotIn applies the NotIn predicate on the "asset_id" field.
+func AssetIDNotIn(vs ...int) predicate.Item {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldAssetID), v...))
+	})
+}
+
+// AssetIDGT applies the GT predicate on the "asset_id" field.
+func AssetIDGT(v int) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldAssetID), v))
+	})
+}
+
+// AssetIDGTE applies the GTE predicate on the "asset_id" field.
+func AssetIDGTE(v int) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldAssetID), v))
+	})
+}
+
+// AssetIDLT applies the LT predicate on the "asset_id" field.
+func AssetIDLT(v int) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldAssetID), v))
+	})
+}
+
+// AssetIDLTE applies the LTE predicate on the "asset_id" field.
+func AssetIDLTE(v int) predicate.Item {
+	return predicate.Item(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldAssetID), v))
 	})
 }
 
