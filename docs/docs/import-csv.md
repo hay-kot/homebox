@@ -9,6 +9,9 @@ Using the CSV import is the recommended way for adding items to the database. It
  - Currently only supports importing items, locations, and labels
  - Does not support attachments. Attachments must be uploaded after import
 
+!!! tip "File Formats"
+    The CSV import supports both CSV and TSV files. The only difference is the delimiter used. CSV files use a comma `,` as the delimiter and TSV files use a tab `\t` as the delimiter. The file extension does not matter.
+
 **Template**
 
 You can use this snippet as the headers for your CSV. Copy and paste it into your spreadsheet editor of choice and fill in the value.
