@@ -1,13 +1,54 @@
 package services
 
 import (
+	"bytes"
+	"encoding/csv"
 	"errors"
+	"io"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 )
+
+func determineSeparator(data []byte) (rune, error) {
+	// First row
+	firstRow := bytes.Split(data, []byte("\n"))[0]
+
+	// find first comma or /t
+	comma := bytes.IndexByte(firstRow, ',')
+	tab := bytes.IndexByte(firstRow, '\t')
+
+	switch {
+	case comma == -1 && tab == -1:
+		return 0, errors.New("could not determine separator")
+	case tab > comma:
+		return '\t', nil
+	default:
+		return ',', nil
+	}
+}
+
+func ReadCsv(r io.Reader) ([][]string, error) {
+	data, err := io.ReadAll(r)
+	if err != nil {
+		return nil, err
+	}
+
+	reader := csv.NewReader(bytes.NewReader(data))
+
+	// Determine separator
+	sep, err := determineSeparator(data)
+
+	if err != nil {
+		return nil, err
+	}
+
+	reader.Comma = sep
+
+	return reader.ReadAll()
+}
 
 var ErrInvalidCsv = errors.New("invalid csv")
 

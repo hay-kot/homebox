@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"encoding/csv"
 	"net/http"
 
 	"github.com/hay-kot/homebox/backend/internal/core/services"
@@ -178,8 +177,7 @@ func (ctrl *V1Controller) HandleItemsImport() server.HandlerFunc {
 			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		reader := csv.NewReader(file)
-		data, err := reader.ReadAll()
+		data, err := services.ReadCsv(file)
 		if err != nil {
 			log.Err(err).Msg("failed to read csv")
 			return validate.NewRequestError(err, http.StatusInternalServerError)

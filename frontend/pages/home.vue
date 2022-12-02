@@ -100,7 +100,7 @@
 
       <form @submit.prevent="submitCsvFile">
         <div class="flex flex-col gap-2 py-6">
-          <input ref="importRef" type="file" class="hidden" accept=".csv" @change="setFile" />
+          <input ref="importRef" type="file" class="hidden" accept=".csv,.tsv" @change="setFile" />
 
           <BaseButton type="button" @click="uploadCsv">
             <Icon class="h-5 w-5 mr-2" name="mdi-upload" />
