@@ -252,44 +252,22 @@ func (lu *LabelUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := lu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: label.FieldUpdatedAt,
-		})
+		_spec.SetField(label.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := lu.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: label.FieldName,
-		})
+		_spec.SetField(label.FieldName, field.TypeString, value)
 	}
 	if value, ok := lu.mutation.Description(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: label.FieldDescription,
-		})
+		_spec.SetField(label.FieldDescription, field.TypeString, value)
 	}
 	if lu.mutation.DescriptionCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: label.FieldDescription,
-		})
+		_spec.ClearField(label.FieldDescription, field.TypeString)
 	}
 	if value, ok := lu.mutation.Color(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: label.FieldColor,
-		})
+		_spec.SetField(label.FieldColor, field.TypeString, value)
 	}
 	if lu.mutation.ColorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: label.FieldColor,
-		})
+		_spec.ClearField(label.FieldColor, field.TypeString)
 	}
 	if lu.mutation.GroupCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -650,44 +628,22 @@ func (luo *LabelUpdateOne) sqlSave(ctx context.Context) (_node *Label, err error
 		}
 	}
 	if value, ok := luo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: label.FieldUpdatedAt,
-		})
+		_spec.SetField(label.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := luo.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: label.FieldName,
-		})
+		_spec.SetField(label.FieldName, field.TypeString, value)
 	}
 	if value, ok := luo.mutation.Description(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: label.FieldDescription,
-		})
+		_spec.SetField(label.FieldDescription, field.TypeString, value)
 	}
 	if luo.mutation.DescriptionCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: label.FieldDescription,
-		})
+		_spec.ClearField(label.FieldDescription, field.TypeString)
 	}
 	if value, ok := luo.mutation.Color(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: label.FieldColor,
-		})
+		_spec.SetField(label.FieldColor, field.TypeString, value)
 	}
 	if luo.mutation.ColorCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: label.FieldColor,
-		})
+		_spec.ClearField(label.FieldColor, field.TypeString)
 	}
 	if luo.mutation.GroupCleared() {
 		edge := &sqlgraph.EdgeSpec{

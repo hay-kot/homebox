@@ -354,75 +354,39 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.ID.Value = &id
 	}
 	if value, ok := uc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: user.FieldCreatedAt,
-		})
+		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := uc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: user.FieldUpdatedAt,
-		})
+		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := uc.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: user.FieldName,
-		})
+		_spec.SetField(user.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := uc.mutation.Email(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: user.FieldEmail,
-		})
+		_spec.SetField(user.FieldEmail, field.TypeString, value)
 		_node.Email = value
 	}
 	if value, ok := uc.mutation.Password(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: user.FieldPassword,
-		})
+		_spec.SetField(user.FieldPassword, field.TypeString, value)
 		_node.Password = value
 	}
 	if value, ok := uc.mutation.IsSuperuser(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: user.FieldIsSuperuser,
-		})
+		_spec.SetField(user.FieldIsSuperuser, field.TypeBool, value)
 		_node.IsSuperuser = value
 	}
 	if value, ok := uc.mutation.Role(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: user.FieldRole,
-		})
+		_spec.SetField(user.FieldRole, field.TypeEnum, value)
 		_node.Role = value
 	}
 	if value, ok := uc.mutation.Superuser(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: user.FieldSuperuser,
-		})
+		_spec.SetField(user.FieldSuperuser, field.TypeBool, value)
 		_node.Superuser = value
 	}
 	if value, ok := uc.mutation.ActivatedOn(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: user.FieldActivatedOn,
-		})
+		_spec.SetField(user.FieldActivatedOn, field.TypeTime, value)
 		_node.ActivatedOn = value
 	}
 	if nodes := uc.mutation.GroupIDs(); len(nodes) > 0 {

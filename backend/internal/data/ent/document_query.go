@@ -406,6 +406,11 @@ func (dq *DocumentQuery) Select(fields ...string) *DocumentSelect {
 	return selbuild
 }
 
+// Aggregate returns a DocumentSelect configured with the given aggregations.
+func (dq *DocumentQuery) Aggregate(fns ...AggregateFunc) *DocumentSelect {
+	return dq.Select().Aggregate(fns...)
+}
+
 func (dq *DocumentQuery) prepareQuery(ctx context.Context) error {
 	for _, f := range dq.fields {
 		if !document.ValidColumn(f) {
@@ -724,8 +729,6 @@ func (dgb *DocumentGroupBy) sqlQuery() *sql.Selector {
 	for _, fn := range dgb.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
 	if len(selector.SelectedColumns()) == 0 {
 		columns := make([]string, 0, len(dgb.fields)+len(dgb.fns))
 		for _, f := range dgb.fields {
@@ -745,6 +748,12 @@ type DocumentSelect struct {
 	sql *sql.Selector
 }
 
+// Aggregate adds the given aggregation functions to the selector query.
+func (ds *DocumentSelect) Aggregate(fns ...AggregateFunc) *DocumentSelect {
+	ds.fns = append(ds.fns, fns...)
+	return ds
+}
+
 // Scan applies the selector query and scans the result into the given value.
 func (ds *DocumentSelect) Scan(ctx context.Context, v any) error {
 	if err := ds.prepareQuery(ctx); err != nil {
@@ -755,6 +764,16 @@ func (ds *DocumentSelect) Scan(ctx context.Context, v any) error {
 }
 
 func (ds *DocumentSelect) sqlScan(ctx context.Context, v any) error {
+	aggregation := make([]string, 0, len(ds.fns))
+	for _, fn := range ds.fns {
+		aggregation = append(aggregation, fn(ds.sql))
+	}
+	switch n := len(*ds.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		ds.sql.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		ds.sql.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
 	query, args := ds.sql.Query()
 	if err := ds.driver.Query(ctx, query, args, rows); err != nil {

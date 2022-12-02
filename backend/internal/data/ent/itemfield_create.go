@@ -341,75 +341,39 @@ func (ifc *ItemFieldCreate) createSpec() (*ItemField, *sqlgraph.CreateSpec) {
 		_spec.ID.Value = &id
 	}
 	if value, ok := ifc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: itemfield.FieldCreatedAt,
-		})
+		_spec.SetField(itemfield.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := ifc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: itemfield.FieldUpdatedAt,
-		})
+		_spec.SetField(itemfield.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := ifc.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: itemfield.FieldName,
-		})
+		_spec.SetField(itemfield.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := ifc.mutation.Description(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: itemfield.FieldDescription,
-		})
+		_spec.SetField(itemfield.FieldDescription, field.TypeString, value)
 		_node.Description = value
 	}
 	if value, ok := ifc.mutation.GetType(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: itemfield.FieldType,
-		})
+		_spec.SetField(itemfield.FieldType, field.TypeEnum, value)
 		_node.Type = value
 	}
 	if value, ok := ifc.mutation.TextValue(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: itemfield.FieldTextValue,
-		})
+		_spec.SetField(itemfield.FieldTextValue, field.TypeString, value)
 		_node.TextValue = value
 	}
 	if value, ok := ifc.mutation.NumberValue(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: itemfield.FieldNumberValue,
-		})
+		_spec.SetField(itemfield.FieldNumberValue, field.TypeInt, value)
 		_node.NumberValue = value
 	}
 	if value, ok := ifc.mutation.BooleanValue(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: itemfield.FieldBooleanValue,
-		})
+		_spec.SetField(itemfield.FieldBooleanValue, field.TypeBool, value)
 		_node.BooleanValue = value
 	}
 	if value, ok := ifc.mutation.TimeValue(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: itemfield.FieldTimeValue,
-		})
+		_spec.SetField(itemfield.FieldTimeValue, field.TypeTime, value)
 		_node.TimeValue = value
 	}
 	if nodes := ifc.mutation.ItemIDs(); len(nodes) > 0 {

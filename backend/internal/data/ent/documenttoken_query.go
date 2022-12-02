@@ -333,6 +333,11 @@ func (dtq *DocumentTokenQuery) Select(fields ...string) *DocumentTokenSelect {
 	return selbuild
 }
 
+// Aggregate returns a DocumentTokenSelect configured with the given aggregations.
+func (dtq *DocumentTokenQuery) Aggregate(fns ...AggregateFunc) *DocumentTokenSelect {
+	return dtq.Select().Aggregate(fns...)
+}
+
 func (dtq *DocumentTokenQuery) prepareQuery(ctx context.Context) error {
 	for _, f := range dtq.fields {
 		if !documenttoken.ValidColumn(f) {
@@ -573,8 +578,6 @@ func (dtgb *DocumentTokenGroupBy) sqlQuery() *sql.Selector {
 	for _, fn := range dtgb.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
 	if len(selector.SelectedColumns()) == 0 {
 		columns := make([]string, 0, len(dtgb.fields)+len(dtgb.fns))
 		for _, f := range dtgb.fields {
@@ -594,6 +597,12 @@ type DocumentTokenSelect struct {
 	sql *sql.Selector
 }
 
+// Aggregate adds the given aggregation functions to the selector query.
+func (dts *DocumentTokenSelect) Aggregate(fns ...AggregateFunc) *DocumentTokenSelect {
+	dts.fns = append(dts.fns, fns...)
+	return dts
+}
+
 // Scan applies the selector query and scans the result into the given value.
 func (dts *DocumentTokenSelect) Scan(ctx context.Context, v any) error {
 	if err := dts.prepareQuery(ctx); err != nil {
@@ -604,6 +613,16 @@ func (dts *DocumentTokenSelect) Scan(ctx context.Context, v any) error {
 }
 
 func (dts *DocumentTokenSelect) sqlScan(ctx context.Context, v any) error {
+	aggregation := make([]string, 0, len(dts.fns))
+	for _, fn := range dts.fns {
+		aggregation = append(aggregation, fn(dts.sql))
+	}
+	switch n := len(*dts.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		dts.sql.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		dts.sql.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
 	query, args := dts.sql.Query()
 	if err := dts.driver.Query(ctx, query, args, rows); err != nil {

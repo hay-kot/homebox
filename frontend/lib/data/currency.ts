@@ -1,4 +1,4 @@
-export type Codes = "USD" | "EUR" | "GBP" | "JPY" | "ZAR" | "AUD" | "NOK" | "SEK" | "DKK" | "INR";
+export type Codes = "USD" | "EUR" | "GBP" | "JPY" | "ZAR" | "AUD" | "NOK" | "SEK" | "DKK" | "INR" | "RMB";
 
 export type Currency = {
   code: Codes;
@@ -19,6 +19,12 @@ export const currencies: Currency[] = [
     local: "en-GB",
     symbol: "£",
     name: "British Pound",
+  },
+  {
+    code: "RMB",
+    local: "zh-CN",
+    symbol: "¥",
+    name: "Chinese Yuan",
   },
   {
     code: "DKK",

@@ -385,25 +385,13 @@ func (gu *GroupUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := gu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: group.FieldUpdatedAt,
-		})
+		_spec.SetField(group.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := gu.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: group.FieldName,
-		})
+		_spec.SetField(group.FieldName, field.TypeString, value)
 	}
 	if value, ok := gu.mutation.Currency(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: group.FieldCurrency,
-		})
+		_spec.SetField(group.FieldCurrency, field.TypeEnum, value)
 	}
 	if gu.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1128,25 +1116,13 @@ func (guo *GroupUpdateOne) sqlSave(ctx context.Context) (_node *Group, err error
 		}
 	}
 	if value, ok := guo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: group.FieldUpdatedAt,
-		})
+		_spec.SetField(group.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := guo.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: group.FieldName,
-		})
+		_spec.SetField(group.FieldName, field.TypeString, value)
 	}
 	if value, ok := guo.mutation.Currency(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: group.FieldCurrency,
-		})
+		_spec.SetField(group.FieldCurrency, field.TypeEnum, value)
 	}
 	if guo.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{

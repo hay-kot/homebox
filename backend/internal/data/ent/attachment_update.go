@@ -194,18 +194,10 @@ func (au *AttachmentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := au.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: attachment.FieldUpdatedAt,
-		})
+		_spec.SetField(attachment.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := au.mutation.GetType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: attachment.FieldType,
-		})
+		_spec.SetField(attachment.FieldType, field.TypeEnum, value)
 	}
 	if au.mutation.ItemCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -489,18 +481,10 @@ func (auo *AttachmentUpdateOne) sqlSave(ctx context.Context) (_node *Attachment,
 		}
 	}
 	if value, ok := auo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: attachment.FieldUpdatedAt,
-		})
+		_spec.SetField(attachment.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := auo.mutation.GetType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: attachment.FieldType,
-		})
+		_spec.SetField(attachment.FieldType, field.TypeEnum, value)
 	}
 	if auo.mutation.ItemCleared() {
 		edge := &sqlgraph.EdgeSpec{

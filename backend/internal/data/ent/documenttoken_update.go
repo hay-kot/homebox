@@ -205,39 +205,19 @@ func (dtu *DocumentTokenUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 	}
 	if value, ok := dtu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: documenttoken.FieldUpdatedAt,
-		})
+		_spec.SetField(documenttoken.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := dtu.mutation.Token(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBytes,
-			Value:  value,
-			Column: documenttoken.FieldToken,
-		})
+		_spec.SetField(documenttoken.FieldToken, field.TypeBytes, value)
 	}
 	if value, ok := dtu.mutation.Uses(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: documenttoken.FieldUses,
-		})
+		_spec.SetField(documenttoken.FieldUses, field.TypeInt, value)
 	}
 	if value, ok := dtu.mutation.AddedUses(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: documenttoken.FieldUses,
-		})
+		_spec.AddField(documenttoken.FieldUses, field.TypeInt, value)
 	}
 	if value, ok := dtu.mutation.ExpiresAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: documenttoken.FieldExpiresAt,
-		})
+		_spec.SetField(documenttoken.FieldExpiresAt, field.TypeTime, value)
 	}
 	if dtu.mutation.DocumentCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -498,39 +478,19 @@ func (dtuo *DocumentTokenUpdateOne) sqlSave(ctx context.Context) (_node *Documen
 		}
 	}
 	if value, ok := dtuo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: documenttoken.FieldUpdatedAt,
-		})
+		_spec.SetField(documenttoken.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := dtuo.mutation.Token(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBytes,
-			Value:  value,
-			Column: documenttoken.FieldToken,
-		})
+		_spec.SetField(documenttoken.FieldToken, field.TypeBytes, value)
 	}
 	if value, ok := dtuo.mutation.Uses(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: documenttoken.FieldUses,
-		})
+		_spec.SetField(documenttoken.FieldUses, field.TypeInt, value)
 	}
 	if value, ok := dtuo.mutation.AddedUses(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: documenttoken.FieldUses,
-		})
+		_spec.AddField(documenttoken.FieldUses, field.TypeInt, value)
 	}
 	if value, ok := dtuo.mutation.ExpiresAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: documenttoken.FieldExpiresAt,
-		})
+		_spec.SetField(documenttoken.FieldExpiresAt, field.TypeTime, value)
 	}
 	if dtuo.mutation.DocumentCleared() {
 		edge := &sqlgraph.EdgeSpec{

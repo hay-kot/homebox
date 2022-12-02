@@ -699,187 +699,95 @@ func (ic *ItemCreate) createSpec() (*Item, *sqlgraph.CreateSpec) {
 		_spec.ID.Value = &id
 	}
 	if value, ok := ic.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: item.FieldCreatedAt,
-		})
+		_spec.SetField(item.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := ic.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: item.FieldUpdatedAt,
-		})
+		_spec.SetField(item.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := ic.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldName,
-		})
+		_spec.SetField(item.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := ic.mutation.Description(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldDescription,
-		})
+		_spec.SetField(item.FieldDescription, field.TypeString, value)
 		_node.Description = value
 	}
 	if value, ok := ic.mutation.ImportRef(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldImportRef,
-		})
+		_spec.SetField(item.FieldImportRef, field.TypeString, value)
 		_node.ImportRef = value
 	}
 	if value, ok := ic.mutation.Notes(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldNotes,
-		})
+		_spec.SetField(item.FieldNotes, field.TypeString, value)
 		_node.Notes = value
 	}
 	if value, ok := ic.mutation.Quantity(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: item.FieldQuantity,
-		})
+		_spec.SetField(item.FieldQuantity, field.TypeInt, value)
 		_node.Quantity = value
 	}
 	if value, ok := ic.mutation.Insured(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: item.FieldInsured,
-		})
+		_spec.SetField(item.FieldInsured, field.TypeBool, value)
 		_node.Insured = value
 	}
 	if value, ok := ic.mutation.Archived(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: item.FieldArchived,
-		})
+		_spec.SetField(item.FieldArchived, field.TypeBool, value)
 		_node.Archived = value
 	}
 	if value, ok := ic.mutation.AssetID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: item.FieldAssetID,
-		})
+		_spec.SetField(item.FieldAssetID, field.TypeInt, value)
 		_node.AssetID = value
 	}
 	if value, ok := ic.mutation.SerialNumber(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldSerialNumber,
-		})
+		_spec.SetField(item.FieldSerialNumber, field.TypeString, value)
 		_node.SerialNumber = value
 	}
 	if value, ok := ic.mutation.ModelNumber(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldModelNumber,
-		})
+		_spec.SetField(item.FieldModelNumber, field.TypeString, value)
 		_node.ModelNumber = value
 	}
 	if value, ok := ic.mutation.Manufacturer(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldManufacturer,
-		})
+		_spec.SetField(item.FieldManufacturer, field.TypeString, value)
 		_node.Manufacturer = value
 	}
 	if value, ok := ic.mutation.LifetimeWarranty(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: item.FieldLifetimeWarranty,
-		})
+		_spec.SetField(item.FieldLifetimeWarranty, field.TypeBool, value)
 		_node.LifetimeWarranty = value
 	}
 	if value, ok := ic.mutation.WarrantyExpires(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: item.FieldWarrantyExpires,
-		})
+		_spec.SetField(item.FieldWarrantyExpires, field.TypeTime, value)
 		_node.WarrantyExpires = value
 	}
 	if value, ok := ic.mutation.WarrantyDetails(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldWarrantyDetails,
-		})
+		_spec.SetField(item.FieldWarrantyDetails, field.TypeString, value)
 		_node.WarrantyDetails = value
 	}
 	if value, ok := ic.mutation.PurchaseTime(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: item.FieldPurchaseTime,
-		})
+		_spec.SetField(item.FieldPurchaseTime, field.TypeTime, value)
 		_node.PurchaseTime = value
 	}
 	if value, ok := ic.mutation.PurchaseFrom(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldPurchaseFrom,
-		})
+		_spec.SetField(item.FieldPurchaseFrom, field.TypeString, value)
 		_node.PurchaseFrom = value
 	}
 	if value, ok := ic.mutation.PurchasePrice(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: item.FieldPurchasePrice,
-		})
+		_spec.SetField(item.FieldPurchasePrice, field.TypeFloat64, value)
 		_node.PurchasePrice = value
 	}
 	if value, ok := ic.mutation.SoldTime(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: item.FieldSoldTime,
-		})
+		_spec.SetField(item.FieldSoldTime, field.TypeTime, value)
 		_node.SoldTime = value
 	}
 	if value, ok := ic.mutation.SoldTo(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldSoldTo,
-		})
+		_spec.SetField(item.FieldSoldTo, field.TypeString, value)
 		_node.SoldTo = value
 	}
 	if value, ok := ic.mutation.SoldPrice(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: item.FieldSoldPrice,
-		})
+		_spec.SetField(item.FieldSoldPrice, field.TypeFloat64, value)
 		_node.SoldPrice = value
 	}
 	if value, ok := ic.mutation.SoldNotes(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldSoldNotes,
-		})
+		_spec.SetField(item.FieldSoldNotes, field.TypeString, value)
 		_node.SoldNotes = value
 	}
 	if nodes := ic.mutation.ParentIDs(); len(nodes) > 0 {
