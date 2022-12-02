@@ -37,6 +37,22 @@
     },
   });
 
+  const route = useRoute();
+
+  const labelId = computed(() => {
+    if (route.fullPath.includes("/label/")) {
+      return route.params.id;
+    }
+    return null;
+  });
+
+  const locationId = computed(() => {
+    if (route.fullPath.includes("/location/")) {
+      return route.params.id;
+    }
+    return null;
+  });
+
   const api = useUserApi();
   const toast = useNotifier();
 
@@ -72,6 +88,14 @@
     () => modal.value,
     () => {
       focused.value = true;
+
+      if (locationId.value) {
+        form.location = locations.value.find(l => l.id === locationId.value);
+      }
+
+      if (labelId.value) {
+        form.labels = labels.value.filter(l => l.id === labelId.value);
+      }
     }
   );
 
