@@ -282,43 +282,23 @@ func (lc *LabelCreate) createSpec() (*Label, *sqlgraph.CreateSpec) {
 		_spec.ID.Value = &id
 	}
 	if value, ok := lc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: label.FieldCreatedAt,
-		})
+		_spec.SetField(label.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := lc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: label.FieldUpdatedAt,
-		})
+		_spec.SetField(label.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := lc.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: label.FieldName,
-		})
+		_spec.SetField(label.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := lc.mutation.Description(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: label.FieldDescription,
-		})
+		_spec.SetField(label.FieldDescription, field.TypeString, value)
 		_node.Description = value
 	}
 	if value, ok := lc.mutation.Color(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: label.FieldColor,
-		})
+		_spec.SetField(label.FieldColor, field.TypeString, value)
 		_node.Color = value
 	}
 	if nodes := lc.mutation.GroupIDs(); len(nodes) > 0 {

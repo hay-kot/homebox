@@ -168,25 +168,13 @@ func (atu *AuthTokensUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := atu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: authtokens.FieldUpdatedAt,
-		})
+		_spec.SetField(authtokens.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := atu.mutation.Token(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBytes,
-			Value:  value,
-			Column: authtokens.FieldToken,
-		})
+		_spec.SetField(authtokens.FieldToken, field.TypeBytes, value)
 	}
 	if value, ok := atu.mutation.ExpiresAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: authtokens.FieldExpiresAt,
-		})
+		_spec.SetField(authtokens.FieldExpiresAt, field.TypeTime, value)
 	}
 	if atu.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -410,25 +398,13 @@ func (atuo *AuthTokensUpdateOne) sqlSave(ctx context.Context) (_node *AuthTokens
 		}
 	}
 	if value, ok := atuo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: authtokens.FieldUpdatedAt,
-		})
+		_spec.SetField(authtokens.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := atuo.mutation.Token(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBytes,
-			Value:  value,
-			Column: authtokens.FieldToken,
-		})
+		_spec.SetField(authtokens.FieldToken, field.TypeBytes, value)
 	}
 	if value, ok := atuo.mutation.ExpiresAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: authtokens.FieldExpiresAt,
-		})
+		_spec.SetField(authtokens.FieldExpiresAt, field.TypeTime, value)
 	}
 	if atuo.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{

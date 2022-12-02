@@ -333,6 +333,11 @@ func (ifq *ItemFieldQuery) Select(fields ...string) *ItemFieldSelect {
 	return selbuild
 }
 
+// Aggregate returns a ItemFieldSelect configured with the given aggregations.
+func (ifq *ItemFieldQuery) Aggregate(fns ...AggregateFunc) *ItemFieldSelect {
+	return ifq.Select().Aggregate(fns...)
+}
+
 func (ifq *ItemFieldQuery) prepareQuery(ctx context.Context) error {
 	for _, f := range ifq.fields {
 		if !itemfield.ValidColumn(f) {
@@ -573,8 +578,6 @@ func (ifgb *ItemFieldGroupBy) sqlQuery() *sql.Selector {
 	for _, fn := range ifgb.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
 	if len(selector.SelectedColumns()) == 0 {
 		columns := make([]string, 0, len(ifgb.fields)+len(ifgb.fns))
 		for _, f := range ifgb.fields {
@@ -594,6 +597,12 @@ type ItemFieldSelect struct {
 	sql *sql.Selector
 }
 
+// Aggregate adds the given aggregation functions to the selector query.
+func (ifs *ItemFieldSelect) Aggregate(fns ...AggregateFunc) *ItemFieldSelect {
+	ifs.fns = append(ifs.fns, fns...)
+	return ifs
+}
+
 // Scan applies the selector query and scans the result into the given value.
 func (ifs *ItemFieldSelect) Scan(ctx context.Context, v any) error {
 	if err := ifs.prepareQuery(ctx); err != nil {
@@ -604,6 +613,16 @@ func (ifs *ItemFieldSelect) Scan(ctx context.Context, v any) error {
 }
 
 func (ifs *ItemFieldSelect) sqlScan(ctx context.Context, v any) error {
+	aggregation := make([]string, 0, len(ifs.fns))
+	for _, fn := range ifs.fns {
+		aggregation = append(aggregation, fn(ifs.sql))
+	}
+	switch n := len(*ifs.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		ifs.sql.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		ifs.sql.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
 	query, args := ifs.sql.Query()
 	if err := ifs.driver.Query(ctx, query, args, rows); err != nil {

@@ -250,25 +250,13 @@ func (du *DocumentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := du.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: document.FieldUpdatedAt,
-		})
+		_spec.SetField(document.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := du.mutation.Title(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: document.FieldTitle,
-		})
+		_spec.SetField(document.FieldTitle, field.TypeString, value)
 	}
 	if value, ok := du.mutation.Path(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: document.FieldPath,
-		})
+		_spec.SetField(document.FieldPath, field.TypeString, value)
 	}
 	if du.mutation.GroupCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -680,25 +668,13 @@ func (duo *DocumentUpdateOne) sqlSave(ctx context.Context) (_node *Document, err
 		}
 	}
 	if value, ok := duo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: document.FieldUpdatedAt,
-		})
+		_spec.SetField(document.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := duo.mutation.Title(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: document.FieldTitle,
-		})
+		_spec.SetField(document.FieldTitle, field.TypeString, value)
 	}
 	if value, ok := duo.mutation.Path(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: document.FieldPath,
-		})
+		_spec.SetField(document.FieldPath, field.TypeString, value)
 	}
 	if duo.mutation.GroupCleared() {
 		edge := &sqlgraph.EdgeSpec{

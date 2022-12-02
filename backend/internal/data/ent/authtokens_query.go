@@ -333,6 +333,11 @@ func (atq *AuthTokensQuery) Select(fields ...string) *AuthTokensSelect {
 	return selbuild
 }
 
+// Aggregate returns a AuthTokensSelect configured with the given aggregations.
+func (atq *AuthTokensQuery) Aggregate(fns ...AggregateFunc) *AuthTokensSelect {
+	return atq.Select().Aggregate(fns...)
+}
+
 func (atq *AuthTokensQuery) prepareQuery(ctx context.Context) error {
 	for _, f := range atq.fields {
 		if !authtokens.ValidColumn(f) {
@@ -573,8 +578,6 @@ func (atgb *AuthTokensGroupBy) sqlQuery() *sql.Selector {
 	for _, fn := range atgb.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
 	if len(selector.SelectedColumns()) == 0 {
 		columns := make([]string, 0, len(atgb.fields)+len(atgb.fns))
 		for _, f := range atgb.fields {
@@ -594,6 +597,12 @@ type AuthTokensSelect struct {
 	sql *sql.Selector
 }
 
+// Aggregate adds the given aggregation functions to the selector query.
+func (ats *AuthTokensSelect) Aggregate(fns ...AggregateFunc) *AuthTokensSelect {
+	ats.fns = append(ats.fns, fns...)
+	return ats
+}
+
 // Scan applies the selector query and scans the result into the given value.
 func (ats *AuthTokensSelect) Scan(ctx context.Context, v any) error {
 	if err := ats.prepareQuery(ctx); err != nil {
@@ -604,6 +613,16 @@ func (ats *AuthTokensSelect) Scan(ctx context.Context, v any) error {
 }
 
 func (ats *AuthTokensSelect) sqlScan(ctx context.Context, v any) error {
+	aggregation := make([]string, 0, len(ats.fns))
+	for _, fn := range ats.fns {
+		aggregation = append(aggregation, fn(ats.sql))
+	}
+	switch n := len(*ats.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		ats.sql.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		ats.sql.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
 	query, args := ats.sql.Query()
 	if err := ats.driver.Query(ctx, query, args, rows); err != nil {

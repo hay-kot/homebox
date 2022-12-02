@@ -249,35 +249,19 @@ func (atc *AuthTokensCreate) createSpec() (*AuthTokens, *sqlgraph.CreateSpec) {
 		_spec.ID.Value = &id
 	}
 	if value, ok := atc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: authtokens.FieldCreatedAt,
-		})
+		_spec.SetField(authtokens.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := atc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: authtokens.FieldUpdatedAt,
-		})
+		_spec.SetField(authtokens.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := atc.mutation.Token(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBytes,
-			Value:  value,
-			Column: authtokens.FieldToken,
-		})
+		_spec.SetField(authtokens.FieldToken, field.TypeBytes, value)
 		_node.Token = value
 	}
 	if value, ok := atc.mutation.ExpiresAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: authtokens.FieldExpiresAt,
-		})
+		_spec.SetField(authtokens.FieldExpiresAt, field.TypeTime, value)
 		_node.ExpiresAt = value
 	}
 	if nodes := atc.mutation.UserIDs(); len(nodes) > 0 {

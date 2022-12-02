@@ -333,6 +333,11 @@ func (gitq *GroupInvitationTokenQuery) Select(fields ...string) *GroupInvitation
 	return selbuild
 }
 
+// Aggregate returns a GroupInvitationTokenSelect configured with the given aggregations.
+func (gitq *GroupInvitationTokenQuery) Aggregate(fns ...AggregateFunc) *GroupInvitationTokenSelect {
+	return gitq.Select().Aggregate(fns...)
+}
+
 func (gitq *GroupInvitationTokenQuery) prepareQuery(ctx context.Context) error {
 	for _, f := range gitq.fields {
 		if !groupinvitationtoken.ValidColumn(f) {
@@ -573,8 +578,6 @@ func (gitgb *GroupInvitationTokenGroupBy) sqlQuery() *sql.Selector {
 	for _, fn := range gitgb.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
 	if len(selector.SelectedColumns()) == 0 {
 		columns := make([]string, 0, len(gitgb.fields)+len(gitgb.fns))
 		for _, f := range gitgb.fields {
@@ -594,6 +597,12 @@ type GroupInvitationTokenSelect struct {
 	sql *sql.Selector
 }
 
+// Aggregate adds the given aggregation functions to the selector query.
+func (gits *GroupInvitationTokenSelect) Aggregate(fns ...AggregateFunc) *GroupInvitationTokenSelect {
+	gits.fns = append(gits.fns, fns...)
+	return gits
+}
+
 // Scan applies the selector query and scans the result into the given value.
 func (gits *GroupInvitationTokenSelect) Scan(ctx context.Context, v any) error {
 	if err := gits.prepareQuery(ctx); err != nil {
@@ -604,6 +613,16 @@ func (gits *GroupInvitationTokenSelect) Scan(ctx context.Context, v any) error {
 }
 
 func (gits *GroupInvitationTokenSelect) sqlScan(ctx context.Context, v any) error {
+	aggregation := make([]string, 0, len(gits.fns))
+	for _, fn := range gits.fns {
+		aggregation = append(aggregation, fn(gits.sql))
+	}
+	switch n := len(*gits.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		gits.sql.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		gits.sql.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
 	query, args := gits.sql.Query()
 	if err := gits.driver.Query(ctx, query, args, rows); err != nil {

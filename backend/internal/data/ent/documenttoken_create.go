@@ -275,43 +275,23 @@ func (dtc *DocumentTokenCreate) createSpec() (*DocumentToken, *sqlgraph.CreateSp
 		_spec.ID.Value = &id
 	}
 	if value, ok := dtc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: documenttoken.FieldCreatedAt,
-		})
+		_spec.SetField(documenttoken.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := dtc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: documenttoken.FieldUpdatedAt,
-		})
+		_spec.SetField(documenttoken.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := dtc.mutation.Token(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBytes,
-			Value:  value,
-			Column: documenttoken.FieldToken,
-		})
+		_spec.SetField(documenttoken.FieldToken, field.TypeBytes, value)
 		_node.Token = value
 	}
 	if value, ok := dtc.mutation.Uses(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: documenttoken.FieldUses,
-		})
+		_spec.SetField(documenttoken.FieldUses, field.TypeInt, value)
 		_node.Uses = value
 	}
 	if value, ok := dtc.mutation.ExpiresAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: documenttoken.FieldExpiresAt,
-		})
+		_spec.SetField(documenttoken.FieldExpiresAt, field.TypeTime, value)
 		_node.ExpiresAt = value
 	}
 	if nodes := dtc.mutation.DocumentIDs(); len(nodes) > 0 {

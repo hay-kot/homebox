@@ -270,43 +270,23 @@ func (gitc *GroupInvitationTokenCreate) createSpec() (*GroupInvitationToken, *sq
 		_spec.ID.Value = &id
 	}
 	if value, ok := gitc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: groupinvitationtoken.FieldCreatedAt,
-		})
+		_spec.SetField(groupinvitationtoken.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := gitc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: groupinvitationtoken.FieldUpdatedAt,
-		})
+		_spec.SetField(groupinvitationtoken.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := gitc.mutation.Token(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBytes,
-			Value:  value,
-			Column: groupinvitationtoken.FieldToken,
-		})
+		_spec.SetField(groupinvitationtoken.FieldToken, field.TypeBytes, value)
 		_node.Token = value
 	}
 	if value, ok := gitc.mutation.ExpiresAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: groupinvitationtoken.FieldExpiresAt,
-		})
+		_spec.SetField(groupinvitationtoken.FieldExpiresAt, field.TypeTime, value)
 		_node.ExpiresAt = value
 	}
 	if value, ok := gitc.mutation.Uses(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: groupinvitationtoken.FieldUses,
-		})
+		_spec.SetField(groupinvitationtoken.FieldUses, field.TypeInt, value)
 		_node.Uses = value
 	}
 	if nodes := gitc.mutation.GroupIDs(); len(nodes) > 0 {

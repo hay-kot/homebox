@@ -274,35 +274,19 @@ func (dc *DocumentCreate) createSpec() (*Document, *sqlgraph.CreateSpec) {
 		_spec.ID.Value = &id
 	}
 	if value, ok := dc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: document.FieldCreatedAt,
-		})
+		_spec.SetField(document.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := dc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: document.FieldUpdatedAt,
-		})
+		_spec.SetField(document.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := dc.mutation.Title(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: document.FieldTitle,
-		})
+		_spec.SetField(document.FieldTitle, field.TypeString, value)
 		_node.Title = value
 	}
 	if value, ok := dc.mutation.Path(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: document.FieldPath,
-		})
+		_spec.SetField(document.FieldPath, field.TypeString, value)
 		_node.Path = value
 	}
 	if nodes := dc.mutation.GroupIDs(); len(nodes) > 0 {

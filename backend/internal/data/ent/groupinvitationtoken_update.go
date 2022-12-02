@@ -189,39 +189,19 @@ func (gitu *GroupInvitationTokenUpdate) sqlSave(ctx context.Context) (n int, err
 		}
 	}
 	if value, ok := gitu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: groupinvitationtoken.FieldUpdatedAt,
-		})
+		_spec.SetField(groupinvitationtoken.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := gitu.mutation.Token(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBytes,
-			Value:  value,
-			Column: groupinvitationtoken.FieldToken,
-		})
+		_spec.SetField(groupinvitationtoken.FieldToken, field.TypeBytes, value)
 	}
 	if value, ok := gitu.mutation.ExpiresAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: groupinvitationtoken.FieldExpiresAt,
-		})
+		_spec.SetField(groupinvitationtoken.FieldExpiresAt, field.TypeTime, value)
 	}
 	if value, ok := gitu.mutation.Uses(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: groupinvitationtoken.FieldUses,
-		})
+		_spec.SetField(groupinvitationtoken.FieldUses, field.TypeInt, value)
 	}
 	if value, ok := gitu.mutation.AddedUses(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: groupinvitationtoken.FieldUses,
-		})
+		_spec.AddField(groupinvitationtoken.FieldUses, field.TypeInt, value)
 	}
 	if gitu.mutation.GroupCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -466,39 +446,19 @@ func (gituo *GroupInvitationTokenUpdateOne) sqlSave(ctx context.Context) (_node 
 		}
 	}
 	if value, ok := gituo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: groupinvitationtoken.FieldUpdatedAt,
-		})
+		_spec.SetField(groupinvitationtoken.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := gituo.mutation.Token(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBytes,
-			Value:  value,
-			Column: groupinvitationtoken.FieldToken,
-		})
+		_spec.SetField(groupinvitationtoken.FieldToken, field.TypeBytes, value)
 	}
 	if value, ok := gituo.mutation.ExpiresAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: groupinvitationtoken.FieldExpiresAt,
-		})
+		_spec.SetField(groupinvitationtoken.FieldExpiresAt, field.TypeTime, value)
 	}
 	if value, ok := gituo.mutation.Uses(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: groupinvitationtoken.FieldUses,
-		})
+		_spec.SetField(groupinvitationtoken.FieldUses, field.TypeInt, value)
 	}
 	if value, ok := gituo.mutation.AddedUses(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: groupinvitationtoken.FieldUses,
-		})
+		_spec.AddField(groupinvitationtoken.FieldUses, field.TypeInt, value)
 	}
 	if gituo.mutation.GroupCleared() {
 		edge := &sqlgraph.EdgeSpec{

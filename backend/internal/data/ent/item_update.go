@@ -764,257 +764,118 @@ func (iu *ItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := iu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: item.FieldUpdatedAt,
-		})
+		_spec.SetField(item.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := iu.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldName,
-		})
+		_spec.SetField(item.FieldName, field.TypeString, value)
 	}
 	if value, ok := iu.mutation.Description(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldDescription,
-		})
+		_spec.SetField(item.FieldDescription, field.TypeString, value)
 	}
 	if iu.mutation.DescriptionCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: item.FieldDescription,
-		})
+		_spec.ClearField(item.FieldDescription, field.TypeString)
 	}
 	if iu.mutation.ImportRefCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: item.FieldImportRef,
-		})
+		_spec.ClearField(item.FieldImportRef, field.TypeString)
 	}
 	if value, ok := iu.mutation.Notes(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldNotes,
-		})
+		_spec.SetField(item.FieldNotes, field.TypeString, value)
 	}
 	if iu.mutation.NotesCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: item.FieldNotes,
-		})
+		_spec.ClearField(item.FieldNotes, field.TypeString)
 	}
 	if value, ok := iu.mutation.Quantity(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: item.FieldQuantity,
-		})
+		_spec.SetField(item.FieldQuantity, field.TypeInt, value)
 	}
 	if value, ok := iu.mutation.AddedQuantity(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: item.FieldQuantity,
-		})
+		_spec.AddField(item.FieldQuantity, field.TypeInt, value)
 	}
 	if value, ok := iu.mutation.Insured(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: item.FieldInsured,
-		})
+		_spec.SetField(item.FieldInsured, field.TypeBool, value)
 	}
 	if value, ok := iu.mutation.Archived(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: item.FieldArchived,
-		})
+		_spec.SetField(item.FieldArchived, field.TypeBool, value)
 	}
 	if value, ok := iu.mutation.AssetID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: item.FieldAssetID,
-		})
+		_spec.SetField(item.FieldAssetID, field.TypeInt, value)
 	}
 	if value, ok := iu.mutation.AddedAssetID(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: item.FieldAssetID,
-		})
+		_spec.AddField(item.FieldAssetID, field.TypeInt, value)
 	}
 	if value, ok := iu.mutation.SerialNumber(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldSerialNumber,
-		})
+		_spec.SetField(item.FieldSerialNumber, field.TypeString, value)
 	}
 	if iu.mutation.SerialNumberCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: item.FieldSerialNumber,
-		})
+		_spec.ClearField(item.FieldSerialNumber, field.TypeString)
 	}
 	if value, ok := iu.mutation.ModelNumber(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldModelNumber,
-		})
+		_spec.SetField(item.FieldModelNumber, field.TypeString, value)
 	}
 	if iu.mutation.ModelNumberCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: item.FieldModelNumber,
-		})
+		_spec.ClearField(item.FieldModelNumber, field.TypeString)
 	}
 	if value, ok := iu.mutation.Manufacturer(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldManufacturer,
-		})
+		_spec.SetField(item.FieldManufacturer, field.TypeString, value)
 	}
 	if iu.mutation.ManufacturerCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: item.FieldManufacturer,
-		})
+		_spec.ClearField(item.FieldManufacturer, field.TypeString)
 	}
 	if value, ok := iu.mutation.LifetimeWarranty(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: item.FieldLifetimeWarranty,
-		})
+		_spec.SetField(item.FieldLifetimeWarranty, field.TypeBool, value)
 	}
 	if value, ok := iu.mutation.WarrantyExpires(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: item.FieldWarrantyExpires,
-		})
+		_spec.SetField(item.FieldWarrantyExpires, field.TypeTime, value)
 	}
 	if iu.mutation.WarrantyExpiresCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: item.FieldWarrantyExpires,
-		})
+		_spec.ClearField(item.FieldWarrantyExpires, field.TypeTime)
 	}
 	if value, ok := iu.mutation.WarrantyDetails(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldWarrantyDetails,
-		})
+		_spec.SetField(item.FieldWarrantyDetails, field.TypeString, value)
 	}
 	if iu.mutation.WarrantyDetailsCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: item.FieldWarrantyDetails,
-		})
+		_spec.ClearField(item.FieldWarrantyDetails, field.TypeString)
 	}
 	if value, ok := iu.mutation.PurchaseTime(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: item.FieldPurchaseTime,
-		})
+		_spec.SetField(item.FieldPurchaseTime, field.TypeTime, value)
 	}
 	if iu.mutation.PurchaseTimeCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: item.FieldPurchaseTime,
-		})
+		_spec.ClearField(item.FieldPurchaseTime, field.TypeTime)
 	}
 	if value, ok := iu.mutation.PurchaseFrom(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldPurchaseFrom,
-		})
+		_spec.SetField(item.FieldPurchaseFrom, field.TypeString, value)
 	}
 	if iu.mutation.PurchaseFromCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: item.FieldPurchaseFrom,
-		})
+		_spec.ClearField(item.FieldPurchaseFrom, field.TypeString)
 	}
 	if value, ok := iu.mutation.PurchasePrice(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: item.FieldPurchasePrice,
-		})
+		_spec.SetField(item.FieldPurchasePrice, field.TypeFloat64, value)
 	}
 	if value, ok := iu.mutation.AddedPurchasePrice(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: item.FieldPurchasePrice,
-		})
+		_spec.AddField(item.FieldPurchasePrice, field.TypeFloat64, value)
 	}
 	if value, ok := iu.mutation.SoldTime(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: item.FieldSoldTime,
-		})
+		_spec.SetField(item.FieldSoldTime, field.TypeTime, value)
 	}
 	if iu.mutation.SoldTimeCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: item.FieldSoldTime,
-		})
+		_spec.ClearField(item.FieldSoldTime, field.TypeTime)
 	}
 	if value, ok := iu.mutation.SoldTo(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldSoldTo,
-		})
+		_spec.SetField(item.FieldSoldTo, field.TypeString, value)
 	}
 	if iu.mutation.SoldToCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: item.FieldSoldTo,
-		})
+		_spec.ClearField(item.FieldSoldTo, field.TypeString)
 	}
 	if value, ok := iu.mutation.SoldPrice(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: item.FieldSoldPrice,
-		})
+		_spec.SetField(item.FieldSoldPrice, field.TypeFloat64, value)
 	}
 	if value, ok := iu.mutation.AddedSoldPrice(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: item.FieldSoldPrice,
-		})
+		_spec.AddField(item.FieldSoldPrice, field.TypeFloat64, value)
 	}
 	if value, ok := iu.mutation.SoldNotes(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldSoldNotes,
-		})
+		_spec.SetField(item.FieldSoldNotes, field.TypeString, value)
 	}
 	if iu.mutation.SoldNotesCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: item.FieldSoldNotes,
-		})
+		_spec.ClearField(item.FieldSoldNotes, field.TypeString)
 	}
 	if iu.mutation.ParentCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -2116,257 +1977,118 @@ func (iuo *ItemUpdateOne) sqlSave(ctx context.Context) (_node *Item, err error) 
 		}
 	}
 	if value, ok := iuo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: item.FieldUpdatedAt,
-		})
+		_spec.SetField(item.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := iuo.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldName,
-		})
+		_spec.SetField(item.FieldName, field.TypeString, value)
 	}
 	if value, ok := iuo.mutation.Description(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldDescription,
-		})
+		_spec.SetField(item.FieldDescription, field.TypeString, value)
 	}
 	if iuo.mutation.DescriptionCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: item.FieldDescription,
-		})
+		_spec.ClearField(item.FieldDescription, field.TypeString)
 	}
 	if iuo.mutation.ImportRefCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: item.FieldImportRef,
-		})
+		_spec.ClearField(item.FieldImportRef, field.TypeString)
 	}
 	if value, ok := iuo.mutation.Notes(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldNotes,
-		})
+		_spec.SetField(item.FieldNotes, field.TypeString, value)
 	}
 	if iuo.mutation.NotesCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: item.FieldNotes,
-		})
+		_spec.ClearField(item.FieldNotes, field.TypeString)
 	}
 	if value, ok := iuo.mutation.Quantity(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: item.FieldQuantity,
-		})
+		_spec.SetField(item.FieldQuantity, field.TypeInt, value)
 	}
 	if value, ok := iuo.mutation.AddedQuantity(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: item.FieldQuantity,
-		})
+		_spec.AddField(item.FieldQuantity, field.TypeInt, value)
 	}
 	if value, ok := iuo.mutation.Insured(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: item.FieldInsured,
-		})
+		_spec.SetField(item.FieldInsured, field.TypeBool, value)
 	}
 	if value, ok := iuo.mutation.Archived(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: item.FieldArchived,
-		})
+		_spec.SetField(item.FieldArchived, field.TypeBool, value)
 	}
 	if value, ok := iuo.mutation.AssetID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: item.FieldAssetID,
-		})
+		_spec.SetField(item.FieldAssetID, field.TypeInt, value)
 	}
 	if value, ok := iuo.mutation.AddedAssetID(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: item.FieldAssetID,
-		})
+		_spec.AddField(item.FieldAssetID, field.TypeInt, value)
 	}
 	if value, ok := iuo.mutation.SerialNumber(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldSerialNumber,
-		})
+		_spec.SetField(item.FieldSerialNumber, field.TypeString, value)
 	}
 	if iuo.mutation.SerialNumberCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: item.FieldSerialNumber,
-		})
+		_spec.ClearField(item.FieldSerialNumber, field.TypeString)
 	}
 	if value, ok := iuo.mutation.ModelNumber(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldModelNumber,
-		})
+		_spec.SetField(item.FieldModelNumber, field.TypeString, value)
 	}
 	if iuo.mutation.ModelNumberCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: item.FieldModelNumber,
-		})
+		_spec.ClearField(item.FieldModelNumber, field.TypeString)
 	}
 	if value, ok := iuo.mutation.Manufacturer(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldManufacturer,
-		})
+		_spec.SetField(item.FieldManufacturer, field.TypeString, value)
 	}
 	if iuo.mutation.ManufacturerCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: item.FieldManufacturer,
-		})
+		_spec.ClearField(item.FieldManufacturer, field.TypeString)
 	}
 	if value, ok := iuo.mutation.LifetimeWarranty(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: item.FieldLifetimeWarranty,
-		})
+		_spec.SetField(item.FieldLifetimeWarranty, field.TypeBool, value)
 	}
 	if value, ok := iuo.mutation.WarrantyExpires(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: item.FieldWarrantyExpires,
-		})
+		_spec.SetField(item.FieldWarrantyExpires, field.TypeTime, value)
 	}
 	if iuo.mutation.WarrantyExpiresCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: item.FieldWarrantyExpires,
-		})
+		_spec.ClearField(item.FieldWarrantyExpires, field.TypeTime)
 	}
 	if value, ok := iuo.mutation.WarrantyDetails(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldWarrantyDetails,
-		})
+		_spec.SetField(item.FieldWarrantyDetails, field.TypeString, value)
 	}
 	if iuo.mutation.WarrantyDetailsCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: item.FieldWarrantyDetails,
-		})
+		_spec.ClearField(item.FieldWarrantyDetails, field.TypeString)
 	}
 	if value, ok := iuo.mutation.PurchaseTime(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: item.FieldPurchaseTime,
-		})
+		_spec.SetField(item.FieldPurchaseTime, field.TypeTime, value)
 	}
 	if iuo.mutation.PurchaseTimeCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: item.FieldPurchaseTime,
-		})
+		_spec.ClearField(item.FieldPurchaseTime, field.TypeTime)
 	}
 	if value, ok := iuo.mutation.PurchaseFrom(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldPurchaseFrom,
-		})
+		_spec.SetField(item.FieldPurchaseFrom, field.TypeString, value)
 	}
 	if iuo.mutation.PurchaseFromCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: item.FieldPurchaseFrom,
-		})
+		_spec.ClearField(item.FieldPurchaseFrom, field.TypeString)
 	}
 	if value, ok := iuo.mutation.PurchasePrice(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: item.FieldPurchasePrice,
-		})
+		_spec.SetField(item.FieldPurchasePrice, field.TypeFloat64, value)
 	}
 	if value, ok := iuo.mutation.AddedPurchasePrice(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: item.FieldPurchasePrice,
-		})
+		_spec.AddField(item.FieldPurchasePrice, field.TypeFloat64, value)
 	}
 	if value, ok := iuo.mutation.SoldTime(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: item.FieldSoldTime,
-		})
+		_spec.SetField(item.FieldSoldTime, field.TypeTime, value)
 	}
 	if iuo.mutation.SoldTimeCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: item.FieldSoldTime,
-		})
+		_spec.ClearField(item.FieldSoldTime, field.TypeTime)
 	}
 	if value, ok := iuo.mutation.SoldTo(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldSoldTo,
-		})
+		_spec.SetField(item.FieldSoldTo, field.TypeString, value)
 	}
 	if iuo.mutation.SoldToCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: item.FieldSoldTo,
-		})
+		_spec.ClearField(item.FieldSoldTo, field.TypeString)
 	}
 	if value, ok := iuo.mutation.SoldPrice(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: item.FieldSoldPrice,
-		})
+		_spec.SetField(item.FieldSoldPrice, field.TypeFloat64, value)
 	}
 	if value, ok := iuo.mutation.AddedSoldPrice(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: item.FieldSoldPrice,
-		})
+		_spec.AddField(item.FieldSoldPrice, field.TypeFloat64, value)
 	}
 	if value, ok := iuo.mutation.SoldNotes(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: item.FieldSoldNotes,
-		})
+		_spec.SetField(item.FieldSoldNotes, field.TypeString, value)
 	}
 	if iuo.mutation.SoldNotesCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: item.FieldSoldNotes,
-		})
+		_spec.ClearField(item.FieldSoldNotes, field.TypeString)
 	}
 	if iuo.mutation.ParentCleared() {
 		edge := &sqlgraph.EdgeSpec{

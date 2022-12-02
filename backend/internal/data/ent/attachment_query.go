@@ -369,6 +369,11 @@ func (aq *AttachmentQuery) Select(fields ...string) *AttachmentSelect {
 	return selbuild
 }
 
+// Aggregate returns a AttachmentSelect configured with the given aggregations.
+func (aq *AttachmentQuery) Aggregate(fns ...AggregateFunc) *AttachmentSelect {
+	return aq.Select().Aggregate(fns...)
+}
+
 func (aq *AttachmentQuery) prepareQuery(ctx context.Context) error {
 	for _, f := range aq.fields {
 		if !attachment.ValidColumn(f) {
@@ -645,8 +650,6 @@ func (agb *AttachmentGroupBy) sqlQuery() *sql.Selector {
 	for _, fn := range agb.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
 	if len(selector.SelectedColumns()) == 0 {
 		columns := make([]string, 0, len(agb.fields)+len(agb.fns))
 		for _, f := range agb.fields {
@@ -666,6 +669,12 @@ type AttachmentSelect struct {
 	sql *sql.Selector
 }
 
+// Aggregate adds the given aggregation functions to the selector query.
+func (as *AttachmentSelect) Aggregate(fns ...AggregateFunc) *AttachmentSelect {
+	as.fns = append(as.fns, fns...)
+	return as
+}
+
 // Scan applies the selector query and scans the result into the given value.
 func (as *AttachmentSelect) Scan(ctx context.Context, v any) error {
 	if err := as.prepareQuery(ctx); err != nil {
@@ -676,6 +685,16 @@ func (as *AttachmentSelect) Scan(ctx context.Context, v any) error {
 }
 
 func (as *AttachmentSelect) sqlScan(ctx context.Context, v any) error {
+	aggregation := make([]string, 0, len(as.fns))
+	for _, fn := range as.fns {
+		aggregation = append(aggregation, fn(as.sql))
+	}
+	switch n := len(*as.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		as.sql.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		as.sql.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
 	query, args := as.sql.Query()
 	if err := as.driver.Query(ctx, query, args, rows); err != nil {

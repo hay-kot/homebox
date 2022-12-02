@@ -288,31 +288,16 @@ func (lu *LocationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := lu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: location.FieldUpdatedAt,
-		})
+		_spec.SetField(location.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := lu.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: location.FieldName,
-		})
+		_spec.SetField(location.FieldName, field.TypeString, value)
 	}
 	if value, ok := lu.mutation.Description(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: location.FieldDescription,
-		})
+		_spec.SetField(location.FieldDescription, field.TypeString, value)
 	}
 	if lu.mutation.DescriptionCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: location.FieldDescription,
-		})
+		_spec.ClearField(location.FieldDescription, field.TypeString)
 	}
 	if lu.mutation.ParentCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -798,31 +783,16 @@ func (luo *LocationUpdateOne) sqlSave(ctx context.Context) (_node *Location, err
 		}
 	}
 	if value, ok := luo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: location.FieldUpdatedAt,
-		})
+		_spec.SetField(location.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := luo.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: location.FieldName,
-		})
+		_spec.SetField(location.FieldName, field.TypeString, value)
 	}
 	if value, ok := luo.mutation.Description(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: location.FieldDescription,
-		})
+		_spec.SetField(location.FieldDescription, field.TypeString, value)
 	}
 	if luo.mutation.DescriptionCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: location.FieldDescription,
-		})
+		_spec.ClearField(location.FieldDescription, field.TypeString)
 	}
 	if luo.mutation.ParentCleared() {
 		edge := &sqlgraph.EdgeSpec{
