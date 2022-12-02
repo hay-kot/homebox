@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"path/filepath"
+	"strings"
 
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/attachment"
@@ -113,7 +115,15 @@ func (ctrl *V1Controller) HandleItemAttachmentDownload() server.HandlerFunc {
 			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", doc.Title))
+		ext := filepath.Ext(doc.Path)
+
+		title := doc.Title
+
+		if !strings.HasSuffix(doc.Title, ext) {
+			title = doc.Title + ext
+		}
+
+		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", title))
 		w.Header().Set("Content-Type", "application/octet-stream")
 		http.ServeFile(w, r, doc.Path)
 		return nil
