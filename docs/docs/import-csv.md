@@ -17,7 +17,7 @@ Using the CSV import is the recommended way for adding items to the database. It
 You can use this snippet as the headers for your CSV. Copy and paste it into your spreadsheet editor of choice and fill in the value.
 
 ```csv
-Import RefLocation	Labels	Quantity	Name	Description	Insured	Serial Number	Model Number	Manufacturer	Notes	Purchase From	Purchased Price	Purchased Time	Lifetime Warranty	Warranty Expires	Warranty Details	Sold To	Sold Price	Sold Time	Sold Notes
+ImportRef Location	Labels	Quantity	Name	Description	Insured	Serial Number	Model Number	Manufacturer	Notes	Purchase From	Purchased Price	Purchased Time	Lifetime Warranty	Warranty Expires	Warranty Details	Sold To	Sold Price	Sold Time	Sold Notes
 ```
 
 !!! tip "Column Order"
