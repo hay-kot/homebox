@@ -2,6 +2,7 @@ package services
 
 import (
 	"bytes"
+	_ "embed"
 	"encoding/csv"
 	"fmt"
 	"reflect"
@@ -11,17 +12,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const CSV_DATA = `
-Import Ref,Location,Labels,Quantity,Name,Description,Insured,Serial Number,Mode Number,Manufacturer,Notes,Purchase From,Purchased Price,Purchased Time,Lifetime Warranty,Warranty Expires,Warranty Details,Sold To,Sold Price,Sold Time,Sold Notes
-A,Garage,IOT;Home Assistant; Z-Wave,1,Zooz Universal Relay ZEN17,Description 1,TRUE,,ZEN17,Zooz,,Amazon,39.95,10/13/2021,,10/13/2021,,,,10/13/2021,
-B,Living Room,IOT;Home Assistant; Z-Wave,1,Zooz Motion Sensor,Description 2,FALSE,,ZSE18,Zooz,,Amazon,29.95,10/15/2021,,10/15/2021,,,,10/15/2021,
-C,Office,IOT;Home Assistant; Z-Wave,1,Zooz 110v Power Switch,Description 3,TRUE,,ZEN15,Zooz,,Amazon,39.95,10/13/2021,,10/13/2021,,,,10/13/2021,
-D,Downstairs,IOT;Home Assistant; Z-Wave,1,Ecolink Z-Wave PIR Motion Sensor,Description 4,FALSE,,PIRZWAVE2.5-ECO,Ecolink,,Amazon,35.58,10/21/2020,,10/21/2020,,,,10/21/2020,
-E,Entry,IOT;Home Assistant; Z-Wave,1,Yale Security Touchscreen Deadbolt,Description 5,TRUE,,YRD226ZW2619,Yale,,Amazon,120.39,10/14/2020,,10/14/2020,,,,10/14/2020,
-F,Kitchen,IOT;Home Assistant; Z-Wave,1,Smart Rocker Light Dimmer,Description 6,FALSE,,39351,Honeywell,,Amazon,65.98,09/30/2020,,09/30/2020,,,,09/30/2020,`
+//go:embed testdata/import.csv
+var CSVData_Comma []byte
+
+//go:embed testdata/import.tsv
+var CSVData_Tab []byte
 
 func loadcsv() [][]string {
-	reader := csv.NewReader(bytes.NewBuffer([]byte(CSV_DATA)))
+	reader := csv.NewReader(bytes.NewReader(CSVData_Comma))
 
 	records, err := reader.ReadAll()
 	if err != nil {
@@ -111,6 +109,55 @@ func Test_csvRow_getLabels(t *testing.T) {
 			}
 			if got := c.getLabels(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("csvRow.getLabels() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_determineSeparator(t *testing.T) {
+	type args struct {
+		data []byte
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    rune
+		wantErr bool
+	}{
+		{
+			name: "comma",
+			args: args{
+				data: CSVData_Comma,
+			},
+			want:    ',',
+			wantErr: false,
+		},
+		{
+			name: "tab",
+			args: args{
+				data: CSVData_Tab,
+			},
+			want:    '\t',
+			wantErr: false,
+		},
+		{
+			name: "invalid",
+			args: args{
+				data: []byte("a;b;c"),
+			},
+			want:    0,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := determineSeparator(tt.args.data)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("determineSeparator() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("determineSeparator() = %v, want %v", got, tt.want)
 			}
 		})
 	}
