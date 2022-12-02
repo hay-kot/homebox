@@ -320,6 +320,7 @@ func (e *ItemsRepository) QueryByGroup(ctx context.Context, gid uuid.UUID, q Ite
 			item.Or(
 				item.NameContainsFold(q.Search),
 				item.DescriptionContainsFold(q.Search),
+				item.NotesContainsFold(q.Search),
 			),
 		)
 	}
