@@ -6,7 +6,10 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/authroles"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authtokens"
+	"github.com/hay-kot/homebox/backend/pkgs/hasher"
+	"github.com/hay-kot/homebox/backend/pkgs/set"
 )
 
 type TokenRepository struct {
@@ -47,9 +50,31 @@ func (r *TokenRepository) GetUserFromToken(ctx context.Context, token []byte) (U
 	return mapUserOut(user), nil
 }
 
-// Creates a token for a user
-func (r *TokenRepository) CreateToken(ctx context.Context, createToken UserAuthTokenCreate) (UserAuthToken, error) {
+func (r *TokenRepository) GetRoles(ctx context.Context, token string) (*set.Set[string], error) {
+	tokenHash := hasher.HashToken(token)
 
+	roles, err := r.db.AuthRoles.
+		Query().
+		Where(authroles.HasTokenWith(
+			authtokens.Token(tokenHash),
+		)).
+		All(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	roleSet := set.Make[string](len(roles))
+
+	for _, role := range roles {
+		roleSet.Insert(role.Role.String())
+	}
+
+	return &roleSet, nil
+}
+
+// Creates a token for a user
+func (r *TokenRepository) CreateToken(ctx context.Context, createToken UserAuthTokenCreate, roles ...authroles.Role) (UserAuthToken, error) {
 	dbToken, err := r.db.AuthTokens.Create().
 		SetToken(createToken.TokenHash).
 		SetUserID(createToken.UserID).
@@ -58,6 +83,17 @@ func (r *TokenRepository) CreateToken(ctx context.Context, createToken UserAuthT
 
 	if err != nil {
 		return UserAuthToken{}, err
+	}
+
+	for _, role := range roles {
+		_, err := r.db.AuthRoles.Create().
+			SetRole(role).
+			SetToken(dbToken).
+			Save(ctx)
+
+		if err != nil {
+			return UserAuthToken{}, err
+		}
 	}
 
 	return UserAuthToken{
