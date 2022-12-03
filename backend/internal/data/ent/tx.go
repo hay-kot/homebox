@@ -14,6 +14,8 @@ type Tx struct {
 	config
 	// Attachment is the client for interacting with the Attachment builders.
 	Attachment *AttachmentClient
+	// AuthRoles is the client for interacting with the AuthRoles builders.
+	AuthRoles *AuthRolesClient
 	// AuthTokens is the client for interacting with the AuthTokens builders.
 	AuthTokens *AuthTokensClient
 	// Document is the client for interacting with the Document builders.
@@ -166,6 +168,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Attachment = NewAttachmentClient(tx.config)
+	tx.AuthRoles = NewAuthRolesClient(tx.config)
 	tx.AuthTokens = NewAuthTokensClient(tx.config)
 	tx.Document = NewDocumentClient(tx.config)
 	tx.DocumentToken = NewDocumentTokenClient(tx.config)

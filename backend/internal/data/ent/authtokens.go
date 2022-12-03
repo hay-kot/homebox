@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/authroles"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authtokens"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/user"
 )
@@ -36,9 +37,11 @@ type AuthTokens struct {
 type AuthTokensEdges struct {
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`
+	// Roles holds the value of the roles edge.
+	Roles *AuthRoles `json:"roles,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -52,6 +55,19 @@ func (e AuthTokensEdges) UserOrErr() (*User, error) {
 		return e.User, nil
 	}
 	return nil, &NotLoadedError{edge: "user"}
+}
+
+// RolesOrErr returns the Roles value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AuthTokensEdges) RolesOrErr() (*AuthRoles, error) {
+	if e.loadedTypes[1] {
+		if e.Roles == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: authroles.Label}
+		}
+		return e.Roles, nil
+	}
+	return nil, &NotLoadedError{edge: "roles"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -127,6 +143,11 @@ func (at *AuthTokens) assignValues(columns []string, values []any) error {
 // QueryUser queries the "user" edge of the AuthTokens entity.
 func (at *AuthTokens) QueryUser() *UserQuery {
 	return (&AuthTokensClient{config: at.config}).QueryUser(at)
+}
+
+// QueryRoles queries the "roles" edge of the AuthTokens entity.
+func (at *AuthTokens) QueryRoles() *AuthRolesQuery {
+	return (&AuthTokensClient{config: at.config}).QueryRoles(at)
 }
 
 // Update returns a builder for updating this AuthTokens.

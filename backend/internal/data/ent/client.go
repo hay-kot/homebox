@@ -12,6 +12,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/ent/migrate"
 
 	"github.com/hay-kot/homebox/backend/internal/data/ent/attachment"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/authroles"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authtokens"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/document"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/documenttoken"
@@ -35,6 +36,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Attachment is the client for interacting with the Attachment builders.
 	Attachment *AttachmentClient
+	// AuthRoles is the client for interacting with the AuthRoles builders.
+	AuthRoles *AuthRolesClient
 	// AuthTokens is the client for interacting with the AuthTokens builders.
 	AuthTokens *AuthTokensClient
 	// Document is the client for interacting with the Document builders.
@@ -69,6 +72,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Attachment = NewAttachmentClient(c.config)
+	c.AuthRoles = NewAuthRolesClient(c.config)
 	c.AuthTokens = NewAuthTokensClient(c.config)
 	c.Document = NewDocumentClient(c.config)
 	c.DocumentToken = NewDocumentTokenClient(c.config)
@@ -113,6 +117,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:                  ctx,
 		config:               cfg,
 		Attachment:           NewAttachmentClient(cfg),
+		AuthRoles:            NewAuthRolesClient(cfg),
 		AuthTokens:           NewAuthTokensClient(cfg),
 		Document:             NewDocumentClient(cfg),
 		DocumentToken:        NewDocumentTokenClient(cfg),
@@ -143,6 +148,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ctx:                  ctx,
 		config:               cfg,
 		Attachment:           NewAttachmentClient(cfg),
+		AuthRoles:            NewAuthRolesClient(cfg),
 		AuthTokens:           NewAuthTokensClient(cfg),
 		Document:             NewDocumentClient(cfg),
 		DocumentToken:        NewDocumentTokenClient(cfg),
@@ -182,6 +188,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Attachment.Use(hooks...)
+	c.AuthRoles.Use(hooks...)
 	c.AuthTokens.Use(hooks...)
 	c.Document.Use(hooks...)
 	c.DocumentToken.Use(hooks...)
@@ -316,6 +323,112 @@ func (c *AttachmentClient) Hooks() []Hook {
 	return c.hooks.Attachment
 }
 
+// AuthRolesClient is a client for the AuthRoles schema.
+type AuthRolesClient struct {
+	config
+}
+
+// NewAuthRolesClient returns a client for the AuthRoles from the given config.
+func NewAuthRolesClient(c config) *AuthRolesClient {
+	return &AuthRolesClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `authroles.Hooks(f(g(h())))`.
+func (c *AuthRolesClient) Use(hooks ...Hook) {
+	c.hooks.AuthRoles = append(c.hooks.AuthRoles, hooks...)
+}
+
+// Create returns a builder for creating a AuthRoles entity.
+func (c *AuthRolesClient) Create() *AuthRolesCreate {
+	mutation := newAuthRolesMutation(c.config, OpCreate)
+	return &AuthRolesCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AuthRoles entities.
+func (c *AuthRolesClient) CreateBulk(builders ...*AuthRolesCreate) *AuthRolesCreateBulk {
+	return &AuthRolesCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AuthRoles.
+func (c *AuthRolesClient) Update() *AuthRolesUpdate {
+	mutation := newAuthRolesMutation(c.config, OpUpdate)
+	return &AuthRolesUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AuthRolesClient) UpdateOne(ar *AuthRoles) *AuthRolesUpdateOne {
+	mutation := newAuthRolesMutation(c.config, OpUpdateOne, withAuthRoles(ar))
+	return &AuthRolesUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AuthRolesClient) UpdateOneID(id int) *AuthRolesUpdateOne {
+	mutation := newAuthRolesMutation(c.config, OpUpdateOne, withAuthRolesID(id))
+	return &AuthRolesUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AuthRoles.
+func (c *AuthRolesClient) Delete() *AuthRolesDelete {
+	mutation := newAuthRolesMutation(c.config, OpDelete)
+	return &AuthRolesDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AuthRolesClient) DeleteOne(ar *AuthRoles) *AuthRolesDeleteOne {
+	return c.DeleteOneID(ar.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AuthRolesClient) DeleteOneID(id int) *AuthRolesDeleteOne {
+	builder := c.Delete().Where(authroles.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AuthRolesDeleteOne{builder}
+}
+
+// Query returns a query builder for AuthRoles.
+func (c *AuthRolesClient) Query() *AuthRolesQuery {
+	return &AuthRolesQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a AuthRoles entity by its id.
+func (c *AuthRolesClient) Get(ctx context.Context, id int) (*AuthRoles, error) {
+	return c.Query().Where(authroles.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AuthRolesClient) GetX(ctx context.Context, id int) *AuthRoles {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryToken queries the token edge of a AuthRoles.
+func (c *AuthRolesClient) QueryToken(ar *AuthRoles) *AuthTokensQuery {
+	query := &AuthTokensQuery{config: c.config}
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ar.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(authroles.Table, authroles.FieldID, id),
+			sqlgraph.To(authtokens.Table, authtokens.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, authroles.TokenTable, authroles.TokenColumn),
+		)
+		fromV = sqlgraph.Neighbors(ar.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *AuthRolesClient) Hooks() []Hook {
+	return c.hooks.AuthRoles
+}
+
 // AuthTokensClient is a client for the AuthTokens schema.
 type AuthTokensClient struct {
 	config
@@ -410,6 +523,22 @@ func (c *AuthTokensClient) QueryUser(at *AuthTokens) *UserQuery {
 			sqlgraph.From(authtokens.Table, authtokens.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, authtokens.UserTable, authtokens.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRoles queries the roles edge of a AuthTokens.
+func (c *AuthTokensClient) QueryRoles(at *AuthTokens) *AuthRolesQuery {
+	query := &AuthRolesQuery{config: c.config}
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(authtokens.Table, authtokens.FieldID, id),
+			sqlgraph.To(authroles.Table, authroles.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, authtokens.RolesTable, authtokens.RolesColumn),
 		)
 		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
 		return fromV, nil
