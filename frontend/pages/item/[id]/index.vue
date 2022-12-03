@@ -35,17 +35,19 @@
 
   type Photo = {
     src: string;
-  }
+  };
 
   const photos = computed<Photo[]>(() => {
-    return item.value?.attachments.reduce((acc, cur) => {
-      if (cur.type === "photo") {
-        acc.push({
-          src: api.authURL(`/items/${item.value.id}/attachments/${cur.id}`),
-        })
-      }
-      return acc;
-    }, [] as Photo[]) || [];
+    return (
+      item.value?.attachments.reduce((acc, cur) => {
+        if (cur.type === "photo") {
+          acc.push({
+            src: api.authURL(`/items/${item.value.id}/attachments/${cur.id}`),
+          });
+        }
+        return acc;
+      }, [] as Photo[]) || []
+    );
   });
 
   const attachments = computed<FilteredAttachments>(() => {
@@ -304,7 +306,7 @@
   const refDialog = ref<HTMLDialogElement>();
   const dialoged = reactive({
     src: "",
-  })
+  });
 
   function openDialog(img: Photo) {
     refDialog.value.showModal();
@@ -319,30 +321,22 @@
   onClickOutside(refDialogBody, () => {
     closeDialog();
   });
-
 </script>
-
-<style>
-  /* Style dialog background */
-  dialog::backdrop {
-    background: rgba(0, 0, 0, 0.5);
-  }
-</style>
 
 <template>
   <BaseContainer v-if="item" class="pb-8">
     <dialog ref="refDialog" class="z-[999] fixed bg-transparent">
-      <div class="relative" ref="refDialogBody">
+      <div ref="refDialogBody" class="relative">
         <div class="absolute right-0 -mt-3 -mr-3 sm:-mt-4 sm:-mr-4 space-x-1">
           <a class="btn btn-sm sm:btn-md btn-primary btn-circle" :href="dialoged.src" download>
-            <Icon class="h-5 w-5" name="mdi-download"/>
+            <Icon class="h-5 w-5" name="mdi-download" />
           </a>
           <button class="btn btn-sm sm:btn-md btn-primary btn-circle" @click="closeDialog()">
-            <Icon class="h-5 w-5"  name="mdi-close" />
+            <Icon class="h-5 w-5" name="mdi-close" />
           </button>
         </div>
 
-        <img class="max-w-[80vw] max-h-[80vh]" :src="dialoged.src"/>
+        <img class="max-w-[80vw] max-h-[80vh]" :src="dialoged.src" />
       </div>
     </dialog>
     <section class="px-3">
@@ -405,8 +399,8 @@
         <BaseCard>
           <template #title> Photos </template>
           <div class="container p-4 flex flex-wrap gap-2 mx-auto max-h-[500px] overflow-scroll">
-            <button v-for="img in photos" @click="openDialog(img)">
-              <img class="rounded max-h-[200px]" :src="img.src"/>
+            <button v-for="(img, i) in photos" :key="i" @click="openDialog(img)">
+              <img class="rounded max-h-[200px]" :src="img.src" />
             </button>
           </div>
         </BaseCard>
@@ -470,3 +464,10 @@
     </section>
   </BaseContainer>
 </template>
+
+<style>
+  /* Style dialog background */
+  dialog::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+  }
+</style>

@@ -27,9 +27,9 @@ export function parseDate<T>(obj: T, keys: Array<keyof T> = []): T {
 
 export class BaseAPI {
   http: Requests;
-  attachmentToken: string
+  attachmentToken: string;
 
-  constructor(requests: Requests, attachmentToken: string = "") {
+  constructor(requests: Requests, attachmentToken = "") {
     this.http = requests;
     this.attachmentToken = attachmentToken;
   }

@@ -1,12 +1,6 @@
 import { BaseAPI, route } from "../base";
 import { parseDate } from "../base/base-api";
-import {
-  ItemAttachmentUpdate,
-  ItemCreate,
-  ItemOut,
-  ItemSummary,
-  ItemUpdate,
-} from "../types/data-contracts";
+import { ItemAttachmentUpdate, ItemCreate, ItemOut, ItemSummary, ItemUpdate } from "../types/data-contracts";
 import { AttachmentTypes, PaginationResult } from "../types/non-generated";
 
 export type ItemsQuery = {

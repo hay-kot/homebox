@@ -11,10 +11,10 @@
       </div>
       <div class="ml-4 flex-shrink-0">
         <a class="tooltip mr-2" data-tip="Download" :href="attachmentURL(attachment.id)" target="_blank">
-         <Icon class="h-5 w-5" name="mdi-download"/>
+          <Icon class="h-5 w-5" name="mdi-download" />
         </a>
         <a class="tooltip" data-tip="Open" :href="attachmentURL(attachment.id)" target="_blank">
-          <Icon class="h-5 w-5" name="mdi-open-in-new"/>
+          <Icon class="h-5 w-5" name="mdi-open-in-new" />
         </a>
       </div>
     </li>
@@ -37,11 +37,9 @@
 
   const api = useUserApi();
 
-  function attachmentURL(attachmentId : string) {
+  function attachmentURL(attachmentId: string) {
     return api.authURL(`/items/${props.itemId}/attachments/${attachmentId}`);
   }
-
-
 </script>
 
 <style scoped></style>
