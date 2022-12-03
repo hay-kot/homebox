@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { CustomDetail, Detail, Details } from "~~/components/global/DetailsSection/types";
+  import { AnyDetail, Detail, Details } from "~~/components/global/DetailsSection/types";
   import { ItemAttachment } from "~~/lib/api/types/data-contracts";
 
   definePageMeta({
@@ -87,6 +87,7 @@
     return [
       {
         name: "Description",
+        type: "markdown",
         text: item.value?.description,
       },
       {
@@ -111,6 +112,7 @@
       },
       {
         name: "Notes",
+        type: "markdown",
         text: item.value?.notes,
       },
       ...assetID.value,
@@ -125,7 +127,7 @@
             name: field.name,
             text: url.text,
             href: url.url,
-          } as CustomDetail;
+          } as AnyDetail;
         }
 
         return {
@@ -214,6 +216,7 @@
 
     details.push({
       name: "Warranty Details",
+      type: "markdown",
       text: item.value?.warrantyDetails || "",
     });
 

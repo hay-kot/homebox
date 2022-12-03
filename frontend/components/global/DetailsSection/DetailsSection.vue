@@ -17,6 +17,11 @@
                 </a>
               </div>
             </template>
+            <template v-else-if="detail.type === 'markdown'">
+              <ClientOnly>
+                <Markdown :source="detail.text" />
+              </ClientOnly>
+            </template>
             <template v-else>
               {{ detail.text }}
             </template>
@@ -28,11 +33,11 @@
 </template>
 
 <script setup lang="ts">
-  import type { CustomDetail, Detail } from "./types";
+  import type { AnyDetail, Detail } from "./types";
 
   defineProps({
     details: {
-      type: Object as () => (Detail | CustomDetail)[],
+      type: Object as () => (Detail | AnyDetail)[],
       required: true,
     },
   });
