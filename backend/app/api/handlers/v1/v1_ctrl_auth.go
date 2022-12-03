@@ -13,8 +13,9 @@ import (
 
 type (
 	TokenResponse struct {
-		Token     string    `json:"token"`
-		ExpiresAt time.Time `json:"expiresAt"`
+		Token           string    `json:"token"`
+		ExpiresAt       time.Time `json:"expiresAt"`
+		AttachmentToken string    `json:"attachmentToken"`
 	}
 
 	LoginForm struct {
@@ -76,8 +77,9 @@ func (ctrl *V1Controller) HandleAuthLogin() server.HandlerFunc {
 		}
 
 		return server.Respond(w, http.StatusOK, TokenResponse{
-			Token:     "Bearer " + newToken.Raw,
-			ExpiresAt: newToken.ExpiresAt,
+			Token:           "Bearer " + newToken.Raw,
+			ExpiresAt:       newToken.ExpiresAt,
+			AttachmentToken: newToken.AttachmentToken,
 		})
 	}
 }

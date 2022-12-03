@@ -130,7 +130,7 @@ func (ctrl *V1Controller) HandleItemAttachmentDownload() server.HandlerFunc {
 	}
 }
 
-// HandleItemAttachmentToken godocs
+// HandleItemAttachmentGet godocs
 // @Summary  retrieves an attachment for an item
 // @Tags     Items Attachments
 // @Produce  application/octet-stream
@@ -139,7 +139,7 @@ func (ctrl *V1Controller) HandleItemAttachmentDownload() server.HandlerFunc {
 // @Success  200           {object} ItemAttachmentToken
 // @Router   /v1/items/{id}/attachments/{attachment_id} [GET]
 // @Security Bearer
-func (ctrl *V1Controller) HandleItemAttachmentToken() server.HandlerFunc {
+func (ctrl *V1Controller) HandleItemAttachmentGet() server.HandlerFunc {
 	return ctrl.handleItemAttachmentsHandler
 }
 
@@ -181,33 +181,15 @@ func (ctrl *V1Controller) handleItemAttachmentsHandler(w http.ResponseWriter, r 
 
 	ctx := services.NewContext(r.Context())
 	switch r.Method {
-	// Token Handler
 	case http.MethodGet:
-		token, err := ctrl.svc.Items.AttachmentToken(ctx, ID, attachmentID)
+		doc, err := ctrl.svc.Items.AttachmentPathV2(r.Context(), attachmentID)
 		if err != nil {
-			switch err {
-			case services.ErrNotFound:
-				log.Err(err).
-					Str("id", attachmentID.String()).
-					Msg("failed to find attachment with id")
-
-				return validate.NewRequestError(err, http.StatusNotFound)
-
-			case services.ErrFileNotFound:
-				log.Err(err).
-					Str("id", attachmentID.String()).
-					Msg("failed to find file path for attachment with id")
-				log.Warn().Msg("attachment with no file path removed from database")
-
-				return validate.NewRequestError(err, http.StatusNotFound)
-
-			default:
-				log.Err(err).Msg("failed to get attachment")
-				return validate.NewRequestError(err, http.StatusInternalServerError)
-			}
+			log.Err(err).Msg("failed to get attachment path")
+			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		return server.Respond(w, http.StatusOK, ItemAttachmentToken{Token: token})
+		http.ServeFile(w, r, doc.Path)
+		return nil
 
 	// Delete Attachment Handler
 	case http.MethodDelete:

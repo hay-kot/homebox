@@ -63,6 +63,15 @@ func (svc *ItemService) AttachmentToken(ctx Context, itemId, attachmentId uuid.U
 	return token.Raw, nil
 }
 
+func (svc *ItemService) AttachmentPathV2(ctx context.Context, attachmentId uuid.UUID) (*ent.Document, error) {
+	attachment, err := svc.repo.Attachments.Get(ctx, attachmentId)
+	if err != nil {
+		return nil, err
+	}
+
+	return attachment.Edges.Document, nil
+}
+
 func (svc *ItemService) AttachmentPath(ctx context.Context, token string) (*ent.Document, error) {
 	attachmentId, ok := svc.at.Get(token)
 	if !ok {
