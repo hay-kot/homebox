@@ -30,10 +30,13 @@
     --y-gap: 0.65rem;
   }
 
+  .markdown > :first-child {
+    margin-top: 0px !important;
+  }
+
   .markdown :where(p, ul, ol, dl, blockquote, h1, h2, h3, h4, h5, h6) {
     margin-top: var(--y-gap);
     margin-bottom: var(--y-gap);
-    line-height: 1.5;
   }
 
   .markdown :where(ul) {
