@@ -33,11 +33,11 @@
 </template>
 
 <script setup lang="ts">
-  import type { CustomDetail, Detail } from "./types";
+  import type { AnyDetail, Detail } from "./types";
 
   defineProps({
     details: {
-      type: Object as () => (Detail | CustomDetail)[],
+      type: Object as () => (Detail | AnyDetail)[],
       required: true,
     },
   });

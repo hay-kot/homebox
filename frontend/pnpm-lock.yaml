@@ -14,6 +14,7 @@ specifiers:
   '@vueuse/nuxt': ^9.1.1
   autoprefixer: ^10.4.8
   daisyui: ^2.24.0
+  dompurify: ^2.4.1
   eslint: ^8.23.0
   eslint-config-prettier: ^8.5.0
   eslint-plugin-prettier: ^4.2.1
@@ -40,6 +41,7 @@ dependencies:
   '@vueuse/nuxt': 9.6.0_34m4vklv7wytvv7hkkggjs6mui
   autoprefixer: 10.4.13_postcss@8.4.19
   daisyui: 2.42.1_2lwn2upnx27dqeg6hqdu7sq75m
+  dompurify: 2.4.1
   markdown-it: 13.0.1
   pinia: 2.0.27_mgnvym7yiazkylwwogi5r767ue
   postcss: 8.4.19
@@ -2243,6 +2245,10 @@ packages:
     engines: {node: '>= 4'}
     dependencies:
       domelementtype: 2.3.0
+
+  /dompurify/2.4.1:
+    resolution: {integrity: sha512-ewwFzHzrrneRjxzmK6oVz/rZn9VWspGFRDb4/rRtIsM1n36t9AKma/ye8syCpcw+XJ25kOK/hOG7t1j2I2yBqA==}
+    dev: false
 
   /domutils/2.8.0:
     resolution: {integrity: sha512-w96Cjofp72M5IIhpjgobBimYEfoPjx1Vx0BSX9P30WBdZW2WIKU0T1Bd0kz2eNZ9ikjKgHbEyKx8BB6H1L3h3A==}
