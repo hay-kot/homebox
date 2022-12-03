@@ -37,6 +37,8 @@ func (AuthTokens) Edges() []ent.Edge {
 		edge.From("user", User.Type).
 			Ref("auth_tokens").
 			Unique(),
+		edge.To("roles", AuthRoles.Type).
+			Unique(),
 	}
 }
 
