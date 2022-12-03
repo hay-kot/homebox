@@ -18,9 +18,6 @@ type ItemService struct {
 	repo *repo.AllRepos
 
 	filepath string
-	// at is a map of tokens to attachment IDs. This is used to store the attachment ID
-	// for issued URLs
-	at attachmentTokens
 
 	autoIncrementAssetID bool
 }

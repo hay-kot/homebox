@@ -38,7 +38,6 @@ func New(repos *repo.AllRepos, opts ...OptionsFunc) *AllServices {
 		Group: &GroupService{repos},
 		Items: &ItemService{
 			repo:                 repos,
-			at:                   attachmentTokens{},
 			autoIncrementAssetID: options.autoIncrementAssetID,
 		},
 	}

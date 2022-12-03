@@ -65,10 +65,6 @@ func (a *app) mountRoutes(repos *repo.AllRepos) {
 	a.server.Post(v1Base("/users/register"), v1Ctrl.HandleUserRegistration())
 	a.server.Post(v1Base("/users/login"), v1Ctrl.HandleAuthLogin())
 
-	// Attachment download URl needs a `token` query param to be passed in the request.
-	// and also needs to be outside of the `auth` middleware.
-	a.server.Get(v1Base("/items/{id}/attachments/download"), v1Ctrl.HandleItemAttachmentDownload())
-
 	userMW := []server.Middleware{
 		a.mwAuthToken,
 		a.mwRoles(RoleModeOr, authroles.RoleUser.String()),
