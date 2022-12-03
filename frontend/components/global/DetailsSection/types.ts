@@ -21,11 +21,16 @@ type LinkDetail = BaseDetail & {
   href: string;
 };
 
-export type CustomDetail = DateDetail | CurrencyDetail | LinkDetail;
+type MarkdownDetail = BaseDetail & {
+  type: "markdown",
+  text: string;
+};
 
 export type Detail = BaseDetail & {
   text: StringLike;
   type?: "text";
 };
 
-export type Details = Array<Detail | CustomDetail>;
+export type AnyDetail = DateDetail | CurrencyDetail | LinkDetail | MarkdownDetail | Detail;
+
+export type Details = Array<Detail | AnyDetail>;

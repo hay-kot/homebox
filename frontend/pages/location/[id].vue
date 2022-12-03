@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { Detail, CustomDetail } from "~~/components/global/DetailsSection/types";
+  import { AnyDetail, Details } from "~~/components/global/DetailsSection/types";
   import { LocationSummary, LocationUpdate } from "~~/lib/api/types/data-contracts";
   import { useLocationStore } from "~~/stores/locations";
 
@@ -30,16 +30,17 @@
     return data;
   });
 
-  const details = computed<(Detail | CustomDetail)[]>(() => {
+  const details = computed<Details>(() => {
     const details = [
       {
         name: "Name",
-        text: location.value?.name,
+        text: location.value?.name ?? "",
       },
       {
         name: "Description",
-        text: location.value?.description,
-      },
+        type: "markdown",
+        text: location.value?.description ?? "",
+      } as AnyDetail,
     ];
 
     if (preferences.value.showDetails) {

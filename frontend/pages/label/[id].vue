@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import type { CustomDetail, Detail } from "~~/components/global/DetailsSection/types";
+  import type { AnyDetail, Details } from "~~/components/global/DetailsSection/types";
 
   definePageMeta({
     middleware: ["auth"],
@@ -23,7 +23,7 @@
     return data;
   });
 
-  const details = computed<(Detail | CustomDetail)[]>(() => {
+  const details = computed<Details>(() => {
     const details = [
       {
         name: "Name",
@@ -31,8 +31,9 @@
       },
       {
         name: "Description",
+        type: "markdown",
         text: label.value?.description,
-      },
+      } as AnyDetail,
     ];
 
     if (preferences.value.showDetails) {

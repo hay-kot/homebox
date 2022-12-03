@@ -17,6 +17,11 @@
                 </a>
               </div>
             </template>
+            <template v-else-if="detail.type === 'markdown'">
+              <ClientOnly>
+                <Markdown :source="detail.text" />
+              </ClientOnly>
+            </template>
             <template v-else>
               {{ detail.text }}
             </template>
