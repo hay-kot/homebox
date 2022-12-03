@@ -22,7 +22,7 @@ type LinkDetail = BaseDetail & {
 };
 
 type MarkdownDetail = BaseDetail & {
-  type: "markdown",
+  type: "markdown";
   text: string;
 };
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import MarkdownIt from "markdown-it";
-  import DOMPurify from 'dompurify';
+  import DOMPurify from "dompurify";
 
   type Props = {
     source: string;
@@ -13,7 +13,6 @@
     linkify: true,
     typographer: true,
   });
-
 
   const raw = computed(() => {
     const html = md.render(props.source);
