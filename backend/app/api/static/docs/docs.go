@@ -1966,6 +1966,9 @@ const docTemplate = `{
         "v1.TokenResponse": {
             "type": "object",
             "properties": {
+                "attachmentToken": {
+                    "type": "string"
+                },
                 "expiresAt": {
                     "type": "string"
                 },
