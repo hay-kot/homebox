@@ -8,6 +8,12 @@ type Set[T key] struct {
 	mp map[T]struct{}
 }
 
+func Make[T key](size int) Set[T] {
+	return Set[T]{
+		mp: make(map[T]struct{}, size),
+	}
+}
+
 func New[T key](v ...T) Set[T] {
 	mp := make(map[T]struct{}, len(v))
 

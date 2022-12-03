@@ -10,7 +10,12 @@
         <span class="ml-2 w-0 flex-1 truncate"> {{ attachment.document.title }}</span>
       </div>
       <div class="ml-4 flex-shrink-0">
-        <button class="font-medium" @click="getAttachmentUrl(attachment)">Download</button>
+        <a class="tooltip mr-2" data-tip="Download" :href="attachmentURL(attachment.id)" target="_blank">
+          <Icon class="h-5 w-5" name="mdi-download" />
+        </a>
+        <a class="tooltip" data-tip="Open" :href="attachmentURL(attachment.id)" target="_blank">
+          <Icon class="h-5 w-5" name="mdi-open-in-new" />
+        </a>
       </div>
     </li>
   </ul>
@@ -31,25 +36,9 @@
   });
 
   const api = useUserApi();
-  const toast = useNotifier();
-  async function getAttachmentUrl(attachment: ItemAttachment) {
-    const url = await api.items.getAttachmentUrl(props.itemId, attachment.id);
 
-    if (!url) {
-      toast.error("Failed to get attachment url");
-      return;
-    }
-
-    if (!document) {
-      window.open(url, "_blank");
-      return;
-    }
-
-    const link = document.createElement("a");
-    link.href = url;
-    link.target = "_blank";
-    link.setAttribute("download", attachment.document.title);
-    link.click();
+  function attachmentURL(attachmentId: string) {
+    return api.authURL(`/items/${props.itemId}/attachments/${attachmentId}`);
   }
 </script>
 

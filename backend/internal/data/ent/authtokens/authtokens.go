@@ -23,6 +23,8 @@ const (
 	FieldExpiresAt = "expires_at"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
+	// EdgeRoles holds the string denoting the roles edge name in mutations.
+	EdgeRoles = "roles"
 	// Table holds the table name of the authtokens in the database.
 	Table = "auth_tokens"
 	// UserTable is the table that holds the user relation/edge.
@@ -32,6 +34,13 @@ const (
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
 	UserColumn = "user_auth_tokens"
+	// RolesTable is the table that holds the roles relation/edge.
+	RolesTable = "auth_roles"
+	// RolesInverseTable is the table name for the AuthRoles entity.
+	// It exists in this package in order to avoid circular dependency with the "authroles" package.
+	RolesInverseTable = "auth_roles"
+	// RolesColumn is the table column denoting the roles relation/edge.
+	RolesColumn = "auth_tokens_roles"
 )
 
 // Columns holds all SQL columns for authtokens fields.

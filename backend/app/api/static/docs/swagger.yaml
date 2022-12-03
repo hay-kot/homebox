@@ -510,6 +510,8 @@ definitions:
     type: object
   v1.TokenResponse:
     properties:
+      attachmentToken:
+        type: string
       expiresAt:
         type: string
       token:

@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/authroles"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authtokens"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/user"
 )
@@ -101,6 +102,25 @@ func (atc *AuthTokensCreate) SetNillableUserID(id *uuid.UUID) *AuthTokensCreate 
 // SetUser sets the "user" edge to the User entity.
 func (atc *AuthTokensCreate) SetUser(u *User) *AuthTokensCreate {
 	return atc.SetUserID(u.ID)
+}
+
+// SetRolesID sets the "roles" edge to the AuthRoles entity by ID.
+func (atc *AuthTokensCreate) SetRolesID(id int) *AuthTokensCreate {
+	atc.mutation.SetRolesID(id)
+	return atc
+}
+
+// SetNillableRolesID sets the "roles" edge to the AuthRoles entity by ID if the given value is not nil.
+func (atc *AuthTokensCreate) SetNillableRolesID(id *int) *AuthTokensCreate {
+	if id != nil {
+		atc = atc.SetRolesID(*id)
+	}
+	return atc
+}
+
+// SetRoles sets the "roles" edge to the AuthRoles entity.
+func (atc *AuthTokensCreate) SetRoles(a *AuthRoles) *AuthTokensCreate {
+	return atc.SetRolesID(a.ID)
 }
 
 // Mutation returns the AuthTokensMutation object of the builder.
@@ -282,6 +302,25 @@ func (atc *AuthTokensCreate) createSpec() (*AuthTokens, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.user_auth_tokens = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := atc.mutation.RolesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   authtokens.RolesTable,
+			Columns: []string{authtokens.RolesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: authroles.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

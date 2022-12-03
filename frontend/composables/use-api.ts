@@ -43,5 +43,5 @@ export function useUserApi(): UserClient {
     requests.addResponseInterceptor(observer.handler);
   }
 
-  return new UserClient(requests);
+  return new UserClient(requests, authStore.attachmentToken);
 }

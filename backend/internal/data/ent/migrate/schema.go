@@ -37,6 +37,26 @@ var (
 			},
 		},
 	}
+	// AuthRolesColumns holds the columns for the "auth_roles" table.
+	AuthRolesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "role", Type: field.TypeEnum, Enums: []string{"admin", "user", "attachments"}, Default: "user"},
+		{Name: "auth_tokens_roles", Type: field.TypeUUID, Unique: true, Nullable: true},
+	}
+	// AuthRolesTable holds the schema information for the "auth_roles" table.
+	AuthRolesTable = &schema.Table{
+		Name:       "auth_roles",
+		Columns:    AuthRolesColumns,
+		PrimaryKey: []*schema.Column{AuthRolesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "auth_roles_auth_tokens_roles",
+				Columns:    []*schema.Column{AuthRolesColumns[2]},
+				RefColumns: []*schema.Column{AuthTokensColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// AuthTokensColumns holds the columns for the "auth_tokens" table.
 	AuthTokensColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -385,6 +405,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AttachmentsTable,
+		AuthRolesTable,
 		AuthTokensTable,
 		DocumentsTable,
 		DocumentTokensTable,
@@ -402,6 +423,7 @@ var (
 func init() {
 	AttachmentsTable.ForeignKeys[0].RefTable = DocumentsTable
 	AttachmentsTable.ForeignKeys[1].RefTable = ItemsTable
+	AuthRolesTable.ForeignKeys[0].RefTable = AuthTokensTable
 	AuthTokensTable.ForeignKeys[0].RefTable = UsersTable
 	DocumentsTable.ForeignKeys[0].RefTable = GroupsTable
 	DocumentTokensTable.ForeignKeys[0].RefTable = DocumentsTable

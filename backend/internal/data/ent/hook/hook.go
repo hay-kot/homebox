@@ -22,6 +22,19 @@ func (f AttachmentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return f(ctx, mv)
 }
 
+// The AuthRolesFunc type is an adapter to allow the use of ordinary
+// function as AuthRoles mutator.
+type AuthRolesFunc func(context.Context, *ent.AuthRolesMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AuthRolesFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.AuthRolesMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AuthRolesMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The AuthTokensFunc type is an adapter to allow the use of ordinary
 // function as AuthTokens mutator.
 type AuthTokensFunc func(context.Context, *ent.AuthTokensMutation) (ent.Value, error)

@@ -105,6 +105,7 @@
     authStore.$patch({
       token: data.token,
       expires: data.expiresAt,
+      attachmentToken: data.attachmentToken,
     });
 
     navigateTo("/home");

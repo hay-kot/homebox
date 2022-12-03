@@ -43,6 +43,8 @@ func init() {
 	attachmentDescID := attachmentMixinFields0[0].Descriptor()
 	// attachment.DefaultID holds the default value on creation for the id field.
 	attachment.DefaultID = attachmentDescID.Default.(func() uuid.UUID)
+	authrolesFields := schema.AuthRoles{}.Fields()
+	_ = authrolesFields
 	authtokensMixin := schema.AuthTokens{}.Mixin()
 	authtokensMixinFields0 := authtokensMixin[0].Fields()
 	_ = authtokensMixinFields0

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/authroles"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/pkgs/hasher"
 	"github.com/rs/zerolog/log"
@@ -30,8 +31,9 @@ type (
 		Password   string `json:"password"`
 	}
 	UserAuthTokenDetail struct {
-		Raw       string    `json:"raw"`
-		ExpiresAt time.Time `json:"expiresAt"`
+		Raw             string    `json:"raw"`
+		AttachmentToken string    `json:"attachmentToken"`
+		ExpiresAt       time.Time `json:"expiresAt"`
 	}
 	LoginForm struct {
 		Username string `json:"username"`
@@ -131,16 +133,37 @@ func (svc *UserService) UpdateSelf(ctx context.Context, ID uuid.UUID, data repo.
 // ============================================================================
 // User Authentication
 
-func (svc *UserService) createToken(ctx context.Context, userId uuid.UUID) (UserAuthTokenDetail, error) {
-	newToken := hasher.GenerateToken()
+func (svc *UserService) createSessionToken(ctx context.Context, userId uuid.UUID) (UserAuthTokenDetail, error) {
 
-	created, err := svc.repos.AuthTokens.CreateToken(ctx, repo.UserAuthTokenCreate{
+	attachmentToken := hasher.GenerateToken()
+	attachmentData := repo.UserAuthTokenCreate{
 		UserID:    userId,
-		TokenHash: newToken.Hash,
+		TokenHash: attachmentToken.Hash,
 		ExpiresAt: time.Now().Add(oneWeek),
-	})
+	}
 
-	return UserAuthTokenDetail{Raw: newToken.Raw, ExpiresAt: created.ExpiresAt}, err
+	_, err := svc.repos.AuthTokens.CreateToken(ctx, attachmentData, authroles.RoleAttachments)
+	if err != nil {
+		return UserAuthTokenDetail{}, err
+	}
+
+	userToken := hasher.GenerateToken()
+	data := repo.UserAuthTokenCreate{
+		UserID:    userId,
+		TokenHash: userToken.Hash,
+		ExpiresAt: time.Now().Add(oneWeek),
+	}
+
+	created, err := svc.repos.AuthTokens.CreateToken(ctx, data, authroles.RoleUser)
+	if err != nil {
+		return UserAuthTokenDetail{}, err
+	}
+
+	return UserAuthTokenDetail{
+		Raw:             userToken.Raw,
+		ExpiresAt:       created.ExpiresAt,
+		AttachmentToken: attachmentToken.Raw,
+	}, nil
 }
 
 func (svc *UserService) Login(ctx context.Context, username, password string) (UserAuthTokenDetail, error) {
@@ -156,7 +179,7 @@ func (svc *UserService) Login(ctx context.Context, username, password string) (U
 		return UserAuthTokenDetail{}, ErrorInvalidLogin
 	}
 
-	return svc.createToken(ctx, usr.ID)
+	return svc.createSessionToken(ctx, usr.ID)
 }
 
 func (svc *UserService) Logout(ctx context.Context, token string) error {
@@ -174,9 +197,7 @@ func (svc *UserService) RenewToken(ctx context.Context, token string) (UserAuthT
 		return UserAuthTokenDetail{}, ErrorInvalidToken
 	}
 
-	newToken, _ := svc.createToken(ctx, dbToken.ID)
-
-	return newToken, nil
+	return svc.createSessionToken(ctx, dbToken.ID)
 }
 
 // DeleteSelf deletes the user that is currently logged based of the provided UUID

@@ -4,71 +4,15 @@ import (
 	"context"
 	"io"
 	"os"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/attachment"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
-	"github.com/hay-kot/homebox/backend/pkgs/hasher"
 	"github.com/rs/zerolog/log"
 )
 
-// TODO: this isn't a scalable solution, tokens should be stored in the database
-type attachmentTokens map[string]uuid.UUID
-
-func (at attachmentTokens) Add(token string, id uuid.UUID) {
-	at[token] = id
-
-	log.Debug().Str("token", token).Str("uuid", id.String()).Msg("added token")
-
-	go func() {
-		ch := time.After(1 * time.Minute)
-		<-ch
-		at.Delete(token)
-		log.Debug().Str("token", token).Msg("deleted token")
-	}()
-}
-
-func (at attachmentTokens) Get(token string) (uuid.UUID, bool) {
-	id, ok := at[token]
-	return id, ok
-}
-
-func (at attachmentTokens) Delete(token string) {
-	delete(at, token)
-}
-
-func (svc *ItemService) AttachmentToken(ctx Context, itemId, attachmentId uuid.UUID) (string, error) {
-	_, err := svc.repo.Items.GetOneByGroup(ctx, ctx.GID, itemId)
-	if err != nil {
-		return "", err
-	}
-
-	token := hasher.GenerateToken()
-
-	// Ensure that the file exists
-	attachment, err := svc.repo.Attachments.Get(ctx, attachmentId)
-	if err != nil {
-		return "", err
-	}
-
-	if _, err := os.Stat(attachment.Edges.Document.Path); os.IsNotExist(err) {
-		_ = svc.AttachmentDelete(ctx, ctx.GID, itemId, attachmentId)
-		return "", ErrNotFound
-	}
-
-	svc.at.Add(token.Raw, attachmentId)
-
-	return token.Raw, nil
-}
-
-func (svc *ItemService) AttachmentPath(ctx context.Context, token string) (*ent.Document, error) {
-	attachmentId, ok := svc.at.Get(token)
-	if !ok {
-		return nil, ErrNotFound
-	}
-
+func (svc *ItemService) AttachmentPath(ctx context.Context, attachmentId uuid.UUID) (*ent.Document, error) {
 	attachment, err := svc.repo.Attachments.Get(ctx, attachmentId)
 	if err != nil {
 		return nil, err

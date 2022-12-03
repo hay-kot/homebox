@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/attachment"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/authroles"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authtokens"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/document"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/documenttoken"
@@ -42,6 +43,7 @@ type OrderFunc func(*sql.Selector)
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
 		attachment.Table:           attachment.ValidColumn,
+		authroles.Table:            authroles.ValidColumn,
 		authtokens.Table:           authtokens.ValidColumn,
 		document.Table:             document.ValidColumn,
 		documenttoken.Table:        documenttoken.ValidColumn,

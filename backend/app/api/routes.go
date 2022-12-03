@@ -13,6 +13,7 @@ import (
 	"github.com/hay-kot/homebox/backend/app/api/handlers/debughandlers"
 	v1 "github.com/hay-kot/homebox/backend/app/api/handlers/v1"
 	_ "github.com/hay-kot/homebox/backend/app/api/static/docs"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/authroles"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 	httpSwagger "github.com/swaggo/http-swagger" // http-swagger middleware
@@ -64,49 +65,55 @@ func (a *app) mountRoutes(repos *repo.AllRepos) {
 	a.server.Post(v1Base("/users/register"), v1Ctrl.HandleUserRegistration())
 	a.server.Post(v1Base("/users/login"), v1Ctrl.HandleAuthLogin())
 
-	// Attachment download URl needs a `token` query param to be passed in the request.
-	// and also needs to be outside of the `auth` middleware.
-	a.server.Get(v1Base("/items/{id}/attachments/download"), v1Ctrl.HandleItemAttachmentDownload())
+	userMW := []server.Middleware{
+		a.mwAuthToken,
+		a.mwRoles(RoleModeOr, authroles.RoleUser.String()),
+	}
 
-	a.server.Get(v1Base("/users/self"), v1Ctrl.HandleUserSelf(), a.mwAuthToken)
-	a.server.Put(v1Base("/users/self"), v1Ctrl.HandleUserSelfUpdate(), a.mwAuthToken)
-	a.server.Delete(v1Base("/users/self"), v1Ctrl.HandleUserSelfDelete(), a.mwAuthToken)
-	a.server.Post(v1Base("/users/logout"), v1Ctrl.HandleAuthLogout(), a.mwAuthToken)
-	a.server.Get(v1Base("/users/refresh"), v1Ctrl.HandleAuthRefresh(), a.mwAuthToken)
-	a.server.Put(v1Base("/users/self/change-password"), v1Ctrl.HandleUserSelfChangePassword(), a.mwAuthToken)
+	a.server.Get(v1Base("/users/self"), v1Ctrl.HandleUserSelf(), userMW...)
+	a.server.Put(v1Base("/users/self"), v1Ctrl.HandleUserSelfUpdate(), userMW...)
+	a.server.Delete(v1Base("/users/self"), v1Ctrl.HandleUserSelfDelete(), userMW...)
+	a.server.Post(v1Base("/users/logout"), v1Ctrl.HandleAuthLogout(), userMW...)
+	a.server.Get(v1Base("/users/refresh"), v1Ctrl.HandleAuthRefresh(), userMW...)
+	a.server.Put(v1Base("/users/self/change-password"), v1Ctrl.HandleUserSelfChangePassword(), userMW...)
 
-	a.server.Post(v1Base("/groups/invitations"), v1Ctrl.HandleGroupInvitationsCreate(), a.mwAuthToken)
-	a.server.Get(v1Base("/groups/statistics"), v1Ctrl.HandleGroupStatistics(), a.mwAuthToken)
+	a.server.Post(v1Base("/groups/invitations"), v1Ctrl.HandleGroupInvitationsCreate(), userMW...)
+	a.server.Get(v1Base("/groups/statistics"), v1Ctrl.HandleGroupStatistics(), userMW...)
 
 	// TODO: I don't like /groups being the URL for users
-	a.server.Get(v1Base("/groups"), v1Ctrl.HandleGroupGet(), a.mwAuthToken)
-	a.server.Put(v1Base("/groups"), v1Ctrl.HandleGroupUpdate(), a.mwAuthToken)
+	a.server.Get(v1Base("/groups"), v1Ctrl.HandleGroupGet(), userMW...)
+	a.server.Put(v1Base("/groups"), v1Ctrl.HandleGroupUpdate(), userMW...)
 
-	a.server.Post(v1Base("/actions/ensure-asset-ids"), v1Ctrl.HandleEnsureAssetID(), a.mwAuthToken)
+	a.server.Post(v1Base("/actions/ensure-asset-ids"), v1Ctrl.HandleEnsureAssetID(), userMW...)
 
-	a.server.Get(v1Base("/locations"), v1Ctrl.HandleLocationGetAll(), a.mwAuthToken)
-	a.server.Post(v1Base("/locations"), v1Ctrl.HandleLocationCreate(), a.mwAuthToken)
-	a.server.Get(v1Base("/locations/{id}"), v1Ctrl.HandleLocationGet(), a.mwAuthToken)
-	a.server.Put(v1Base("/locations/{id}"), v1Ctrl.HandleLocationUpdate(), a.mwAuthToken)
-	a.server.Delete(v1Base("/locations/{id}"), v1Ctrl.HandleLocationDelete(), a.mwAuthToken)
+	a.server.Get(v1Base("/locations"), v1Ctrl.HandleLocationGetAll(), userMW...)
+	a.server.Post(v1Base("/locations"), v1Ctrl.HandleLocationCreate(), userMW...)
+	a.server.Get(v1Base("/locations/{id}"), v1Ctrl.HandleLocationGet(), userMW...)
+	a.server.Put(v1Base("/locations/{id}"), v1Ctrl.HandleLocationUpdate(), userMW...)
+	a.server.Delete(v1Base("/locations/{id}"), v1Ctrl.HandleLocationDelete(), userMW...)
 
-	a.server.Get(v1Base("/labels"), v1Ctrl.HandleLabelsGetAll(), a.mwAuthToken)
-	a.server.Post(v1Base("/labels"), v1Ctrl.HandleLabelsCreate(), a.mwAuthToken)
-	a.server.Get(v1Base("/labels/{id}"), v1Ctrl.HandleLabelGet(), a.mwAuthToken)
-	a.server.Put(v1Base("/labels/{id}"), v1Ctrl.HandleLabelUpdate(), a.mwAuthToken)
-	a.server.Delete(v1Base("/labels/{id}"), v1Ctrl.HandleLabelDelete(), a.mwAuthToken)
+	a.server.Get(v1Base("/labels"), v1Ctrl.HandleLabelsGetAll(), userMW...)
+	a.server.Post(v1Base("/labels"), v1Ctrl.HandleLabelsCreate(), userMW...)
+	a.server.Get(v1Base("/labels/{id}"), v1Ctrl.HandleLabelGet(), userMW...)
+	a.server.Put(v1Base("/labels/{id}"), v1Ctrl.HandleLabelUpdate(), userMW...)
+	a.server.Delete(v1Base("/labels/{id}"), v1Ctrl.HandleLabelDelete(), userMW...)
 
-	a.server.Get(v1Base("/items"), v1Ctrl.HandleItemsGetAll(), a.mwAuthToken)
-	a.server.Post(v1Base("/items/import"), v1Ctrl.HandleItemsImport(), a.mwAuthToken)
-	a.server.Post(v1Base("/items"), v1Ctrl.HandleItemsCreate(), a.mwAuthToken)
-	a.server.Get(v1Base("/items/{id}"), v1Ctrl.HandleItemGet(), a.mwAuthToken)
-	a.server.Put(v1Base("/items/{id}"), v1Ctrl.HandleItemUpdate(), a.mwAuthToken)
-	a.server.Delete(v1Base("/items/{id}"), v1Ctrl.HandleItemDelete(), a.mwAuthToken)
+	a.server.Get(v1Base("/items"), v1Ctrl.HandleItemsGetAll(), userMW...)
+	a.server.Post(v1Base("/items/import"), v1Ctrl.HandleItemsImport(), userMW...)
+	a.server.Post(v1Base("/items"), v1Ctrl.HandleItemsCreate(), userMW...)
+	a.server.Get(v1Base("/items/{id}"), v1Ctrl.HandleItemGet(), userMW...)
+	a.server.Put(v1Base("/items/{id}"), v1Ctrl.HandleItemUpdate(), userMW...)
+	a.server.Delete(v1Base("/items/{id}"), v1Ctrl.HandleItemDelete(), userMW...)
 
-	a.server.Post(v1Base("/items/{id}/attachments"), v1Ctrl.HandleItemAttachmentCreate(), a.mwAuthToken)
-	a.server.Get(v1Base("/items/{id}/attachments/{attachment_id}"), v1Ctrl.HandleItemAttachmentToken(), a.mwAuthToken)
-	a.server.Put(v1Base("/items/{id}/attachments/{attachment_id}"), v1Ctrl.HandleItemAttachmentUpdate(), a.mwAuthToken)
-	a.server.Delete(v1Base("/items/{id}/attachments/{attachment_id}"), v1Ctrl.HandleItemAttachmentDelete(), a.mwAuthToken)
+	a.server.Post(v1Base("/items/{id}/attachments"), v1Ctrl.HandleItemAttachmentCreate(), userMW...)
+	a.server.Put(v1Base("/items/{id}/attachments/{attachment_id}"), v1Ctrl.HandleItemAttachmentUpdate(), userMW...)
+	a.server.Delete(v1Base("/items/{id}/attachments/{attachment_id}"), v1Ctrl.HandleItemAttachmentDelete(), userMW...)
+
+	a.server.Get(
+		v1Base("/items/{id}/attachments/{attachment_id}"),
+		v1Ctrl.HandleItemAttachmentGet(),
+		a.mwAuthToken, a.mwRoles(RoleModeOr, authroles.RoleUser.String(), authroles.RoleAttachments.String()),
+	)
 
 	a.server.NotFound(notFoundHandler())
 }

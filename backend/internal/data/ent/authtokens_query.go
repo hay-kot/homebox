@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
@@ -11,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/authroles"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authtokens"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/predicate"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/user"
@@ -26,6 +28,7 @@ type AuthTokensQuery struct {
 	fields     []string
 	predicates []predicate.AuthTokens
 	withUser   *UserQuery
+	withRoles  *AuthRolesQuery
 	withFKs    bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -78,6 +81,28 @@ func (atq *AuthTokensQuery) QueryUser() *UserQuery {
 			sqlgraph.From(authtokens.Table, authtokens.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, authtokens.UserTable, authtokens.UserColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(atq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRoles chains the current query on the "roles" edge.
+func (atq *AuthTokensQuery) QueryRoles() *AuthRolesQuery {
+	query := &AuthRolesQuery{config: atq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := atq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := atq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(authtokens.Table, authtokens.FieldID, selector),
+			sqlgraph.To(authroles.Table, authroles.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, authtokens.RolesTable, authtokens.RolesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(atq.driver.Dialect(), step)
 		return fromU, nil
@@ -267,6 +292,7 @@ func (atq *AuthTokensQuery) Clone() *AuthTokensQuery {
 		order:      append([]OrderFunc{}, atq.order...),
 		predicates: append([]predicate.AuthTokens{}, atq.predicates...),
 		withUser:   atq.withUser.Clone(),
+		withRoles:  atq.withRoles.Clone(),
 		// clone intermediate query.
 		sql:    atq.sql.Clone(),
 		path:   atq.path,
@@ -282,6 +308,17 @@ func (atq *AuthTokensQuery) WithUser(opts ...func(*UserQuery)) *AuthTokensQuery 
 		opt(query)
 	}
 	atq.withUser = query
+	return atq
+}
+
+// WithRoles tells the query-builder to eager-load the nodes that are connected to
+// the "roles" edge. The optional arguments are used to configure the query builder of the edge.
+func (atq *AuthTokensQuery) WithRoles(opts ...func(*AuthRolesQuery)) *AuthTokensQuery {
+	query := &AuthRolesQuery{config: atq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	atq.withRoles = query
 	return atq
 }
 
@@ -359,8 +396,9 @@ func (atq *AuthTokensQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 		nodes       = []*AuthTokens{}
 		withFKs     = atq.withFKs
 		_spec       = atq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			atq.withUser != nil,
+			atq.withRoles != nil,
 		}
 	)
 	if atq.withUser != nil {
@@ -393,6 +431,12 @@ func (atq *AuthTokensQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 			return nil, err
 		}
 	}
+	if query := atq.withRoles; query != nil {
+		if err := atq.loadRoles(ctx, query, nodes, nil,
+			func(n *AuthTokens, e *AuthRoles) { n.Edges.Roles = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
 }
 
@@ -422,6 +466,34 @@ func (atq *AuthTokensQuery) loadUser(ctx context.Context, query *UserQuery, node
 		for i := range nodes {
 			assign(nodes[i], n)
 		}
+	}
+	return nil
+}
+func (atq *AuthTokensQuery) loadRoles(ctx context.Context, query *AuthRolesQuery, nodes []*AuthTokens, init func(*AuthTokens), assign func(*AuthTokens, *AuthRoles)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*AuthTokens)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+	}
+	query.withFKs = true
+	query.Where(predicate.AuthRoles(func(s *sql.Selector) {
+		s.Where(sql.InValues(authtokens.RolesColumn, fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.auth_tokens_roles
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "auth_tokens_roles" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "auth_tokens_roles" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
 	}
 	return nil
 }

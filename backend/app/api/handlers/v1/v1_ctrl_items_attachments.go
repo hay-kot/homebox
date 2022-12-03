@@ -2,10 +2,7 @@ package v1
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
-	"path/filepath"
-	"strings"
 
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/attachment"
@@ -99,47 +96,12 @@ func (ctrl *V1Controller) HandleItemAttachmentCreate() server.HandlerFunc {
 // @Summary  retrieves an attachment for an item
 // @Tags     Items Attachments
 // @Produce  application/octet-stream
-// @Param    id    path  string true "Item ID"
-// @Param    token query string true "Attachment token"
-// @Success  200
-// @Router   /v1/items/{id}/attachments/download [GET]
-// @Security Bearer
-func (ctrl *V1Controller) HandleItemAttachmentDownload() server.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) error {
-		token := server.GetParam(r, "token", "")
-
-		doc, err := ctrl.svc.Items.AttachmentPath(r.Context(), token)
-
-		if err != nil {
-			log.Err(err).Msg("failed to get attachment")
-			return validate.NewRequestError(err, http.StatusInternalServerError)
-		}
-
-		ext := filepath.Ext(doc.Path)
-
-		title := doc.Title
-
-		if !strings.HasSuffix(doc.Title, ext) {
-			title = doc.Title + ext
-		}
-
-		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", title))
-		w.Header().Set("Content-Type", "application/octet-stream")
-		http.ServeFile(w, r, doc.Path)
-		return nil
-	}
-}
-
-// HandleItemAttachmentToken godocs
-// @Summary  retrieves an attachment for an item
-// @Tags     Items Attachments
-// @Produce  application/octet-stream
 // @Param    id            path     string true "Item ID"
 // @Param    attachment_id path     string true "Attachment ID"
 // @Success  200           {object} ItemAttachmentToken
 // @Router   /v1/items/{id}/attachments/{attachment_id} [GET]
 // @Security Bearer
-func (ctrl *V1Controller) HandleItemAttachmentToken() server.HandlerFunc {
+func (ctrl *V1Controller) HandleItemAttachmentGet() server.HandlerFunc {
 	return ctrl.handleItemAttachmentsHandler
 }
 
@@ -181,33 +143,15 @@ func (ctrl *V1Controller) handleItemAttachmentsHandler(w http.ResponseWriter, r 
 
 	ctx := services.NewContext(r.Context())
 	switch r.Method {
-	// Token Handler
 	case http.MethodGet:
-		token, err := ctrl.svc.Items.AttachmentToken(ctx, ID, attachmentID)
+		doc, err := ctrl.svc.Items.AttachmentPath(r.Context(), attachmentID)
 		if err != nil {
-			switch err {
-			case services.ErrNotFound:
-				log.Err(err).
-					Str("id", attachmentID.String()).
-					Msg("failed to find attachment with id")
-
-				return validate.NewRequestError(err, http.StatusNotFound)
-
-			case services.ErrFileNotFound:
-				log.Err(err).
-					Str("id", attachmentID.String()).
-					Msg("failed to find file path for attachment with id")
-				log.Warn().Msg("attachment with no file path removed from database")
-
-				return validate.NewRequestError(err, http.StatusNotFound)
-
-			default:
-				log.Err(err).Msg("failed to get attachment")
-				return validate.NewRequestError(err, http.StatusInternalServerError)
-			}
+			log.Err(err).Msg("failed to get attachment path")
+			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		return server.Respond(w, http.StatusOK, ItemAttachmentToken{Token: token})
+		http.ServeFile(w, r, doc.Path)
+		return nil
 
 	// Delete Attachment Handler
 	case http.MethodDelete:

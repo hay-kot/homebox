@@ -11,6 +11,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/attachment"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/authroles"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authtokens"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/document"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/documenttoken"
@@ -36,6 +37,7 @@ const (
 
 	// Node types.
 	TypeAttachment           = "Attachment"
+	TypeAuthRoles            = "AuthRoles"
 	TypeAuthTokens           = "AuthTokens"
 	TypeDocument             = "Document"
 	TypeDocumentToken        = "DocumentToken"
@@ -599,6 +601,384 @@ func (m *AttachmentMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Attachment edge %s", name)
 }
 
+// AuthRolesMutation represents an operation that mutates the AuthRoles nodes in the graph.
+type AuthRolesMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *int
+	role          *authroles.Role
+	clearedFields map[string]struct{}
+	token         *uuid.UUID
+	clearedtoken  bool
+	done          bool
+	oldValue      func(context.Context) (*AuthRoles, error)
+	predicates    []predicate.AuthRoles
+}
+
+var _ ent.Mutation = (*AuthRolesMutation)(nil)
+
+// authrolesOption allows management of the mutation configuration using functional options.
+type authrolesOption func(*AuthRolesMutation)
+
+// newAuthRolesMutation creates new mutation for the AuthRoles entity.
+func newAuthRolesMutation(c config, op Op, opts ...authrolesOption) *AuthRolesMutation {
+	m := &AuthRolesMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeAuthRoles,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withAuthRolesID sets the ID field of the mutation.
+func withAuthRolesID(id int) authrolesOption {
+	return func(m *AuthRolesMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *AuthRoles
+		)
+		m.oldValue = func(ctx context.Context) (*AuthRoles, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().AuthRoles.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withAuthRoles sets the old AuthRoles of the mutation.
+func withAuthRoles(node *AuthRoles) authrolesOption {
+	return func(m *AuthRolesMutation) {
+		m.oldValue = func(context.Context) (*AuthRoles, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m AuthRolesMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m AuthRolesMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *AuthRolesMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *AuthRolesMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().AuthRoles.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetRole sets the "role" field.
+func (m *AuthRolesMutation) SetRole(a authroles.Role) {
+	m.role = &a
+}
+
+// Role returns the value of the "role" field in the mutation.
+func (m *AuthRolesMutation) Role() (r authroles.Role, exists bool) {
+	v := m.role
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRole returns the old "role" field's value of the AuthRoles entity.
+// If the AuthRoles object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AuthRolesMutation) OldRole(ctx context.Context) (v authroles.Role, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRole is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRole requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRole: %w", err)
+	}
+	return oldValue.Role, nil
+}
+
+// ResetRole resets all changes to the "role" field.
+func (m *AuthRolesMutation) ResetRole() {
+	m.role = nil
+}
+
+// SetTokenID sets the "token" edge to the AuthTokens entity by id.
+func (m *AuthRolesMutation) SetTokenID(id uuid.UUID) {
+	m.token = &id
+}
+
+// ClearToken clears the "token" edge to the AuthTokens entity.
+func (m *AuthRolesMutation) ClearToken() {
+	m.clearedtoken = true
+}
+
+// TokenCleared reports if the "token" edge to the AuthTokens entity was cleared.
+func (m *AuthRolesMutation) TokenCleared() bool {
+	return m.clearedtoken
+}
+
+// TokenID returns the "token" edge ID in the mutation.
+func (m *AuthRolesMutation) TokenID() (id uuid.UUID, exists bool) {
+	if m.token != nil {
+		return *m.token, true
+	}
+	return
+}
+
+// TokenIDs returns the "token" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TokenID instead. It exists only for internal usage by the builders.
+func (m *AuthRolesMutation) TokenIDs() (ids []uuid.UUID) {
+	if id := m.token; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetToken resets all changes to the "token" edge.
+func (m *AuthRolesMutation) ResetToken() {
+	m.token = nil
+	m.clearedtoken = false
+}
+
+// Where appends a list predicates to the AuthRolesMutation builder.
+func (m *AuthRolesMutation) Where(ps ...predicate.AuthRoles) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *AuthRolesMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (AuthRoles).
+func (m *AuthRolesMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *AuthRolesMutation) Fields() []string {
+	fields := make([]string, 0, 1)
+	if m.role != nil {
+		fields = append(fields, authroles.FieldRole)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *AuthRolesMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case authroles.FieldRole:
+		return m.Role()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *AuthRolesMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case authroles.FieldRole:
+		return m.OldRole(ctx)
+	}
+	return nil, fmt.Errorf("unknown AuthRoles field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AuthRolesMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case authroles.FieldRole:
+		v, ok := value.(authroles.Role)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRole(v)
+		return nil
+	}
+	return fmt.Errorf("unknown AuthRoles field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *AuthRolesMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *AuthRolesMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AuthRolesMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown AuthRoles numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *AuthRolesMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *AuthRolesMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *AuthRolesMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown AuthRoles nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *AuthRolesMutation) ResetField(name string) error {
+	switch name {
+	case authroles.FieldRole:
+		m.ResetRole()
+		return nil
+	}
+	return fmt.Errorf("unknown AuthRoles field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *AuthRolesMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.token != nil {
+		edges = append(edges, authroles.EdgeToken)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *AuthRolesMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case authroles.EdgeToken:
+		if id := m.token; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *AuthRolesMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *AuthRolesMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *AuthRolesMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedtoken {
+		edges = append(edges, authroles.EdgeToken)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *AuthRolesMutation) EdgeCleared(name string) bool {
+	switch name {
+	case authroles.EdgeToken:
+		return m.clearedtoken
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *AuthRolesMutation) ClearEdge(name string) error {
+	switch name {
+	case authroles.EdgeToken:
+		m.ClearToken()
+		return nil
+	}
+	return fmt.Errorf("unknown AuthRoles unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *AuthRolesMutation) ResetEdge(name string) error {
+	switch name {
+	case authroles.EdgeToken:
+		m.ResetToken()
+		return nil
+	}
+	return fmt.Errorf("unknown AuthRoles edge %s", name)
+}
+
 // AuthTokensMutation represents an operation that mutates the AuthTokens nodes in the graph.
 type AuthTokensMutation struct {
 	config
@@ -612,6 +992,8 @@ type AuthTokensMutation struct {
 	clearedFields map[string]struct{}
 	user          *uuid.UUID
 	cleareduser   bool
+	roles         *int
+	clearedroles  bool
 	done          bool
 	oldValue      func(context.Context) (*AuthTokens, error)
 	predicates    []predicate.AuthTokens
@@ -904,6 +1286,45 @@ func (m *AuthTokensMutation) ResetUser() {
 	m.cleareduser = false
 }
 
+// SetRolesID sets the "roles" edge to the AuthRoles entity by id.
+func (m *AuthTokensMutation) SetRolesID(id int) {
+	m.roles = &id
+}
+
+// ClearRoles clears the "roles" edge to the AuthRoles entity.
+func (m *AuthTokensMutation) ClearRoles() {
+	m.clearedroles = true
+}
+
+// RolesCleared reports if the "roles" edge to the AuthRoles entity was cleared.
+func (m *AuthTokensMutation) RolesCleared() bool {
+	return m.clearedroles
+}
+
+// RolesID returns the "roles" edge ID in the mutation.
+func (m *AuthTokensMutation) RolesID() (id int, exists bool) {
+	if m.roles != nil {
+		return *m.roles, true
+	}
+	return
+}
+
+// RolesIDs returns the "roles" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// RolesID instead. It exists only for internal usage by the builders.
+func (m *AuthTokensMutation) RolesIDs() (ids []int) {
+	if id := m.roles; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetRoles resets all changes to the "roles" edge.
+func (m *AuthTokensMutation) ResetRoles() {
+	m.roles = nil
+	m.clearedroles = false
+}
+
 // Where appends a list predicates to the AuthTokensMutation builder.
 func (m *AuthTokensMutation) Where(ps ...predicate.AuthTokens) {
 	m.predicates = append(m.predicates, ps...)
@@ -1073,9 +1494,12 @@ func (m *AuthTokensMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *AuthTokensMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.user != nil {
 		edges = append(edges, authtokens.EdgeUser)
+	}
+	if m.roles != nil {
+		edges = append(edges, authtokens.EdgeRoles)
 	}
 	return edges
 }
@@ -1088,13 +1512,17 @@ func (m *AuthTokensMutation) AddedIDs(name string) []ent.Value {
 		if id := m.user; id != nil {
 			return []ent.Value{*id}
 		}
+	case authtokens.EdgeRoles:
+		if id := m.roles; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *AuthTokensMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	return edges
 }
 
@@ -1106,9 +1534,12 @@ func (m *AuthTokensMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *AuthTokensMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.cleareduser {
 		edges = append(edges, authtokens.EdgeUser)
+	}
+	if m.clearedroles {
+		edges = append(edges, authtokens.EdgeRoles)
 	}
 	return edges
 }
@@ -1119,6 +1550,8 @@ func (m *AuthTokensMutation) EdgeCleared(name string) bool {
 	switch name {
 	case authtokens.EdgeUser:
 		return m.cleareduser
+	case authtokens.EdgeRoles:
+		return m.clearedroles
 	}
 	return false
 }
@@ -1130,6 +1563,9 @@ func (m *AuthTokensMutation) ClearEdge(name string) error {
 	case authtokens.EdgeUser:
 		m.ClearUser()
 		return nil
+	case authtokens.EdgeRoles:
+		m.ClearRoles()
+		return nil
 	}
 	return fmt.Errorf("unknown AuthTokens unique edge %s", name)
 }
@@ -1140,6 +1576,9 @@ func (m *AuthTokensMutation) ResetEdge(name string) error {
 	switch name {
 	case authtokens.EdgeUser:
 		m.ResetUser()
+		return nil
+	case authtokens.EdgeRoles:
+		m.ResetRoles()
 		return nil
 	}
 	return fmt.Errorf("unknown AuthTokens edge %s", name)

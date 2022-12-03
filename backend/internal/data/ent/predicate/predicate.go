@@ -9,6 +9,9 @@ import (
 // Attachment is the predicate function for attachment builders.
 type Attachment func(*sql.Selector)
 
+// AuthRoles is the predicate function for authroles builders.
+type AuthRoles func(*sql.Selector)
+
 // AuthTokens is the predicate function for authtokens builders.
 type AuthTokens func(*sql.Selector)
 
