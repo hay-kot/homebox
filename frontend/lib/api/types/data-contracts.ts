@@ -324,6 +324,7 @@ export interface ItemAttachmentToken {
 }
 
 export interface TokenResponse {
+  attachmentToken: string;
   expiresAt: Date;
   token: string;
 }

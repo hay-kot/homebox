@@ -27,17 +27,30 @@
   });
 
   type FilteredAttachments = {
-    photos: ItemAttachment[];
     attachments: ItemAttachment[];
     warranty: ItemAttachment[];
     manuals: ItemAttachment[];
     receipts: ItemAttachment[];
   };
 
+  type Photo = {
+    src: string;
+  }
+
+  const photos = computed<Photo[]>(() => {
+    return item.value?.attachments.reduce((acc, cur) => {
+      if (cur.type === "photo") {
+        acc.push({
+          src: api.authURL(`/items/${item.value.id}/attachments/${cur.id}`),
+        })
+      }
+      return acc;
+    }, [] as Photo[]) || [];
+  });
+
   const attachments = computed<FilteredAttachments>(() => {
     if (!item.value) {
       return {
-        photos: [],
         attachments: [],
         manuals: [],
         warranty: [],
@@ -48,8 +61,9 @@
     return item.value.attachments.reduce(
       (acc, attachment) => {
         if (attachment.type === "photo") {
-          acc.photos.push(attachment);
-        } else if (attachment.type === "warranty") {
+          return acc;
+        }
+        if (attachment.type === "warranty") {
           acc.warranty.push(attachment);
         } else if (attachment.type === "manual") {
           acc.manuals.push(attachment);
@@ -61,7 +75,6 @@
         return acc;
       },
       {
-        photos: [] as ItemAttachment[],
         attachments: [] as ItemAttachment[],
         warranty: [] as ItemAttachment[],
         manuals: [] as ItemAttachment[],
@@ -144,7 +157,6 @@
     }
 
     return (
-      attachments.value.photos.length > 0 ||
       attachments.value.attachments.length > 0 ||
       attachments.value.warranty.length > 0 ||
       attachments.value.manuals.length > 0 ||
@@ -162,10 +174,6 @@
         slot: name.toLowerCase(),
       });
     };
-
-    if (attachments.value.photos.length > 0) {
-      push("Photos");
-    }
 
     if (attachments.value.attachments.length > 0) {
       push("Attachments");
@@ -292,10 +300,51 @@
     toast.success("Item deleted");
     navigateTo("/home");
   }
+
+  const refDialog = ref<HTMLDialogElement>();
+  const dialoged = reactive({
+    src: "",
+  })
+
+  function openDialog(img: Photo) {
+    refDialog.value.showModal();
+    dialoged.src = img.src;
+  }
+
+  function closeDialog() {
+    refDialog.value.close();
+  }
+
+  const refDialogBody = ref<HTMLDivElement>();
+  onClickOutside(refDialogBody, () => {
+    closeDialog();
+  });
+
 </script>
+
+<style>
+  /* Style dialog background */
+  dialog::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+  }
+</style>
 
 <template>
   <BaseContainer v-if="item" class="pb-8">
+    <dialog ref="refDialog" class="z-[999] fixed bg-transparent">
+      <div class="relative" ref="refDialogBody">
+        <div class="absolute right-0 -mt-3 -mr-3 sm:-mt-4 sm:-mr-4 space-x-1">
+          <a class="btn btn-sm sm:btn-md btn-primary btn-circle" :href="dialoged.src" download>
+            <Icon class="h-5 w-5" name="mdi-download"/>
+          </a>
+          <button class="btn btn-sm sm:btn-md btn-primary btn-circle" @click="closeDialog()">
+            <Icon class="h-5 w-5"  name="mdi-close" />
+          </button>
+        </div>
+
+        <img class="max-w-[80vw] max-h-[80vh]" :src="dialoged.src"/>
+      </div>
+    </dialog>
     <section class="px-3">
       <div class="flex justify-between items-center">
         <div class="form-control"></div>
@@ -353,6 +402,15 @@
           <DetailsSection :details="itemDetails" />
         </BaseCard>
 
+        <BaseCard>
+          <template #title> Photos </template>
+          <div class="container p-4 flex flex-wrap gap-2 mx-auto max-h-[500px] overflow-scroll">
+            <button v-for="img in photos" @click="openDialog(img)">
+              <img class="rounded max-h-[200px]" :src="img.src"/>
+            </button>
+          </div>
+        </BaseCard>
+
         <BaseCard v-if="showAttachments">
           <template #title> Attachments </template>
           <DetailsSection :details="attachmentDetails">
@@ -374,13 +432,6 @@
               <ItemAttachmentsList
                 v-if="attachments.warranty.length > 0"
                 :attachments="attachments.warranty"
-                :item-id="item.id"
-              />
-            </template>
-            <template #photos>
-              <ItemAttachmentsList
-                v-if="attachments.photos.length > 0"
-                :attachments="attachments.photos"
                 :item-id="item.id"
               />
             </template>

@@ -1,7 +1,6 @@
 import { BaseAPI, route } from "../base";
 import { parseDate } from "../base/base-api";
 import {
-  ItemAttachmentToken,
   ItemAttachmentUpdate,
   ItemCreate,
   ItemOut,
@@ -77,18 +76,6 @@ export class ItemsApi extends BaseAPI {
       url: route(`/items/${id}/attachments`),
       data: formData,
     });
-  }
-
-  async getAttachmentUrl(id: string, attachmentId: string): Promise<string> {
-    const payload = await this.http.get<ItemAttachmentToken>({
-      url: route(`/items/${id}/attachments/${attachmentId}`),
-    });
-
-    if (!payload.data) {
-      return "";
-    }
-
-    return route(`/items/${id}/attachments/download`, { token: payload.data.token });
   }
 
   async deleteAttachment(id: string, attachmentId: string) {

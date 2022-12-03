@@ -27,9 +27,21 @@ export function parseDate<T>(obj: T, keys: Array<keyof T> = []): T {
 
 export class BaseAPI {
   http: Requests;
+  attachmentToken: string
 
-  constructor(requests: Requests) {
+  constructor(requests: Requests, attachmentToken: string = "") {
     this.http = requests;
+    this.attachmentToken = attachmentToken;
+  }
+
+  // if a attachmentToken is present it will be added to URL as a query param
+  // this is done with a simple appending of the query param to the URL. If your
+  // URL already has a query param, this will not work.
+  authURL(url: string): string {
+    if (this.attachmentToken) {
+      return `/api/v1${url}?access_token=${this.attachmentToken}`;
+    }
+    return url;
   }
 
   /**

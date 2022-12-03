@@ -15,8 +15,8 @@ export class UserClient extends BaseAPI {
   user: UserApi;
   actions: ActionsAPI;
 
-  constructor(requests: Requests) {
-    super(requests);
+  constructor(requests: Requests, attachmentToken: string) {
+    super(requests, attachmentToken);
 
     this.locations = new LocationsApi(requests);
     this.labels = new LabelsApi(requests);

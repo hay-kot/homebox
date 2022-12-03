@@ -6,6 +6,7 @@ import { UserOut } from "~~/lib/api/types/data-contracts";
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     token: useLocalStorage("pinia/auth/token", ""),
+    attachmentToken: useLocalStorage("pinia/auth/attachmentToken", ""),
     expires: useLocalStorage("pinia/auth/expires", ""),
     self: null as UserOut | null,
   }),
@@ -27,6 +28,7 @@ export const useAuthStore = defineStore("auth", {
       const result = await api.user.logout();
 
       this.token = "";
+      this.attachmentToken = "";
       this.expires = "";
       this.self = null;
 
