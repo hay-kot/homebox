@@ -79,17 +79,24 @@ func (ctrl *V1Controller) HandleGroupStatistics() server.HandlerFunc {
 // @Router   /v1/groups/statistics/purchase-price [GET]
 // @Security Bearer
 func (ctrl *V1Controller) HandleGroupStatisticsPriceOverTime() server.HandlerFunc {
+	parseDate := func(datestr string, defaultDate time.Time) (time.Time, error) {
+		if datestr == "" {
+			return defaultDate, nil
+		}
+		return time.Parse("2006-01-02", datestr)
+	}
+
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := services.NewContext(r.Context())
 
-		startDate, err := time.Parse("2006-01-02", r.URL.Query().Get("start"))
+		startDate, err := parseDate(r.URL.Query().Get("start"), time.Now().AddDate(0, -1, 0))
 		if err != nil {
 			return validate.NewRequestError(err, http.StatusBadRequest)
 		}
 
-		endDate, err := time.Parse("2006-01-02", r.URL.Query().Get("end"))
+		endDate, err := parseDate(r.URL.Query().Get("end"), time.Now())
 		if err != nil {
-			endDate = time.Now()
+			return validate.NewRequestError(err, http.StatusBadRequest)
 		}
 
 		stats, err := ctrl.repo.Groups.StatsPurchasePrice(ctx, ctx.GID, startDate, endDate)
