@@ -9,6 +9,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/groupinvitationtoken"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/item"
 )
 
 type GroupRepository struct {
@@ -41,11 +42,27 @@ type (
 		Uses      int       `json:"uses"`
 		Group     Group     `json:"group"`
 	}
+
 	GroupStatistics struct {
-		TotalUsers     int `json:"totalUsers"`
-		TotalItems     int `json:"totalItems"`
-		TotalLocations int `json:"totalLocations"`
-		TotalLabels    int `json:"totalLabels"`
+		TotalUsers        int     `json:"totalUsers"`
+		TotalItems        int     `json:"totalItems"`
+		TotalLocations    int     `json:"totalLocations"`
+		TotalLabels       int     `json:"totalLabels"`
+		TotalItemPrice    float64 `json:"totalItemPrice"`
+		TotalWithWarranty int     `json:"totalWithWarranty"`
+	}
+
+	ValueOverTimeEntry struct {
+		Date  time.Time `json:"date"`
+		Value float64   `json:"value"`
+	}
+
+	ValueOverTime struct {
+		PriceAtStart float64              `json:"valueAtStart"`
+		PriceAtEnd   float64              `json:"valueAtEnd"`
+		Start        time.Time            `json:"start"`
+		End          time.Time            `json:"end"`
+		Entries      []ValueOverTimeEntry `json:"entries"`
 	}
 )
 
@@ -76,18 +93,86 @@ func mapToGroupInvitation(g *ent.GroupInvitationToken) GroupInvitation {
 	}
 }
 
+func (r *GroupRepository) GroupStatisticsPriceOverTime(ctx context.Context, GID uuid.UUID, start, end time.Time) (*ValueOverTime, error) {
+	// Get the Totals for the Start and End of the Given Time Period
+	q := `
+	SELECT
+		(SELECT Sum(purchase_price)
+			FROM   items
+			WHERE  group_items = ?
+				AND items.archived = false
+				AND items.created_at < ?) AS price_at_start,
+		(SELECT Sum(purchase_price)
+			FROM   items
+			WHERE  group_items = ?
+				AND items.archived = false
+				AND items.created_at < ?) AS price_at_end
+`
+	stats := ValueOverTime{
+		Start: start,
+		End:   end,
+	}
+
+	var maybeStart *float64
+	var maybeEnd *float64
+
+	row := r.db.Sql().QueryRowContext(ctx, q, GID, sqliteDateFormat(start), GID, sqliteDateFormat(end))
+	err := row.Scan(&maybeStart, &maybeEnd)
+	if err != nil {
+		return nil, err
+	}
+
+	stats.PriceAtStart = orDefault(maybeStart, 0)
+	stats.PriceAtEnd = orDefault(maybeEnd, 0)
+
+	var v []struct {
+		CreatedAt     time.Time `json:"created_at"`
+		PurchasePrice float64   `json:"purchase_price"`
+	}
+
+	// Get Created Date and Price of all items between start and end
+	err = r.db.Item.Query().Where(
+		item.HasGroupWith(group.ID(GID)),
+		item.CreatedAtGTE(start),
+		item.CreatedAtLTE(end),
+		item.Archived(false)).
+		Select(item.FieldCreatedAt, item.FieldPurchasePrice).Scan(ctx, &v)
+
+	if err != nil {
+		return nil, err
+	}
+
+	stats.Entries = make([]ValueOverTimeEntry, len(v))
+
+	for i, vv := range v {
+		stats.Entries[i] = ValueOverTimeEntry{
+			Date:  vv.CreatedAt,
+			Value: vv.PurchasePrice,
+		}
+	}
+
+	return &stats, nil
+}
+
 func (r *GroupRepository) GroupStatistics(ctx context.Context, GID uuid.UUID) (GroupStatistics, error) {
 	q := `
 		SELECT
 			(SELECT COUNT(*) FROM users WHERE group_users = ?) AS total_users,
 			(SELECT COUNT(*) FROM items WHERE group_items = ? AND items.archived = false) AS total_items,
 			(SELECT COUNT(*) FROM locations WHERE group_locations = ?) AS total_locations,
-			(SELECT COUNT(*) FROM labels WHERE group_labels = ?) AS total_labels
+			(SELECT COUNT(*) FROM labels WHERE group_labels = ?) AS total_labels,
+			(SELECT SUM(purchase_price) FROM items WHERE group_items = ? AND items.archived = false) AS total_item_price,
+			(SELECT COUNT(*)
+				FROM items
+					WHERE group_items = ?
+					AND items.archived = false
+					AND (items.lifetime_warranty = true OR items.warranty_expires > date())
+				) AS total_with_warranty
 `
 	var stats GroupStatistics
-	row := r.db.Sql().QueryRowContext(ctx, q, GID, GID, GID, GID)
+	row := r.db.Sql().QueryRowContext(ctx, q, GID, GID, GID, GID, GID, GID)
 
-	err := row.Scan(&stats.TotalUsers, &stats.TotalItems, &stats.TotalLocations, &stats.TotalLabels)
+	err := row.Scan(&stats.TotalUsers, &stats.TotalItems, &stats.TotalLocations, &stats.TotalLabels, &stats.TotalItemPrice, &stats.TotalWithWarranty)
 	if err != nil {
 		return GroupStatistics{}, err
 	}
