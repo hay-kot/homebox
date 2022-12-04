@@ -5,11 +5,14 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/groupinvitationtoken"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/item"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/label"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/location"
 )
 
 type GroupRepository struct {
@@ -64,6 +67,12 @@ type (
 		End          time.Time            `json:"end"`
 		Entries      []ValueOverTimeEntry `json:"entries"`
 	}
+
+	TotalsByOrganizer struct {
+		ID    uuid.UUID `json:"id"`
+		Name  string    `json:"name"`
+		Total float64   `json:"total"`
+	}
 )
 
 var (
@@ -93,7 +102,60 @@ func mapToGroupInvitation(g *ent.GroupInvitationToken) GroupInvitation {
 	}
 }
 
-func (r *GroupRepository) GroupStatisticsPriceOverTime(ctx context.Context, GID uuid.UUID, start, end time.Time) (*ValueOverTime, error) {
+func (r *GroupRepository) StatsLocationsByPurchasePrice(ctx context.Context, GID uuid.UUID) ([]TotalsByOrganizer, error) {
+	var v []TotalsByOrganizer
+
+	err := r.db.Location.Query().
+		Where(
+			location.HasGroupWith(group.ID(GID)),
+		).
+		GroupBy(location.FieldID, location.FieldName).
+		Aggregate(func(sq *sql.Selector) string {
+			t := sql.Table(item.Table)
+			sq.Join(t).On(sq.C(location.FieldID), t.C(item.LocationColumn))
+
+			return sql.As(sql.Sum(t.C(item.FieldPurchasePrice)), "total")
+		}).
+		Scan(ctx, &v)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return v, err
+}
+
+func (r *GroupRepository) StatsLabelsByPurchasePrice(ctx context.Context, GID uuid.UUID) ([]TotalsByOrganizer, error) {
+	var v []TotalsByOrganizer
+
+	err := r.db.Debug().Label.Query().
+		Where(
+			label.HasGroupWith(group.ID(GID)),
+		).
+		GroupBy(label.FieldID, label.FieldName).
+		Aggregate(func(sq *sql.Selector) string {
+			itemTable := sql.Table(item.Table)
+
+			// item to label is a many to many relation
+			// so we need to join the junction table
+			jt := sql.Table(label.ItemsTable)
+
+			// join the junction table to the item table
+			sq.Join(jt).On(sq.C(label.FieldID), jt.C(label.ItemsPrimaryKey[0]))
+			sq.Join(itemTable).On(jt.C(label.ItemsPrimaryKey[1]), itemTable.C(item.FieldID))
+
+			return sql.As(sql.Sum(itemTable.C(item.FieldPurchasePrice)), "total")
+		}).
+		Scan(ctx, &v)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return v, err
+}
+
+func (r *GroupRepository) StatsPurchasePrice(ctx context.Context, GID uuid.UUID, start, end time.Time) (*ValueOverTime, error) {
 	// Get the Totals for the Start and End of the Given Time Period
 	q := `
 	SELECT
@@ -154,7 +216,7 @@ func (r *GroupRepository) GroupStatisticsPriceOverTime(ctx context.Context, GID 
 	return &stats, nil
 }
 
-func (r *GroupRepository) GroupStatistics(ctx context.Context, GID uuid.UUID) (GroupStatistics, error) {
+func (r *GroupRepository) StatsGroup(ctx context.Context, GID uuid.UUID) (GroupStatistics, error) {
 	q := `
 		SELECT
 			(SELECT COUNT(*) FROM users WHERE group_users = ?) AS total_users,

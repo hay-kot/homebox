@@ -13,6 +13,46 @@ import (
 // @Summary  Get the current user's group statistics
 // @Tags     Statistics
 // @Produce  json
+// @Success  200 {object} []repo.TotalsByOrganizer
+// @Router   /v1/groups/statistics/locations [GET]
+// @Security Bearer
+func (ctrl *V1Controller) HandleGroupStatisticsLocations() server.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) error {
+		ctx := services.NewContext(r.Context())
+
+		stats, err := ctrl.repo.Groups.StatsLocationsByPurchasePrice(ctx, ctx.GID)
+		if err != nil {
+			return validate.NewRequestError(err, http.StatusInternalServerError)
+		}
+
+		return server.Respond(w, http.StatusOK, stats)
+	}
+}
+
+// HandleGroupGet godoc
+// @Summary  Get the current user's group statistics
+// @Tags     Statistics
+// @Produce  json
+// @Success  200 {object} []repo.TotalsByOrganizer
+// @Router   /v1/groups/statistics/labels [GET]
+// @Security Bearer
+func (ctrl *V1Controller) HandleGroupStatisticsLabels() server.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) error {
+		ctx := services.NewContext(r.Context())
+
+		stats, err := ctrl.repo.Groups.StatsLabelsByPurchasePrice(ctx, ctx.GID)
+		if err != nil {
+			return validate.NewRequestError(err, http.StatusInternalServerError)
+		}
+
+		return server.Respond(w, http.StatusOK, stats)
+	}
+}
+
+// HandleGroupGet godoc
+// @Summary  Get the current user's group statistics
+// @Tags     Statistics
+// @Produce  json
 // @Success  200 {object} repo.GroupStatistics
 // @Router   /v1/groups/statistics [GET]
 // @Security Bearer
@@ -20,7 +60,7 @@ func (ctrl *V1Controller) HandleGroupStatistics() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := services.NewContext(r.Context())
 
-		stats, err := ctrl.repo.Groups.GroupStatistics(ctx, ctx.GID)
+		stats, err := ctrl.repo.Groups.StatsGroup(ctx, ctx.GID)
 		if err != nil {
 			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
@@ -52,7 +92,7 @@ func (ctrl *V1Controller) HandleGroupStatisticsPriceOverTime() server.HandlerFun
 			endDate = time.Now()
 		}
 
-		stats, err := ctrl.repo.Groups.GroupStatisticsPriceOverTime(ctx, ctx.GID, startDate, endDate)
+		stats, err := ctrl.repo.Groups.StatsPurchasePrice(ctx, ctx.GID, startDate, endDate)
 		if err != nil {
 			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
