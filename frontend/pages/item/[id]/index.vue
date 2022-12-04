@@ -396,9 +396,11 @@
           <DetailsSection :details="itemDetails" />
         </BaseCard>
 
-        <BaseCard v-if="photos && photos.length >0">
+        <BaseCard v-if="photos && photos.length > 0">
           <template #title> Photos </template>
-          <div class="container border-t border-gray-300 p-4 flex flex-wrap gap-2 mx-auto max-h-[500px] overflow-y-scroll scroll-bg">
+          <div
+            class="container border-t border-gray-300 p-4 flex flex-wrap gap-2 mx-auto max-h-[500px] overflow-y-scroll scroll-bg"
+          >
             <button v-for="(img, i) in photos" :key="i" @click="openDialog(img)">
               <img class="rounded max-h-[200px]" :src="img.src" />
             </button>
@@ -471,14 +473,12 @@
     background: rgba(0, 0, 0, 0.5);
   }
 
-.scroll-bg::-webkit-scrollbar {
-  width: 0.5rem;
-}
+  .scroll-bg::-webkit-scrollbar {
+    width: 0.5rem;
+  }
 
-
-.scroll-bg::-webkit-scrollbar-thumb {
-  border-radius: 0.25rem;
-  @apply bg-base-300
-}
-
+  .scroll-bg::-webkit-scrollbar-thumb {
+    border-radius: 0.25rem;
+    @apply bg-base-300;
+  }
 </style>
