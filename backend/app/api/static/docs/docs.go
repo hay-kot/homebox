@@ -161,6 +161,60 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/groups/statistics/labels": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Statistics"
+                ],
+                "summary": "Get the current user's group statistics",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/repo.TotalsByOrganizer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/groups/statistics/locations": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Statistics"
+                ],
+                "summary": "Get the current user's group statistics",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/repo.TotalsByOrganizer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/v1/groups/statistics/purchase-price": {
             "get": {
                 "security": [
@@ -1788,6 +1842,20 @@ const docTemplate = `{
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "repo.TotalsByOrganizer": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "total": {
+                    "type": "number"
                 }
             }
         },

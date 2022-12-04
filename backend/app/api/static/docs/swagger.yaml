@@ -396,6 +396,15 @@ definitions:
       total:
         type: integer
     type: object
+  repo.TotalsByOrganizer:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      total:
+        type: number
+    type: object
   repo.UserOut:
     properties:
       email:
@@ -632,6 +641,38 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/repo.GroupStatistics'
+      security:
+      - Bearer: []
+      summary: Get the current user's group statistics
+      tags:
+      - Statistics
+  /v1/groups/statistics/labels:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/repo.TotalsByOrganizer'
+            type: array
+      security:
+      - Bearer: []
+      summary: Get the current user's group statistics
+      tags:
+      - Statistics
+  /v1/groups/statistics/locations:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/repo.TotalsByOrganizer'
+            type: array
       security:
       - Bearer: []
       summary: Get the current user's group statistics

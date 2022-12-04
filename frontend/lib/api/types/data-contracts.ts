@@ -248,6 +248,12 @@ export interface PaginationResultRepoItemSummary {
   total: number;
 }
 
+export interface TotalsByOrganizer {
+  id: string;
+  name: string;
+  total: number;
+}
+
 export interface UserOut {
   email: string;
   groupId: string;
