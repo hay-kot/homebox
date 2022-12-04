@@ -128,7 +128,7 @@ func (r *GroupRepository) StatsLocationsByPurchasePrice(ctx context.Context, GID
 func (r *GroupRepository) StatsLabelsByPurchasePrice(ctx context.Context, GID uuid.UUID) ([]TotalsByOrganizer, error) {
 	var v []TotalsByOrganizer
 
-	err := r.db.Debug().Label.Query().
+	err := r.db.Label.Query().
 		Where(
 			label.HasGroupWith(group.ID(GID)),
 		).
