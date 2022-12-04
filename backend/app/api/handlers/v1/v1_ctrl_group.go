@@ -28,26 +28,6 @@ type (
 // @Summary  Get the current user's group
 // @Tags     Group
 // @Produce  json
-// @Success  200 {object} repo.GroupStatistics
-// @Router   /v1/groups/statistics [Get]
-// @Security Bearer
-func (ctrl *V1Controller) HandleGroupStatistics() server.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) error {
-		ctx := services.NewContext(r.Context())
-
-		stats, err := ctrl.repo.Groups.GroupStatistics(ctx, ctx.GID)
-		if err != nil {
-			return validate.NewRequestError(err, http.StatusInternalServerError)
-		}
-
-		return server.Respond(w, http.StatusOK, stats)
-	}
-}
-
-// HandleGroupGet godoc
-// @Summary  Get the current user's group
-// @Tags     Group
-// @Produce  json
 // @Success  200 {object} repo.Group
 // @Router   /v1/groups [Get]
 // @Security Bearer

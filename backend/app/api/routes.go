@@ -79,6 +79,7 @@ func (a *app) mountRoutes(repos *repo.AllRepos) {
 
 	a.server.Post(v1Base("/groups/invitations"), v1Ctrl.HandleGroupInvitationsCreate(), userMW...)
 	a.server.Get(v1Base("/groups/statistics"), v1Ctrl.HandleGroupStatistics(), userMW...)
+	a.server.Get(v1Base("/groups/statistics/purchase-price"), v1Ctrl.HandleGroupStatisticsPriceOverTime(), userMW...)
 
 	// TODO: I don't like /groups being the URL for users
 	a.server.Get(v1Base("/groups"), v1Ctrl.HandleGroupGet(), userMW...)
