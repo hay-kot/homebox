@@ -50,7 +50,7 @@ export class ItemsApi extends BaseAPI {
     return payload;
   }
 
-  import(file: File) {
+  import(file: File | Blob) {
     const formData = new FormData();
     formData.append("csv", file);
 
