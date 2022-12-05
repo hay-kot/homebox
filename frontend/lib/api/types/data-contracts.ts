@@ -25,10 +25,12 @@ export interface Group {
 }
 
 export interface GroupStatistics {
+  totalItemPrice: number;
   totalItems: number;
   totalLabels: number;
   totalLocations: number;
   totalUsers: number;
+  totalWithWarranty: number;
 }
 
 export interface GroupUpdate {
@@ -246,6 +248,12 @@ export interface PaginationResultRepoItemSummary {
   total: number;
 }
 
+export interface TotalsByOrganizer {
+  id: string;
+  name: string;
+  total: number;
+}
+
 export interface UserOut {
   email: string;
   groupId: string;
@@ -259,6 +267,20 @@ export interface UserOut {
 export interface UserUpdate {
   email: string;
   name: string;
+}
+
+export interface ValueOverTime {
+  end: string;
+  entries: ValueOverTimeEntry[];
+  start: string;
+  valueAtEnd: number;
+  valueAtStart: number;
+}
+
+export interface ValueOverTimeEntry {
+  date: string;
+  name: string;
+  value: number;
 }
 
 export interface ServerErrorResponse {

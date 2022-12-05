@@ -22,7 +22,7 @@
   const labels = computed(() => labelsStore.labels);
 
   const { data: statistics } = useAsyncData(async () => {
-    const { data } = await api.group.statistics();
+    const { data } = await api.stats.group();
     return data;
   });
 

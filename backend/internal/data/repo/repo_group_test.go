@@ -36,7 +36,7 @@ func Test_Group_GroupStatistics(t *testing.T) {
 	useItems(t, 20)
 	useLabels(t, 20)
 
-	stats, err := tRepos.Groups.GroupStatistics(context.Background(), tGroup.ID)
+	stats, err := tRepos.Groups.StatsGroup(context.Background(), tGroup.ID)
 
 	assert.NoError(t, err)
 	assert.Equal(t, 20, stats.TotalItems)

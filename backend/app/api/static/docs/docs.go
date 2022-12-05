@@ -148,14 +148,106 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Group"
+                    "Statistics"
                 ],
-                "summary": "Get the current user's group",
+                "summary": "Get the current user's group statistics",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/repo.GroupStatistics"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/groups/statistics/labels": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Statistics"
+                ],
+                "summary": "Get the current user's group statistics",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/repo.TotalsByOrganizer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/groups/statistics/locations": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Statistics"
+                ],
+                "summary": "Get the current user's group statistics",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/repo.TotalsByOrganizer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/groups/statistics/purchase-price": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Statistics"
+                ],
+                "summary": "Queries the changes overtime of the purchase price over time",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "start date",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "end date",
+                        "name": "end",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/repo.ValueOverTime"
                         }
                     }
                 }
@@ -445,43 +537,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/server.ErrorResponse"
                         }
-                    }
-                }
-            }
-        },
-        "/v1/items/{id}/attachments/download": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/octet-stream"
-                ],
-                "tags": [
-                    "Items Attachments"
-                ],
-                "summary": "retrieves an attachment for an item",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Item ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Attachment token",
-                        "name": "token",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
                     }
                 }
             }
@@ -1237,6 +1292,9 @@ const docTemplate = `{
         "repo.GroupStatistics": {
             "type": "object",
             "properties": {
+                "totalItemPrice": {
+                    "type": "number"
+                },
                 "totalItems": {
                     "type": "integer"
                 },
@@ -1247,6 +1305,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "totalUsers": {
+                    "type": "integer"
+                },
+                "totalWithWarranty": {
                     "type": "integer"
                 }
             }
@@ -1784,6 +1845,20 @@ const docTemplate = `{
                 }
             }
         },
+        "repo.TotalsByOrganizer": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "total": {
+                    "type": "number"
+                }
+            }
+        },
         "repo.UserOut": {
             "type": "object",
             "properties": {
@@ -1818,6 +1893,43 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "repo.ValueOverTime": {
+            "type": "object",
+            "properties": {
+                "end": {
+                    "type": "string"
+                },
+                "entries": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/repo.ValueOverTimeEntry"
+                    }
+                },
+                "start": {
+                    "type": "string"
+                },
+                "valueAtEnd": {
+                    "type": "number"
+                },
+                "valueAtStart": {
+                    "type": "number"
+                }
+            }
+        },
+        "repo.ValueOverTimeEntry": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "number"
                 }
             }
         },
