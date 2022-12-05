@@ -18,6 +18,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/ent/itemfield"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/label"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/location"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/maintenanceentry"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/predicate"
 )
 
@@ -506,6 +507,21 @@ func (iu *ItemUpdate) AddFields(i ...*ItemField) *ItemUpdate {
 	return iu.AddFieldIDs(ids...)
 }
 
+// AddMaintenanceEntryIDs adds the "maintenance_entries" edge to the MaintenanceEntry entity by IDs.
+func (iu *ItemUpdate) AddMaintenanceEntryIDs(ids ...uuid.UUID) *ItemUpdate {
+	iu.mutation.AddMaintenanceEntryIDs(ids...)
+	return iu
+}
+
+// AddMaintenanceEntries adds the "maintenance_entries" edges to the MaintenanceEntry entity.
+func (iu *ItemUpdate) AddMaintenanceEntries(m ...*MaintenanceEntry) *ItemUpdate {
+	ids := make([]uuid.UUID, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return iu.AddMaintenanceEntryIDs(ids...)
+}
+
 // AddAttachmentIDs adds the "attachments" edge to the Attachment entity by IDs.
 func (iu *ItemUpdate) AddAttachmentIDs(ids ...uuid.UUID) *ItemUpdate {
 	iu.mutation.AddAttachmentIDs(ids...)
@@ -605,6 +621,27 @@ func (iu *ItemUpdate) RemoveFields(i ...*ItemField) *ItemUpdate {
 		ids[j] = i[j].ID
 	}
 	return iu.RemoveFieldIDs(ids...)
+}
+
+// ClearMaintenanceEntries clears all "maintenance_entries" edges to the MaintenanceEntry entity.
+func (iu *ItemUpdate) ClearMaintenanceEntries() *ItemUpdate {
+	iu.mutation.ClearMaintenanceEntries()
+	return iu
+}
+
+// RemoveMaintenanceEntryIDs removes the "maintenance_entries" edge to MaintenanceEntry entities by IDs.
+func (iu *ItemUpdate) RemoveMaintenanceEntryIDs(ids ...uuid.UUID) *ItemUpdate {
+	iu.mutation.RemoveMaintenanceEntryIDs(ids...)
+	return iu
+}
+
+// RemoveMaintenanceEntries removes "maintenance_entries" edges to MaintenanceEntry entities.
+func (iu *ItemUpdate) RemoveMaintenanceEntries(m ...*MaintenanceEntry) *ItemUpdate {
+	ids := make([]uuid.UUID, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return iu.RemoveMaintenanceEntryIDs(ids...)
 }
 
 // ClearAttachments clears all "attachments" edges to the Attachment entity.
@@ -1136,6 +1173,60 @@ func (iu *ItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: itemfield.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if iu.mutation.MaintenanceEntriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   item.MaintenanceEntriesTable,
+			Columns: []string{item.MaintenanceEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: maintenanceentry.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := iu.mutation.RemovedMaintenanceEntriesIDs(); len(nodes) > 0 && !iu.mutation.MaintenanceEntriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   item.MaintenanceEntriesTable,
+			Columns: []string{item.MaintenanceEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: maintenanceentry.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := iu.mutation.MaintenanceEntriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   item.MaintenanceEntriesTable,
+			Columns: []string{item.MaintenanceEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: maintenanceentry.FieldID,
 				},
 			},
 		}
@@ -1689,6 +1780,21 @@ func (iuo *ItemUpdateOne) AddFields(i ...*ItemField) *ItemUpdateOne {
 	return iuo.AddFieldIDs(ids...)
 }
 
+// AddMaintenanceEntryIDs adds the "maintenance_entries" edge to the MaintenanceEntry entity by IDs.
+func (iuo *ItemUpdateOne) AddMaintenanceEntryIDs(ids ...uuid.UUID) *ItemUpdateOne {
+	iuo.mutation.AddMaintenanceEntryIDs(ids...)
+	return iuo
+}
+
+// AddMaintenanceEntries adds the "maintenance_entries" edges to the MaintenanceEntry entity.
+func (iuo *ItemUpdateOne) AddMaintenanceEntries(m ...*MaintenanceEntry) *ItemUpdateOne {
+	ids := make([]uuid.UUID, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return iuo.AddMaintenanceEntryIDs(ids...)
+}
+
 // AddAttachmentIDs adds the "attachments" edge to the Attachment entity by IDs.
 func (iuo *ItemUpdateOne) AddAttachmentIDs(ids ...uuid.UUID) *ItemUpdateOne {
 	iuo.mutation.AddAttachmentIDs(ids...)
@@ -1788,6 +1894,27 @@ func (iuo *ItemUpdateOne) RemoveFields(i ...*ItemField) *ItemUpdateOne {
 		ids[j] = i[j].ID
 	}
 	return iuo.RemoveFieldIDs(ids...)
+}
+
+// ClearMaintenanceEntries clears all "maintenance_entries" edges to the MaintenanceEntry entity.
+func (iuo *ItemUpdateOne) ClearMaintenanceEntries() *ItemUpdateOne {
+	iuo.mutation.ClearMaintenanceEntries()
+	return iuo
+}
+
+// RemoveMaintenanceEntryIDs removes the "maintenance_entries" edge to MaintenanceEntry entities by IDs.
+func (iuo *ItemUpdateOne) RemoveMaintenanceEntryIDs(ids ...uuid.UUID) *ItemUpdateOne {
+	iuo.mutation.RemoveMaintenanceEntryIDs(ids...)
+	return iuo
+}
+
+// RemoveMaintenanceEntries removes "maintenance_entries" edges to MaintenanceEntry entities.
+func (iuo *ItemUpdateOne) RemoveMaintenanceEntries(m ...*MaintenanceEntry) *ItemUpdateOne {
+	ids := make([]uuid.UUID, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return iuo.RemoveMaintenanceEntryIDs(ids...)
 }
 
 // ClearAttachments clears all "attachments" edges to the Attachment entity.
@@ -2349,6 +2476,60 @@ func (iuo *ItemUpdateOne) sqlSave(ctx context.Context) (_node *Item, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: itemfield.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if iuo.mutation.MaintenanceEntriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   item.MaintenanceEntriesTable,
+			Columns: []string{item.MaintenanceEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: maintenanceentry.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := iuo.mutation.RemovedMaintenanceEntriesIDs(); len(nodes) > 0 && !iuo.mutation.MaintenanceEntriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   item.MaintenanceEntriesTable,
+			Columns: []string{item.MaintenanceEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: maintenanceentry.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := iuo.mutation.MaintenanceEntriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   item.MaintenanceEntriesTable,
+			Columns: []string{item.MaintenanceEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: maintenanceentry.FieldID,
 				},
 			},
 		}

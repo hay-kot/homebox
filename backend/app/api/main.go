@@ -7,7 +7,9 @@ import (
 	"path/filepath"
 	"time"
 
+	"ariga.io/atlas/sql/migrate"
 	atlas "ariga.io/atlas/sql/migrate"
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql/schema"
 	"github.com/hay-kot/homebox/backend/app/api/static/docs"
 	"github.com/hay-kot/homebox/backend/internal/core/services"
@@ -93,6 +95,14 @@ func run(cfg *config.Config) error {
 		schema.WithDir(dir),
 		schema.WithDropColumn(true),
 		schema.WithDropIndex(true),
+		schema.WithAtlas(true),
+		schema.WithApplyHook(func(next schema.Applier) schema.Applier {
+			return schema.ApplyFunc(func(ctx context.Context, conn dialect.ExecQuerier, plan *migrate.Plan) error {
+				// Log the plan.
+				log.Info().Msgf("Applying migration %s", plan.Version)
+				return next.Apply(ctx, conn, plan)
+			})
+		}),
 	}
 
 	err = c.Schema.Create(context.Background(), options...)

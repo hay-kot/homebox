@@ -116,6 +116,10 @@ func (Item) Edges() []ent.Edge {
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,
 			}),
+		edge.To("maintenance_entries", MaintenanceEntry.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
 		edge.To("attachments", Attachment.Type).
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,

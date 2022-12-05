@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 
@@ -39,4 +40,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed generating migration file: %v", err)
 	}
+
+	fmt.Println("Migration file generated successfully.")
 }

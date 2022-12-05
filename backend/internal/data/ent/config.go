@@ -34,6 +34,7 @@ type hooks struct {
 	ItemField            []ent.Hook
 	Label                []ent.Hook
 	Location             []ent.Hook
+	MaintenanceEntry     []ent.Hook
 	User                 []ent.Hook
 }
 

@@ -87,11 +87,13 @@ type ItemEdges struct {
 	Location *Location `json:"location,omitempty"`
 	// Fields holds the value of the fields edge.
 	Fields []*ItemField `json:"fields,omitempty"`
+	// MaintenanceEntries holds the value of the maintenance_entries edge.
+	MaintenanceEntries []*MaintenanceEntry `json:"maintenance_entries,omitempty"`
 	// Attachments holds the value of the attachments edge.
 	Attachments []*Attachment `json:"attachments,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [7]bool
+	loadedTypes [8]bool
 }
 
 // ParentOrErr returns the Parent value or an error if the edge
@@ -160,10 +162,19 @@ func (e ItemEdges) FieldsOrErr() ([]*ItemField, error) {
 	return nil, &NotLoadedError{edge: "fields"}
 }
 
+// MaintenanceEntriesOrErr returns the MaintenanceEntries value or an error if the edge
+// was not loaded in eager-loading.
+func (e ItemEdges) MaintenanceEntriesOrErr() ([]*MaintenanceEntry, error) {
+	if e.loadedTypes[6] {
+		return e.MaintenanceEntries, nil
+	}
+	return nil, &NotLoadedError{edge: "maintenance_entries"}
+}
+
 // AttachmentsOrErr returns the Attachments value or an error if the edge
 // was not loaded in eager-loading.
 func (e ItemEdges) AttachmentsOrErr() ([]*Attachment, error) {
-	if e.loadedTypes[6] {
+	if e.loadedTypes[7] {
 		return e.Attachments, nil
 	}
 	return nil, &NotLoadedError{edge: "attachments"}
@@ -405,6 +416,11 @@ func (i *Item) QueryLocation() *LocationQuery {
 // QueryFields queries the "fields" edge of the Item entity.
 func (i *Item) QueryFields() *ItemFieldQuery {
 	return (&ItemClient{config: i.config}).QueryFields(i)
+}
+
+// QueryMaintenanceEntries queries the "maintenance_entries" edge of the Item entity.
+func (i *Item) QueryMaintenanceEntries() *MaintenanceEntryQuery {
+	return (&ItemClient{config: i.config}).QueryMaintenanceEntries(i)
 }
 
 // QueryAttachments queries the "attachments" edge of the Item entity.

@@ -20,6 +20,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/ent/itemfield"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/label"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/location"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/maintenanceentry"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/user"
 )
 
@@ -51,6 +52,7 @@ func columnChecker(table string) func(string) error {
 		itemfield.Table:            itemfield.ValidColumn,
 		label.Table:                label.ValidColumn,
 		location.Table:             location.ValidColumn,
+		maintenanceentry.Table:     maintenanceentry.ValidColumn,
 		user.Table:                 user.ValidColumn,
 	}
 	check, ok := checks[table]

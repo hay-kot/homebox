@@ -53,7 +53,7 @@ var (
 				Symbol:     "auth_roles_auth_tokens_roles",
 				Columns:    []*schema.Column{AuthRolesColumns[2]},
 				RefColumns: []*schema.Column{AuthTokensColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Cascade,
 			},
 		},
 	}
@@ -318,6 +318,31 @@ var (
 			},
 		},
 	}
+	// MaintenanceEntriesColumns holds the columns for the "maintenance_entries" table.
+	MaintenanceEntriesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "date", Type: field.TypeTime},
+		{Name: "name", Type: field.TypeString, Size: 255},
+		{Name: "description", Type: field.TypeString, Nullable: true, Size: 2500},
+		{Name: "cost", Type: field.TypeFloat64, Default: 0},
+		{Name: "item_id", Type: field.TypeUUID},
+	}
+	// MaintenanceEntriesTable holds the schema information for the "maintenance_entries" table.
+	MaintenanceEntriesTable = &schema.Table{
+		Name:       "maintenance_entries",
+		Columns:    MaintenanceEntriesColumns,
+		PrimaryKey: []*schema.Column{MaintenanceEntriesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "maintenance_entries_items_maintenance_entries",
+				Columns:    []*schema.Column{MaintenanceEntriesColumns[7]},
+				RefColumns: []*schema.Column{ItemsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -383,6 +408,7 @@ var (
 		ItemFieldsTable,
 		LabelsTable,
 		LocationsTable,
+		MaintenanceEntriesTable,
 		UsersTable,
 		LabelItemsTable,
 	}
@@ -402,6 +428,7 @@ func init() {
 	LabelsTable.ForeignKeys[0].RefTable = GroupsTable
 	LocationsTable.ForeignKeys[0].RefTable = GroupsTable
 	LocationsTable.ForeignKeys[1].RefTable = LocationsTable
+	MaintenanceEntriesTable.ForeignKeys[0].RefTable = ItemsTable
 	UsersTable.ForeignKeys[0].RefTable = GroupsTable
 	LabelItemsTable.ForeignKeys[0].RefTable = LabelsTable
 	LabelItemsTable.ForeignKeys[1].RefTable = ItemsTable

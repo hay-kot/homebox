@@ -32,6 +32,8 @@ type Tx struct {
 	Label *LabelClient
 	// Location is the client for interacting with the Location builders.
 	Location *LocationClient
+	// MaintenanceEntry is the client for interacting with the MaintenanceEntry builders.
+	MaintenanceEntry *MaintenanceEntryClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 
@@ -175,6 +177,7 @@ func (tx *Tx) init() {
 	tx.ItemField = NewItemFieldClient(tx.config)
 	tx.Label = NewLabelClient(tx.config)
 	tx.Location = NewLocationClient(tx.config)
+	tx.MaintenanceEntry = NewMaintenanceEntryClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
 

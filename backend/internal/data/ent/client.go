@@ -21,6 +21,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/ent/itemfield"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/label"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/location"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/maintenanceentry"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/user"
 
 	"entgo.io/ent/dialect"
@@ -53,6 +54,8 @@ type Client struct {
 	Label *LabelClient
 	// Location is the client for interacting with the Location builders.
 	Location *LocationClient
+	// MaintenanceEntry is the client for interacting with the MaintenanceEntry builders.
+	MaintenanceEntry *MaintenanceEntryClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 }
@@ -78,6 +81,7 @@ func (c *Client) init() {
 	c.ItemField = NewItemFieldClient(c.config)
 	c.Label = NewLabelClient(c.config)
 	c.Location = NewLocationClient(c.config)
+	c.MaintenanceEntry = NewMaintenanceEntryClient(c.config)
 	c.User = NewUserClient(c.config)
 }
 
@@ -122,6 +126,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ItemField:            NewItemFieldClient(cfg),
 		Label:                NewLabelClient(cfg),
 		Location:             NewLocationClient(cfg),
+		MaintenanceEntry:     NewMaintenanceEntryClient(cfg),
 		User:                 NewUserClient(cfg),
 	}, nil
 }
@@ -152,6 +157,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ItemField:            NewItemFieldClient(cfg),
 		Label:                NewLabelClient(cfg),
 		Location:             NewLocationClient(cfg),
+		MaintenanceEntry:     NewMaintenanceEntryClient(cfg),
 		User:                 NewUserClient(cfg),
 	}, nil
 }
@@ -191,6 +197,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.ItemField.Use(hooks...)
 	c.Label.Use(hooks...)
 	c.Location.Use(hooks...)
+	c.MaintenanceEntry.Use(hooks...)
 	c.User.Use(hooks...)
 }
 
@@ -1139,6 +1146,22 @@ func (c *ItemClient) QueryFields(i *Item) *ItemFieldQuery {
 	return query
 }
 
+// QueryMaintenanceEntries queries the maintenance_entries edge of a Item.
+func (c *ItemClient) QueryMaintenanceEntries(i *Item) *MaintenanceEntryQuery {
+	query := &MaintenanceEntryQuery{config: c.config}
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := i.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(item.Table, item.FieldID, id),
+			sqlgraph.To(maintenanceentry.Table, maintenanceentry.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, item.MaintenanceEntriesTable, item.MaintenanceEntriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(i.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryAttachments queries the attachments edge of a Item.
 func (c *ItemClient) QueryAttachments(i *Item) *AttachmentQuery {
 	query := &AttachmentQuery{config: c.config}
@@ -1540,6 +1563,112 @@ func (c *LocationClient) QueryItems(l *Location) *ItemQuery {
 // Hooks returns the client hooks.
 func (c *LocationClient) Hooks() []Hook {
 	return c.hooks.Location
+}
+
+// MaintenanceEntryClient is a client for the MaintenanceEntry schema.
+type MaintenanceEntryClient struct {
+	config
+}
+
+// NewMaintenanceEntryClient returns a client for the MaintenanceEntry from the given config.
+func NewMaintenanceEntryClient(c config) *MaintenanceEntryClient {
+	return &MaintenanceEntryClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `maintenanceentry.Hooks(f(g(h())))`.
+func (c *MaintenanceEntryClient) Use(hooks ...Hook) {
+	c.hooks.MaintenanceEntry = append(c.hooks.MaintenanceEntry, hooks...)
+}
+
+// Create returns a builder for creating a MaintenanceEntry entity.
+func (c *MaintenanceEntryClient) Create() *MaintenanceEntryCreate {
+	mutation := newMaintenanceEntryMutation(c.config, OpCreate)
+	return &MaintenanceEntryCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of MaintenanceEntry entities.
+func (c *MaintenanceEntryClient) CreateBulk(builders ...*MaintenanceEntryCreate) *MaintenanceEntryCreateBulk {
+	return &MaintenanceEntryCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for MaintenanceEntry.
+func (c *MaintenanceEntryClient) Update() *MaintenanceEntryUpdate {
+	mutation := newMaintenanceEntryMutation(c.config, OpUpdate)
+	return &MaintenanceEntryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *MaintenanceEntryClient) UpdateOne(me *MaintenanceEntry) *MaintenanceEntryUpdateOne {
+	mutation := newMaintenanceEntryMutation(c.config, OpUpdateOne, withMaintenanceEntry(me))
+	return &MaintenanceEntryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *MaintenanceEntryClient) UpdateOneID(id uuid.UUID) *MaintenanceEntryUpdateOne {
+	mutation := newMaintenanceEntryMutation(c.config, OpUpdateOne, withMaintenanceEntryID(id))
+	return &MaintenanceEntryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for MaintenanceEntry.
+func (c *MaintenanceEntryClient) Delete() *MaintenanceEntryDelete {
+	mutation := newMaintenanceEntryMutation(c.config, OpDelete)
+	return &MaintenanceEntryDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *MaintenanceEntryClient) DeleteOne(me *MaintenanceEntry) *MaintenanceEntryDeleteOne {
+	return c.DeleteOneID(me.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *MaintenanceEntryClient) DeleteOneID(id uuid.UUID) *MaintenanceEntryDeleteOne {
+	builder := c.Delete().Where(maintenanceentry.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &MaintenanceEntryDeleteOne{builder}
+}
+
+// Query returns a query builder for MaintenanceEntry.
+func (c *MaintenanceEntryClient) Query() *MaintenanceEntryQuery {
+	return &MaintenanceEntryQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a MaintenanceEntry entity by its id.
+func (c *MaintenanceEntryClient) Get(ctx context.Context, id uuid.UUID) (*MaintenanceEntry, error) {
+	return c.Query().Where(maintenanceentry.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *MaintenanceEntryClient) GetX(ctx context.Context, id uuid.UUID) *MaintenanceEntry {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryItem queries the item edge of a MaintenanceEntry.
+func (c *MaintenanceEntryClient) QueryItem(me *MaintenanceEntry) *ItemQuery {
+	query := &ItemQuery{config: c.config}
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := me.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(maintenanceentry.Table, maintenanceentry.FieldID, id),
+			sqlgraph.To(item.Table, item.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, maintenanceentry.ItemTable, maintenanceentry.ItemColumn),
+		)
+		fromV = sqlgraph.Neighbors(me.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *MaintenanceEntryClient) Hooks() []Hook {
+	return c.hooks.MaintenanceEntry
 }
 
 // UserClient is a client for the User schema.

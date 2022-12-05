@@ -44,6 +44,10 @@ func (l *Location) GetID() uuid.UUID {
 	return l.ID
 }
 
+func (me *MaintenanceEntry) GetID() uuid.UUID {
+	return me.ID
+}
+
 func (u *User) GetID() uuid.UUID {
 	return u.ID
 }

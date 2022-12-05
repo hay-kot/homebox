@@ -15,6 +15,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/ent/itemfield"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/label"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/location"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/maintenanceentry"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/schema"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/user"
 )
@@ -430,6 +431,55 @@ func init() {
 	locationDescID := locationMixinFields0[0].Descriptor()
 	// location.DefaultID holds the default value on creation for the id field.
 	location.DefaultID = locationDescID.Default.(func() uuid.UUID)
+	maintenanceentryMixin := schema.MaintenanceEntry{}.Mixin()
+	maintenanceentryMixinFields0 := maintenanceentryMixin[0].Fields()
+	_ = maintenanceentryMixinFields0
+	maintenanceentryFields := schema.MaintenanceEntry{}.Fields()
+	_ = maintenanceentryFields
+	// maintenanceentryDescCreatedAt is the schema descriptor for created_at field.
+	maintenanceentryDescCreatedAt := maintenanceentryMixinFields0[1].Descriptor()
+	// maintenanceentry.DefaultCreatedAt holds the default value on creation for the created_at field.
+	maintenanceentry.DefaultCreatedAt = maintenanceentryDescCreatedAt.Default.(func() time.Time)
+	// maintenanceentryDescUpdatedAt is the schema descriptor for updated_at field.
+	maintenanceentryDescUpdatedAt := maintenanceentryMixinFields0[2].Descriptor()
+	// maintenanceentry.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	maintenanceentry.DefaultUpdatedAt = maintenanceentryDescUpdatedAt.Default.(func() time.Time)
+	// maintenanceentry.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	maintenanceentry.UpdateDefaultUpdatedAt = maintenanceentryDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// maintenanceentryDescDate is the schema descriptor for date field.
+	maintenanceentryDescDate := maintenanceentryFields[1].Descriptor()
+	// maintenanceentry.DefaultDate holds the default value on creation for the date field.
+	maintenanceentry.DefaultDate = maintenanceentryDescDate.Default.(func() time.Time)
+	// maintenanceentryDescName is the schema descriptor for name field.
+	maintenanceentryDescName := maintenanceentryFields[2].Descriptor()
+	// maintenanceentry.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	maintenanceentry.NameValidator = func() func(string) error {
+		validators := maintenanceentryDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// maintenanceentryDescDescription is the schema descriptor for description field.
+	maintenanceentryDescDescription := maintenanceentryFields[3].Descriptor()
+	// maintenanceentry.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
+	maintenanceentry.DescriptionValidator = maintenanceentryDescDescription.Validators[0].(func(string) error)
+	// maintenanceentryDescCost is the schema descriptor for cost field.
+	maintenanceentryDescCost := maintenanceentryFields[4].Descriptor()
+	// maintenanceentry.DefaultCost holds the default value on creation for the cost field.
+	maintenanceentry.DefaultCost = maintenanceentryDescCost.Default.(float64)
+	// maintenanceentryDescID is the schema descriptor for id field.
+	maintenanceentryDescID := maintenanceentryMixinFields0[0].Descriptor()
+	// maintenanceentry.DefaultID holds the default value on creation for the id field.
+	maintenanceentry.DefaultID = maintenanceentryDescID.Default.(func() uuid.UUID)
 	userMixin := schema.User{}.Mixin()
 	userMixinFields0 := userMixin[0].Fields()
 	_ = userMixinFields0

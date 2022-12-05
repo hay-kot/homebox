@@ -54,7 +54,6 @@ export interface ItemAttachmentUpdate {
 export interface ItemCreate {
   description: string;
   labelIds: string[];
-
   /** Edges */
   locationId: string;
   name: string;
@@ -73,8 +72,7 @@ export interface ItemField {
 
 export interface ItemOut {
   archived: boolean;
-
-  /** @example 0 */
+  /** @example "0" */
   assetId: string;
   attachments: ItemAttachment[];
   children: ItemSummary[];
@@ -84,33 +82,26 @@ export interface ItemOut {
   id: string;
   insured: boolean;
   labels: LabelSummary[];
-
   /** Warranty */
   lifetimeWarranty: boolean;
-
   /** Edges */
   location: LocationSummary | null;
   manufacturer: string;
   modelNumber: string;
   name: string;
-
   /** Extras */
   notes: string;
   parent: ItemSummary | null;
   purchaseFrom: string;
-
-  /** @example 0 */
+  /** @example "0" */
   purchasePrice: string;
-
   /** Purchase */
   purchaseTime: Date;
   quantity: number;
   serialNumber: string;
   soldNotes: string;
-
-  /** @example 0 */
+  /** @example "0" */
   soldPrice: string;
-
   /** Sold */
   soldTime: Date;
   soldTo: string;
@@ -126,7 +117,6 @@ export interface ItemSummary {
   id: string;
   insured: boolean;
   labels: LabelSummary[];
-
   /** Edges */
   location: LocationSummary | null;
   name: string;
@@ -142,35 +132,27 @@ export interface ItemUpdate {
   id: string;
   insured: boolean;
   labelIds: string[];
-
   /** Warranty */
   lifetimeWarranty: boolean;
-
   /** Edges */
   locationId: string;
   manufacturer: string;
   modelNumber: string;
   name: string;
-
   /** Extras */
   notes: string;
   parentId: string | null;
   purchaseFrom: string;
-
-  /** @example 0 */
+  /** @example "0" */
   purchasePrice: string;
-
   /** Purchase */
   purchaseTime: Date;
   quantity: number;
-
   /** Identifications */
   serialNumber: string;
   soldNotes: string;
-
-  /** @example 0 */
+  /** @example "0" */
   soldPrice: string;
-
   /** Sold */
   soldTime: Date;
   soldTo: string;

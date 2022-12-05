@@ -36,5 +36,8 @@ type Label func(*sql.Selector)
 // Location is the predicate function for location builders.
 type Location func(*sql.Selector)
 
+// MaintenanceEntry is the predicate function for maintenanceentry builders.
+type MaintenanceEntry func(*sql.Selector)
+
 // User is the predicate function for user builders.
 type User func(*sql.Selector)
