@@ -14,7 +14,6 @@ var Files embed.FS
 // should be called when the migrations are no longer needed.
 func Write(temp string) error {
 	err := os.MkdirAll(temp, 0755)
-
 	if err != nil {
 		return err
 	}
