@@ -6,7 +6,6 @@
   definePageMeta({
     middleware: ["auth"],
   });
-
   useHead({
     title: "Homebox | Home",
   });
@@ -87,6 +86,63 @@
 
     eventBus.emit(EventTypes.ClearStores);
   }
+
+  const { data: timeseries } = useAsyncData(async () => {
+    const { data } = await api.stats.totalPriceOverTime();
+    return data;
+  });
+
+  const primary = useCssVar("--p");
+  const secondary = useCssVar("--s");
+  const accent = useCssVar("--a");
+  const neutral = useCssVar("--n");
+  const base = useCssVar("--b");
+
+  const chartData = computed(() => {
+    let start = timeseries.value?.valueAtStart;
+
+    return {
+      labels: timeseries?.value.entries.map(t => new Date(t.date).toDateString()) || [],
+      datasets: [
+        {
+          label: "Purchase Price",
+          data:
+            timeseries.value?.entries.map(t => {
+              start += t.value;
+              return start;
+            }) || [],
+          backgroundColor: primary.value,
+          borderColor: primary.value,
+        },
+      ],
+    };
+  });
+
+  const { data: donutSeries } = useAsyncData(async () => {
+    const { data } = await api.stats.locations();
+    return data;
+  });
+
+  const donutData = computed(() => {
+    return {
+      labels: donutSeries.value?.map(l => l.name) || [],
+      datasets: [
+        {
+          label: "Value",
+          data: donutSeries.value?.map(l => l.total) || [],
+          backgroundColor: [primary.value, secondary.value, neutral.value],
+          borderColor: [primary.value, secondary.value, neutral.value],
+          hoverOffset: 4,
+        },
+      ],
+    };
+  });
+
+  const refDonutEl = ref<HTMLDivElement>(null);
+
+  const donutElWidth = computed(() => {
+    return refDonutEl.value?.clientWidth || 0;
+  });
 </script>
 
 <template>
@@ -144,6 +200,25 @@
               {{ " " }}
               <span class="text-base-600">{{ stat.label }}</span>
             </div>
+          </div>
+        </BaseCard>
+      </section>
+
+      <section v-if="timeseries" class="grid grid-cols-6 gap-6">
+        <BaseCard class="col-span-4">
+          <template #title>Total Asset Value {{ fmtCurrency(timeseries.valueAtEnd) }}</template>
+          <div class="p-6 pt-0">
+            <ClientOnly>
+              <ChartLine chart-id="asd" :height="200" :chart-data="chartData" />
+            </ClientOnly>
+          </div>
+        </BaseCard>
+        <BaseCard class="col-span-2">
+          <template #title> Asset By Location {{ fmtCurrency(timeseries.valueAtEnd) }}</template>
+          <div ref="refDonutEl" class="grid place-content-center h-full">
+            <ClientOnly>
+              <ChartDonut chart-id="donut" :width="donutElWidth - 50" :height="300" :chart-data="donutData" />
+            </ClientOnly>
           </div>
         </BaseCard>
       </section>
