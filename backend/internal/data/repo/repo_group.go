@@ -58,6 +58,7 @@ type (
 	ValueOverTimeEntry struct {
 		Date  time.Time `json:"date"`
 		Value float64   `json:"value"`
+		Name  string    `json:"name"`
 	}
 
 	ValueOverTime struct {
@@ -136,11 +137,8 @@ func (r *GroupRepository) StatsLabelsByPurchasePrice(ctx context.Context, GID uu
 		Aggregate(func(sq *sql.Selector) string {
 			itemTable := sql.Table(item.Table)
 
-			// item to label is a many to many relation
-			// so we need to join the junction table
 			jt := sql.Table(label.ItemsTable)
 
-			// join the junction table to the item table
 			sq.Join(jt).On(sq.C(label.FieldID), jt.C(label.ItemsPrimaryKey[0]))
 			sq.Join(itemTable).On(jt.C(label.ItemsPrimaryKey[1]), itemTable.C(item.FieldID))
 
@@ -188,17 +186,25 @@ func (r *GroupRepository) StatsPurchasePrice(ctx context.Context, GID uuid.UUID,
 	stats.PriceAtEnd = orDefault(maybeEnd, 0)
 
 	var v []struct {
+		Name          string    `json:"name"`
 		CreatedAt     time.Time `json:"created_at"`
 		PurchasePrice float64   `json:"purchase_price"`
 	}
 
 	// Get Created Date and Price of all items between start and end
-	err = r.db.Item.Query().Where(
-		item.HasGroupWith(group.ID(GID)),
-		item.CreatedAtGTE(start),
-		item.CreatedAtLTE(end),
-		item.Archived(false)).
-		Select(item.FieldCreatedAt, item.FieldPurchasePrice).Scan(ctx, &v)
+	err = r.db.Item.Query().
+		Where(
+			item.HasGroupWith(group.ID(GID)),
+			item.CreatedAtGTE(start),
+			item.CreatedAtLTE(end),
+			item.Archived(false),
+		).
+		Select(
+			item.FieldName,
+			item.FieldCreatedAt,
+			item.FieldPurchasePrice,
+		).
+		Scan(ctx, &v)
 
 	if err != nil {
 		return nil, err
