@@ -8,6 +8,10 @@ func (a *Attachment) GetID() uuid.UUID {
 	return a.ID
 }
 
+func (ar *AuthRoles) GetID() int {
+	return ar.ID
+}
+
 func (at *AuthTokens) GetID() uuid.UUID {
 	return at.ID
 }
@@ -16,12 +20,12 @@ func (d *Document) GetID() uuid.UUID {
 	return d.ID
 }
 
-func (dt *DocumentToken) GetID() uuid.UUID {
-	return dt.ID
-}
-
 func (gr *Group) GetID() uuid.UUID {
 	return gr.ID
+}
+
+func (git *GroupInvitationToken) GetID() uuid.UUID {
+	return git.ID
 }
 
 func (i *Item) GetID() uuid.UUID {

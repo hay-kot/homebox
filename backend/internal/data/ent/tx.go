@@ -20,8 +20,6 @@ type Tx struct {
 	AuthTokens *AuthTokensClient
 	// Document is the client for interacting with the Document builders.
 	Document *DocumentClient
-	// DocumentToken is the client for interacting with the DocumentToken builders.
-	DocumentToken *DocumentTokenClient
 	// Group is the client for interacting with the Group builders.
 	Group *GroupClient
 	// GroupInvitationToken is the client for interacting with the GroupInvitationToken builders.
@@ -171,7 +169,6 @@ func (tx *Tx) init() {
 	tx.AuthRoles = NewAuthRolesClient(tx.config)
 	tx.AuthTokens = NewAuthTokensClient(tx.config)
 	tx.Document = NewDocumentClient(tx.config)
-	tx.DocumentToken = NewDocumentTokenClient(tx.config)
 	tx.Group = NewGroupClient(tx.config)
 	tx.GroupInvitationToken = NewGroupInvitationTokenClient(tx.config)
 	tx.Item = NewItemClient(tx.config)

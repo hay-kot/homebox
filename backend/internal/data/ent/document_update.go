@@ -14,7 +14,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/attachment"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/document"
-	"github.com/hay-kot/homebox/backend/internal/data/ent/documenttoken"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/predicate"
 )
@@ -61,21 +60,6 @@ func (du *DocumentUpdate) SetGroup(g *Group) *DocumentUpdate {
 	return du.SetGroupID(g.ID)
 }
 
-// AddDocumentTokenIDs adds the "document_tokens" edge to the DocumentToken entity by IDs.
-func (du *DocumentUpdate) AddDocumentTokenIDs(ids ...uuid.UUID) *DocumentUpdate {
-	du.mutation.AddDocumentTokenIDs(ids...)
-	return du
-}
-
-// AddDocumentTokens adds the "document_tokens" edges to the DocumentToken entity.
-func (du *DocumentUpdate) AddDocumentTokens(d ...*DocumentToken) *DocumentUpdate {
-	ids := make([]uuid.UUID, len(d))
-	for i := range d {
-		ids[i] = d[i].ID
-	}
-	return du.AddDocumentTokenIDs(ids...)
-}
-
 // AddAttachmentIDs adds the "attachments" edge to the Attachment entity by IDs.
 func (du *DocumentUpdate) AddAttachmentIDs(ids ...uuid.UUID) *DocumentUpdate {
 	du.mutation.AddAttachmentIDs(ids...)
@@ -100,27 +84,6 @@ func (du *DocumentUpdate) Mutation() *DocumentMutation {
 func (du *DocumentUpdate) ClearGroup() *DocumentUpdate {
 	du.mutation.ClearGroup()
 	return du
-}
-
-// ClearDocumentTokens clears all "document_tokens" edges to the DocumentToken entity.
-func (du *DocumentUpdate) ClearDocumentTokens() *DocumentUpdate {
-	du.mutation.ClearDocumentTokens()
-	return du
-}
-
-// RemoveDocumentTokenIDs removes the "document_tokens" edge to DocumentToken entities by IDs.
-func (du *DocumentUpdate) RemoveDocumentTokenIDs(ids ...uuid.UUID) *DocumentUpdate {
-	du.mutation.RemoveDocumentTokenIDs(ids...)
-	return du
-}
-
-// RemoveDocumentTokens removes "document_tokens" edges to DocumentToken entities.
-func (du *DocumentUpdate) RemoveDocumentTokens(d ...*DocumentToken) *DocumentUpdate {
-	ids := make([]uuid.UUID, len(d))
-	for i := range d {
-		ids[i] = d[i].ID
-	}
-	return du.RemoveDocumentTokenIDs(ids...)
 }
 
 // ClearAttachments clears all "attachments" edges to the Attachment entity.
@@ -293,60 +256,6 @@ func (du *DocumentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if du.mutation.DocumentTokensCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   document.DocumentTokensTable,
-			Columns: []string{document.DocumentTokensColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: documenttoken.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := du.mutation.RemovedDocumentTokensIDs(); len(nodes) > 0 && !du.mutation.DocumentTokensCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   document.DocumentTokensTable,
-			Columns: []string{document.DocumentTokensColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: documenttoken.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := du.mutation.DocumentTokensIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   document.DocumentTokensTable,
-			Columns: []string{document.DocumentTokensColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: documenttoken.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if du.mutation.AttachmentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -449,21 +358,6 @@ func (duo *DocumentUpdateOne) SetGroup(g *Group) *DocumentUpdateOne {
 	return duo.SetGroupID(g.ID)
 }
 
-// AddDocumentTokenIDs adds the "document_tokens" edge to the DocumentToken entity by IDs.
-func (duo *DocumentUpdateOne) AddDocumentTokenIDs(ids ...uuid.UUID) *DocumentUpdateOne {
-	duo.mutation.AddDocumentTokenIDs(ids...)
-	return duo
-}
-
-// AddDocumentTokens adds the "document_tokens" edges to the DocumentToken entity.
-func (duo *DocumentUpdateOne) AddDocumentTokens(d ...*DocumentToken) *DocumentUpdateOne {
-	ids := make([]uuid.UUID, len(d))
-	for i := range d {
-		ids[i] = d[i].ID
-	}
-	return duo.AddDocumentTokenIDs(ids...)
-}
-
 // AddAttachmentIDs adds the "attachments" edge to the Attachment entity by IDs.
 func (duo *DocumentUpdateOne) AddAttachmentIDs(ids ...uuid.UUID) *DocumentUpdateOne {
 	duo.mutation.AddAttachmentIDs(ids...)
@@ -488,27 +382,6 @@ func (duo *DocumentUpdateOne) Mutation() *DocumentMutation {
 func (duo *DocumentUpdateOne) ClearGroup() *DocumentUpdateOne {
 	duo.mutation.ClearGroup()
 	return duo
-}
-
-// ClearDocumentTokens clears all "document_tokens" edges to the DocumentToken entity.
-func (duo *DocumentUpdateOne) ClearDocumentTokens() *DocumentUpdateOne {
-	duo.mutation.ClearDocumentTokens()
-	return duo
-}
-
-// RemoveDocumentTokenIDs removes the "document_tokens" edge to DocumentToken entities by IDs.
-func (duo *DocumentUpdateOne) RemoveDocumentTokenIDs(ids ...uuid.UUID) *DocumentUpdateOne {
-	duo.mutation.RemoveDocumentTokenIDs(ids...)
-	return duo
-}
-
-// RemoveDocumentTokens removes "document_tokens" edges to DocumentToken entities.
-func (duo *DocumentUpdateOne) RemoveDocumentTokens(d ...*DocumentToken) *DocumentUpdateOne {
-	ids := make([]uuid.UUID, len(d))
-	for i := range d {
-		ids[i] = d[i].ID
-	}
-	return duo.RemoveDocumentTokenIDs(ids...)
 }
 
 // ClearAttachments clears all "attachments" edges to the Attachment entity.
@@ -703,60 +576,6 @@ func (duo *DocumentUpdateOne) sqlSave(ctx context.Context) (_node *Document, err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: group.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if duo.mutation.DocumentTokensCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   document.DocumentTokensTable,
-			Columns: []string{document.DocumentTokensColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: documenttoken.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := duo.mutation.RemovedDocumentTokensIDs(); len(nodes) > 0 && !duo.mutation.DocumentTokensCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   document.DocumentTokensTable,
-			Columns: []string{document.DocumentTokensColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: documenttoken.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := duo.mutation.DocumentTokensIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   document.DocumentTokensTable,
-			Columns: []string{document.DocumentTokensColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: documenttoken.FieldID,
 				},
 			},
 		}

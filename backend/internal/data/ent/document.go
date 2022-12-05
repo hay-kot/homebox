@@ -36,13 +36,11 @@ type Document struct {
 type DocumentEdges struct {
 	// Group holds the value of the group edge.
 	Group *Group `json:"group,omitempty"`
-	// DocumentTokens holds the value of the document_tokens edge.
-	DocumentTokens []*DocumentToken `json:"document_tokens,omitempty"`
 	// Attachments holds the value of the attachments edge.
 	Attachments []*Attachment `json:"attachments,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [2]bool
 }
 
 // GroupOrErr returns the Group value or an error if the edge
@@ -58,19 +56,10 @@ func (e DocumentEdges) GroupOrErr() (*Group, error) {
 	return nil, &NotLoadedError{edge: "group"}
 }
 
-// DocumentTokensOrErr returns the DocumentTokens value or an error if the edge
-// was not loaded in eager-loading.
-func (e DocumentEdges) DocumentTokensOrErr() ([]*DocumentToken, error) {
-	if e.loadedTypes[1] {
-		return e.DocumentTokens, nil
-	}
-	return nil, &NotLoadedError{edge: "document_tokens"}
-}
-
 // AttachmentsOrErr returns the Attachments value or an error if the edge
 // was not loaded in eager-loading.
 func (e DocumentEdges) AttachmentsOrErr() ([]*Attachment, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[1] {
 		return e.Attachments, nil
 	}
 	return nil, &NotLoadedError{edge: "attachments"}
@@ -149,11 +138,6 @@ func (d *Document) assignValues(columns []string, values []any) error {
 // QueryGroup queries the "group" edge of the Document entity.
 func (d *Document) QueryGroup() *GroupQuery {
 	return (&DocumentClient{config: d.config}).QueryGroup(d)
-}
-
-// QueryDocumentTokens queries the "document_tokens" edge of the Document entity.
-func (d *Document) QueryDocumentTokens() *DocumentTokenQuery {
-	return (&DocumentClient{config: d.config}).QueryDocumentTokens(d)
 }
 
 // QueryAttachments queries the "attachments" edge of the Document entity.

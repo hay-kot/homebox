@@ -18,9 +18,6 @@ type AuthTokens func(*sql.Selector)
 // Document is the predicate function for document builders.
 type Document func(*sql.Selector)
 
-// DocumentToken is the predicate function for documenttoken builders.
-type DocumentToken func(*sql.Selector)
-
 // Group is the predicate function for group builders.
 type Group func(*sql.Selector)
 

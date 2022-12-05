@@ -15,7 +15,6 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authroles"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authtokens"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/document"
-	"github.com/hay-kot/homebox/backend/internal/data/ent/documenttoken"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/groupinvitationtoken"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/item"
@@ -42,8 +41,6 @@ type Client struct {
 	AuthTokens *AuthTokensClient
 	// Document is the client for interacting with the Document builders.
 	Document *DocumentClient
-	// DocumentToken is the client for interacting with the DocumentToken builders.
-	DocumentToken *DocumentTokenClient
 	// Group is the client for interacting with the Group builders.
 	Group *GroupClient
 	// GroupInvitationToken is the client for interacting with the GroupInvitationToken builders.
@@ -75,7 +72,6 @@ func (c *Client) init() {
 	c.AuthRoles = NewAuthRolesClient(c.config)
 	c.AuthTokens = NewAuthTokensClient(c.config)
 	c.Document = NewDocumentClient(c.config)
-	c.DocumentToken = NewDocumentTokenClient(c.config)
 	c.Group = NewGroupClient(c.config)
 	c.GroupInvitationToken = NewGroupInvitationTokenClient(c.config)
 	c.Item = NewItemClient(c.config)
@@ -120,7 +116,6 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		AuthRoles:            NewAuthRolesClient(cfg),
 		AuthTokens:           NewAuthTokensClient(cfg),
 		Document:             NewDocumentClient(cfg),
-		DocumentToken:        NewDocumentTokenClient(cfg),
 		Group:                NewGroupClient(cfg),
 		GroupInvitationToken: NewGroupInvitationTokenClient(cfg),
 		Item:                 NewItemClient(cfg),
@@ -151,7 +146,6 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		AuthRoles:            NewAuthRolesClient(cfg),
 		AuthTokens:           NewAuthTokensClient(cfg),
 		Document:             NewDocumentClient(cfg),
-		DocumentToken:        NewDocumentTokenClient(cfg),
 		Group:                NewGroupClient(cfg),
 		GroupInvitationToken: NewGroupInvitationTokenClient(cfg),
 		Item:                 NewItemClient(cfg),
@@ -191,7 +185,6 @@ func (c *Client) Use(hooks ...Hook) {
 	c.AuthRoles.Use(hooks...)
 	c.AuthTokens.Use(hooks...)
 	c.Document.Use(hooks...)
-	c.DocumentToken.Use(hooks...)
 	c.Group.Use(hooks...)
 	c.GroupInvitationToken.Use(hooks...)
 	c.Item.Use(hooks...)
@@ -652,22 +645,6 @@ func (c *DocumentClient) QueryGroup(d *Document) *GroupQuery {
 	return query
 }
 
-// QueryDocumentTokens queries the document_tokens edge of a Document.
-func (c *DocumentClient) QueryDocumentTokens(d *Document) *DocumentTokenQuery {
-	query := &DocumentTokenQuery{config: c.config}
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := d.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(document.Table, document.FieldID, id),
-			sqlgraph.To(documenttoken.Table, documenttoken.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, document.DocumentTokensTable, document.DocumentTokensColumn),
-		)
-		fromV = sqlgraph.Neighbors(d.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryAttachments queries the attachments edge of a Document.
 func (c *DocumentClient) QueryAttachments(d *Document) *AttachmentQuery {
 	query := &AttachmentQuery{config: c.config}
@@ -687,112 +664,6 @@ func (c *DocumentClient) QueryAttachments(d *Document) *AttachmentQuery {
 // Hooks returns the client hooks.
 func (c *DocumentClient) Hooks() []Hook {
 	return c.hooks.Document
-}
-
-// DocumentTokenClient is a client for the DocumentToken schema.
-type DocumentTokenClient struct {
-	config
-}
-
-// NewDocumentTokenClient returns a client for the DocumentToken from the given config.
-func NewDocumentTokenClient(c config) *DocumentTokenClient {
-	return &DocumentTokenClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `documenttoken.Hooks(f(g(h())))`.
-func (c *DocumentTokenClient) Use(hooks ...Hook) {
-	c.hooks.DocumentToken = append(c.hooks.DocumentToken, hooks...)
-}
-
-// Create returns a builder for creating a DocumentToken entity.
-func (c *DocumentTokenClient) Create() *DocumentTokenCreate {
-	mutation := newDocumentTokenMutation(c.config, OpCreate)
-	return &DocumentTokenCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of DocumentToken entities.
-func (c *DocumentTokenClient) CreateBulk(builders ...*DocumentTokenCreate) *DocumentTokenCreateBulk {
-	return &DocumentTokenCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for DocumentToken.
-func (c *DocumentTokenClient) Update() *DocumentTokenUpdate {
-	mutation := newDocumentTokenMutation(c.config, OpUpdate)
-	return &DocumentTokenUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *DocumentTokenClient) UpdateOne(dt *DocumentToken) *DocumentTokenUpdateOne {
-	mutation := newDocumentTokenMutation(c.config, OpUpdateOne, withDocumentToken(dt))
-	return &DocumentTokenUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *DocumentTokenClient) UpdateOneID(id uuid.UUID) *DocumentTokenUpdateOne {
-	mutation := newDocumentTokenMutation(c.config, OpUpdateOne, withDocumentTokenID(id))
-	return &DocumentTokenUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for DocumentToken.
-func (c *DocumentTokenClient) Delete() *DocumentTokenDelete {
-	mutation := newDocumentTokenMutation(c.config, OpDelete)
-	return &DocumentTokenDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *DocumentTokenClient) DeleteOne(dt *DocumentToken) *DocumentTokenDeleteOne {
-	return c.DeleteOneID(dt.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *DocumentTokenClient) DeleteOneID(id uuid.UUID) *DocumentTokenDeleteOne {
-	builder := c.Delete().Where(documenttoken.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &DocumentTokenDeleteOne{builder}
-}
-
-// Query returns a query builder for DocumentToken.
-func (c *DocumentTokenClient) Query() *DocumentTokenQuery {
-	return &DocumentTokenQuery{
-		config: c.config,
-	}
-}
-
-// Get returns a DocumentToken entity by its id.
-func (c *DocumentTokenClient) Get(ctx context.Context, id uuid.UUID) (*DocumentToken, error) {
-	return c.Query().Where(documenttoken.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *DocumentTokenClient) GetX(ctx context.Context, id uuid.UUID) *DocumentToken {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryDocument queries the document edge of a DocumentToken.
-func (c *DocumentTokenClient) QueryDocument(dt *DocumentToken) *DocumentQuery {
-	query := &DocumentQuery{config: c.config}
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := dt.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(documenttoken.Table, documenttoken.FieldID, id),
-			sqlgraph.To(document.Table, document.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, documenttoken.DocumentTable, documenttoken.DocumentColumn),
-		)
-		fromV = sqlgraph.Neighbors(dt.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *DocumentTokenClient) Hooks() []Hook {
-	return c.hooks.DocumentToken
 }
 
 // GroupClient is a client for the Group schema.

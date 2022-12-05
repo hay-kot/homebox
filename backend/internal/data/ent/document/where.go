@@ -464,34 +464,6 @@ func HasGroupWith(preds ...predicate.Group) predicate.Document {
 	})
 }
 
-// HasDocumentTokens applies the HasEdge predicate on the "document_tokens" edge.
-func HasDocumentTokens() predicate.Document {
-	return predicate.Document(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(DocumentTokensTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, DocumentTokensTable, DocumentTokensColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasDocumentTokensWith applies the HasEdge predicate on the "document_tokens" edge with a given conditions (other predicates).
-func HasDocumentTokensWith(preds ...predicate.DocumentToken) predicate.Document {
-	return predicate.Document(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(DocumentTokensInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, DocumentTokensTable, DocumentTokensColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // HasAttachments applies the HasEdge predicate on the "attachments" edge.
 func HasAttachments() predicate.Document {
 	return predicate.Document(func(s *sql.Selector) {

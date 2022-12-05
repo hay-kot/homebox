@@ -9,7 +9,6 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/ent/attachment"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authtokens"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/document"
-	"github.com/hay-kot/homebox/backend/internal/data/ent/documenttoken"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/groupinvitationtoken"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/item"
@@ -123,37 +122,6 @@ func init() {
 	documentDescID := documentMixinFields0[0].Descriptor()
 	// document.DefaultID holds the default value on creation for the id field.
 	document.DefaultID = documentDescID.Default.(func() uuid.UUID)
-	documenttokenMixin := schema.DocumentToken{}.Mixin()
-	documenttokenMixinFields0 := documenttokenMixin[0].Fields()
-	_ = documenttokenMixinFields0
-	documenttokenFields := schema.DocumentToken{}.Fields()
-	_ = documenttokenFields
-	// documenttokenDescCreatedAt is the schema descriptor for created_at field.
-	documenttokenDescCreatedAt := documenttokenMixinFields0[1].Descriptor()
-	// documenttoken.DefaultCreatedAt holds the default value on creation for the created_at field.
-	documenttoken.DefaultCreatedAt = documenttokenDescCreatedAt.Default.(func() time.Time)
-	// documenttokenDescUpdatedAt is the schema descriptor for updated_at field.
-	documenttokenDescUpdatedAt := documenttokenMixinFields0[2].Descriptor()
-	// documenttoken.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	documenttoken.DefaultUpdatedAt = documenttokenDescUpdatedAt.Default.(func() time.Time)
-	// documenttoken.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	documenttoken.UpdateDefaultUpdatedAt = documenttokenDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// documenttokenDescToken is the schema descriptor for token field.
-	documenttokenDescToken := documenttokenFields[0].Descriptor()
-	// documenttoken.TokenValidator is a validator for the "token" field. It is called by the builders before save.
-	documenttoken.TokenValidator = documenttokenDescToken.Validators[0].(func([]byte) error)
-	// documenttokenDescUses is the schema descriptor for uses field.
-	documenttokenDescUses := documenttokenFields[1].Descriptor()
-	// documenttoken.DefaultUses holds the default value on creation for the uses field.
-	documenttoken.DefaultUses = documenttokenDescUses.Default.(int)
-	// documenttokenDescExpiresAt is the schema descriptor for expires_at field.
-	documenttokenDescExpiresAt := documenttokenFields[2].Descriptor()
-	// documenttoken.DefaultExpiresAt holds the default value on creation for the expires_at field.
-	documenttoken.DefaultExpiresAt = documenttokenDescExpiresAt.Default.(func() time.Time)
-	// documenttokenDescID is the schema descriptor for id field.
-	documenttokenDescID := documenttokenMixinFields0[0].Descriptor()
-	// documenttoken.DefaultID holds the default value on creation for the id field.
-	documenttoken.DefaultID = documenttokenDescID.Default.(func() uuid.UUID)
 	groupMixin := schema.Group{}.Mixin()
 	groupMixinFields0 := groupMixin[0].Fields()
 	_ = groupMixinFields0

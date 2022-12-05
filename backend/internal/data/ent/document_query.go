@@ -14,7 +14,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/attachment"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/document"
-	"github.com/hay-kot/homebox/backend/internal/data/ent/documenttoken"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/predicate"
 )
@@ -22,16 +21,15 @@ import (
 // DocumentQuery is the builder for querying Document entities.
 type DocumentQuery struct {
 	config
-	limit              *int
-	offset             *int
-	unique             *bool
-	order              []OrderFunc
-	fields             []string
-	predicates         []predicate.Document
-	withGroup          *GroupQuery
-	withDocumentTokens *DocumentTokenQuery
-	withAttachments    *AttachmentQuery
-	withFKs            bool
+	limit           *int
+	offset          *int
+	unique          *bool
+	order           []OrderFunc
+	fields          []string
+	predicates      []predicate.Document
+	withGroup       *GroupQuery
+	withAttachments *AttachmentQuery
+	withFKs         bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -83,28 +81,6 @@ func (dq *DocumentQuery) QueryGroup() *GroupQuery {
 			sqlgraph.From(document.Table, document.FieldID, selector),
 			sqlgraph.To(group.Table, group.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, document.GroupTable, document.GroupColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(dq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryDocumentTokens chains the current query on the "document_tokens" edge.
-func (dq *DocumentQuery) QueryDocumentTokens() *DocumentTokenQuery {
-	query := &DocumentTokenQuery{config: dq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := dq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := dq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(document.Table, document.FieldID, selector),
-			sqlgraph.To(documenttoken.Table, documenttoken.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, document.DocumentTokensTable, document.DocumentTokensColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(dq.driver.Dialect(), step)
 		return fromU, nil
@@ -310,14 +286,13 @@ func (dq *DocumentQuery) Clone() *DocumentQuery {
 		return nil
 	}
 	return &DocumentQuery{
-		config:             dq.config,
-		limit:              dq.limit,
-		offset:             dq.offset,
-		order:              append([]OrderFunc{}, dq.order...),
-		predicates:         append([]predicate.Document{}, dq.predicates...),
-		withGroup:          dq.withGroup.Clone(),
-		withDocumentTokens: dq.withDocumentTokens.Clone(),
-		withAttachments:    dq.withAttachments.Clone(),
+		config:          dq.config,
+		limit:           dq.limit,
+		offset:          dq.offset,
+		order:           append([]OrderFunc{}, dq.order...),
+		predicates:      append([]predicate.Document{}, dq.predicates...),
+		withGroup:       dq.withGroup.Clone(),
+		withAttachments: dq.withAttachments.Clone(),
 		// clone intermediate query.
 		sql:    dq.sql.Clone(),
 		path:   dq.path,
@@ -333,17 +308,6 @@ func (dq *DocumentQuery) WithGroup(opts ...func(*GroupQuery)) *DocumentQuery {
 		opt(query)
 	}
 	dq.withGroup = query
-	return dq
-}
-
-// WithDocumentTokens tells the query-builder to eager-load the nodes that are connected to
-// the "document_tokens" edge. The optional arguments are used to configure the query builder of the edge.
-func (dq *DocumentQuery) WithDocumentTokens(opts ...func(*DocumentTokenQuery)) *DocumentQuery {
-	query := &DocumentTokenQuery{config: dq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	dq.withDocumentTokens = query
 	return dq
 }
 
@@ -432,9 +396,8 @@ func (dq *DocumentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Doc
 		nodes       = []*Document{}
 		withFKs     = dq.withFKs
 		_spec       = dq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [2]bool{
 			dq.withGroup != nil,
-			dq.withDocumentTokens != nil,
 			dq.withAttachments != nil,
 		}
 	)
@@ -465,13 +428,6 @@ func (dq *DocumentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Doc
 	if query := dq.withGroup; query != nil {
 		if err := dq.loadGroup(ctx, query, nodes, nil,
 			func(n *Document, e *Group) { n.Edges.Group = e }); err != nil {
-			return nil, err
-		}
-	}
-	if query := dq.withDocumentTokens; query != nil {
-		if err := dq.loadDocumentTokens(ctx, query, nodes,
-			func(n *Document) { n.Edges.DocumentTokens = []*DocumentToken{} },
-			func(n *Document, e *DocumentToken) { n.Edges.DocumentTokens = append(n.Edges.DocumentTokens, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -511,37 +467,6 @@ func (dq *DocumentQuery) loadGroup(ctx context.Context, query *GroupQuery, nodes
 		for i := range nodes {
 			assign(nodes[i], n)
 		}
-	}
-	return nil
-}
-func (dq *DocumentQuery) loadDocumentTokens(ctx context.Context, query *DocumentTokenQuery, nodes []*Document, init func(*Document), assign func(*Document, *DocumentToken)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uuid.UUID]*Document)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	query.withFKs = true
-	query.Where(predicate.DocumentToken(func(s *sql.Selector) {
-		s.Where(sql.InValues(document.DocumentTokensColumn, fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.document_document_tokens
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "document_document_tokens" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "document_document_tokens" returned %v for node %v`, *fk, n.ID)
-		}
-		assign(node, n)
 	}
 	return nil
 }

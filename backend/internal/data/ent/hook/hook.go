@@ -61,19 +61,6 @@ func (f DocumentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 	return f(ctx, mv)
 }
 
-// The DocumentTokenFunc type is an adapter to allow the use of ordinary
-// function as DocumentToken mutator.
-type DocumentTokenFunc func(context.Context, *ent.DocumentTokenMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f DocumentTokenFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.DocumentTokenMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.DocumentTokenMutation", m)
-	}
-	return f(ctx, mv)
-}
-
 // The GroupFunc type is an adapter to allow the use of ordinary
 // function as Group mutator.
 type GroupFunc func(context.Context, *ent.GroupMutation) (ent.Value, error)
