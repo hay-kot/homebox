@@ -1925,6 +1925,9 @@ const docTemplate = `{
                 "date": {
                     "type": "string"
                 },
+                "name": {
+                    "type": "string"
+                },
                 "value": {
                     "type": "number"
                 }

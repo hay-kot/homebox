@@ -279,6 +279,7 @@ export interface ValueOverTime {
 
 export interface ValueOverTimeEntry {
   date: string;
+  name: string;
   value: number;
 }
 
