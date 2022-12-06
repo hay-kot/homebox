@@ -34,6 +34,7 @@ regex_replace: dict[re.Pattern, str] = {
         "purchaseTime",
         "warrantyExpires",
         "expiresAt",
+        "date",
     ),
 }
 

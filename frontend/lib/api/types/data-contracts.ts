@@ -223,6 +223,38 @@ export interface LocationUpdate {
   parentId: string | null;
 }
 
+export interface MaintenanceEntry {
+  /** @example "0" */
+  cost: string;
+  date: Date;
+  description: string;
+  id: string;
+  name: string;
+}
+
+export interface MaintenanceEntryCreate {
+  /** @example "0" */
+  cost: string;
+  date: Date;
+  description: string;
+  name: string;
+}
+
+export interface MaintenanceEntryUpdate {
+  /** @example "0" */
+  cost: string;
+  date: Date;
+  description: string;
+  name: string;
+}
+
+export interface MaintenanceLog {
+  costAverage: number;
+  costTotal: number;
+  entries: MaintenanceEntry[];
+  itemId: string;
+}
+
 export interface PaginationResultRepoItemSummary {
   items: ItemSummary[];
   page: number;
@@ -260,7 +292,7 @@ export interface ValueOverTime {
 }
 
 export interface ValueOverTimeEntry {
-  date: string;
+  date: Date;
   name: string;
   value: number;
 }

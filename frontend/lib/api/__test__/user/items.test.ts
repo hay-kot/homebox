@@ -33,6 +33,7 @@ describe("user should be able to create an item and add an attachment", () => {
     const [location, cleanup] = await useLocation(api);
 
     const { response, data: item } = await api.items.create({
+      parentId: null,
       name: "test-item",
       labelIds: [],
       description: "test-description",
@@ -43,7 +44,7 @@ describe("user should be able to create an item and add an attachment", () => {
     // Add attachment
     {
       const testFile = new Blob(["test"], { type: "text/plain" });
-      const { response } = await api.items.addAttachment(item.id, testFile, "test.txt", AttachmentTypes.Attachment);
+      const { response } = await api.items.attachments.add(item.id, testFile, "test.txt", AttachmentTypes.Attachment);
       expect(response.status).toBe(201);
     }
 
@@ -54,7 +55,7 @@ describe("user should be able to create an item and add an attachment", () => {
     expect(data.attachments).toHaveLength(1);
     expect(data.attachments[0].document.title).toBe("test.txt");
 
-    const resp = await api.items.deleteAttachment(data.id, data.attachments[0].id);
+    const resp = await api.items.attachments.delete(data.id, data.attachments[0].id);
     expect(resp.response.status).toBe(204);
 
     api.items.delete(item.id);
@@ -66,6 +67,7 @@ describe("user should be able to create an item and add an attachment", () => {
     const [location, cleanup] = await useLocation(api);
 
     const { response, data: item } = await api.items.create({
+      parentId: null,
       name: faker.vehicle.model(),
       labelIds: [],
       description: faker.lorem.paragraph(1),
@@ -82,6 +84,7 @@ describe("user should be able to create an item and add an attachment", () => {
 
     // Add fields
     const itemUpdate = {
+      parentId: null,
       ...item,
       locationId: item.location.id,
       labelIds: item.labels.map(l => l.id),
@@ -109,6 +112,43 @@ describe("user should be able to create an item and add an attachment", () => {
       expect(item3.fields[i].name).toBe(itemUpdate.fields[i].name);
       expect(item3.fields[i].textValue).toBe(itemUpdate.fields[i].textValue);
       expect(item3.fields[i].numberValue).toBe(itemUpdate.fields[i].numberValue);
+    }
+
+    cleanup();
+  });
+
+  test("users should be able to create and few maintenance logs for an item", async () => {
+    const api = await sharedUserClient();
+    const [location, cleanup] = await useLocation(api);
+    const { response, data: item } = await api.items.create({
+      parentId: null,
+      name: faker.vehicle.model(),
+      labelIds: [],
+      description: faker.lorem.paragraph(1),
+      locationId: location.id,
+    });
+    expect(response.status).toBe(201);
+
+    const maintenanceEntries = [];
+    for (let i = 0; i < 5; i++) {
+      const { response, data } = await api.items.maintenance.create(item.id, {
+        name: faker.vehicle.model(),
+        description: faker.lorem.paragraph(1),
+        date: faker.date.past(1),
+        cost: faker.datatype.number(100).toString(),
+      });
+
+      expect(response.status).toBe(201);
+      maintenanceEntries.push(data);
+    }
+
+    // Log
+    {
+      const { response, data } = await api.items.maintenance.getLog(item.id);
+      expect(response.status).toBe(200);
+      expect(data.entries).toHaveLength(maintenanceEntries.length);
+      expect(data.costAverage).toBeGreaterThan(0);
+      expect(data.costTotal).toBeGreaterThan(0);
     }
 
     cleanup();
