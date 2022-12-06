@@ -17,11 +17,10 @@ type MaintenanceEntryRepository struct {
 }
 type (
 	MaintenanceEntryCreate struct {
-		ItemID      uuid.UUID `json:"itemId"`
 		Date        time.Time `json:"date"`
 		Name        string    `json:"name"`
 		Description string    `json:"description"`
-		Cost        float64   `json:"cost"`
+		Cost        float64   `json:"cost,string"`
 	}
 
 	MaintenanceEntry struct {
@@ -29,14 +28,21 @@ type (
 		Date        time.Time `json:"date"`
 		Name        string    `json:"name"`
 		Description string    `json:"description"`
-		Cost        float64   `json:"cost"`
+		Cost        float64   `json:"cost,string"`
+	}
+
+	MaintenanceEntryUpdate struct {
+		Date        time.Time `json:"date"`
+		Name        string    `json:"name"`
+		Description string    `json:"description"`
+		Cost        float64   `json:"cost,string"`
 	}
 
 	MaintenanceLog struct {
-		ItemID      uuid.UUID `json:"itemId"`
-		CostAverage float64   `json:"costAverage"`
-		CostTotal   float64   `json:"costTotal"`
-		Entries     []MaintenanceEntry
+		ItemID      uuid.UUID          `json:"itemId"`
+		CostAverage float64            `json:"costAverage"`
+		CostTotal   float64            `json:"costTotal"`
+		Entries     []MaintenanceEntry `json:"entries"`
 	}
 )
 
@@ -55,9 +61,20 @@ func mapMaintenanceEntry(entry *ent.MaintenanceEntry) MaintenanceEntry {
 	}
 }
 
-func (r *MaintenanceEntryRepository) Create(ctx context.Context, input MaintenanceEntryCreate) (MaintenanceEntry, error) {
+func (r *MaintenanceEntryRepository) Create(ctx context.Context, itemID uuid.UUID, input MaintenanceEntryCreate) (MaintenanceEntry, error) {
 	item, err := r.db.MaintenanceEntry.Create().
-		SetItemID(input.ItemID).
+		SetItemID(itemID).
+		SetDate(input.Date).
+		SetName(input.Name).
+		SetDescription(input.Description).
+		SetCost(input.Cost).
+		Save(ctx)
+
+	return mapMaintenanceEntryErr(item, err)
+}
+
+func (r *MaintenanceEntryRepository) Update(ctx context.Context, ID uuid.UUID, input MaintenanceEntryUpdate) (MaintenanceEntry, error) {
+	item, err := r.db.MaintenanceEntry.UpdateOneID(ID).
 		SetDate(input.Date).
 		SetName(input.Name).
 		SetDescription(input.Description).
