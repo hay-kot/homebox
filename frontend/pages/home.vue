@@ -46,7 +46,7 @@
   const importDialog = ref(false);
   const importCsv = ref(null);
   const importLoading = ref(false);
-  const importRef = ref<HTMLInputElement>(null);
+  const importRef = ref<HTMLInputElement>();
   whenever(
     () => !importDialog.value,
     () => {
@@ -120,7 +120,7 @@
       <section>
         <BaseCard>
           <template #title> Welcome Back, {{ auth.self ? auth.self.name : "Username" }} </template>
-          <template #subtitle> {{ auth.self.isSuperuser ? "Admin" : "User" }} </template>
+          <!-- <template #subtitle> {{ auth.self.isSuperuser ? "Admin" : "User" }} </template> -->
           <template #title-actions>
             <div class="flex justify-end gap-2">
               <div class="tooltip" data-tip="Import CSV File">

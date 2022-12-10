@@ -17,6 +17,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/ent/itemfield"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/label"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/location"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/maintenanceentry"
 )
 
 // ItemCreate is the builder for creating a Item entity.
@@ -446,6 +447,21 @@ func (ic *ItemCreate) AddFields(i ...*ItemField) *ItemCreate {
 		ids[j] = i[j].ID
 	}
 	return ic.AddFieldIDs(ids...)
+}
+
+// AddMaintenanceEntryIDs adds the "maintenance_entries" edge to the MaintenanceEntry entity by IDs.
+func (ic *ItemCreate) AddMaintenanceEntryIDs(ids ...uuid.UUID) *ItemCreate {
+	ic.mutation.AddMaintenanceEntryIDs(ids...)
+	return ic
+}
+
+// AddMaintenanceEntries adds the "maintenance_entries" edges to the MaintenanceEntry entity.
+func (ic *ItemCreate) AddMaintenanceEntries(m ...*MaintenanceEntry) *ItemCreate {
+	ids := make([]uuid.UUID, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return ic.AddMaintenanceEntryIDs(ids...)
 }
 
 // AddAttachmentIDs adds the "attachments" edge to the Attachment entity by IDs.
@@ -899,6 +915,25 @@ func (ic *ItemCreate) createSpec() (*Item, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: itemfield.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ic.mutation.MaintenanceEntriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   item.MaintenanceEntriesTable,
+			Columns: []string{item.MaintenanceEntriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: maintenanceentry.FieldID,
 				},
 			},
 		}

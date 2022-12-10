@@ -3,11 +3,36 @@
 </template>
 
 <script setup lang="ts">
-  enum DateTimeFormat {
-    RELATIVE = "relative",
-    LONG = "long",
-    SHORT = "short",
+  type DateTimeFormat = "relative" | "long" | "short" | "human";
+
+  function ordinalIndicator(num: number) {
+    if (num > 3 && num < 21) return "th";
+    switch (num % 10) {
+      case 1:
+        return "st";
+      case 2:
+        return "nd";
+      case 3:
+        return "rd";
+      default:
+        return "th";
+    }
   }
+
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
   const value = computed(() => {
     if (!props.date) {
@@ -24,12 +49,15 @@
     }
 
     switch (props.format) {
-      case DateTimeFormat.RELATIVE:
+      case "relative":
         return useTimeAgo(dt).value + useDateFormat(dt, " (MM-DD-YYYY)").value;
-      case DateTimeFormat.LONG:
+      case "long":
         return useDateFormat(dt, "MM-DD-YYYY (dddd)").value;
-      case DateTimeFormat.SHORT:
+      case "short":
         return useDateFormat(dt, "MM-DD-YYYY").value;
+      case "human":
+        // January 1st, 2021
+        return `${months[dt.getMonth()]} ${dt.getDate()}${ordinalIndicator(dt.getDate())}, ${dt.getFullYear()}`;
       default:
         return "";
     }

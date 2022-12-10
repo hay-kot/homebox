@@ -16,17 +16,16 @@ func mapTErrFunc[T any, Y any](fn func(T) Y) func(T, error) (Y, error) {
 	}
 }
 
-// TODO: Future Usage
-// func mapEachFunc[T any, Y any](fn func(T) Y) func([]T) []Y {
-// 	return func(items []T) []Y {
-// 		result := make([]Y, len(items))
-// 		for i, item := range items {
-// 			result[i] = fn(item)
-// 		}
+func mapTEachFunc[T any, Y any](fn func(T) Y) func([]T) []Y {
+	return func(items []T) []Y {
+		result := make([]Y, len(items))
+		for i, item := range items {
+			result[i] = fn(item)
+		}
 
-// 		return result
-// 	}
-// }
+		return result
+	}
+}
 
 func mapTEachErrFunc[T any, Y any](fn func(T) Y) func([]T, error) ([]Y, error) {
 	return func(items []T, err error) ([]Y, error) {

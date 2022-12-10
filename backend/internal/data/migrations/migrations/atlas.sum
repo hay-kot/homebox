@@ -1,4 +1,4 @@
-h1:oo2QbYbKkbf4oTfkRXqo9XGPp8S76j33WQvDZITv5s8=
+h1:dn3XsqwgjCxEtpLXmHlt2ALRwg2cZB6m8lg2faxeLXM=
 20220929052825_init.sql h1:ZlCqm1wzjDmofeAcSX3jE4h4VcdTNGpRg2eabztDy9Q=
 20221001210956_group_invitations.sql h1:YQKJFtE39wFOcRNbZQ/d+ZlHwrcfcsZlcv/pLEYdpjw=
 20221009173029_add_user_roles.sql h1:vWmzAfgEWQeGk0Vn70zfVPCcfEZth3E0JcvyKTjpYyU=
@@ -6,3 +6,6 @@ h1:oo2QbYbKkbf4oTfkRXqo9XGPp8S76j33WQvDZITv5s8=
 20221101041931_add_archived_field.sql h1:L2WxiOh1svRn817cNURgqnEQg6DIcodZ1twK4tvxW94=
 20221113012312_add_asset_id_field.sql h1:DjD7e1PS8OfxGBWic8h0nO/X6CNnHEMqQjDCaaQ3M3Q=
 20221203053132_add_token_roles.sql h1:wFTIh+KBoHfLfy/L0ZmJz4cNXKHdACG9ZK/yvVKjF0M=
+20221205230404_drop_document_tokens.sql h1:9dCbNFcjtsT6lEhkxCn/vYaGRmQrl1LefdEJgvkfhGg=
+20221205234214_add_maintenance_entries.sql h1:B56VzCuDsed1k3/sYUoKlOkP90DcdLufxFK0qYvoafU=
+20221205234812_cascade_delete_roles.sql h1:VIiaImR48nCHF3uFbOYOX1E79Ta5HsUBetGaSAbh9Gk=

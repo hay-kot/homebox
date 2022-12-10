@@ -71,6 +71,8 @@ const (
 	EdgeLocation = "location"
 	// EdgeFields holds the string denoting the fields edge name in mutations.
 	EdgeFields = "fields"
+	// EdgeMaintenanceEntries holds the string denoting the maintenance_entries edge name in mutations.
+	EdgeMaintenanceEntries = "maintenance_entries"
 	// EdgeAttachments holds the string denoting the attachments edge name in mutations.
 	EdgeAttachments = "attachments"
 	// Table holds the table name of the item in the database.
@@ -109,6 +111,13 @@ const (
 	FieldsInverseTable = "item_fields"
 	// FieldsColumn is the table column denoting the fields relation/edge.
 	FieldsColumn = "item_fields"
+	// MaintenanceEntriesTable is the table that holds the maintenance_entries relation/edge.
+	MaintenanceEntriesTable = "maintenance_entries"
+	// MaintenanceEntriesInverseTable is the table name for the MaintenanceEntry entity.
+	// It exists in this package in order to avoid circular dependency with the "maintenanceentry" package.
+	MaintenanceEntriesInverseTable = "maintenance_entries"
+	// MaintenanceEntriesColumn is the table column denoting the maintenance_entries relation/edge.
+	MaintenanceEntriesColumn = "item_id"
 	// AttachmentsTable is the table that holds the attachments relation/edge.
 	AttachmentsTable = "attachments"
 	// AttachmentsInverseTable is the table name for the Attachment entity.

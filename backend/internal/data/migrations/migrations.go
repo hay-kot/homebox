@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 )
 
-// go:embed all:migrations
+//go:embed all:migrations
 var Files embed.FS
 
 // Write writes the embedded migrations to a temporary directory.
@@ -18,7 +18,7 @@ func Write(temp string) error {
 		return err
 	}
 
-	fsDir, err := Files.ReadDir(".")
+	fsDir, err := Files.ReadDir("migrations")
 	if err != nil {
 		return err
 	}

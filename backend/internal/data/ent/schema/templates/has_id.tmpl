@@ -9,8 +9,13 @@
 import 	"github.com/google/uuid"
 {{/* Loop over all nodes and implement the "HasID" interface */}}
 {{ range $n := $.Nodes }}
+    {{ if not $n.ID }}
+        {{/* If the node doesn't have an ID field, we skip it. */}}
+        {{ continue }}
+    {{ end }}
+    {{/* The "HasID" interface is implemented by the "ID" method. */}}
     {{ $receiver := $n.Receiver }}
-    func ({{ $receiver }} *{{ $n.Name }}) GetID() uuid.UUID {
+    func ({{ $receiver }} *{{ $n.Name }}) GetID() {{ $n.ID.Type }} {
         return {{ $receiver }}.ID
     }
 {{ end }}

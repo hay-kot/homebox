@@ -28,13 +28,13 @@ type hooks struct {
 	AuthRoles            []ent.Hook
 	AuthTokens           []ent.Hook
 	Document             []ent.Hook
-	DocumentToken        []ent.Hook
 	Group                []ent.Hook
 	GroupInvitationToken []ent.Hook
 	Item                 []ent.Hook
 	ItemField            []ent.Hook
 	Label                []ent.Hook
 	Location             []ent.Hook
+	MaintenanceEntry     []ent.Hook
 	User                 []ent.Hook
 }
 

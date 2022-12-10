@@ -11,8 +11,8 @@ type AllRepos struct {
 	Labels      *LabelRepository
 	Items       *ItemsRepository
 	Docs        *DocumentRepository
-	DocTokens   *DocumentTokensRepository
 	Attachments *AttachmentRepo
+	MaintEntry  *MaintenanceEntryRepository
 }
 
 func New(db *ent.Client, root string) *AllRepos {
@@ -24,7 +24,7 @@ func New(db *ent.Client, root string) *AllRepos {
 		Labels:      &LabelRepository{db},
 		Items:       &ItemsRepository{db},
 		Docs:        &DocumentRepository{db, root},
-		DocTokens:   &DocumentTokensRepository{db},
 		Attachments: &AttachmentRepo{db},
+		MaintEntry:  &MaintenanceEntryRepository{db},
 	}
 }

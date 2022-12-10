@@ -3,10 +3,12 @@
   import DOMPurify from "dompurify";
 
   type Props = {
-    source: string;
+    source: string | null | undefined;
   };
 
-  const props = withDefaults(defineProps<Props>(), {});
+  const props = withDefaults(defineProps<Props>(), {
+    source: null,
+  });
 
   const md = new MarkdownIt({
     html: true,
@@ -15,7 +17,7 @@
   });
 
   const raw = computed(() => {
-    const html = md.render(props.source);
+    const html = md.render(props.source || "");
     return DOMPurify.sanitize(html);
   });
 </script>

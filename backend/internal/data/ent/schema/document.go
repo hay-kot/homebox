@@ -38,10 +38,6 @@ func (Document) Edges() []ent.Edge {
 			Ref("documents").
 			Required().
 			Unique(),
-		edge.To("document_tokens", DocumentToken.Type).
-			Annotations(entsql.Annotation{
-				OnDelete: entsql.Cascade,
-			}),
 		edge.To("attachments", Attachment.Type).
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,

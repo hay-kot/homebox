@@ -9,6 +9,7 @@
       'btn-sm': size === 'sm',
       'btn-lg': size === 'lg',
     }"
+    :style="upper ? '' : 'text-transform: none'"
   >
     <label v-if="$slots.icon" class="swap swap-rotate mr-2" :class="{ 'swap-active': isHover }">
       <slot name="icon" />

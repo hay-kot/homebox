@@ -14,13 +14,13 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authroles"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authtokens"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/document"
-	"github.com/hay-kot/homebox/backend/internal/data/ent/documenttoken"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/groupinvitationtoken"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/item"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/itemfield"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/label"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/location"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/maintenanceentry"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/user"
 )
 
@@ -46,13 +46,13 @@ func columnChecker(table string) func(string) error {
 		authroles.Table:            authroles.ValidColumn,
 		authtokens.Table:           authtokens.ValidColumn,
 		document.Table:             document.ValidColumn,
-		documenttoken.Table:        documenttoken.ValidColumn,
 		group.Table:                group.ValidColumn,
 		groupinvitationtoken.Table: groupinvitationtoken.ValidColumn,
 		item.Table:                 item.ValidColumn,
 		itemfield.Table:            itemfield.ValidColumn,
 		label.Table:                label.ValidColumn,
 		location.Table:             location.ValidColumn,
+		maintenanceentry.Table:     maintenanceentry.ValidColumn,
 		user.Table:                 user.ValidColumn,
 	}
 	check, ok := checks[table]
