@@ -13,6 +13,7 @@ specifiers:
   '@typescript-eslint/parser': ^5.36.2
   '@vueuse/nuxt': ^9.1.1
   autoprefixer: ^10.4.8
+  chart.js: ^4.0.1
   daisyui: ^2.24.0
   dompurify: ^2.4.1
   eslint: ^8.23.0
@@ -30,6 +31,7 @@ specifiers:
   vite-plugin-eslint: ^1.8.1
   vitest: ^0.22.1
   vue: ^3.2.38
+  vue-chartjs: ^4.1.2
 
 dependencies:
   '@iconify/vue': 3.2.1_vue@3.2.45
@@ -40,6 +42,7 @@ dependencies:
   '@tailwindcss/typography': 0.5.8_tailwindcss@3.2.4
   '@vueuse/nuxt': 9.6.0_nuxt@3.0.0+vue@3.2.45
   autoprefixer: 10.4.13_postcss@8.4.19
+  chart.js: 4.0.1
   daisyui: 2.43.0_2lwn2upnx27dqeg6hqdu7sq75m
   dompurify: 2.4.1
   markdown-it: 13.0.1
@@ -47,6 +50,7 @@ dependencies:
   postcss: 8.4.19
   tailwindcss: 3.2.4_postcss@8.4.19
   vue: 3.2.45
+  vue-chartjs: 4.1.2_chart.js@4.0.1+vue@3.2.45
 
 devDependencies:
   '@faker-js/faker': 7.6.0
@@ -1749,6 +1753,11 @@ packages:
 
   /chardet/0.7.0:
     resolution: {integrity: sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==}
+
+  /chart.js/4.0.1:
+    resolution: {integrity: sha512-5/8/9eBivwBZK81mKvmIwTb2Pmw4D/5h1RK9fBWZLLZ8mCJ+kfYNmV9rMrGoa5Hgy2/wVDBMLSUDudul2/9ihA==}
+    engines: {pnpm: ^7.0.0}
+    dev: false
 
   /check-error/1.0.2:
     resolution: {integrity: sha512-BrgHpW9NURQgzoNyjfq0Wu6VFO6D7IZEmJNdtgNqpzGG8RuNFHt2jQxWlAs4HMe119chBnv+34syEZtc6IhLtA==}
@@ -6411,6 +6420,16 @@ packages:
     resolution: {integrity: sha512-43vCqTgaMXfHhtR8/VcxxWD1DgtzyvNc4wNyG5NKCIH19O1z5G9ZCRXTGEA2wifVec5PU82CkRLD2sTK9NkTdA==}
     dependencies:
       ufo: 1.0.1
+
+  /vue-chartjs/4.1.2_chart.js@4.0.1+vue@3.2.45:
+    resolution: {integrity: sha512-QSggYjeFv/L4jFSBQpX8NzrAvX0B+Ha6nDgxkTG8tEXxYOOTwKI4phRLe+B4f+REnkmg7hgPY24R0cixZJyXBg==}
+    peerDependencies:
+      chart.js: ^3.7.0
+      vue: ^3.0.0-0 || ^2.6.0
+    dependencies:
+      chart.js: 4.0.1
+      vue: 3.2.45
+    dev: false
 
   /vue-demi/0.13.11_vue@3.2.45:
     resolution: {integrity: sha512-IR8HoEEGM65YY3ZJYAjMlKygDQn25D5ajNFNoKh9RSDMQtlzCxtfQjdQgv9jjK+m3377SsJXY8ysq8kLCZL25A==}
