@@ -91,6 +91,7 @@ func (r *MaintenanceEntryRepository) GetLog(ctx context.Context, itemID uuid.UUI
 
 	entries, err := r.db.MaintenanceEntry.Query().
 		Where(maintenanceentry.ItemID(itemID)).
+		Order(ent.Desc(maintenanceentry.FieldDate)).
 		All(ctx)
 
 	if err != nil {

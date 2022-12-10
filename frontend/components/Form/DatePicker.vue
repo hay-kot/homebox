@@ -13,6 +13,7 @@
             <button
               v-if="day.number != ''"
               :key="day.number"
+              type="button"
               class="text-center btn-xs btn btn-outline"
               @click="select($event, day.date)"
             >
@@ -22,11 +23,11 @@
           </template>
         </div>
         <div class="flex justify-between mt-1 items-center">
-          <button class="btn btn-xs" @click="prevMonth">
+          <button type="button" class="btn btn-xs" @click="prevMonth">
             <Icon class="h-5 w-5" name="mdi-arrow-left"></Icon>
           </button>
           <p class="text-center">{{ month }} {{ year }}</p>
-          <button class="btn btn-xs" @click="nextMonth">
+          <button type="button" class="btn btn-xs" @click="nextMonth">
             <Icon class="h-5 w-5" name="mdi-arrow-right"></Icon>
           </button>
         </div>

@@ -13,6 +13,10 @@
   const itemId = computed<string>(() => route.params.id as string);
   const preferences = useViewPreferences();
 
+  const hasNested = computed<boolean>(() => {
+    return route.fullPath.split("/").at(-1) !== itemId.value;
+  });
+
   const { data: item, refresh } = useAsyncData(itemId.value, async () => {
     const { data, error } = await api.items.get(itemId.value);
     if (error) {
@@ -219,7 +223,7 @@
     } else {
       details.push({
         name: "Warranty Expires",
-        text: item.value?.warrantyExpires,
+        text: item.value?.warrantyExpires || "",
         type: "date",
       });
     }
@@ -253,7 +257,7 @@
       },
       {
         name: "Purchase Date",
-        text: item.value.purchaseTime,
+        text: item.value?.purchaseTime || "",
         type: "date",
       },
     ];
@@ -309,12 +313,12 @@
   });
 
   function openDialog(img: Photo) {
-    refDialog.value.showModal();
+    refDialog.value?.showModal();
     dialoged.src = img.src;
   }
 
   function closeDialog() {
-    refDialog.value.close();
+    refDialog.value?.close();
   }
 
   const refDialogBody = ref<HTMLDivElement>();
@@ -340,10 +344,7 @@
       </div>
     </dialog>
     <section class="px-3">
-      <div class="flex justify-between items-center">
-        <div class="form-control"></div>
-      </div>
-      <div class="grid grid-cols-1 gap-3">
+      <div class="space-y-3">
         <BaseCard>
           <template #title>
             <BaseSectionHeader>
@@ -374,10 +375,16 @@
           </template>
           <template #title-actions>
             <div class="modal-action mt-0">
-              <label class="label cursor-pointer mr-auto">
+              <label v-if="!hasNested" class="label cursor-pointer mr-auto">
                 <input v-model="preferences.showEmpty" type="checkbox" class="toggle toggle-primary" />
                 <span class="label-text ml-4"> Show Empty </span>
               </label>
+              <BaseButton v-else class="mr-auto" size="sm" @click="$router.go(-1)">
+                <template #icon>
+                  <Icon name="mdi-arrow-left" class="h-5 w-5" />
+                </template>
+                Back
+              </BaseButton>
               <BaseButton size="sm" :to="`/item/${itemId}/edit`">
                 <template #icon>
                   <Icon name="mdi-pencil" />
@@ -390,75 +397,84 @@
                 </template>
                 Delete
               </BaseButton>
+              <BaseButton size="sm" :to="`/item/${itemId}/log`">
+                <template #icon>
+                  <Icon name="mdi-post" />
+                </template>
+                Log
+              </BaseButton>
             </div>
           </template>
 
-          <DetailsSection :details="itemDetails" />
+          <DetailsSection v-if="!hasNested" :details="itemDetails" />
         </BaseCard>
 
-        <BaseCard v-if="photos && photos.length > 0">
-          <template #title> Photos </template>
-          <div
-            class="container border-t border-gray-300 p-4 flex flex-wrap gap-2 mx-auto max-h-[500px] overflow-y-scroll scroll-bg"
-          >
-            <button v-for="(img, i) in photos" :key="i" @click="openDialog(img)">
-              <img class="rounded max-h-[200px]" :src="img.src" />
-            </button>
-          </div>
-        </BaseCard>
+        <NuxtPage :item="item" :page-key="itemId" />
+        <div v-if="!hasNested">
+          <BaseCard v-if="photos && photos.length > 0">
+            <template #title> Photos </template>
+            <div
+              class="container border-t border-gray-300 p-4 flex flex-wrap gap-2 mx-auto max-h-[500px] overflow-y-scroll scroll-bg"
+            >
+              <button v-for="(img, i) in photos" :key="i" @click="openDialog(img)">
+                <img class="rounded max-h-[200px]" :src="img.src" />
+              </button>
+            </div>
+          </BaseCard>
 
-        <BaseCard v-if="showAttachments">
-          <template #title> Attachments </template>
-          <DetailsSection :details="attachmentDetails">
-            <template #manuals>
-              <ItemAttachmentsList
-                v-if="attachments.manuals.length > 0"
-                :attachments="attachments.manuals"
-                :item-id="item.id"
-              />
-            </template>
-            <template #attachments>
-              <ItemAttachmentsList
-                v-if="attachments.attachments.length > 0"
-                :attachments="attachments.attachments"
-                :item-id="item.id"
-              />
-            </template>
-            <template #warranty>
-              <ItemAttachmentsList
-                v-if="attachments.warranty.length > 0"
-                :attachments="attachments.warranty"
-                :item-id="item.id"
-              />
-            </template>
-            <template #receipts>
-              <ItemAttachmentsList
-                v-if="attachments.receipts.length > 0"
-                :attachments="attachments.receipts"
-                :item-id="item.id"
-              />
-            </template>
-          </DetailsSection>
-        </BaseCard>
+          <BaseCard v-if="showAttachments">
+            <template #title> Attachments </template>
+            <DetailsSection :details="attachmentDetails">
+              <template #manuals>
+                <ItemAttachmentsList
+                  v-if="attachments.manuals.length > 0"
+                  :attachments="attachments.manuals"
+                  :item-id="item.id"
+                />
+              </template>
+              <template #attachments>
+                <ItemAttachmentsList
+                  v-if="attachments.attachments.length > 0"
+                  :attachments="attachments.attachments"
+                  :item-id="item.id"
+                />
+              </template>
+              <template #warranty>
+                <ItemAttachmentsList
+                  v-if="attachments.warranty.length > 0"
+                  :attachments="attachments.warranty"
+                  :item-id="item.id"
+                />
+              </template>
+              <template #receipts>
+                <ItemAttachmentsList
+                  v-if="attachments.receipts.length > 0"
+                  :attachments="attachments.receipts"
+                  :item-id="item.id"
+                />
+              </template>
+            </DetailsSection>
+          </BaseCard>
 
-        <BaseCard v-if="showPurchase">
-          <template #title> Purchase Details </template>
-          <DetailsSection :details="purchaseDetails" />
-        </BaseCard>
+          <BaseCard v-if="showPurchase">
+            <template #title> Purchase Details </template>
+            <DetailsSection :details="purchaseDetails" />
+          </BaseCard>
 
-        <BaseCard v-if="showWarranty">
-          <template #title> Warranty Details </template>
-          <DetailsSection :details="warrantyDetails" />
-        </BaseCard>
+          <BaseCard v-if="showWarranty">
+            <template #title> Warranty Details </template>
+            <DetailsSection :details="warrantyDetails" />
+          </BaseCard>
 
-        <BaseCard v-if="showSold">
-          <template #title> Sold Details </template>
-          <DetailsSection :details="soldDetails" />
-        </BaseCard>
+          <BaseCard v-if="showSold">
+            <template #title> Sold Details </template>
+            <DetailsSection :details="soldDetails" />
+          </BaseCard>
+        </div>
       </div>
     </section>
 
-    <section class="my-6 px-3">
+    <section v-if="!hasNested" class="my-6 px-3">
       <BaseSectionHeader v-if="item && item.children && item.children.length > 0"> Child Items </BaseSectionHeader>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <ItemCard v-for="child in item.children" :key="child.id" :item="child" />
