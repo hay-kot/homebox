@@ -93,7 +93,6 @@ func run(cfg *config.Config) error {
 		schema.WithDir(dir),
 		schema.WithDropColumn(true),
 		schema.WithDropIndex(true),
-		schema.WithAtlas(true),
 	}
 
 	err = c.Schema.Create(context.Background(), options...)
