@@ -120,6 +120,8 @@ export interface ItemSummary {
   /** Edges */
   location: LocationSummary | null;
   name: string;
+  /** @example "0" */
+  purchasePrice: string;
   quantity: number;
   updatedAt: Date;
 }

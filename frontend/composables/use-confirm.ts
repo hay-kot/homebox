@@ -32,6 +32,13 @@ export function useConfirm(): Store {
   }
 
   async function openDialog(msg: string): Promise<UseConfirmDialogRevealResult<boolean, boolean>> {
+    if (!store.reveal) {
+      throw new Error("reveal is not defined");
+    }
+    if (!store.text) {
+      throw new Error("text is not defined");
+    }
+
     store.text.value = msg;
     return await store.reveal();
   }

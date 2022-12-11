@@ -1665,6 +1665,10 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "purchasePrice": {
+                    "type": "string",
+                    "example": "0"
+                },
                 "quantity": {
                     "type": "integer"
                 },

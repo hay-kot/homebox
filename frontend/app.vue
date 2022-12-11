@@ -1,6 +1,6 @@
 <template>
   <NuxtLayout>
-    <Html lang="en" :data-theme="theme" />
+    <Html lang="en" :data-theme="theme || 'homebox'" />
     <NuxtPage />
   </NuxtLayout>
 </template>

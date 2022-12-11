@@ -9,8 +9,9 @@ export default defineNuxtConfig({
       "/api": {
         target: "http://localhost:7745/api",
         changeOrigin: true,
-      }
+      },
     },
   },
-    plugins: [],
+  css: ["@/assets/css/main.css"],
+  plugins: [],
 });
