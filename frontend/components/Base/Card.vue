@@ -1,5 +1,5 @@
 <template>
-  <div class="card bg-white shadow-xl sm:rounded-lg">
+  <div class="card bg-base-100 shadow-xl sm:rounded-lg">
     <div v-if="$slots.title" class="px-4 py-5 sm:px-6">
       <h3 class="text-lg font-medium leading-6">
         <slot name="title"></slot>

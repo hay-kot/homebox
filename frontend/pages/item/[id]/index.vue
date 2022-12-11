@@ -344,7 +344,7 @@
       </div>
     </dialog>
     <section class="px-3">
-      <div class="space-y-3">
+      <div class="space-y-6">
         <BaseCard>
           <template #title>
             <BaseSectionHeader>
@@ -410,7 +410,7 @@
         </BaseCard>
 
         <NuxtPage :item="item" :page-key="itemId" />
-        <div v-if="!hasNested">
+        <template v-if="!hasNested">
           <BaseCard v-if="photos && photos.length > 0">
             <template #title> Photos </template>
             <div
@@ -470,7 +470,7 @@
             <template #title> Sold Details </template>
             <DetailsSection :details="soldDetails" />
           </BaseCard>
-        </div>
+        </template>
       </div>
     </section>
 

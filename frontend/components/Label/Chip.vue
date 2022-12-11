@@ -23,7 +23,7 @@
 <template>
   <NuxtLink
     ref="badge"
-    class="badge badge-secondary"
+    class="badge badge-secondary text-secondary-content"
     :class="{
       'badge-lg p-4': size === 'lg',
       'p-3': size !== 'sm' && size !== 'lg',

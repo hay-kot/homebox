@@ -24,57 +24,6 @@
   const itemTable = itemsTable(api);
   const stats = statCardData(api);
 
-  // const importDialog = ref(false);
-  // const importCsv = ref(null);
-  // const importLoading = ref(false);
-  // const importRef = ref<HTMLInputElement>();
-  // whenever(
-  //   () => !importDialog.value,
-  //   () => {
-  //     importCsv.value = null;
-  //   }
-  // );
-
-  // function setFile(e: Event & { target: HTMLInputElement }) {
-  //   importCsv.value = e.target.files[0];
-  // }
-
-  // function openDialog() {
-  //   importDialog.value = true;
-  // }
-
-  // function uploadCsv() {
-  //   importRef.value.click();
-  // }
-
-  // const eventBus = useEventBus();
-
-  // async function submitCsvFile() {
-  //   if (!importCsv.value) {
-  //     toast.error("Please select a file to import.");
-  //     return;
-  //   }
-
-  //   importLoading.value = true;
-
-  //   const { error } = await api.items.import(importCsv.value);
-
-  //   if (error) {
-  //     toast.error("Import failed. Please try again later.");
-  //   }
-
-  //   // Reset
-  //   importDialog.value = false;
-  //   importLoading.value = false;
-  //   importCsv.value = null;
-
-  //   if (importRef.value) {
-  //     importRef.value.value = "";
-  //   }
-
-  //   eventBus.emit(EventTypes.ClearStores);
-  // }
-
   const purchasePriceOverTime = purchasePriceOverTimeChart(api);
 
   const inventoryByLocation = inventoryByLocationChart(api);

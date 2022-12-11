@@ -29,7 +29,7 @@ func (ctrl *V1Controller) HandleItemsGetAll() server.HandlerFunc {
 
 		return repo.ItemQuery{
 			Page:            queryIntOrNegativeOne(params.Get("page")),
-			PageSize:        queryIntOrNegativeOne(params.Get("perPage")),
+			PageSize:        queryIntOrNegativeOne(params.Get("pageSize")),
 			Search:          params.Get("q"),
 			LocationIDs:     queryUUIDList(params, "locations"),
 			LabelIDs:        queryUUIDList(params, "labels"),

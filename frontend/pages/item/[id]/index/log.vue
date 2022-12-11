@@ -21,14 +21,12 @@
       {
         id: "total",
         title: "Total Cost",
-        subtitle: "Sum over all entries",
-        value: fmtCurrency(log.value.costTotal),
+        value: log.value.costTotal,
       },
       {
         id: "average",
         title: "Monthly Average",
-        subtitle: "Average over all entries",
-        value: fmtCurrency(log.value.costAverage),
+        value: log.value.costAverage,
       },
     ];
   });
@@ -138,13 +136,14 @@
         </BaseCard>
       </div>
       <div class="side-slot space-y-6">
-        <div v-for="stat in stats" :key="stat.id" class="stats block shadow-xl border-l-primary">
-          <div class="stat">
-            <div class="stat-title">{{ stat.title }}</div>
-            <div class="stat-value text-primary">{{ stat.value }}</div>
-            <div class="stat-desc">{{ stat.subtitle }}</div>
-          </div>
-        </div>
+        <StatCard
+          v-for="stat in stats"
+          :key="stat.id"
+          class="stats block shadow-xl border-l-primary"
+          :title="stat.title"
+          :value="stat.value"
+          type="currency"
+        />
       </div>
     </section>
   </div>

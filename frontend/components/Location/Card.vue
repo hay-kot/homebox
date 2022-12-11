@@ -2,7 +2,7 @@
   <NuxtLink
     ref="card"
     :to="`/location/${location.id}`"
-    class="card bg-white text-neutral rounded-md transition duration-300 shadow-md"
+    class="card bg-base-100 text-base-content rounded-md transition duration-300 shadow-md"
   >
     <div
       class="card-body"
@@ -19,7 +19,7 @@
         <span class="mx-auto">
           {{ location.name }}
         </span>
-        <span v-if="hasCount" class="badge badge-primary h-6 w-6 badge-lg"> {{ count }}</span>
+        <span v-if="hasCount" class="badge badge-primary h-6 badge-lg"> {{ count }}</span>
       </h2>
     </div>
   </NuxtLink>

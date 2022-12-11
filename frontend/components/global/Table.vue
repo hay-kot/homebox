@@ -24,7 +24,7 @@
           <td
             v-for="h in headers"
             :key="`${h.value}-${i}`"
-            class="bg-white"
+            class="bg-base-100"
             :class="{
               'text-center': h.align === 'center',
               'text-right': h.align === 'right',
