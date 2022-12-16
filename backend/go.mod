@@ -13,7 +13,7 @@ require (
 	github.com/rs/zerolog v1.28.0
 	github.com/stretchr/testify v1.8.1
 	github.com/swaggo/http-swagger v1.3.3
-	github.com/swaggo/swag v1.8.8
+	github.com/swaggo/swag v1.8.9
 	golang.org/x/crypto v0.3.0
 )
 
