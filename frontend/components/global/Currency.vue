@@ -13,7 +13,7 @@
 
   const value = computed(() => {
     if (!props.amount || props.amount === "0") {
-      return "";
+      return fmt(0);
     }
 
     return fmt(props.amount);

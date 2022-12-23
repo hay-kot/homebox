@@ -23,5 +23,6 @@
 
   withDefaults(defineProps<Props>(), {
     type: "number",
+    subtitle: undefined,
   });
 </script>

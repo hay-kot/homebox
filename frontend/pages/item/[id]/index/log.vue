@@ -21,12 +21,12 @@
       {
         id: "total",
         title: "Total Cost",
-        value: log.value.costTotal,
+        value: log.value.costTotal || 0,
       },
       {
         id: "average",
         title: "Monthly Average",
-        value: log.value.costAverage,
+        value: log.value.costAverage || 0,
       },
     ];
   });
@@ -61,14 +61,20 @@
     refreshLog();
   }
 
+  const confirm = useConfirm();
+
   async function deleteEntry(id: string) {
+    const result = await confirm.open("Are you sure you want to delete this entry?");
+    if (result.isCanceled) {
+      return;
+    }
+
     const { error } = await api.items.maintenance.delete(props.item.id, id);
 
     if (error) {
       toast.error("Failed to delete entry");
       return;
     }
-
     refreshLog();
   }
 </script>
