@@ -119,8 +119,6 @@ export function useCssVar(name: string, options?: VarOptions) {
           val += `, ${options.transparency}`;
         }
 
-        console.log(`hsla(${val})`);
-
         return `hsla(${val})`;
       });
     }

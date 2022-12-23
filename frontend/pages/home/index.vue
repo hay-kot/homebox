@@ -1,7 +1,6 @@
 <script setup lang="ts">
   import { statCardData } from "./statistics";
   import { itemsTable } from "./table";
-  import { inventoryByLocationChart, purchasePriceOverTimeChart } from "./charts";
   import { useLabelStore } from "~~/stores/labels";
   import { useLocationStore } from "~~/stores/locations";
 
@@ -24,58 +23,32 @@
   const itemTable = itemsTable(api);
   const stats = statCardData(api);
 
-  const purchasePriceOverTime = purchasePriceOverTimeChart(api);
+  // const purchasePriceOverTime = purchasePriceOverTimeChart(api);
 
-  const inventoryByLocation = inventoryByLocationChart(api);
+  // const inventoryByLocation = inventoryByLocationChart(api);
 
-  const refDonutEl = ref<HTMLDivElement>();
+  // const refDonutEl = ref<HTMLDivElement>();
 
-  const donutElWidth = computed(() => {
-    return refDonutEl.value?.clientWidth || 0;
-  });
+  // const donutElWidth = computed(() => {
+  //   return refDonutEl.value?.clientWidth || 0;
+  // });
 </script>
 
 <template>
   <div>
-    <!-- <BaseModal v-model="importDialog">
-      <template #title> Import CSV File </template>
-      <p>
-        Import a CSV file containing your items, labels, and locations. See documentation for more information on the
-        required format.
-      </p>
-
-      <form @submit.prevent="submitCsvFile">
-        <div class="flex flex-col gap-2 py-6">
-          <input ref="importRef" type="file" class="hidden" accept=".csv,.tsv" @change="setFile" />
-
-          <BaseButton type="button" @click="uploadCsv">
-            <Icon class="h-5 w-5 mr-2" name="mdi-upload" />
-            Upload
-          </BaseButton>
-          <p class="text-center pt-4 -mb-5">
-            {{ importCsv?.name }}
-          </p>
-        </div>
-
-        <div class="modal-action">
-          <BaseButton type="submit" :disabled="!importCsv"> Submit </BaseButton>
-        </div>
-      </form>
-    </BaseModal> -->
-
     <BaseContainer class="flex flex-col gap-12 pb-16">
-      <section v-if="breakpoints.lg" class="grid grid-cols-6 gap-6">
+      <!-- <section class="grid grid-cols-6 gap-6">
         <article class="col-span-4">
           <Subtitle> Inventory Value Over Time </Subtitle>
           <BaseCard>
-            <div class="p-6 pt-0">
+            <div class="p-10 h-[300px]">
               <ClientOnly>
-                <ChartLine chart-id="asd" :height="140" :chart-data="purchasePriceOverTime" />
+                <ChartLine :chart-data="purchasePriceOverTime" />
               </ClientOnly>
             </div>
           </BaseCard>
         </article>
-        <article class="col-span-2 max-h-[100px]">
+        <article class="col-span-2">
           <Subtitle>
             Inventory By
             <span class="btn-group">
@@ -83,7 +56,7 @@
               <button class="btn btn-xs text-no-transform">Labels</button>
             </span>
           </Subtitle>
-          <BaseCard>
+          <BaseCard class="h-[300px]">
             <div ref="refDonutEl" class="grid place-content-center h-full">
               <ClientOnly>
                 <ChartDonut
@@ -96,7 +69,7 @@
             </div>
           </BaseCard>
         </article>
-      </section>
+      </section> -->
 
       <section>
         <Subtitle> Quick Statistics </Subtitle>

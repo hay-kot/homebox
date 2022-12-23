@@ -1,14 +1,8 @@
 <template>
-  <LineChart
-    :chart-options="chartOptions"
-    :chart-data="chartData"
-    :chart-id="chartId"
-    :dataset-id-key="datasetIdKey"
-    :css-classes="cssClasses"
-    :styles="styles"
-    :width="width"
-    :height="height"
-  />
+  <div ref="el" class="min-h-full flex flex-col">
+    {{ styles }}
+    <LineChart :chart-options="options" :chart-data="chartData" :styles="styles" />
+  </div>
 </template>
 
 <script lang="ts">
@@ -41,23 +35,9 @@
         type: String,
         default: "label",
       },
-      width: {
-        type: Number,
-        default: 400,
-      },
-      height: {
-        type: Number,
-        default: 400,
-      },
       cssClasses: {
         default: "",
         type: String,
-      },
-      styles: {
-        type: Object,
-        default: () => {
-          return {};
-        },
       },
       chartData: {
         type: Object as () => TChartData<"line", number[], unknown>,
@@ -69,10 +49,46 @@
         },
       },
     },
+    setup() {
+      const el = ref<HTMLElement | null>(null);
+
+      const calcHeight = ref(0);
+      const calcWidth = ref(0);
+
+      function resize() {
+        console.log("resize", el.value?.offsetHeight, el.value?.offsetWidth);
+        calcHeight.value = el.value?.offsetHeight || 0;
+        calcWidth.value = el.value?.offsetWidth || 0;
+      }
+
+      onMounted(() => {
+        resize();
+        window.addEventListener("resize", resize);
+      });
+
+      onUnmounted(() => {
+        window.removeEventListener("resize", resize);
+      });
+
+      const styles = computed(() => {
+        return {
+          height: `${calcHeight.value}px`,
+          width: `${calcWidth.value}px`,
+          position: "relative",
+        };
+      });
+
+      return {
+        el,
+        parentHeight: calcHeight,
+        styles,
+      };
+    },
     data() {
       return {
-        chartOptions: {
+        options: {
           responsive: true,
+          maintainAspectRatio: false,
           scales: {
             x: {
               display: false,
@@ -94,3 +110,5 @@
     },
   });
 </script>
+
+<style></style>
