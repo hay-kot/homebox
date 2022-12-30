@@ -8,7 +8,7 @@
 </script>
 
 <template>
-  <component :is="cmp" class="container max-w-6xl mx-auto px-4">
+  <component :is="cmp" class="container max-w-6xl mx-auto px-3">
     <slot />
   </component>
 </template>

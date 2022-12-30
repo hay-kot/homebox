@@ -22,8 +22,6 @@
     if (group.value) {
       group.value.currency = currency.value.code;
     }
-
-    console.log(group.value);
   });
 
   const currencyExample = computed(() => {

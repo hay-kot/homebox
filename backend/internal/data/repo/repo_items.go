@@ -101,6 +101,8 @@ type (
 		CreatedAt   time.Time `json:"createdAt"`
 		UpdatedAt   time.Time `json:"updatedAt"`
 
+		PurchasePrice float64 `json:"purchasePrice,string"`
+
 		// Edges
 		Location *LocationSummary `json:"location,omitempty" extensions:"x-nullable,x-omitempty"`
 		Labels   []LabelSummary   `json:"labels"`
@@ -121,9 +123,8 @@ type (
 		WarrantyDetails  string    `json:"warrantyDetails"`
 
 		// Purchase
-		PurchaseTime  time.Time `json:"purchaseTime"`
-		PurchaseFrom  string    `json:"purchaseFrom"`
-		PurchasePrice float64   `json:"purchasePrice,string"`
+		PurchaseTime time.Time `json:"purchaseTime"`
+		PurchaseFrom string    `json:"purchaseFrom"`
 
 		// Sold
 		SoldTime  time.Time `json:"soldTime"`
@@ -157,13 +158,14 @@ func mapItemSummary(item *ent.Item) ItemSummary {
 	}
 
 	return ItemSummary{
-		ID:          item.ID,
-		Name:        item.Name,
-		Description: item.Description,
-		Quantity:    item.Quantity,
-		CreatedAt:   item.CreatedAt,
-		UpdatedAt:   item.UpdatedAt,
-		Archived:    item.Archived,
+		ID:            item.ID,
+		Name:          item.Name,
+		Description:   item.Description,
+		Quantity:      item.Quantity,
+		CreatedAt:     item.CreatedAt,
+		UpdatedAt:     item.UpdatedAt,
+		Archived:      item.Archived,
+		PurchasePrice: item.PurchasePrice,
 
 		// Edges
 		Location: location,
@@ -230,9 +232,8 @@ func mapItemOut(item *ent.Item) ItemOut {
 		Manufacturer: item.Manufacturer,
 
 		// Purchase
-		PurchaseTime:  item.PurchaseTime,
-		PurchaseFrom:  item.PurchaseFrom,
-		PurchasePrice: item.PurchasePrice,
+		PurchaseTime: item.PurchaseTime,
+		PurchaseFrom: item.PurchaseFrom,
 
 		// Sold
 		SoldTime:  item.SoldTime,

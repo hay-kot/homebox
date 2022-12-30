@@ -135,7 +135,7 @@
     <div class="flex mt-1">
       <label class="ml-auto label cursor-pointer">
         <input v-model="advanced" type="checkbox" class="toggle toggle-primary" />
-        <span class="label-text text-neutral-content ml-2"> Filters </span>
+        <span class="label-text text-base-content ml-2"> Filters </span>
       </label>
     </div>
     <BaseCard v-if="advanced" class="my-1 overflow-visible">

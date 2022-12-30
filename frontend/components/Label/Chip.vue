@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { LabelOut, LabelSummary } from "~~/lib/api/types/data-contracts";
 
-  export type sizes = "sm" | "md" | "lg";
+  export type sizes = "sm" | "md" | "lg" | "xl";
   defineProps({
     label: {
       type: Object as () => LabelOut | LabelSummary,
@@ -23,9 +23,10 @@
 <template>
   <NuxtLink
     ref="badge"
-    class="badge"
+    class="badge badge-secondary text-secondary-content"
     :class="{
-      'p-3': size !== 'sm',
+      'badge-lg p-4': size === 'lg',
+      'p-3': size !== 'sm' && size !== 'lg',
       'p-2 badge-sm': size === 'sm',
     }"
     :to="`/label/${label.id}`"

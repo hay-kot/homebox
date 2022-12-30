@@ -343,8 +343,8 @@
         <img class="max-w-[80vw] max-h-[80vh]" :src="dialoged.src" />
       </div>
     </dialog>
-    <section class="px-3">
-      <div class="space-y-3">
+    <section>
+      <div class="space-y-6">
         <BaseCard>
           <template #title>
             <BaseSectionHeader>
@@ -374,35 +374,31 @@
             </BaseSectionHeader>
           </template>
           <template #title-actions>
-            <div class="modal-action mt-0">
-              <label v-if="!hasNested" class="label cursor-pointer mr-auto">
+            <div class="flex flex-wrap justify-between items-center mt-2 gap-4">
+              <label v-if="!hasNested" class="label cursor-pointer">
                 <input v-model="preferences.showEmpty" type="checkbox" class="toggle toggle-primary" />
                 <span class="label-text ml-4"> Show Empty </span>
               </label>
-              <BaseButton v-else class="mr-auto" size="sm" @click="$router.go(-1)">
-                <template #icon>
-                  <Icon name="mdi-arrow-left" class="h-5 w-5" />
-                </template>
-                Back
-              </BaseButton>
-              <BaseButton size="sm" :to="`/item/${itemId}/edit`">
-                <template #icon>
-                  <Icon name="mdi-pencil" />
-                </template>
-                Edit
-              </BaseButton>
-              <BaseButton size="sm" @click="deleteItem">
-                <template #icon>
-                  <Icon name="mdi-delete" />
-                </template>
-                Delete
-              </BaseButton>
-              <BaseButton size="sm" :to="`/item/${itemId}/log`">
-                <template #icon>
-                  <Icon name="mdi-post" />
-                </template>
-                Log
-              </BaseButton>
+              <div class="flex flex-wrap justify-end gap-2 ml-auto">
+                <BaseButton size="sm" :to="`/item/${itemId}/edit`">
+                  <template #icon>
+                    <Icon name="mdi-pencil" />
+                  </template>
+                  Edit
+                </BaseButton>
+                <BaseButton size="sm" @click="deleteItem">
+                  <template #icon>
+                    <Icon name="mdi-delete" />
+                  </template>
+                  Delete
+                </BaseButton>
+                <BaseButton size="sm" :to="`/item/${itemId}/log`">
+                  <template #icon>
+                    <Icon name="mdi-post" />
+                  </template>
+                  Log
+                </BaseButton>
+              </div>
             </div>
           </template>
 
@@ -410,7 +406,7 @@
         </BaseCard>
 
         <NuxtPage :item="item" :page-key="itemId" />
-        <div v-if="!hasNested">
+        <template v-if="!hasNested">
           <BaseCard v-if="photos && photos.length > 0">
             <template #title> Photos </template>
             <div
@@ -470,7 +466,7 @@
             <template #title> Sold Details </template>
             <DetailsSection :details="soldDetails" />
           </BaseCard>
-        </div>
+        </template>
       </div>
     </section>
 

@@ -202,6 +202,9 @@ definitions:
         x-omitempty: true
       name:
         type: string
+      purchasePrice:
+        example: "0"
+        type: string
       quantity:
         type: integer
       updatedAt:
