@@ -19,7 +19,14 @@
         <span class="mx-auto">
           {{ location.name }}
         </span>
-        <span v-if="hasCount" class="badge badge-primary h-6 badge-lg"> {{ count }}</span>
+        <span
+          class="badge badge-primary h-6 badge-lg"
+          :class="{
+            'opacity-0': !hasCount,
+          }"
+        >
+          {{ count }}
+        </span>
       </h2>
     </div>
   </NuxtLink>
