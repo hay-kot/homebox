@@ -13,14 +13,23 @@
     <AppToast />
     <div class="drawer drawer-mobile">
       <input id="my-drawer-2" v-model="drawerToggle" type="checkbox" class="drawer-toggle" />
-      <div class="drawer-content justify-center bg-base-300">
-        <AppHeaderDecor class="-mt-10" />
-        <slot></slot>
-
+      <div class="drawer-content justify-center bg-base-300 pt-20 lg:pt-0">
+        <AppHeaderDecor class="-mt-10 hidden lg:block" />
         <!-- Button -->
-        <label for="my-drawer-2" class="btn btn-primary drawer-button lg:hidden fixed bottom-2 right-2">
-          <Icon name="mdi-menu" class="h-6 w-6" />
-        </label>
+        <div class="navbar z-[99] lg:hidden top-0 fixed bg-primary shadow-md drawer-button">
+          <NuxtLink to="/home">
+            <h2 class="mt-1 ml-1 text-3xl font-bold tracking-tight text-base-100 flex">
+              HomeB
+              <AppLogo class="w-8 -mb-3" />
+              x
+            </h2>
+          </NuxtLink>
+          <label for="my-drawer-2" class="btn btn-square btn-ghost ml-auto text-base-100 drawer-button lg:hidden">
+            <Icon name="mdi-menu" class="h-6 w-6" />
+          </label>
+        </div>
+
+        <slot></slot>
       </div>
 
       <!-- Sidebar -->
