@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import DatePicker from "~~/components/Form/DatePicker.vue";
+  import { StatsFormat } from "~~/components/global/StatCard/types";
   import { ItemOut } from "~~/lib/api/types/data-contracts";
 
   const props = defineProps<{
@@ -14,19 +15,31 @@
     return data;
   });
 
+  const count = computed(() => {
+    if (!log.value) return 0;
+    return log.value.entries.length;
+  });
   const stats = computed(() => {
     if (!log.value) return [];
 
     return [
       {
+        id: "count",
+        title: "Total Entries",
+        value: count.value || 0,
+        type: "number" as StatsFormat,
+      },
+      {
         id: "total",
         title: "Total Cost",
         value: log.value.costTotal || 0,
+        type: "currency" as StatsFormat,
       },
       {
         id: "average",
         title: "Monthly Average",
         value: log.value.costAverage || 0,
+        type: "currency" as StatsFormat,
       },
     ];
   });
@@ -99,16 +112,32 @@
       </form>
     </BaseModal>
 
-    <div class="flex">
-      <BaseButton class="ml-auto" size="sm" @click="newEntry()">
-        <template #icon>
-          <Icon name="mdi-post" />
-        </template>
-        Log Maintenance
-      </BaseButton>
-    </div>
-    <section class="page-layout my-6">
-      <div class="main-slot container space-y-6">
+    <section class="space-y-6">
+      <div class="flex">
+        <BaseButton size="sm" @click="$router.go(-1)">
+          <template #icon>
+            <Icon name="mdi-arrow-left" class="h-5 w-5" />
+          </template>
+          Back
+        </BaseButton>
+        <BaseButton class="ml-auto" size="sm" @click="newEntry()">
+          <template #icon>
+            <Icon name="mdi-post" />
+          </template>
+          Log Maintenance
+        </BaseButton>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <StatCard
+          v-for="stat in stats"
+          :key="stat.id"
+          class="stats block shadow-xl border-l-primary"
+          :title="stat.title"
+          :value="stat.value"
+          :type="stat.type"
+        />
+      </div>
+      <div class="container space-y-6">
         <BaseCard v-for="e in log.entries" :key="e.id">
           <BaseSectionHeader class="p-6 border-b border-b-gray-300">
             <span class="text-base-content">
@@ -141,38 +170,6 @@
           </div>
         </BaseCard>
       </div>
-      <div class="side-slot space-y-6">
-        <StatCard
-          v-for="stat in stats"
-          :key="stat.id"
-          class="stats block shadow-xl border-l-primary"
-          :title="stat.title"
-          :value="stat.value"
-          type="currency"
-        />
-      </div>
     </section>
   </div>
 </template>
-
-<style scoped>
-  .page-layout {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    grid-template-rows: auto;
-    grid-template-areas: "side main";
-    gap: 1rem;
-  }
-
-  .side-slot {
-    grid-area: side;
-  }
-
-  .main-slot {
-    grid-area: main;
-  }
-
-  .grid {
-    display: grid;
-  }
-</style>

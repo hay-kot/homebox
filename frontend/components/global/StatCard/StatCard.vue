@@ -12,13 +12,13 @@
 </template>
 
 <script setup lang="ts">
-  type format = "currency" | "number" | "percent";
+  import { StatsFormat } from "./types";
 
   type Props = {
     title: string;
     value: number;
     subtitle?: string;
-    type?: format;
+    type?: StatsFormat;
   };
 
   withDefaults(defineProps<Props>(), {
