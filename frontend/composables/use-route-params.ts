@@ -4,6 +4,7 @@ import { WritableComputedRef } from "vue";
 export function useRouteQuery(q: string, def: string[]): WritableComputedRef<string[]>;
 export function useRouteQuery(q: string, def: string): WritableComputedRef<string>;
 export function useRouteQuery(q: string, def: boolean): WritableComputedRef<boolean>;
+export function useRouteQuery(q: string, def: number): WritableComputedRef<number>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useRouteQuery(q: string, def: any): WritableComputedRef<any> {
   const route = useRoute();
@@ -56,5 +57,21 @@ export function useRouteQuery(q: string, def: any): WritableComputedRef<any> {
           router.push({ query });
         },
       });
+    case "number":
+      return computed({
+        get: () => {
+          const qv = route.query[q];
+          if (Array.isArray(qv) && qv.length > 0) {
+            return parseInt(qv[0] as string, 10);
+          }
+          return parseInt(qv as string, 10) || def;
+        },
+        set: v => {
+          const query = { ...route.query, [q]: `${v}` };
+          router.push({ query });
+        },
+      });
   }
+
+  throw new Error("Invalid type");
 }
