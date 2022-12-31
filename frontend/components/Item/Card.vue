@@ -13,15 +13,12 @@
         </span>
       </NuxtLink>
     </div>
-    <div class="rounded-b p-4 flex-grow col-span-4 flex flex-col gap-y-2 bg-base-100">
+    <div class="rounded-b p-4 pt-2 flex-grow col-span-4 flex flex-col gap-y-2 bg-base-100">
       <div class="flex justify-between gap-2">
-        <div class="mr-auto tooltip" data-tip="Purchase Price">
+        <div class="mr-auto tooltip tooltip-tip" data-tip="Purchase Price">
           <span class="badge badge-sm badge-ghost h-5">
             <Currency :amount="item.purchasePrice" />
           </span>
-        </div>
-        <div v-if="item.createdAt" class="tooltip z-10" :data-tip="datetime">
-          <Icon class="h-5 w-5 text-primary" name="mdi-calendar" />
         </div>
         <div v-if="item.insured" class="tooltip z-10" data-tip="Insured">
           <Icon class="h-5 w-5 text-primary" name="mdi-shield-check" />
@@ -48,10 +45,6 @@
 
   const top3 = computed(() => {
     return props.item.labels.slice(0, 3) || [];
-  });
-
-  const datetime = computed(() => {
-    return "Created " + fmtDate(props.item.createdAt, "human");
   });
 
   const props = defineProps({
