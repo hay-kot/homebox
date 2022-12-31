@@ -107,6 +107,36 @@ func TestItemsRepository_GetAll(t *testing.T) {
 	}
 }
 
+func TestItemsRepository_GetIDsByAssetID(t *testing.T) {
+	useItems(t, 4)
+
+	items, err := tRepos.Items.GetIDsByAssetID(context.Background(), 0)
+
+	assert.NoError(t, err)
+	assert.Equal(t, 4, len(items), "Two items are returned when there are many with the same asset Id")
+
+	item1 := useItems(t, 1)[0]
+
+	item1Update := ItemUpdate{
+		ID:          item1.ID,
+		AssetID:    1,
+		Name:        "note-important",
+		Description: "This is a note",
+		LocationID:  item1.Location.ID,
+	}
+
+	_, err = tRepos.Items.UpdateByGroup(context.Background(), tGroup.ID, item1Update)
+
+	assert.NoError(t, err)
+
+	items, err = tRepos.Items.GetIDsByAssetID(context.Background(), 1)
+
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(items), "One item is returned when there is only one with the same asset Id")
+	assert.Equal(t, item1.ID, items[0], "The item returned is the one with the same asset Id")
+}
+
+
 func TestItemsRepository_Create(t *testing.T) {
 	location, err := tRepos.Locations.Create(context.Background(), tGroup.ID, locationFactory())
 	assert.NoError(t, err)

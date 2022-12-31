@@ -45,3 +45,7 @@ node_modules
 .output
 .env
 dist
+
+.pnpm-store
+devData
+backend/app/api/app
