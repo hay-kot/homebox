@@ -157,7 +157,7 @@
 
     <section v-if="label">
       <BaseSectionHeader class="mb-5"> Items </BaseSectionHeader>
-      <div class="grid gap-2 grid-cols-1 sm:grid-cols-2">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         <ItemCard v-for="item in label.items" :key="item.id" :item="item" />
       </div>
     </section>

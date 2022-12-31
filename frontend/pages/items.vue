@@ -158,7 +158,7 @@
     </BaseCard>
     <section class="mt-10">
       <BaseSectionHeader class="mb-5"> Items </BaseSectionHeader>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         <TransitionGroup name="list">
           <ItemCard v-for="item in results" :key="item.id" :item="item" />
         </TransitionGroup>
