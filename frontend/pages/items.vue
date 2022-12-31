@@ -16,11 +16,40 @@
 
   const api = useUserApi();
   const loading = useMinLoader(2000);
-  const results = ref<ItemSummary[]>([]);
+  const items = ref<ItemSummary[]>([]);
+  const total = ref(0);
 
+  const page = useRouteQuery("page", 1);
+  const perPage = useRouteQuery("perPage", 24);
   const query = useRouteQuery("q", "");
   const advanced = useRouteQuery("advanced", false);
   const includeArchived = useRouteQuery("archived", false);
+
+  const hasNext = computed(() => {
+    return page.value * perPage.value < total.value;
+  });
+
+  const totalPages = computed(() => {
+    return Math.ceil(total.value / perPage.value);
+  });
+
+  function next() {
+    page.value = Math.min(Math.ceil(total.value / perPage.value), page.value + 1);
+  }
+
+  const hasPrev = computed(() => {
+    return page.value > 1;
+  });
+
+  function prev() {
+    page.value = Math.max(1, page.value - 1);
+  }
+
+  async function resetPageSearch() {
+    page.value = 1;
+    items.value = [];
+    await search();
+  }
 
   async function search() {
     if (searchLocked.value) {
@@ -37,13 +66,22 @@
       locations,
       labels,
       includeArchived: includeArchived.value,
+      page: page.value,
+      pageSize: perPage.value,
     });
     if (error) {
+      page.value--;
       loading.value = false;
       return;
     }
 
-    results.value = data.items;
+    if (!data.items || data.items.length === 0) {
+      page.value--;
+    }
+
+    total.value = data.total;
+    items.value = data.items;
+
     loading.value = false;
   }
 
@@ -53,6 +91,7 @@
   const queryParamsInitialized = ref(false);
 
   onMounted(async () => {
+    loading.value = true;
     // Wait until locations and labels are loaded
     let maxRetry = 10;
     while (!labels.value || !locations.value) {
@@ -79,6 +118,8 @@
     if (!qLab && !qLoc) {
       search();
     }
+
+    loading.value = false;
   });
 
   const locationsStore = useLocationStore();
@@ -125,7 +166,7 @@
     }
   });
 
-  watchDebounced([selectedLocations, selectedLabels, query], search, { debounce: 250, maxWait: 1000 });
+  watchDebounced([selectedLocations, selectedLabels, query, page, perPage], search, { debounce: 250, maxWait: 1000 });
   watch(includeArchived, search);
 </script>
 
@@ -157,12 +198,20 @@
       </div>
     </BaseCard>
     <section class="mt-10">
-      <BaseSectionHeader class="mb-5"> Items </BaseSectionHeader>
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        <TransitionGroup name="list">
-          <ItemCard v-for="item in results" :key="item.id" :item="item" />
+      <BaseSectionHeader> Items </BaseSectionHeader>
+      <span class="text-base font-medium"> {{ total }} Results </span>
+      <div ref="cardgrid" class="grid mt-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <TransitionGroup appear name="list">
+          <ItemCard v-for="item in items" :key="item.id" :item="item" />
         </TransitionGroup>
         <div class="hidden first:inline text-xl">No Items Found</div>
+      </div>
+      <div v-if="items.length > 0" class="flex">
+        <div class="btn-group mx-auto mt-10">
+          <button :disabled="!hasPrev" class="btn" @click="prev">«</button>
+          <button class="btn">Page {{ page }} of {{ totalPages }}</button>
+          <button :disabled="!hasNext" class="btn" @click="next">»</button>
+        </div>
       </div>
     </section>
   </BaseContainer>
