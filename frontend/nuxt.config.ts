@@ -10,6 +10,10 @@ export default defineNuxtConfig({
         target: "http://localhost:7745/api",
         changeOrigin: true,
       },
+      "/a": {
+        target: "http://localhost:7745/a",
+        changeOrigin: true,
+      },
     },
   },
   css: ["@/assets/css/main.css"],
