@@ -12,6 +12,7 @@ specifiers:
   '@typescript-eslint/eslint-plugin': ^5.36.2
   '@typescript-eslint/parser': ^5.36.2
   '@vueuse/nuxt': ^9.1.1
+  '@vueuse/router': ^9.9.0
   autoprefixer: ^10.4.8
   chart.js: ^4.0.1
   daisyui: ^2.24.0
@@ -32,6 +33,7 @@ specifiers:
   vitest: ^0.22.1
   vue: ^3.2.38
   vue-chartjs: ^4.1.2
+  vue-router: '4'
 
 dependencies:
   '@iconify/vue': 3.2.1_vue@3.2.45
@@ -41,6 +43,7 @@ dependencies:
   '@tailwindcss/forms': 0.5.3_tailwindcss@3.2.4
   '@tailwindcss/typography': 0.5.8_tailwindcss@3.2.4
   '@vueuse/nuxt': 9.6.0_nuxt@3.0.0+vue@3.2.45
+  '@vueuse/router': 9.9.0_xsxatmlnmmg5bcuv3xdnj6fj7y
   autoprefixer: 10.4.13_postcss@8.4.19
   chart.js: 4.0.1
   daisyui: 2.43.0_2lwn2upnx27dqeg6hqdu7sq75m
@@ -51,6 +54,7 @@ dependencies:
   tailwindcss: 3.2.4_postcss@8.4.19
   vue: 3.2.45
   vue-chartjs: 4.1.2_chart.js@4.0.1+vue@3.2.45
+  vue-router: 4.1.6_vue@3.2.45
 
 devDependencies:
   '@faker-js/faker': 7.6.0
@@ -1339,8 +1343,30 @@ packages:
       - vue
     dev: false
 
+  /@vueuse/router/9.9.0_xsxatmlnmmg5bcuv3xdnj6fj7y:
+    resolution: {integrity: sha512-C6w3HZrU3aLde8t3cjcMfFVnw722Is9FtBNJH2wwUPUv7Fc0bKsqcOEq1yFM0f6K5QktHxlp2vcuV4/nA3xPQw==}
+    peerDependencies:
+      vue-router: '>=4.0.0-rc.1'
+    dependencies:
+      '@vueuse/shared': 9.9.0_vue@3.2.45
+      vue-demi: 0.13.11_vue@3.2.45
+      vue-router: 4.1.6_vue@3.2.45
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+      - vue
+    dev: false
+
   /@vueuse/shared/9.6.0_vue@3.2.45:
     resolution: {integrity: sha512-/eDchxYYhkHnFyrb00t90UfjCx94kRHxc7J1GtBCqCG4HyPMX+krV9XJgVtWIsAMaxKVU4fC8NSUviG1JkwhUQ==}
+    dependencies:
+      vue-demi: 0.13.11_vue@3.2.45
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+      - vue
+    dev: false
+
+  /@vueuse/shared/9.9.0_vue@3.2.45:
+    resolution: {integrity: sha512-+D0XFwHG0T+uaIbCSlROBwm1wzs71B7n3KyDOxnvfEMMHDOzl09rYKwaE2AENmYwYPXfHPbSBRDD2gBVHbvTcg==}
     dependencies:
       vue-demi: 0.13.11_vue@3.2.45
     transitivePeerDependencies:

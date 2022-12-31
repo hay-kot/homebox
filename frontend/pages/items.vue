@@ -13,6 +13,8 @@
   });
 
   const searchLocked = ref(false);
+  const queryParamsInitialized = ref(false);
+  const initialSearch = ref(true);
 
   const api = useUserApi();
   const loading = useMinLoader(2000);
@@ -20,21 +22,21 @@
   const total = ref(0);
 
   const page = useRouteQuery("page", 1);
-  const perPage = useRouteQuery("perPage", 24);
+  const pageSize = useRouteQuery("pageSize", 21);
   const query = useRouteQuery("q", "");
   const advanced = useRouteQuery("advanced", false);
   const includeArchived = useRouteQuery("archived", false);
 
   const hasNext = computed(() => {
-    return page.value * perPage.value < total.value;
+    return page.value * pageSize.value < total.value;
   });
 
   const totalPages = computed(() => {
-    return Math.ceil(total.value / perPage.value);
+    return Math.ceil(total.value / pageSize.value);
   });
 
   function next() {
-    page.value = Math.min(Math.ceil(total.value / perPage.value), page.value + 1);
+    page.value = Math.min(Math.ceil(total.value / pageSize.value), page.value + 1);
   }
 
   const hasPrev = computed(() => {
@@ -46,7 +48,14 @@
   }
 
   async function resetPageSearch() {
-    page.value = 1;
+    if (searchLocked.value) {
+      return;
+    }
+
+    if (!initialSearch.value) {
+      page.value = 1;
+    }
+
     items.value = [];
     await search();
   }
@@ -67,28 +76,29 @@
       labels,
       includeArchived: includeArchived.value,
       page: page.value,
-      pageSize: perPage.value,
+      pageSize: pageSize.value,
     });
     if (error) {
-      page.value--;
+      page.value = Math.max(1, page.value - 1);
       loading.value = false;
       return;
     }
 
     if (!data.items || data.items.length === 0) {
-      page.value--;
+      page.value = Math.max(1, page.value - 1);
+      loading.value = false;
+      return;
     }
 
     total.value = data.total;
     items.value = data.items;
 
     loading.value = false;
+    initialSearch.value = false;
   }
 
   const route = useRoute();
   const router = useRouter();
-
-  const queryParamsInitialized = ref(false);
 
   onMounted(async () => {
     loading.value = true;
@@ -166,8 +176,10 @@
     }
   });
 
-  watchDebounced([selectedLocations, selectedLabels, query, page, perPage], search, { debounce: 250, maxWait: 1000 });
-  watch(includeArchived, search);
+  watchDebounced([selectedLocations, selectedLabels, query], resetPageSearch, { debounce: 250, maxWait: 1000 });
+  watch(includeArchived, resetPageSearch);
+
+  watchDebounced([page, pageSize], search, { debounce: 250, maxWait: 1000 });
 </script>
 
 <template>
@@ -199,19 +211,32 @@
     </BaseCard>
     <section class="mt-10">
       <BaseSectionHeader> Items </BaseSectionHeader>
-      <span class="text-base font-medium"> {{ total }} Results </span>
+      <p class="text-base font-medium flex items-center">
+        {{ total }} Results
+        <span class="text-base ml-auto"> Page {{ page }} of {{ totalPages }}</span>
+      </p>
+
       <div ref="cardgrid" class="grid mt-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        <TransitionGroup appear name="list">
-          <ItemCard v-for="item in items" :key="item.id" :item="item" />
-        </TransitionGroup>
+        <ItemCard v-for="item in items" :key="item.id" :item="item" />
+
         <div class="hidden first:inline text-xl">No Items Found</div>
       </div>
-      <div v-if="items.length > 0" class="flex">
-        <div class="btn-group mx-auto mt-10">
-          <button :disabled="!hasPrev" class="btn" @click="prev">«</button>
-          <button class="btn">Page {{ page }} of {{ totalPages }}</button>
-          <button :disabled="!hasNext" class="btn" @click="next">»</button>
+      <div v-if="items.length > 0" class="mt-10 flex gap-2 flex-col items-center">
+        <div class="flex">
+          <div class="btn-group">
+            <button :disabled="!hasPrev" class="btn text-no-transform" @click="prev">
+              <Icon class="mr-1 h-6 w-6" name="mdi-chevron-left" />
+              Prev
+            </button>
+            <button v-if="hasPrev" class="btn text-no-transform" @click="page = 1">First</button>
+            <button v-if="hasNext" class="btn text-no-transform" @click="page = totalPages">Last</button>
+            <button :disabled="!hasNext" class="btn text-no-transform" @click="next">
+              Next
+              <Icon class="ml-1 h-6 w-6" name="mdi-chevron-right" />
+            </button>
+          </div>
         </div>
+        <p class="text-sm font-bold">Page {{ page }} of {{ totalPages }}</p>
       </div>
     </section>
   </BaseContainer>

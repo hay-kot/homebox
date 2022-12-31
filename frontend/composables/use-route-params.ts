@@ -1,3 +1,5 @@
+import { useRouteQuery as useRouteQueryBase } from "@vueuse/router";
+
 /* eslint no-redeclare: 0 */
 import { WritableComputedRef } from "vue";
 
@@ -10,12 +12,24 @@ export function useRouteQuery(q: string, def: any): WritableComputedRef<any> {
   const route = useRoute();
   const router = useRouter();
 
+  const v = useRouteQueryBase(q, def);
+
+  const first = computed<string>(() => {
+    const qv = route.query[q];
+    if (Array.isArray(qv)) {
+      return qv[0]?.toString() || def;
+    }
+    return qv?.toString() || def;
+  });
+
+  onMounted(() => {
+    if (route.query[q] === undefined) {
+      v.value = def;
+    }
+  });
+
   switch (typeof def) {
     case "string":
-      if (route.query[q] === undefined) {
-        router.push({ query: { ...route.query, [q]: def } });
-      }
-
       return computed({
         get: () => {
           const qv = route.query[q];
@@ -46,11 +60,7 @@ export function useRouteQuery(q: string, def: any): WritableComputedRef<any> {
     case "boolean":
       return computed({
         get: () => {
-          const qv = route.query[q];
-          if (Array.isArray(qv)) {
-            return qv[0] === "true";
-          }
-          return qv === "true";
+          return first.value === "true";
         },
         set: v => {
           const query = { ...route.query, [q]: `${v}` };
@@ -59,16 +69,9 @@ export function useRouteQuery(q: string, def: any): WritableComputedRef<any> {
       });
     case "number":
       return computed({
-        get: () => {
-          const qv = route.query[q];
-          if (Array.isArray(qv) && qv.length > 0) {
-            return parseInt(qv[0] as string, 10);
-          }
-          return parseInt(qv as string, 10) || def;
-        },
-        set: v => {
-          const query = { ...route.query, [q]: `${v}` };
-          router.push({ query });
+        get: () => parseInt(first.value, 10),
+        set: nv => {
+          v.value = nv.toString();
         },
       });
   }
