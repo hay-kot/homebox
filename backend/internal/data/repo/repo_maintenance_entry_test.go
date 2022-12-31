@@ -8,14 +8,35 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// get the previous month from the current month, accounts for errors when run
+// near the beginning or end of the month/year
+func getPrevMonth(now time.Time) time.Time {
+	t := now.AddDate(0, -1, 0)
+
+	// avoid infinite loop
+	max := 15
+	for t.Month() == now.Month() {
+		println("month is the same")
+		t = t.AddDate(0, 0, -1)
+		println(t.String())
+
+		max--
+		if max == 0 {
+			panic("max exceeded")
+		}
+	}
+
+	return t
+}
+
 func TestMaintenanceEntryRepository_GetLog(t *testing.T) {
 	item := useItems(t, 1)[0]
 
 	// Create 10 maintenance entries for the item
 	created := make([]MaintenanceEntryCreate, 10)
 
-	lastMonth := time.Now().AddDate(0, -1, 0)
 	thisMonth := time.Now()
+	lastMonth := getPrevMonth(thisMonth)
 
 	for i := 0; i < 10; i++ {
 		dt := lastMonth
