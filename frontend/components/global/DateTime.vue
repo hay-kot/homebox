@@ -5,18 +5,21 @@
 <script setup lang="ts">
   type DateTimeFormat = "relative" | "long" | "short" | "human";
 
-  const props = defineProps({
-    date: {
-      type: [Date, String],
-      required: true,
-    },
-    format: {
-      type: String as () => DateTimeFormat,
-      default: "relative",
-    },
+  type Props = {
+    date?: Date | string;
+    format?: DateTimeFormat;
+  };
+
+  const props = withDefaults(defineProps<Props>(), {
+    date: undefined,
+    format: "relative",
   });
 
   const value = computed(() => {
+    if (!props.date || !validDate(props.date)) {
+      return "";
+    }
+
     return fmtDate(props.date, props.format);
   });
 </script>
