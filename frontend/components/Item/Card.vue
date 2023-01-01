@@ -29,9 +29,7 @@
           </span>
         </div>
       </div>
-      <p class="mb-2 text-clip three-line">
-        {{ item.description }}
-      </p>
+      <Markdown class="mb-2 text-clip three-line" :source="item.description" />
 
       <div class="flex gap-2 flex-wrap -mr-1 mt-auto justify-end">
         <LabelChip v-for="label in top3" :key="label.id" :label="label" size="sm" />

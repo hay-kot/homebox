@@ -21,30 +21,32 @@
   const items = ref<ItemSummary[]>([]);
   const total = ref(0);
 
-  const page = useRouteQuery("page", 1);
+  const page1 = useRouteQuery("page", 1);
+
+  const page = computed({
+    get: () => page1.value,
+    set: value => {
+      page1.value = value;
+    },
+  });
+
   const pageSize = useRouteQuery("pageSize", 21);
   const query = useRouteQuery("q", "");
   const advanced = useRouteQuery("advanced", false);
   const includeArchived = useRouteQuery("archived", false);
 
-  const hasNext = computed(() => {
-    return page.value * pageSize.value < total.value;
-  });
+  const totalPages = computed(() => Math.ceil(total.value / pageSize.value));
+  const hasNext = computed(() => page.value * pageSize.value < total.value);
+  const hasPrev = computed(() => page.value > 1);
 
-  const totalPages = computed(() => {
-    return Math.ceil(total.value / pageSize.value);
-  });
-
-  function next() {
-    page.value = Math.min(Math.ceil(total.value / pageSize.value), page.value + 1);
-  }
-
-  const hasPrev = computed(() => {
-    return page.value > 1;
-  });
+  const itemsTitle = ref<HTMLDivElement>();
 
   function prev() {
     page.value = Math.max(1, page.value - 1);
+  }
+
+  function next() {
+    page.value = Math.min(Math.ceil(total.value / pageSize.value), page.value + 1);
   }
 
   async function resetPageSearch() {
@@ -67,17 +69,15 @@
 
     loading.value = true;
 
-    const locations = selectedLocations.value.map(l => l.id);
-    const labels = selectedLabels.value.map(l => l.id);
-
     const { data, error } = await api.items.getAll({
       q: query.value || "",
-      locations,
-      labels,
+      locations: locIDs.value,
+      labels: labIDs.value,
       includeArchived: includeArchived.value,
       page: page.value,
       pageSize: pageSize.value,
     });
+
     if (error) {
       page.value = Math.max(1, page.value - 1);
       loading.value = false;
@@ -130,6 +130,11 @@
     }
 
     loading.value = false;
+    window.scroll({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
   });
 
   const locationsStore = useLocationStore();
@@ -141,16 +146,18 @@
   const selectedLocations = ref<LocationOutCount[]>([]);
   const selectedLabels = ref<LabelSummary[]>([]);
 
+  const locIDs = computed(() => selectedLocations.value.map(l => l.id));
+  const labIDs = computed(() => selectedLabels.value.map(l => l.id));
+
   watchPostEffect(() => {
     if (!queryParamsInitialized.value) {
       return;
     }
 
-    const labelIds = selectedLabels.value.map(l => l.id);
     router.push({
       query: {
         ...router.currentRoute.value.query,
-        lab: labelIds,
+        lab: labIDs.value,
       },
     });
   });
@@ -160,11 +167,10 @@
       return;
     }
 
-    const locIds = selectedLocations.value.map(l => l.id);
     router.push({
       query: {
         ...router.currentRoute.value.query,
-        loc: locIds,
+        loc: locIDs.value,
       },
     });
   });
@@ -176,8 +182,20 @@
     }
   });
 
-  watchDebounced([selectedLocations, selectedLabels, query], resetPageSearch, { debounce: 250, maxWait: 1000 });
-  watch(includeArchived, resetPageSearch);
+  // resetPageHash computes a JSON string that is used to detect if the search
+  // parameters have changed. If they have changed, the page is reset to 1.
+  const resetPageHash = computed(() => {
+    const map = {
+      q: query.value,
+      includeArchived: includeArchived.value,
+      locations: locIDs.value,
+      labels: labIDs.value,
+    };
+
+    return JSON.stringify(map);
+  });
+
+  watchDebounced(resetPageHash, resetPageSearch, { debounce: 250, maxWait: 1000 });
 
   watchDebounced([page, pageSize], search, { debounce: 250, maxWait: 1000 });
 </script>
@@ -210,7 +228,7 @@
       </div>
     </BaseCard>
     <section class="mt-10">
-      <BaseSectionHeader> Items </BaseSectionHeader>
+      <BaseSectionHeader ref="itemsTitle"> Items </BaseSectionHeader>
       <p class="text-base font-medium flex items-center">
         {{ total }} Results
         <span class="text-base ml-auto"> Page {{ page }} of {{ totalPages }}</span>
@@ -221,7 +239,7 @@
 
         <div class="hidden first:inline text-xl">No Items Found</div>
       </div>
-      <div v-if="items.length > 0" class="mt-10 flex gap-2 flex-col items-center">
+      <div v-if="items.length > 0 && (hasNext || hasPrev)" class="mt-10 flex gap-2 flex-col items-center">
         <div class="flex">
           <div class="btn-group">
             <button :disabled="!hasPrev" class="btn text-no-transform" @click="prev">

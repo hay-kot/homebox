@@ -2,12 +2,12 @@ const cache = {
   currency: "",
 };
 
-export function ResetCurrency() {
+export function resetCurrency() {
   cache.currency = "";
 }
 
 export async function useFormatCurrency() {
-  if (!cache.currency) {
+  if (cache.currency === "") {
     const client = useUserApi();
 
     const { data: group } = await client.group.get();
