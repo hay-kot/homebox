@@ -39,8 +39,6 @@
   const hasNext = computed(() => page.value * pageSize.value < total.value);
   const hasPrev = computed(() => page.value > 1);
 
-  const itemsTitle = ref<HTMLDivElement>();
-
   function prev() {
     page.value = Math.max(1, page.value - 1);
   }
