@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"database/sql"
+	"errors"
 	"net/http"
 
 	"github.com/hay-kot/homebox/backend/internal/core/services"
@@ -41,6 +43,11 @@ func (ctrl *V1Controller) HandleItemsGetAll() server.HandlerFunc {
 		ctx := services.NewContext(r.Context())
 		items, err := ctrl.repo.Items.QueryByGroup(ctx, ctx.GID, extractQuery(r))
 		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return server.Respond(w, http.StatusOK, repo.PaginationResult[repo.ItemSummary]{
+					Items: []repo.ItemSummary{},
+				})
+			}
 			log.Err(err).Msg("failed to get items")
 			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}

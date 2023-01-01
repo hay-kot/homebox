@@ -1,5 +1,7 @@
 import { Requests } from "../../requests";
 
+const ZERO_DATE = "0001-01-01T00:00:00Z";
+
 type BaseApiType = {
   createdAt: string;
   updatedAt: string;
@@ -16,6 +18,14 @@ export function parseDate<T>(obj: T, keys: Array<keyof T> = []): T {
   [...keys, "createdAt", "updatedAt"].forEach(key => {
     // @ts-ignore - TS doesn't know that we're checking for the key above
     if (hasKey(result, key)) {
+      if (result[key] === ZERO_DATE) {
+        const dt = new Date();
+        dt.setFullYear(1);
+
+        result[key] = dt;
+        return;
+      }
+
       // Ensure date like format YYYY/MM/DD - otherwise results will be 1 day off
       const dateStr: string = result[key].split("T")[0].replace(/-/g, "/");
       result[key] = new Date(dateStr);

@@ -13,14 +13,52 @@
   });
 
   const searchLocked = ref(false);
+  const queryParamsInitialized = ref(false);
+  const initialSearch = ref(true);
 
   const api = useUserApi();
   const loading = useMinLoader(2000);
-  const results = ref<ItemSummary[]>([]);
+  const items = ref<ItemSummary[]>([]);
+  const total = ref(0);
 
+  const page1 = useRouteQuery("page", 1);
+
+  const page = computed({
+    get: () => page1.value,
+    set: value => {
+      page1.value = value;
+    },
+  });
+
+  const pageSize = useRouteQuery("pageSize", 21);
   const query = useRouteQuery("q", "");
   const advanced = useRouteQuery("advanced", false);
   const includeArchived = useRouteQuery("archived", false);
+
+  const totalPages = computed(() => Math.ceil(total.value / pageSize.value));
+  const hasNext = computed(() => page.value * pageSize.value < total.value);
+  const hasPrev = computed(() => page.value > 1);
+
+  function prev() {
+    page.value = Math.max(1, page.value - 1);
+  }
+
+  function next() {
+    page.value = Math.min(Math.ceil(total.value / pageSize.value), page.value + 1);
+  }
+
+  async function resetPageSearch() {
+    if (searchLocked.value) {
+      return;
+    }
+
+    if (!initialSearch.value) {
+      page.value = 1;
+    }
+
+    items.value = [];
+    await search();
+  }
 
   async function search() {
     if (searchLocked.value) {
@@ -29,30 +67,39 @@
 
     loading.value = true;
 
-    const locations = selectedLocations.value.map(l => l.id);
-    const labels = selectedLabels.value.map(l => l.id);
-
     const { data, error } = await api.items.getAll({
       q: query.value || "",
-      locations,
-      labels,
+      locations: locIDs.value,
+      labels: labIDs.value,
       includeArchived: includeArchived.value,
+      page: page.value,
+      pageSize: pageSize.value,
     });
+
     if (error) {
+      page.value = Math.max(1, page.value - 1);
       loading.value = false;
       return;
     }
 
-    results.value = data.items;
+    if (!data.items || data.items.length === 0) {
+      page.value = Math.max(1, page.value - 1);
+      loading.value = false;
+      return;
+    }
+
+    total.value = data.total;
+    items.value = data.items;
+
     loading.value = false;
+    initialSearch.value = false;
   }
 
   const route = useRoute();
   const router = useRouter();
 
-  const queryParamsInitialized = ref(false);
-
   onMounted(async () => {
+    loading.value = true;
     // Wait until locations and labels are loaded
     let maxRetry = 10;
     while (!labels.value || !locations.value) {
@@ -79,6 +126,13 @@
     if (!qLab && !qLoc) {
       search();
     }
+
+    loading.value = false;
+    window.scroll({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
   });
 
   const locationsStore = useLocationStore();
@@ -90,16 +144,18 @@
   const selectedLocations = ref<LocationOutCount[]>([]);
   const selectedLabels = ref<LabelSummary[]>([]);
 
+  const locIDs = computed(() => selectedLocations.value.map(l => l.id));
+  const labIDs = computed(() => selectedLabels.value.map(l => l.id));
+
   watchPostEffect(() => {
     if (!queryParamsInitialized.value) {
       return;
     }
 
-    const labelIds = selectedLabels.value.map(l => l.id);
     router.push({
       query: {
         ...router.currentRoute.value.query,
-        lab: labelIds,
+        lab: labIDs.value,
       },
     });
   });
@@ -109,11 +165,10 @@
       return;
     }
 
-    const locIds = selectedLocations.value.map(l => l.id);
     router.push({
       query: {
         ...router.currentRoute.value.query,
-        loc: locIds,
+        loc: locIDs.value,
       },
     });
   });
@@ -125,8 +180,22 @@
     }
   });
 
-  watchDebounced([selectedLocations, selectedLabels, query], search, { debounce: 250, maxWait: 1000 });
-  watch(includeArchived, search);
+  // resetPageHash computes a JSON string that is used to detect if the search
+  // parameters have changed. If they have changed, the page is reset to 1.
+  const resetPageHash = computed(() => {
+    const map = {
+      q: query.value,
+      includeArchived: includeArchived.value,
+      locations: locIDs.value,
+      labels: labIDs.value,
+    };
+
+    return JSON.stringify(map);
+  });
+
+  watchDebounced(resetPageHash, resetPageSearch, { debounce: 250, maxWait: 1000 });
+
+  watchDebounced([page, pageSize], search, { debounce: 250, maxWait: 1000 });
 </script>
 
 <template>
@@ -157,12 +226,33 @@
       </div>
     </BaseCard>
     <section class="mt-10">
-      <BaseSectionHeader class="mb-5"> Items </BaseSectionHeader>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <TransitionGroup name="list">
-          <ItemCard v-for="item in results" :key="item.id" :item="item" />
-        </TransitionGroup>
+      <BaseSectionHeader ref="itemsTitle"> Items </BaseSectionHeader>
+      <p class="text-base font-medium flex items-center">
+        {{ total }} Results
+        <span class="text-base ml-auto"> Page {{ page }} of {{ totalPages }}</span>
+      </p>
+
+      <div ref="cardgrid" class="grid mt-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <ItemCard v-for="item in items" :key="item.id" :item="item" />
+
         <div class="hidden first:inline text-xl">No Items Found</div>
+      </div>
+      <div v-if="items.length > 0 && (hasNext || hasPrev)" class="mt-10 flex gap-2 flex-col items-center">
+        <div class="flex">
+          <div class="btn-group">
+            <button :disabled="!hasPrev" class="btn text-no-transform" @click="prev">
+              <Icon class="mr-1 h-6 w-6" name="mdi-chevron-left" />
+              Prev
+            </button>
+            <button v-if="hasPrev" class="btn text-no-transform" @click="page = 1">First</button>
+            <button v-if="hasNext" class="btn text-no-transform" @click="page = totalPages">Last</button>
+            <button :disabled="!hasNext" class="btn text-no-transform" @click="next">
+              Next
+              <Icon class="ml-1 h-6 w-6" name="mdi-chevron-right" />
+            </button>
+          </div>
+        </div>
+        <p class="text-sm font-bold">Page {{ page }} of {{ totalPages }}</p>
       </div>
     </section>
   </BaseContainer>
