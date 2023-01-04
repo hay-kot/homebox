@@ -102,6 +102,9 @@
 
   const username = computed(() => authStore.self?.name || "User");
 
+  // Preload currency format
+  useFormatCurrency();
+
   const modals = reactive({
     item: false,
     location: false,
