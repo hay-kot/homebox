@@ -12,7 +12,7 @@
     "debughandlers"
   ],
   // use ESLint to format code on save
-  "editor.formatOnSave": true,
+  "editor.formatOnSave": false,
   "editor.defaultFormatter": "dbaeumer.vscode-eslint",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true

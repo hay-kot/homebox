@@ -283,10 +283,6 @@ func (e *ItemsRepository) GetOneByGroup(ctx context.Context, gid, id uuid.UUID) 
 	return e.getOne(ctx, item.ID(id), item.HasGroupWith(group.ID(gid)))
 }
 
-func (e *ItemsRepository) GetIDsByAssetID(ctx context.Context, assetID AssetID) ([]uuid.UUID, error) {
-	return e.db.Item.Query().Where(item.AssetID(int(assetID))).Order(ent.Desc(item.FieldCreatedAt)).IDs(ctx)
-}
-
 // QueryByGroup returns a list of items that belong to a specific group based on the provided query.
 func (e *ItemsRepository) QueryByGroup(ctx context.Context, gid uuid.UUID, q ItemQuery) (PaginationResult[ItemSummary], error) {
 	qb := e.db.Item.Query().Where(
@@ -358,6 +354,41 @@ func (e *ItemsRepository) QueryByGroup(ctx context.Context, gid uuid.UUID, q Ite
 		Items:    items,
 	}, nil
 
+}
+
+
+// QueryByAssetID returns items by asset ID. If the item does not exist, an error is returned.
+func (e *ItemsRepository) QueryByAssetID(ctx context.Context, gid uuid.UUID, assetID AssetID, page int, pageSize int) (PaginationResult[ItemSummary], error) {
+	qb := e.db.Item.Query().Where(
+		item.HasGroupWith(group.ID(gid)),
+		item.AssetID(int(assetID)),
+	)
+
+	if page != -1 || pageSize != -1 {
+		qb.Offset(calculateOffset(page, pageSize)).
+			Limit(pageSize)
+	} else {
+		page = -1
+		pageSize = -1
+	}
+
+	items, err :=  mapItemsSummaryErr(
+		qb.Order(ent.Asc(item.FieldName)).
+			WithLabel().
+			WithLocation().
+			All(ctx),
+	)
+
+	if err != nil {
+		return PaginationResult[ItemSummary]{}, err
+	}
+
+	return PaginationResult[ItemSummary]{
+		Page:     page,
+		PageSize: pageSize,
+		Total:    len(items),
+		Items:    items,
+	}, nil
 }
 
 // GetAll returns all the items in the database with the Labels and Locations eager loaded.

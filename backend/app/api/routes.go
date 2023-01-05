@@ -10,7 +10,6 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/hay-kot/homebox/backend/app/api/handlers/assetIds"
 	"github.com/hay-kot/homebox/backend/app/api/handlers/debughandlers"
 	v1 "github.com/hay-kot/homebox/backend/app/api/handlers/v1"
 	_ "github.com/hay-kot/homebox/backend/app/api/static/docs"
@@ -118,13 +117,13 @@ func (a *app) mountRoutes(repos *repo.AllRepos) {
 	a.server.Put(v1Base("/items/{id}/maintenance/{entry_id}"), v1Ctrl.HandleMaintenanceEntryUpdate(), userMW...)
 	a.server.Delete(v1Base("/items/{id}/maintenance/{entry_id}"), v1Ctrl.HandleMaintenanceEntryDelete(), userMW...)
 
+	a.server.Get(v1Base("/asset/{id}"), v1Ctrl.HandleAssetGet(), userMW...)
+
 	a.server.Get(
 		v1Base("/items/{id}/attachments/{attachment_id}"),
 		v1Ctrl.HandleItemAttachmentGet(),
 		a.mwAuthToken, a.mwRoles(RoleModeOr, authroles.RoleUser.String(), authroles.RoleAttachments.String()),
 	)
-
-	a.server.Get("/a/{id}", assetIds.HandleAssetRedirect(a.repos))
 
 	a.server.NotFound(notFoundHandler())
 }
