@@ -326,23 +326,23 @@ func (e *ItemsRepository) QueryByGroup(ctx context.Context, gid uuid.UUID, q Ite
 		)
 	}
 
+	count, err := qb.Count(ctx)
+	if err != nil {
+		return PaginationResult[ItemSummary]{}, err
+	}
+
+	qb = qb.Order(ent.Asc(item.FieldName)).
+		WithLabel().
+		WithLocation()
+
 	if q.Page != -1 || q.PageSize != -1 {
 		qb = qb.
 			Offset(calculateOffset(q.Page, q.PageSize)).
 			Limit(q.PageSize)
 	}
 
-	items, err := mapItemsSummaryErr(
-		qb.Order(ent.Asc(item.FieldName)).
-			WithLabel().
-			WithLocation().
-			All(ctx),
-	)
-	if err != nil {
-		return PaginationResult[ItemSummary]{}, err
-	}
+	items, err := mapItemsSummaryErr(qb.All(ctx))
 
-	count, err := qb.Count(ctx)
 	if err != nil {
 		return PaginationResult[ItemSummary]{}, err
 	}

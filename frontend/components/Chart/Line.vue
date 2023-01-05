@@ -56,7 +56,6 @@
       const calcWidth = ref(0);
 
       function resize() {
-        console.log("resize", el.value?.offsetHeight, el.value?.offsetWidth);
         calcHeight.value = el.value?.offsetHeight || 0;
         calcWidth.value = el.value?.offsetWidth || 0;
       }
