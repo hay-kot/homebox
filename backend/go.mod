@@ -14,7 +14,7 @@ require (
 	github.com/stretchr/testify v1.8.1
 	github.com/swaggo/http-swagger v1.3.3
 	github.com/swaggo/swag v1.8.9
-	golang.org/x/crypto v0.4.0
+	golang.org/x/crypto v0.5.0
 )
 
 require (
@@ -41,9 +41,9 @@ require (
 	github.com/swaggo/files v1.0.0 // indirect
 	github.com/zclconf/go-cty v1.12.1 // indirect
 	golang.org/x/mod v0.7.0 // indirect
-	golang.org/x/net v0.4.0 // indirect
-	golang.org/x/sys v0.3.0 // indirect
-	golang.org/x/text v0.5.0 // indirect
+	golang.org/x/net v0.5.0 // indirect
+	golang.org/x/sys v0.4.0 // indirect
+	golang.org/x/text v0.6.0 // indirect
 	golang.org/x/tools v0.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
