@@ -1,4 +1,4 @@
-/* post-processed by ./scripts/process-types.py */
+/* post-processed by ./scripts/process-types.go */
 /* eslint-disable */
 /* tslint:disable */
 /*
