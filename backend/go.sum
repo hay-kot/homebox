@@ -1,7 +1,7 @@
-ariga.io/atlas v0.8.3 h1:nddOywkhr/62Cwa+UsGgO35lAhUYh52XGVsbFwGzWZM=
-ariga.io/atlas v0.8.3/go.mod h1:T230JFcENj4ZZzMkZrXFDSkv+2kXkUgpJ5FQQ5hMcKU=
-entgo.io/ent v0.11.4 h1:grwVY0fp31BZ6oEo3YrXenAuv8VJmEw7F/Bi6WqeH3Q=
-entgo.io/ent v0.11.4/go.mod h1:fnQIXL36RYnCk/9nvG4aE7YHBFZhCycfh7wMjY5p7SE=
+ariga.io/atlas v0.8.4-0.20221212165942-e53dd27a603d h1:eAmX+el+OOTP5Y3ep9kmdj7Db6+0aHbT0LIYyPtcboU=
+ariga.io/atlas v0.8.4-0.20221212165942-e53dd27a603d/go.mod h1:T230JFcENj4ZZzMkZrXFDSkv+2kXkUgpJ5FQQ5hMcKU=
+entgo.io/ent v0.11.5 h1:V2qhG91C4PMQTa82Q4StoESMQ4dzkMNeStCzszxi0jQ=
+entgo.io/ent v0.11.5/go.mod h1:u7eKwNWAo/VlHIKxgwbmsFy3J7cKDxwi3jyF5TW/okY=
 github.com/DATA-DOG/go-sqlmock v1.5.0 h1:Shsta01QNfFxHCfpW6YH2STWB0MudeXXEWMr20OEh60=
 github.com/KyleBanks/depth v1.2.1 h1:5h8fQADFrWtarTdtDudMmGsC7GPbOAu6RVB3ffsVFHc=
 github.com/KyleBanks/depth v1.2.1/go.mod h1:jzSb9d0L43HxTQfT+oSA1EEp2q+ne2uh6XgeJcm8brE=
