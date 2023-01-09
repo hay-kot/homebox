@@ -76,7 +76,7 @@ export class ItemsApi extends BaseAPI {
   attachments: AttachmentsAPI;
   maintenance: MaintenanceAPI;
 
-  constructor(http: Requests, token: string) {
+  constructor(http: Requests, token = "") {
     super(http, token);
     this.attachments = new AttachmentsAPI(http);
     this.maintenance = new MaintenanceAPI(http);
