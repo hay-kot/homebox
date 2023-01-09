@@ -1,27 +1,27 @@
 <script setup lang="ts">
-  import { statCardData } from "./statistics";
-  import { itemsTable } from "./table";
-  import { useLabelStore } from "~~/stores/labels";
-  import { useLocationStore } from "~~/stores/locations";
+import { statCardData } from "./statistics";
+import { itemsTable } from "./table";
+import { useLabelStore } from "~~/stores/labels";
+import { useLocationStore } from "~~/stores/locations";
 
-  definePageMeta({
-    middleware: ["auth"],
-  });
-  useHead({
-    title: "Homebox | Home",
-  });
+definePageMeta({
+  middleware: ["auth"],
+});
+useHead({
+  title: "Homebox | Home",
+});
 
-  const api = useUserApi();
-  const breakpoints = useBreakpoints();
+const api = useUserApi();
+const breakpoints = useBreakpoints();
 
-  const locationStore = useLocationStore();
-  const locations = computed(() => locationStore.parentLocations);
+const locationStore = useLocationStore();
+const locations = computed(() => locationStore.parentLocations);
 
-  const labelsStore = useLabelStore();
-  const labels = computed(() => labelsStore.labels);
+const labelsStore = useLabelStore();
+const labels = computed(() => labelsStore.labels);
 
-  const itemTable = itemsTable(api);
-  const stats = statCardData(api);
+const itemTable = itemsTable(api);
+const stats = statCardData(api);
 
   // const purchasePriceOverTime = purchasePriceOverTimeChart(api);
 
@@ -83,6 +83,11 @@
 
         <BaseCard v-if="breakpoints.lg">
           <Table :headers="itemTable.headers" :data="itemTable.items">
+            <template #cell-name="{ item }">
+              <NuxtLink :to="`/item/${item.id}`">
+                {{ item.name }}
+              </NuxtLink>
+            </template>
             <template #cell-warranty="{ item }">
               <Icon v-if="item.warranty" name="mdi-check" class="text-green-500 h-5 w-5" />
               <Icon v-else name="mdi-close" class="text-red-500 h-5 w-5" />
@@ -90,7 +95,7 @@
             <template #cell-purchasePrice="{ item }">
               <Currency :amount="item.purchasePrice" />
             </template>
-            <template #cell-location_Name="{ item }">
+            <template #cell-location_name="{ item }">
               <NuxtLink class="badge badge-sm badge-primary p-3" :to="`/location/${item.location.id}`">
                 {{ item.location?.name }}
               </NuxtLink>
