@@ -633,6 +633,26 @@ paths:
       summary: Get the current user
       tags:
       - Group
+  /v1/assets/{id}:
+    get:
+      parameters:
+      - description: Asset ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/repo.PaginationResult-repo_ItemSummary'
+      security:
+      - Bearer: []
+      summary: Gets an item by Asset ID
+      tags:
+      - Assets
   /v1/groups:
     get:
       produces:
