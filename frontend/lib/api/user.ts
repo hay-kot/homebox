@@ -6,6 +6,7 @@ import { GroupApi } from "./classes/group";
 import { UserApi } from "./classes/users";
 import { ActionsAPI } from "./classes/actions";
 import { StatsAPI } from "./classes/stats";
+import { AssetsApi } from "./classes/assets";
 import { Requests } from "~~/lib/requests";
 
 export class UserClient extends BaseAPI {
@@ -16,17 +17,19 @@ export class UserClient extends BaseAPI {
   user: UserApi;
   actions: ActionsAPI;
   stats: StatsAPI;
+  assets: AssetsApi;
 
   constructor(requests: Requests, attachmentToken: string) {
     super(requests, attachmentToken);
 
     this.locations = new LocationsApi(requests);
     this.labels = new LabelsApi(requests);
-    this.items = new ItemsApi(requests);
+    this.items = new ItemsApi(requests, attachmentToken);
     this.group = new GroupApi(requests);
     this.user = new UserApi(requests);
     this.actions = new ActionsAPI(requests);
     this.stats = new StatsAPI(requests);
+    this.assets = new AssetsApi(requests);
 
     Object.freeze(this);
   }
