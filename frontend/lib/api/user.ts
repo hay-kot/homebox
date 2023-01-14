@@ -24,7 +24,7 @@ export class UserClient extends BaseAPI {
 
     this.locations = new LocationsApi(requests);
     this.labels = new LabelsApi(requests);
-    this.items = new ItemsApi(requests);
+    this.items = new ItemsApi(requests, attachmentToken);
     this.group = new GroupApi(requests);
     this.user = new UserApi(requests);
     this.actions = new ActionsAPI(requests);
