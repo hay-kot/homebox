@@ -32,7 +32,7 @@ specifiers:
   vite-plugin-eslint: ^1.8.1
   vitest: ^0.22.1
   vue: ^3.2.38
-  vue-chartjs: ^4.1.2
+  vue-chartjs: ^5.0.0
   vue-router: '4'
 
 dependencies:
@@ -53,7 +53,7 @@ dependencies:
   postcss: 8.4.19
   tailwindcss: 3.2.4_postcss@8.4.19
   vue: 3.2.45
-  vue-chartjs: 4.1.2_chart.js@4.0.1+vue@3.2.45
+  vue-chartjs: 5.2.0_chart.js@4.0.1+vue@3.2.45
   vue-router: 4.1.6_vue@3.2.45
 
 devDependencies:
@@ -6447,11 +6447,11 @@ packages:
     dependencies:
       ufo: 1.0.1
 
-  /vue-chartjs/4.1.2_chart.js@4.0.1+vue@3.2.45:
-    resolution: {integrity: sha512-QSggYjeFv/L4jFSBQpX8NzrAvX0B+Ha6nDgxkTG8tEXxYOOTwKI4phRLe+B4f+REnkmg7hgPY24R0cixZJyXBg==}
+  /vue-chartjs/5.2.0_chart.js@4.0.1+vue@3.2.45:
+    resolution: {integrity: sha512-d3zpKmGZr2OWHQ1xmxBcAn5ShTG917+/UCLaSpaCDDqT0U7DBsvFzTs69ZnHCgKoXT55GZDW8YEj9Av+dlONLA==}
     peerDependencies:
-      chart.js: ^3.7.0
-      vue: ^3.0.0-0 || ^2.6.0
+      chart.js: ^4.1.1
+      vue: ^3.0.0-0 || ^2.7.0
     dependencies:
       chart.js: 4.0.1
       vue: 3.2.45
