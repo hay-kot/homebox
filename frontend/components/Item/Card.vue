@@ -1,7 +1,7 @@
 <template>
   <NuxtLink class="group card rounded-md" :to="`/item/${item.id}`">
-    <div class="rounded-t flex flex-col bg-neutral text-neutral-content p-5">
-      <h2 class="text-base mb-4 last:mb-0 font-bold two-line min-h-[48px]">{{ item.name }}</h2>
+    <div class="rounded-t flex flex-col justify-center bg-neutral text-neutral-content p-5">
+      <h2 class="text-base mb-2 last:mb-0 font-bold two-line">{{ item.name }}</h2>
       <NuxtLink
         v-if="item.location"
         class="inline-flex text-sm items-center hover:link"
