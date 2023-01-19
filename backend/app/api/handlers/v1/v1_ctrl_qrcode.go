@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"image/png"
 	"io"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/hay-kot/homebox/backend/internal/sys/validate"
@@ -55,7 +54,7 @@ func (ctrl *V1Controller) HandleGenerateQRCode() server.HandlerFunc {
 			io.Closer
 		}{
 			Writer: w,
-			Closer: ioutil.NopCloser(nil),
+			Closer: io.NopCloser(nil),
 		}
 
 		qrwriter := standard.NewWithWriter(toWriteCloser, standard.WithLogoImage(image))
