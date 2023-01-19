@@ -27,6 +27,9 @@ theme:
   favicon: assets/img/favicon.svg
   logo: assets/img/favicon.svg
 
+plugins:
+  - tags
+
 extra_css:
   - assets/stylesheets/extras.css
 

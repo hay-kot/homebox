@@ -35,6 +35,8 @@ In some cases you may want to skip some items such as consumables, or items that
 
 ## QR Codes
 
+:octicons-tag-24: 0.7.0
+
 Homebox has a built-in QR code generator that can be used to generate QR codes for your items. This is useful for tracking items with a mobile device. You can generate a QR code for any item by clicking the QR code icon in the top right of the item details page. The same can be done for the Labels and Locations page. Currently support is limited to generating one off QR Codes.
 
 However, the API endpoint is available for generating QR codes on the fly for any item (or any other data) if you provide a valid API key in the query parameters. An example url would look like `/api/v1/qrcode?data=https://homebox.fly.dev/item/{uuid}&access_token={api_key}`. Currently the easiest way to get an API token is to use one from an existing URL of the QR Code in the API key, but this will be improved in the future.
