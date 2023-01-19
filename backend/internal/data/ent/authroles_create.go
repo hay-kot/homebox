@@ -61,50 +61,8 @@ func (arc *AuthRolesCreate) Mutation() *AuthRolesMutation {
 
 // Save creates the AuthRoles in the database.
 func (arc *AuthRolesCreate) Save(ctx context.Context) (*AuthRoles, error) {
-	var (
-		err  error
-		node *AuthRoles
-	)
 	arc.defaults()
-	if len(arc.hooks) == 0 {
-		if err = arc.check(); err != nil {
-			return nil, err
-		}
-		node, err = arc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*AuthRolesMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = arc.check(); err != nil {
-				return nil, err
-			}
-			arc.mutation = mutation
-			if node, err = arc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(arc.hooks) - 1; i >= 0; i-- {
-			if arc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = arc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, arc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*AuthRoles)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from AuthRolesMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*AuthRoles, AuthRolesMutation](ctx, arc.sqlSave, arc.mutation, arc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -151,6 +109,9 @@ func (arc *AuthRolesCreate) check() error {
 }
 
 func (arc *AuthRolesCreate) sqlSave(ctx context.Context) (*AuthRoles, error) {
+	if err := arc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := arc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, arc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -160,6 +121,8 @@ func (arc *AuthRolesCreate) sqlSave(ctx context.Context) (*AuthRoles, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = int(id)
+	arc.mutation.id = &_node.ID
+	arc.mutation.done = true
 	return _node, nil
 }
 

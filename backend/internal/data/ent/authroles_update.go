@@ -75,40 +75,7 @@ func (aru *AuthRolesUpdate) ClearToken() *AuthRolesUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (aru *AuthRolesUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
-	if len(aru.hooks) == 0 {
-		if err = aru.check(); err != nil {
-			return 0, err
-		}
-		affected, err = aru.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*AuthRolesMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = aru.check(); err != nil {
-				return 0, err
-			}
-			aru.mutation = mutation
-			affected, err = aru.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(aru.hooks) - 1; i >= 0; i-- {
-			if aru.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = aru.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, aru.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, AuthRolesMutation](ctx, aru.sqlSave, aru.mutation, aru.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -144,6 +111,9 @@ func (aru *AuthRolesUpdate) check() error {
 }
 
 func (aru *AuthRolesUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := aru.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   authroles.Table,
@@ -207,6 +177,7 @@ func (aru *AuthRolesUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	aru.mutation.done = true
 	return n, nil
 }
 
@@ -271,46 +242,7 @@ func (aruo *AuthRolesUpdateOne) Select(field string, fields ...string) *AuthRole
 
 // Save executes the query and returns the updated AuthRoles entity.
 func (aruo *AuthRolesUpdateOne) Save(ctx context.Context) (*AuthRoles, error) {
-	var (
-		err  error
-		node *AuthRoles
-	)
-	if len(aruo.hooks) == 0 {
-		if err = aruo.check(); err != nil {
-			return nil, err
-		}
-		node, err = aruo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*AuthRolesMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = aruo.check(); err != nil {
-				return nil, err
-			}
-			aruo.mutation = mutation
-			node, err = aruo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(aruo.hooks) - 1; i >= 0; i-- {
-			if aruo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = aruo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, aruo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*AuthRoles)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from AuthRolesMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*AuthRoles, AuthRolesMutation](ctx, aruo.sqlSave, aruo.mutation, aruo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -346,6 +278,9 @@ func (aruo *AuthRolesUpdateOne) check() error {
 }
 
 func (aruo *AuthRolesUpdateOne) sqlSave(ctx context.Context) (_node *AuthRoles, err error) {
+	if err := aruo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   authroles.Table,
@@ -429,5 +364,6 @@ func (aruo *AuthRolesUpdateOne) sqlSave(ctx context.Context) (_node *AuthRoles, 
 		}
 		return nil, err
 	}
+	aruo.mutation.done = true
 	return _node, nil
 }

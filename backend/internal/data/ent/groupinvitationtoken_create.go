@@ -124,50 +124,8 @@ func (gitc *GroupInvitationTokenCreate) Mutation() *GroupInvitationTokenMutation
 
 // Save creates the GroupInvitationToken in the database.
 func (gitc *GroupInvitationTokenCreate) Save(ctx context.Context) (*GroupInvitationToken, error) {
-	var (
-		err  error
-		node *GroupInvitationToken
-	)
 	gitc.defaults()
-	if len(gitc.hooks) == 0 {
-		if err = gitc.check(); err != nil {
-			return nil, err
-		}
-		node, err = gitc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*GroupInvitationTokenMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = gitc.check(); err != nil {
-				return nil, err
-			}
-			gitc.mutation = mutation
-			if node, err = gitc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(gitc.hooks) - 1; i >= 0; i-- {
-			if gitc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = gitc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, gitc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*GroupInvitationToken)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from GroupInvitationTokenMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*GroupInvitationToken, GroupInvitationTokenMutation](ctx, gitc.sqlSave, gitc.mutation, gitc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -237,6 +195,9 @@ func (gitc *GroupInvitationTokenCreate) check() error {
 }
 
 func (gitc *GroupInvitationTokenCreate) sqlSave(ctx context.Context) (*GroupInvitationToken, error) {
+	if err := gitc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := gitc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, gitc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -251,6 +212,8 @@ func (gitc *GroupInvitationTokenCreate) sqlSave(ctx context.Context) (*GroupInvi
 			return nil, err
 		}
 	}
+	gitc.mutation.id = &_node.ID
+	gitc.mutation.done = true
 	return _node, nil
 }
 

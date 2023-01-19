@@ -114,35 +114,8 @@ func (atu *AuthTokensUpdate) ClearRoles() *AuthTokensUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (atu *AuthTokensUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	atu.defaults()
-	if len(atu.hooks) == 0 {
-		affected, err = atu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*AuthTokensMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			atu.mutation = mutation
-			affected, err = atu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(atu.hooks) - 1; i >= 0; i-- {
-			if atu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = atu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, atu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, AuthTokensMutation](ctx, atu.sqlSave, atu.mutation, atu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -280,6 +253,7 @@ func (atu *AuthTokensUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	atu.mutation.done = true
 	return n, nil
 }
 
@@ -381,41 +355,8 @@ func (atuo *AuthTokensUpdateOne) Select(field string, fields ...string) *AuthTok
 
 // Save executes the query and returns the updated AuthTokens entity.
 func (atuo *AuthTokensUpdateOne) Save(ctx context.Context) (*AuthTokens, error) {
-	var (
-		err  error
-		node *AuthTokens
-	)
 	atuo.defaults()
-	if len(atuo.hooks) == 0 {
-		node, err = atuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*AuthTokensMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			atuo.mutation = mutation
-			node, err = atuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(atuo.hooks) - 1; i >= 0; i-- {
-			if atuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = atuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, atuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*AuthTokens)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from AuthTokensMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*AuthTokens, AuthTokensMutation](ctx, atuo.sqlSave, atuo.mutation, atuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -573,5 +514,6 @@ func (atuo *AuthTokensUpdateOne) sqlSave(ctx context.Context) (_node *AuthTokens
 		}
 		return nil, err
 	}
+	atuo.mutation.done = true
 	return _node, nil
 }

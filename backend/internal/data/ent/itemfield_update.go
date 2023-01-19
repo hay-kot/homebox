@@ -175,41 +175,8 @@ func (ifu *ItemFieldUpdate) ClearItem() *ItemFieldUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ifu *ItemFieldUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	ifu.defaults()
-	if len(ifu.hooks) == 0 {
-		if err = ifu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = ifu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ItemFieldMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ifu.check(); err != nil {
-				return 0, err
-			}
-			ifu.mutation = mutation
-			affected, err = ifu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(ifu.hooks) - 1; i >= 0; i-- {
-			if ifu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ifu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, ifu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, ItemFieldMutation](ctx, ifu.sqlSave, ifu.mutation, ifu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -268,6 +235,9 @@ func (ifu *ItemFieldUpdate) check() error {
 }
 
 func (ifu *ItemFieldUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := ifu.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   itemfield.Table,
@@ -364,6 +334,7 @@ func (ifu *ItemFieldUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	ifu.mutation.done = true
 	return n, nil
 }
 
@@ -527,47 +498,8 @@ func (ifuo *ItemFieldUpdateOne) Select(field string, fields ...string) *ItemFiel
 
 // Save executes the query and returns the updated ItemField entity.
 func (ifuo *ItemFieldUpdateOne) Save(ctx context.Context) (*ItemField, error) {
-	var (
-		err  error
-		node *ItemField
-	)
 	ifuo.defaults()
-	if len(ifuo.hooks) == 0 {
-		if err = ifuo.check(); err != nil {
-			return nil, err
-		}
-		node, err = ifuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*ItemFieldMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ifuo.check(); err != nil {
-				return nil, err
-			}
-			ifuo.mutation = mutation
-			node, err = ifuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(ifuo.hooks) - 1; i >= 0; i-- {
-			if ifuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ifuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, ifuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*ItemField)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from ItemFieldMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*ItemField, ItemFieldMutation](ctx, ifuo.sqlSave, ifuo.mutation, ifuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -626,6 +558,9 @@ func (ifuo *ItemFieldUpdateOne) check() error {
 }
 
 func (ifuo *ItemFieldUpdateOne) sqlSave(ctx context.Context) (_node *ItemField, err error) {
+	if err := ifuo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   itemfield.Table,
@@ -742,5 +677,6 @@ func (ifuo *ItemFieldUpdateOne) sqlSave(ctx context.Context) (_node *ItemField, 
 		}
 		return nil, err
 	}
+	ifuo.mutation.done = true
 	return _node, nil
 }

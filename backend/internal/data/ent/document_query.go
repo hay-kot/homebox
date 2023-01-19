@@ -26,6 +26,7 @@ type DocumentQuery struct {
 	unique          *bool
 	order           []OrderFunc
 	fields          []string
+	inters          []Interceptor
 	predicates      []predicate.Document
 	withGroup       *GroupQuery
 	withAttachments *AttachmentQuery
@@ -41,13 +42,13 @@ func (dq *DocumentQuery) Where(ps ...predicate.Document) *DocumentQuery {
 	return dq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (dq *DocumentQuery) Limit(limit int) *DocumentQuery {
 	dq.limit = &limit
 	return dq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (dq *DocumentQuery) Offset(offset int) *DocumentQuery {
 	dq.offset = &offset
 	return dq
@@ -60,7 +61,7 @@ func (dq *DocumentQuery) Unique(unique bool) *DocumentQuery {
 	return dq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (dq *DocumentQuery) Order(o ...OrderFunc) *DocumentQuery {
 	dq.order = append(dq.order, o...)
 	return dq
@@ -68,7 +69,7 @@ func (dq *DocumentQuery) Order(o ...OrderFunc) *DocumentQuery {
 
 // QueryGroup chains the current query on the "group" edge.
 func (dq *DocumentQuery) QueryGroup() *GroupQuery {
-	query := &GroupQuery{config: dq.config}
+	query := (&GroupClient{config: dq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := dq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -90,7 +91,7 @@ func (dq *DocumentQuery) QueryGroup() *GroupQuery {
 
 // QueryAttachments chains the current query on the "attachments" edge.
 func (dq *DocumentQuery) QueryAttachments() *AttachmentQuery {
-	query := &AttachmentQuery{config: dq.config}
+	query := (&AttachmentClient{config: dq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := dq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -113,7 +114,7 @@ func (dq *DocumentQuery) QueryAttachments() *AttachmentQuery {
 // First returns the first Document entity from the query.
 // Returns a *NotFoundError when no Document was found.
 func (dq *DocumentQuery) First(ctx context.Context) (*Document, error) {
-	nodes, err := dq.Limit(1).All(ctx)
+	nodes, err := dq.Limit(1).All(newQueryContext(ctx, TypeDocument, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +137,7 @@ func (dq *DocumentQuery) FirstX(ctx context.Context) *Document {
 // Returns a *NotFoundError when no Document ID was found.
 func (dq *DocumentQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = dq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = dq.Limit(1).IDs(newQueryContext(ctx, TypeDocument, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -159,7 +160,7 @@ func (dq *DocumentQuery) FirstIDX(ctx context.Context) uuid.UUID {
 // Returns a *NotSingularError when more than one Document entity is found.
 // Returns a *NotFoundError when no Document entities are found.
 func (dq *DocumentQuery) Only(ctx context.Context) (*Document, error) {
-	nodes, err := dq.Limit(2).All(ctx)
+	nodes, err := dq.Limit(2).All(newQueryContext(ctx, TypeDocument, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -187,7 +188,7 @@ func (dq *DocumentQuery) OnlyX(ctx context.Context) *Document {
 // Returns a *NotFoundError when no entities are found.
 func (dq *DocumentQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = dq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = dq.Limit(2).IDs(newQueryContext(ctx, TypeDocument, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -212,10 +213,12 @@ func (dq *DocumentQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 
 // All executes the query and returns a list of Documents.
 func (dq *DocumentQuery) All(ctx context.Context) ([]*Document, error) {
+	ctx = newQueryContext(ctx, TypeDocument, "All")
 	if err := dq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return dq.sqlAll(ctx)
+	qr := querierAll[[]*Document, *DocumentQuery]()
+	return withInterceptors[[]*Document](ctx, dq, qr, dq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -230,6 +233,7 @@ func (dq *DocumentQuery) AllX(ctx context.Context) []*Document {
 // IDs executes the query and returns a list of Document IDs.
 func (dq *DocumentQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	var ids []uuid.UUID
+	ctx = newQueryContext(ctx, TypeDocument, "IDs")
 	if err := dq.Select(document.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -247,10 +251,11 @@ func (dq *DocumentQuery) IDsX(ctx context.Context) []uuid.UUID {
 
 // Count returns the count of the given query.
 func (dq *DocumentQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeDocument, "Count")
 	if err := dq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return dq.sqlCount(ctx)
+	return withInterceptors[int](ctx, dq, querierCount[*DocumentQuery](), dq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -264,10 +269,15 @@ func (dq *DocumentQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (dq *DocumentQuery) Exist(ctx context.Context) (bool, error) {
-	if err := dq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeDocument, "Exist")
+	switch _, err := dq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return dq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -290,6 +300,7 @@ func (dq *DocumentQuery) Clone() *DocumentQuery {
 		limit:           dq.limit,
 		offset:          dq.offset,
 		order:           append([]OrderFunc{}, dq.order...),
+		inters:          append([]Interceptor{}, dq.inters...),
 		predicates:      append([]predicate.Document{}, dq.predicates...),
 		withGroup:       dq.withGroup.Clone(),
 		withAttachments: dq.withAttachments.Clone(),
@@ -303,7 +314,7 @@ func (dq *DocumentQuery) Clone() *DocumentQuery {
 // WithGroup tells the query-builder to eager-load the nodes that are connected to
 // the "group" edge. The optional arguments are used to configure the query builder of the edge.
 func (dq *DocumentQuery) WithGroup(opts ...func(*GroupQuery)) *DocumentQuery {
-	query := &GroupQuery{config: dq.config}
+	query := (&GroupClient{config: dq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -314,7 +325,7 @@ func (dq *DocumentQuery) WithGroup(opts ...func(*GroupQuery)) *DocumentQuery {
 // WithAttachments tells the query-builder to eager-load the nodes that are connected to
 // the "attachments" edge. The optional arguments are used to configure the query builder of the edge.
 func (dq *DocumentQuery) WithAttachments(opts ...func(*AttachmentQuery)) *DocumentQuery {
-	query := &AttachmentQuery{config: dq.config}
+	query := (&AttachmentClient{config: dq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -337,16 +348,11 @@ func (dq *DocumentQuery) WithAttachments(opts ...func(*AttachmentQuery)) *Docume
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (dq *DocumentQuery) GroupBy(field string, fields ...string) *DocumentGroupBy {
-	grbuild := &DocumentGroupBy{config: dq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := dq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return dq.sqlQuery(ctx), nil
-	}
+	dq.fields = append([]string{field}, fields...)
+	grbuild := &DocumentGroupBy{build: dq}
+	grbuild.flds = &dq.fields
 	grbuild.label = document.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -364,10 +370,10 @@ func (dq *DocumentQuery) GroupBy(field string, fields ...string) *DocumentGroupB
 //		Scan(ctx, &v)
 func (dq *DocumentQuery) Select(fields ...string) *DocumentSelect {
 	dq.fields = append(dq.fields, fields...)
-	selbuild := &DocumentSelect{DocumentQuery: dq}
-	selbuild.label = document.Label
-	selbuild.flds, selbuild.scan = &dq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &DocumentSelect{DocumentQuery: dq}
+	sbuild.label = document.Label
+	sbuild.flds, sbuild.scan = &dq.fields, sbuild.Scan
+	return sbuild
 }
 
 // Aggregate returns a DocumentSelect configured with the given aggregations.
@@ -376,6 +382,16 @@ func (dq *DocumentQuery) Aggregate(fns ...AggregateFunc) *DocumentSelect {
 }
 
 func (dq *DocumentQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range dq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, dq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range dq.fields {
 		if !document.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -511,17 +527,6 @@ func (dq *DocumentQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, dq.driver, _spec)
 }
 
-func (dq *DocumentQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := dq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (dq *DocumentQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -604,13 +609,8 @@ func (dq *DocumentQuery) sqlQuery(ctx context.Context) *sql.Selector {
 
 // DocumentGroupBy is the group-by builder for Document entities.
 type DocumentGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *DocumentQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -619,58 +619,46 @@ func (dgb *DocumentGroupBy) Aggregate(fns ...AggregateFunc) *DocumentGroupBy {
 	return dgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (dgb *DocumentGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := dgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeDocument, "GroupBy")
+	if err := dgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	dgb.sql = query
-	return dgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*DocumentQuery, *DocumentGroupBy](ctx, dgb.build, dgb, dgb.build.inters, v)
 }
 
-func (dgb *DocumentGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range dgb.fields {
-		if !document.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (dgb *DocumentGroupBy) sqlScan(ctx context.Context, root *DocumentQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(dgb.fns))
+	for _, fn := range dgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := dgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*dgb.flds)+len(dgb.fns))
+		for _, f := range *dgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*dgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := dgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := dgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (dgb *DocumentGroupBy) sqlQuery() *sql.Selector {
-	selector := dgb.sql.Select()
-	aggregation := make([]string, 0, len(dgb.fns))
-	for _, fn := range dgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(dgb.fields)+len(dgb.fns))
-		for _, f := range dgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(dgb.fields...)...)
-}
-
 // DocumentSelect is the builder for selecting fields of Document entities.
 type DocumentSelect struct {
 	*DocumentQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
@@ -681,26 +669,27 @@ func (ds *DocumentSelect) Aggregate(fns ...AggregateFunc) *DocumentSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (ds *DocumentSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeDocument, "Select")
 	if err := ds.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ds.sql = ds.DocumentQuery.sqlQuery(ctx)
-	return ds.sqlScan(ctx, v)
+	return scanWithInterceptors[*DocumentQuery, *DocumentSelect](ctx, ds.DocumentQuery, ds, ds.inters, v)
 }
 
-func (ds *DocumentSelect) sqlScan(ctx context.Context, v any) error {
+func (ds *DocumentSelect) sqlScan(ctx context.Context, root *DocumentQuery, v any) error {
+	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(ds.fns))
 	for _, fn := range ds.fns {
-		aggregation = append(aggregation, fn(ds.sql))
+		aggregation = append(aggregation, fn(selector))
 	}
 	switch n := len(*ds.selector.flds); {
 	case n == 0 && len(aggregation) > 0:
-		ds.sql.Select(aggregation...)
+		selector.Select(aggregation...)
 	case n != 0 && len(aggregation) > 0:
-		ds.sql.AppendSelect(aggregation...)
+		selector.AppendSelect(aggregation...)
 	}
 	rows := &sql.Rows{}
-	query, args := ds.sql.Query()
+	query, args := selector.Query()
 	if err := ds.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

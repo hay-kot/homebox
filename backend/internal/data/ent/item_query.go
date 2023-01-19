@@ -30,6 +30,7 @@ type ItemQuery struct {
 	unique                 *bool
 	order                  []OrderFunc
 	fields                 []string
+	inters                 []Interceptor
 	predicates             []predicate.Item
 	withParent             *ItemQuery
 	withChildren           *ItemQuery
@@ -51,13 +52,13 @@ func (iq *ItemQuery) Where(ps ...predicate.Item) *ItemQuery {
 	return iq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (iq *ItemQuery) Limit(limit int) *ItemQuery {
 	iq.limit = &limit
 	return iq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (iq *ItemQuery) Offset(offset int) *ItemQuery {
 	iq.offset = &offset
 	return iq
@@ -70,7 +71,7 @@ func (iq *ItemQuery) Unique(unique bool) *ItemQuery {
 	return iq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (iq *ItemQuery) Order(o ...OrderFunc) *ItemQuery {
 	iq.order = append(iq.order, o...)
 	return iq
@@ -78,7 +79,7 @@ func (iq *ItemQuery) Order(o ...OrderFunc) *ItemQuery {
 
 // QueryParent chains the current query on the "parent" edge.
 func (iq *ItemQuery) QueryParent() *ItemQuery {
-	query := &ItemQuery{config: iq.config}
+	query := (&ItemClient{config: iq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := iq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -100,7 +101,7 @@ func (iq *ItemQuery) QueryParent() *ItemQuery {
 
 // QueryChildren chains the current query on the "children" edge.
 func (iq *ItemQuery) QueryChildren() *ItemQuery {
-	query := &ItemQuery{config: iq.config}
+	query := (&ItemClient{config: iq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := iq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -122,7 +123,7 @@ func (iq *ItemQuery) QueryChildren() *ItemQuery {
 
 // QueryGroup chains the current query on the "group" edge.
 func (iq *ItemQuery) QueryGroup() *GroupQuery {
-	query := &GroupQuery{config: iq.config}
+	query := (&GroupClient{config: iq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := iq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -144,7 +145,7 @@ func (iq *ItemQuery) QueryGroup() *GroupQuery {
 
 // QueryLabel chains the current query on the "label" edge.
 func (iq *ItemQuery) QueryLabel() *LabelQuery {
-	query := &LabelQuery{config: iq.config}
+	query := (&LabelClient{config: iq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := iq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -166,7 +167,7 @@ func (iq *ItemQuery) QueryLabel() *LabelQuery {
 
 // QueryLocation chains the current query on the "location" edge.
 func (iq *ItemQuery) QueryLocation() *LocationQuery {
-	query := &LocationQuery{config: iq.config}
+	query := (&LocationClient{config: iq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := iq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -188,7 +189,7 @@ func (iq *ItemQuery) QueryLocation() *LocationQuery {
 
 // QueryFields chains the current query on the "fields" edge.
 func (iq *ItemQuery) QueryFields() *ItemFieldQuery {
-	query := &ItemFieldQuery{config: iq.config}
+	query := (&ItemFieldClient{config: iq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := iq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -210,7 +211,7 @@ func (iq *ItemQuery) QueryFields() *ItemFieldQuery {
 
 // QueryMaintenanceEntries chains the current query on the "maintenance_entries" edge.
 func (iq *ItemQuery) QueryMaintenanceEntries() *MaintenanceEntryQuery {
-	query := &MaintenanceEntryQuery{config: iq.config}
+	query := (&MaintenanceEntryClient{config: iq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := iq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -232,7 +233,7 @@ func (iq *ItemQuery) QueryMaintenanceEntries() *MaintenanceEntryQuery {
 
 // QueryAttachments chains the current query on the "attachments" edge.
 func (iq *ItemQuery) QueryAttachments() *AttachmentQuery {
-	query := &AttachmentQuery{config: iq.config}
+	query := (&AttachmentClient{config: iq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := iq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -255,7 +256,7 @@ func (iq *ItemQuery) QueryAttachments() *AttachmentQuery {
 // First returns the first Item entity from the query.
 // Returns a *NotFoundError when no Item was found.
 func (iq *ItemQuery) First(ctx context.Context) (*Item, error) {
-	nodes, err := iq.Limit(1).All(ctx)
+	nodes, err := iq.Limit(1).All(newQueryContext(ctx, TypeItem, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -278,7 +279,7 @@ func (iq *ItemQuery) FirstX(ctx context.Context) *Item {
 // Returns a *NotFoundError when no Item ID was found.
 func (iq *ItemQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = iq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = iq.Limit(1).IDs(newQueryContext(ctx, TypeItem, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -301,7 +302,7 @@ func (iq *ItemQuery) FirstIDX(ctx context.Context) uuid.UUID {
 // Returns a *NotSingularError when more than one Item entity is found.
 // Returns a *NotFoundError when no Item entities are found.
 func (iq *ItemQuery) Only(ctx context.Context) (*Item, error) {
-	nodes, err := iq.Limit(2).All(ctx)
+	nodes, err := iq.Limit(2).All(newQueryContext(ctx, TypeItem, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -329,7 +330,7 @@ func (iq *ItemQuery) OnlyX(ctx context.Context) *Item {
 // Returns a *NotFoundError when no entities are found.
 func (iq *ItemQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = iq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = iq.Limit(2).IDs(newQueryContext(ctx, TypeItem, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -354,10 +355,12 @@ func (iq *ItemQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 
 // All executes the query and returns a list of Items.
 func (iq *ItemQuery) All(ctx context.Context) ([]*Item, error) {
+	ctx = newQueryContext(ctx, TypeItem, "All")
 	if err := iq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return iq.sqlAll(ctx)
+	qr := querierAll[[]*Item, *ItemQuery]()
+	return withInterceptors[[]*Item](ctx, iq, qr, iq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -372,6 +375,7 @@ func (iq *ItemQuery) AllX(ctx context.Context) []*Item {
 // IDs executes the query and returns a list of Item IDs.
 func (iq *ItemQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	var ids []uuid.UUID
+	ctx = newQueryContext(ctx, TypeItem, "IDs")
 	if err := iq.Select(item.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -389,10 +393,11 @@ func (iq *ItemQuery) IDsX(ctx context.Context) []uuid.UUID {
 
 // Count returns the count of the given query.
 func (iq *ItemQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeItem, "Count")
 	if err := iq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return iq.sqlCount(ctx)
+	return withInterceptors[int](ctx, iq, querierCount[*ItemQuery](), iq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -406,10 +411,15 @@ func (iq *ItemQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (iq *ItemQuery) Exist(ctx context.Context) (bool, error) {
-	if err := iq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeItem, "Exist")
+	switch _, err := iq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return iq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -432,6 +442,7 @@ func (iq *ItemQuery) Clone() *ItemQuery {
 		limit:                  iq.limit,
 		offset:                 iq.offset,
 		order:                  append([]OrderFunc{}, iq.order...),
+		inters:                 append([]Interceptor{}, iq.inters...),
 		predicates:             append([]predicate.Item{}, iq.predicates...),
 		withParent:             iq.withParent.Clone(),
 		withChildren:           iq.withChildren.Clone(),
@@ -451,7 +462,7 @@ func (iq *ItemQuery) Clone() *ItemQuery {
 // WithParent tells the query-builder to eager-load the nodes that are connected to
 // the "parent" edge. The optional arguments are used to configure the query builder of the edge.
 func (iq *ItemQuery) WithParent(opts ...func(*ItemQuery)) *ItemQuery {
-	query := &ItemQuery{config: iq.config}
+	query := (&ItemClient{config: iq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -462,7 +473,7 @@ func (iq *ItemQuery) WithParent(opts ...func(*ItemQuery)) *ItemQuery {
 // WithChildren tells the query-builder to eager-load the nodes that are connected to
 // the "children" edge. The optional arguments are used to configure the query builder of the edge.
 func (iq *ItemQuery) WithChildren(opts ...func(*ItemQuery)) *ItemQuery {
-	query := &ItemQuery{config: iq.config}
+	query := (&ItemClient{config: iq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -473,7 +484,7 @@ func (iq *ItemQuery) WithChildren(opts ...func(*ItemQuery)) *ItemQuery {
 // WithGroup tells the query-builder to eager-load the nodes that are connected to
 // the "group" edge. The optional arguments are used to configure the query builder of the edge.
 func (iq *ItemQuery) WithGroup(opts ...func(*GroupQuery)) *ItemQuery {
-	query := &GroupQuery{config: iq.config}
+	query := (&GroupClient{config: iq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -484,7 +495,7 @@ func (iq *ItemQuery) WithGroup(opts ...func(*GroupQuery)) *ItemQuery {
 // WithLabel tells the query-builder to eager-load the nodes that are connected to
 // the "label" edge. The optional arguments are used to configure the query builder of the edge.
 func (iq *ItemQuery) WithLabel(opts ...func(*LabelQuery)) *ItemQuery {
-	query := &LabelQuery{config: iq.config}
+	query := (&LabelClient{config: iq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -495,7 +506,7 @@ func (iq *ItemQuery) WithLabel(opts ...func(*LabelQuery)) *ItemQuery {
 // WithLocation tells the query-builder to eager-load the nodes that are connected to
 // the "location" edge. The optional arguments are used to configure the query builder of the edge.
 func (iq *ItemQuery) WithLocation(opts ...func(*LocationQuery)) *ItemQuery {
-	query := &LocationQuery{config: iq.config}
+	query := (&LocationClient{config: iq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -506,7 +517,7 @@ func (iq *ItemQuery) WithLocation(opts ...func(*LocationQuery)) *ItemQuery {
 // WithFields tells the query-builder to eager-load the nodes that are connected to
 // the "fields" edge. The optional arguments are used to configure the query builder of the edge.
 func (iq *ItemQuery) WithFields(opts ...func(*ItemFieldQuery)) *ItemQuery {
-	query := &ItemFieldQuery{config: iq.config}
+	query := (&ItemFieldClient{config: iq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -517,7 +528,7 @@ func (iq *ItemQuery) WithFields(opts ...func(*ItemFieldQuery)) *ItemQuery {
 // WithMaintenanceEntries tells the query-builder to eager-load the nodes that are connected to
 // the "maintenance_entries" edge. The optional arguments are used to configure the query builder of the edge.
 func (iq *ItemQuery) WithMaintenanceEntries(opts ...func(*MaintenanceEntryQuery)) *ItemQuery {
-	query := &MaintenanceEntryQuery{config: iq.config}
+	query := (&MaintenanceEntryClient{config: iq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -528,7 +539,7 @@ func (iq *ItemQuery) WithMaintenanceEntries(opts ...func(*MaintenanceEntryQuery)
 // WithAttachments tells the query-builder to eager-load the nodes that are connected to
 // the "attachments" edge. The optional arguments are used to configure the query builder of the edge.
 func (iq *ItemQuery) WithAttachments(opts ...func(*AttachmentQuery)) *ItemQuery {
-	query := &AttachmentQuery{config: iq.config}
+	query := (&AttachmentClient{config: iq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -551,16 +562,11 @@ func (iq *ItemQuery) WithAttachments(opts ...func(*AttachmentQuery)) *ItemQuery 
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (iq *ItemQuery) GroupBy(field string, fields ...string) *ItemGroupBy {
-	grbuild := &ItemGroupBy{config: iq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := iq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return iq.sqlQuery(ctx), nil
-	}
+	iq.fields = append([]string{field}, fields...)
+	grbuild := &ItemGroupBy{build: iq}
+	grbuild.flds = &iq.fields
 	grbuild.label = item.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -578,10 +584,10 @@ func (iq *ItemQuery) GroupBy(field string, fields ...string) *ItemGroupBy {
 //		Scan(ctx, &v)
 func (iq *ItemQuery) Select(fields ...string) *ItemSelect {
 	iq.fields = append(iq.fields, fields...)
-	selbuild := &ItemSelect{ItemQuery: iq}
-	selbuild.label = item.Label
-	selbuild.flds, selbuild.scan = &iq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &ItemSelect{ItemQuery: iq}
+	sbuild.label = item.Label
+	sbuild.flds, sbuild.scan = &iq.fields, sbuild.Scan
+	return sbuild
 }
 
 // Aggregate returns a ItemSelect configured with the given aggregations.
@@ -590,6 +596,16 @@ func (iq *ItemQuery) Aggregate(fns ...AggregateFunc) *ItemSelect {
 }
 
 func (iq *ItemQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range iq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, iq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range iq.fields {
 		if !item.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -976,17 +992,6 @@ func (iq *ItemQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, iq.driver, _spec)
 }
 
-func (iq *ItemQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := iq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (iq *ItemQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -1069,13 +1074,8 @@ func (iq *ItemQuery) sqlQuery(ctx context.Context) *sql.Selector {
 
 // ItemGroupBy is the group-by builder for Item entities.
 type ItemGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *ItemQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -1084,58 +1084,46 @@ func (igb *ItemGroupBy) Aggregate(fns ...AggregateFunc) *ItemGroupBy {
 	return igb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (igb *ItemGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := igb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeItem, "GroupBy")
+	if err := igb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	igb.sql = query
-	return igb.sqlScan(ctx, v)
+	return scanWithInterceptors[*ItemQuery, *ItemGroupBy](ctx, igb.build, igb, igb.build.inters, v)
 }
 
-func (igb *ItemGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range igb.fields {
-		if !item.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (igb *ItemGroupBy) sqlScan(ctx context.Context, root *ItemQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(igb.fns))
+	for _, fn := range igb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := igb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*igb.flds)+len(igb.fns))
+		for _, f := range *igb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*igb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := igb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := igb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (igb *ItemGroupBy) sqlQuery() *sql.Selector {
-	selector := igb.sql.Select()
-	aggregation := make([]string, 0, len(igb.fns))
-	for _, fn := range igb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(igb.fields)+len(igb.fns))
-		for _, f := range igb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(igb.fields...)...)
-}
-
 // ItemSelect is the builder for selecting fields of Item entities.
 type ItemSelect struct {
 	*ItemQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
@@ -1146,26 +1134,27 @@ func (is *ItemSelect) Aggregate(fns ...AggregateFunc) *ItemSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (is *ItemSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeItem, "Select")
 	if err := is.prepareQuery(ctx); err != nil {
 		return err
 	}
-	is.sql = is.ItemQuery.sqlQuery(ctx)
-	return is.sqlScan(ctx, v)
+	return scanWithInterceptors[*ItemQuery, *ItemSelect](ctx, is.ItemQuery, is, is.inters, v)
 }
 
-func (is *ItemSelect) sqlScan(ctx context.Context, v any) error {
+func (is *ItemSelect) sqlScan(ctx context.Context, root *ItemQuery, v any) error {
+	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(is.fns))
 	for _, fn := range is.fns {
-		aggregation = append(aggregation, fn(is.sql))
+		aggregation = append(aggregation, fn(selector))
 	}
 	switch n := len(*is.selector.flds); {
 	case n == 0 && len(aggregation) > 0:
-		is.sql.Select(aggregation...)
+		selector.Select(aggregation...)
 	case n != 0 && len(aggregation) > 0:
-		is.sql.AppendSelect(aggregation...)
+		selector.AppendSelect(aggregation...)
 	}
 	rows := &sql.Rows{}
-	query, args := is.sql.Query()
+	query, args := selector.Query()
 	if err := is.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

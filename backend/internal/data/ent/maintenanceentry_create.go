@@ -130,50 +130,8 @@ func (mec *MaintenanceEntryCreate) Mutation() *MaintenanceEntryMutation {
 
 // Save creates the MaintenanceEntry in the database.
 func (mec *MaintenanceEntryCreate) Save(ctx context.Context) (*MaintenanceEntry, error) {
-	var (
-		err  error
-		node *MaintenanceEntry
-	)
 	mec.defaults()
-	if len(mec.hooks) == 0 {
-		if err = mec.check(); err != nil {
-			return nil, err
-		}
-		node, err = mec.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*MaintenanceEntryMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = mec.check(); err != nil {
-				return nil, err
-			}
-			mec.mutation = mutation
-			if node, err = mec.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(mec.hooks) - 1; i >= 0; i-- {
-			if mec.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = mec.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, mec.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*MaintenanceEntry)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from MaintenanceEntryMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*MaintenanceEntry, MaintenanceEntryMutation](ctx, mec.sqlSave, mec.mutation, mec.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -259,6 +217,9 @@ func (mec *MaintenanceEntryCreate) check() error {
 }
 
 func (mec *MaintenanceEntryCreate) sqlSave(ctx context.Context) (*MaintenanceEntry, error) {
+	if err := mec.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := mec.createSpec()
 	if err := sqlgraph.CreateNode(ctx, mec.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -273,6 +234,8 @@ func (mec *MaintenanceEntryCreate) sqlSave(ctx context.Context) (*MaintenanceEnt
 			return nil, err
 		}
 	}
+	mec.mutation.id = &_node.ID
+	mec.mutation.done = true
 	return _node, nil
 }
 
