@@ -184,41 +184,8 @@ func (lu *LocationUpdate) RemoveItems(i ...*Item) *LocationUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (lu *LocationUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	lu.defaults()
-	if len(lu.hooks) == 0 {
-		if err = lu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = lu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*LocationMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = lu.check(); err != nil {
-				return 0, err
-			}
-			lu.mutation = mutation
-			affected, err = lu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(lu.hooks) - 1; i >= 0; i-- {
-			if lu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = lu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, lu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, LocationMutation](ctx, lu.sqlSave, lu.mutation, lu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -270,6 +237,9 @@ func (lu *LocationUpdate) check() error {
 }
 
 func (lu *LocationUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := lu.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   location.Table,
@@ -485,6 +455,7 @@ func (lu *LocationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	lu.mutation.done = true
 	return n, nil
 }
 
@@ -656,47 +627,8 @@ func (luo *LocationUpdateOne) Select(field string, fields ...string) *LocationUp
 
 // Save executes the query and returns the updated Location entity.
 func (luo *LocationUpdateOne) Save(ctx context.Context) (*Location, error) {
-	var (
-		err  error
-		node *Location
-	)
 	luo.defaults()
-	if len(luo.hooks) == 0 {
-		if err = luo.check(); err != nil {
-			return nil, err
-		}
-		node, err = luo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*LocationMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = luo.check(); err != nil {
-				return nil, err
-			}
-			luo.mutation = mutation
-			node, err = luo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(luo.hooks) - 1; i >= 0; i-- {
-			if luo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = luo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, luo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Location)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from LocationMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Location, LocationMutation](ctx, luo.sqlSave, luo.mutation, luo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -748,6 +680,9 @@ func (luo *LocationUpdateOne) check() error {
 }
 
 func (luo *LocationUpdateOne) sqlSave(ctx context.Context) (_node *Location, err error) {
+	if err := luo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   location.Table,
@@ -983,5 +918,6 @@ func (luo *LocationUpdateOne) sqlSave(ctx context.Context) (_node *Location, err
 		}
 		return nil, err
 	}
+	luo.mutation.done = true
 	return _node, nil
 }

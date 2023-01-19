@@ -132,50 +132,8 @@ func (lc *LabelCreate) Mutation() *LabelMutation {
 
 // Save creates the Label in the database.
 func (lc *LabelCreate) Save(ctx context.Context) (*Label, error) {
-	var (
-		err  error
-		node *Label
-	)
 	lc.defaults()
-	if len(lc.hooks) == 0 {
-		if err = lc.check(); err != nil {
-			return nil, err
-		}
-		node, err = lc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*LabelMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = lc.check(); err != nil {
-				return nil, err
-			}
-			lc.mutation = mutation
-			if node, err = lc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(lc.hooks) - 1; i >= 0; i-- {
-			if lc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = lc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, lc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Label)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from LabelMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Label, LabelMutation](ctx, lc.sqlSave, lc.mutation, lc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -249,6 +207,9 @@ func (lc *LabelCreate) check() error {
 }
 
 func (lc *LabelCreate) sqlSave(ctx context.Context) (*Label, error) {
+	if err := lc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := lc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, lc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -263,6 +224,8 @@ func (lc *LabelCreate) sqlSave(ctx context.Context) (*Label, error) {
 			return nil, err
 		}
 	}
+	lc.mutation.id = &_node.ID
+	lc.mutation.done = true
 	return _node, nil
 }
 

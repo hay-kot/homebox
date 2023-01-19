@@ -113,20 +113,6 @@
     </BaseModal>
 
     <section class="space-y-6">
-      <div class="flex">
-        <BaseButton size="sm" @click="$router.go(-1)">
-          <template #icon>
-            <Icon name="mdi-arrow-left" class="h-5 w-5" />
-          </template>
-          Back
-        </BaseButton>
-        <BaseButton class="ml-auto" size="sm" @click="newEntry()">
-          <template #icon>
-            <Icon name="mdi-post" />
-          </template>
-          Log Maintenance
-        </BaseButton>
-      </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard
           v-for="stat in stats"
@@ -136,6 +122,14 @@
           :value="stat.value"
           :type="stat.type"
         />
+      </div>
+      <div class="flex">
+        <BaseButton class="ml-auto" size="sm" @click="newEntry()">
+          <template #icon>
+            <Icon name="mdi-post" />
+          </template>
+          Log Maintenance
+        </BaseButton>
       </div>
       <div class="container space-y-6">
         <BaseCard v-for="e in log.entries" :key="e.id">

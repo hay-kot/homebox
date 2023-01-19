@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ItemAttachment, ItemUpdate } from "~~/lib/api/types/data-contracts";
+  import { ItemAttachment, ItemField, ItemUpdate } from "~~/lib/api/types/data-contracts";
   import { AttachmentTypes } from "~~/lib/api/types/non-generated";
   import { useLabelStore } from "~~/stores/labels";
   import { useLocationStore } from "~~/stores/locations";
@@ -196,11 +196,16 @@
 
   function uploadImage(e: InputEvent) {
     const files = (e.target as HTMLInputElement).files;
-    if (!files) {
+    if (!files || !files.item(0)) {
       return;
     }
 
-    uploadAttachment([files.item(0)], AttachmentTypes.Attachment);
+    const first = files.item(0);
+    if (!first) {
+      return;
+    }
+
+    uploadAttachment([first], AttachmentTypes.Attachment);
   }
 
   const dropPhoto = (files: File[] | null) => uploadAttachment(files, AttachmentTypes.Photo);
@@ -210,7 +215,7 @@
   const dropReceipt = (files: File[] | null) => uploadAttachment(files, AttachmentTypes.Receipt);
 
   async function uploadAttachment(files: File[] | null, type: AttachmentTypes) {
-    if (!files && files.length === 0) {
+    if (!files || files.length === 0) {
       return;
     }
 
@@ -295,22 +300,6 @@
     toast.success("Attachment updated");
   }
 
-  // Custom Fields
-  // const fieldTypes = [
-  //   {
-  //     name: "Text",
-  //     value: "text",
-  //   },
-  //   {
-  //     name: "Number",
-  //     value: "number",
-  //   },
-  //   {
-  //     name: "Boolean",
-  //     value: "boolean",
-  //   },
-  // ];
-
   function addField() {
     item.value.fields.push({
       id: null,
@@ -320,7 +309,7 @@
       numberValue: 0,
       booleanValue: false,
       timeValue: null,
-    });
+    } as unknown as ItemField);
   }
 
   const { query, results } = useItemSearch(api, { immediate: false });
@@ -328,7 +317,7 @@
 </script>
 
 <template>
-  <BaseContainer v-if="item" class="pb-8">
+  <div v-if="item" class="pb-8">
     <BaseModal v-model="editState.modal">
       <template #title> Attachment Edit </template>
 
@@ -346,15 +335,11 @@
       </div>
     </BaseModal>
 
-    <section class="px-3">
-      <div class="space-y-4">
+    <section>
+      <div class="space-y-6">
         <div class="card bg-base-100 shadow-xl sm:rounded-lg overflow-visible">
           <BaseSectionHeader v-if="item" class="p-5">
-            <Icon name="mdi-package-variant" class="-mt-1 mr-2 text-base-content" />
-            <span class="text-base-content">
-              {{ item.name }}
-            </span>
-            <p class="text-sm text-base-content font-bold pb-0 mb-0">Quantity {{ item.quantity }}</p>
+            <span class="text-base-content"> Edit </span>
             <template #after>
               <div class="modal-action mt-3">
                 <div class="mr-auto tooltip" data-tip="Hide the cruft! ">
@@ -632,5 +617,5 @@
         </div>
       </div>
     </section>
-  </BaseContainer>
+  </div>
 </template>

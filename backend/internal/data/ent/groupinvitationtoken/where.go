@@ -13,428 +13,272 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uuid.UUID) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.GroupInvitationToken(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uuid.UUID) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.GroupInvitationToken(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uuid.UUID) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.GroupInvitationToken(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uuid.UUID) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.GroupInvitationToken(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uuid.UUID) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.GroupInvitationToken(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uuid.UUID) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.GroupInvitationToken(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uuid.UUID) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.GroupInvitationToken(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uuid.UUID) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.GroupInvitationToken(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uuid.UUID) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.GroupInvitationToken(sql.FieldLTE(FieldID, id))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // Token applies equality check predicate on the "token" field. It's identical to TokenEQ.
 func Token(v []byte) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldToken), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldEQ(FieldToken, v))
 }
 
 // ExpiresAt applies equality check predicate on the "expires_at" field. It's identical to ExpiresAtEQ.
 func ExpiresAt(v time.Time) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldExpiresAt), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldEQ(FieldExpiresAt, v))
 }
 
 // Uses applies equality check predicate on the "uses" field. It's identical to UsesEQ.
 func Uses(v int) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUses), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldEQ(FieldUses, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
 func CreatedAtNEQ(v time.Time) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreatedAt), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldNEQ(FieldCreatedAt, v))
 }
 
 // CreatedAtIn applies the In predicate on the "created_at" field.
 func CreatedAtIn(vs ...time.Time) predicate.GroupInvitationToken {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.GroupInvitationToken(sql.FieldIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
 func CreatedAtNotIn(vs ...time.Time) predicate.GroupInvitationToken {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCreatedAt), v...))
-	})
+	return predicate.GroupInvitationToken(sql.FieldNotIn(FieldCreatedAt, vs...))
 }
 
 // CreatedAtGT applies the GT predicate on the "created_at" field.
 func CreatedAtGT(v time.Time) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldGT(FieldCreatedAt, v))
 }
 
 // CreatedAtGTE applies the GTE predicate on the "created_at" field.
 func CreatedAtGTE(v time.Time) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldGTE(FieldCreatedAt, v))
 }
 
 // CreatedAtLT applies the LT predicate on the "created_at" field.
 func CreatedAtLT(v time.Time) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreatedAt), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldLT(FieldCreatedAt, v))
 }
 
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreatedAt), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
 func UpdatedAtEQ(v time.Time) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
 func UpdatedAtNEQ(v time.Time) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldNEQ(FieldUpdatedAt, v))
 }
 
 // UpdatedAtIn applies the In predicate on the "updated_at" field.
 func UpdatedAtIn(vs ...time.Time) predicate.GroupInvitationToken {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.GroupInvitationToken(sql.FieldIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
 func UpdatedAtNotIn(vs ...time.Time) predicate.GroupInvitationToken {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUpdatedAt), v...))
-	})
+	return predicate.GroupInvitationToken(sql.FieldNotIn(FieldUpdatedAt, vs...))
 }
 
 // UpdatedAtGT applies the GT predicate on the "updated_at" field.
 func UpdatedAtGT(v time.Time) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldGT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
 func UpdatedAtGTE(v time.Time) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldGTE(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLT applies the LT predicate on the "updated_at" field.
 func UpdatedAtLT(v time.Time) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldLT(FieldUpdatedAt, v))
 }
 
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // TokenEQ applies the EQ predicate on the "token" field.
 func TokenEQ(v []byte) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldToken), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldEQ(FieldToken, v))
 }
 
 // TokenNEQ applies the NEQ predicate on the "token" field.
 func TokenNEQ(v []byte) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldToken), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldNEQ(FieldToken, v))
 }
 
 // TokenIn applies the In predicate on the "token" field.
 func TokenIn(vs ...[]byte) predicate.GroupInvitationToken {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldToken), v...))
-	})
+	return predicate.GroupInvitationToken(sql.FieldIn(FieldToken, vs...))
 }
 
 // TokenNotIn applies the NotIn predicate on the "token" field.
 func TokenNotIn(vs ...[]byte) predicate.GroupInvitationToken {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldToken), v...))
-	})
+	return predicate.GroupInvitationToken(sql.FieldNotIn(FieldToken, vs...))
 }
 
 // TokenGT applies the GT predicate on the "token" field.
 func TokenGT(v []byte) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldToken), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldGT(FieldToken, v))
 }
 
 // TokenGTE applies the GTE predicate on the "token" field.
 func TokenGTE(v []byte) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldToken), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldGTE(FieldToken, v))
 }
 
 // TokenLT applies the LT predicate on the "token" field.
 func TokenLT(v []byte) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldToken), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldLT(FieldToken, v))
 }
 
 // TokenLTE applies the LTE predicate on the "token" field.
 func TokenLTE(v []byte) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldToken), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldLTE(FieldToken, v))
 }
 
 // ExpiresAtEQ applies the EQ predicate on the "expires_at" field.
 func ExpiresAtEQ(v time.Time) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldExpiresAt), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldEQ(FieldExpiresAt, v))
 }
 
 // ExpiresAtNEQ applies the NEQ predicate on the "expires_at" field.
 func ExpiresAtNEQ(v time.Time) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldExpiresAt), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldNEQ(FieldExpiresAt, v))
 }
 
 // ExpiresAtIn applies the In predicate on the "expires_at" field.
 func ExpiresAtIn(vs ...time.Time) predicate.GroupInvitationToken {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldExpiresAt), v...))
-	})
+	return predicate.GroupInvitationToken(sql.FieldIn(FieldExpiresAt, vs...))
 }
 
 // ExpiresAtNotIn applies the NotIn predicate on the "expires_at" field.
 func ExpiresAtNotIn(vs ...time.Time) predicate.GroupInvitationToken {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldExpiresAt), v...))
-	})
+	return predicate.GroupInvitationToken(sql.FieldNotIn(FieldExpiresAt, vs...))
 }
 
 // ExpiresAtGT applies the GT predicate on the "expires_at" field.
 func ExpiresAtGT(v time.Time) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldExpiresAt), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldGT(FieldExpiresAt, v))
 }
 
 // ExpiresAtGTE applies the GTE predicate on the "expires_at" field.
 func ExpiresAtGTE(v time.Time) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldExpiresAt), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldGTE(FieldExpiresAt, v))
 }
 
 // ExpiresAtLT applies the LT predicate on the "expires_at" field.
 func ExpiresAtLT(v time.Time) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldExpiresAt), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldLT(FieldExpiresAt, v))
 }
 
 // ExpiresAtLTE applies the LTE predicate on the "expires_at" field.
 func ExpiresAtLTE(v time.Time) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldExpiresAt), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldLTE(FieldExpiresAt, v))
 }
 
 // UsesEQ applies the EQ predicate on the "uses" field.
 func UsesEQ(v int) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUses), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldEQ(FieldUses, v))
 }
 
 // UsesNEQ applies the NEQ predicate on the "uses" field.
 func UsesNEQ(v int) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUses), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldNEQ(FieldUses, v))
 }
 
 // UsesIn applies the In predicate on the "uses" field.
 func UsesIn(vs ...int) predicate.GroupInvitationToken {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUses), v...))
-	})
+	return predicate.GroupInvitationToken(sql.FieldIn(FieldUses, vs...))
 }
 
 // UsesNotIn applies the NotIn predicate on the "uses" field.
 func UsesNotIn(vs ...int) predicate.GroupInvitationToken {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUses), v...))
-	})
+	return predicate.GroupInvitationToken(sql.FieldNotIn(FieldUses, vs...))
 }
 
 // UsesGT applies the GT predicate on the "uses" field.
 func UsesGT(v int) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUses), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldGT(FieldUses, v))
 }
 
 // UsesGTE applies the GTE predicate on the "uses" field.
 func UsesGTE(v int) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUses), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldGTE(FieldUses, v))
 }
 
 // UsesLT applies the LT predicate on the "uses" field.
 func UsesLT(v int) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUses), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldLT(FieldUses, v))
 }
 
 // UsesLTE applies the LTE predicate on the "uses" field.
 func UsesLTE(v int) predicate.GroupInvitationToken {
-	return predicate.GroupInvitationToken(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUses), v))
-	})
+	return predicate.GroupInvitationToken(sql.FieldLTE(FieldUses, v))
 }
 
 // HasGroup applies the HasEdge predicate on the "group" edge.
@@ -442,7 +286,6 @@ func HasGroup() predicate.GroupInvitationToken {
 	return predicate.GroupInvitationToken(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(GroupTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, GroupTable, GroupColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"regexp"
 )
@@ -31,7 +30,7 @@ func main() {
 	}
 
 	text := "/* post-processed by ./scripts/process-types.go */\n"
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -63,7 +62,7 @@ func main() {
 		text = regex.ReplaceAllString(text, replace)
 	}
 
-	err = ioutil.WriteFile(path, []byte(text), 0644)
+	err = os.WriteFile(path, []byte(text), 0644)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

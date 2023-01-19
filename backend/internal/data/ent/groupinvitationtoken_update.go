@@ -109,35 +109,8 @@ func (gitu *GroupInvitationTokenUpdate) ClearGroup() *GroupInvitationTokenUpdate
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (gitu *GroupInvitationTokenUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	gitu.defaults()
-	if len(gitu.hooks) == 0 {
-		affected, err = gitu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*GroupInvitationTokenMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			gitu.mutation = mutation
-			affected, err = gitu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(gitu.hooks) - 1; i >= 0; i-- {
-			if gitu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = gitu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, gitu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, GroupInvitationTokenMutation](ctx, gitu.sqlSave, gitu.mutation, gitu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -246,6 +219,7 @@ func (gitu *GroupInvitationTokenUpdate) sqlSave(ctx context.Context) (n int, err
 		}
 		return 0, err
 	}
+	gitu.mutation.done = true
 	return n, nil
 }
 
@@ -343,41 +317,8 @@ func (gituo *GroupInvitationTokenUpdateOne) Select(field string, fields ...strin
 
 // Save executes the query and returns the updated GroupInvitationToken entity.
 func (gituo *GroupInvitationTokenUpdateOne) Save(ctx context.Context) (*GroupInvitationToken, error) {
-	var (
-		err  error
-		node *GroupInvitationToken
-	)
 	gituo.defaults()
-	if len(gituo.hooks) == 0 {
-		node, err = gituo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*GroupInvitationTokenMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			gituo.mutation = mutation
-			node, err = gituo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(gituo.hooks) - 1; i >= 0; i-- {
-			if gituo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = gituo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, gituo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*GroupInvitationToken)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from GroupInvitationTokenMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*GroupInvitationToken, GroupInvitationTokenMutation](ctx, gituo.sqlSave, gituo.mutation, gituo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -506,5 +447,6 @@ func (gituo *GroupInvitationTokenUpdateOne) sqlSave(ctx context.Context) (_node 
 		}
 		return nil, err
 	}
+	gituo.mutation.done = true
 	return _node, nil
 }

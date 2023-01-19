@@ -10,109 +10,67 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id int) predicate.AuthRoles {
-	return predicate.AuthRoles(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.AuthRoles(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id int) predicate.AuthRoles {
-	return predicate.AuthRoles(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.AuthRoles(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id int) predicate.AuthRoles {
-	return predicate.AuthRoles(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.AuthRoles(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...int) predicate.AuthRoles {
-	return predicate.AuthRoles(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.AuthRoles(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...int) predicate.AuthRoles {
-	return predicate.AuthRoles(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.AuthRoles(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id int) predicate.AuthRoles {
-	return predicate.AuthRoles(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.AuthRoles(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id int) predicate.AuthRoles {
-	return predicate.AuthRoles(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.AuthRoles(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id int) predicate.AuthRoles {
-	return predicate.AuthRoles(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.AuthRoles(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id int) predicate.AuthRoles {
-	return predicate.AuthRoles(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.AuthRoles(sql.FieldLTE(FieldID, id))
 }
 
 // RoleEQ applies the EQ predicate on the "role" field.
 func RoleEQ(v Role) predicate.AuthRoles {
-	return predicate.AuthRoles(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRole), v))
-	})
+	return predicate.AuthRoles(sql.FieldEQ(FieldRole, v))
 }
 
 // RoleNEQ applies the NEQ predicate on the "role" field.
 func RoleNEQ(v Role) predicate.AuthRoles {
-	return predicate.AuthRoles(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRole), v))
-	})
+	return predicate.AuthRoles(sql.FieldNEQ(FieldRole, v))
 }
 
 // RoleIn applies the In predicate on the "role" field.
 func RoleIn(vs ...Role) predicate.AuthRoles {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.AuthRoles(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldRole), v...))
-	})
+	return predicate.AuthRoles(sql.FieldIn(FieldRole, vs...))
 }
 
 // RoleNotIn applies the NotIn predicate on the "role" field.
 func RoleNotIn(vs ...Role) predicate.AuthRoles {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.AuthRoles(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldRole), v...))
-	})
+	return predicate.AuthRoles(sql.FieldNotIn(FieldRole, vs...))
 }
 
 // HasToken applies the HasEdge predicate on the "token" edge.
@@ -120,7 +78,6 @@ func HasToken() predicate.AuthRoles {
 	return predicate.AuthRoles(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(TokenTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, true, TokenTable, TokenColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

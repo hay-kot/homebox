@@ -4,7 +4,7 @@
       <div
         v-for="(notify, index) in notifications.slice(0, 4)"
         :key="notify.id"
-        class="my-2 w-[300px] rounded-md p-3 text-sm text-white opacity-75"
+        class="my-2 w-[300px] rounded-md p-3 text-sm text-white"
         :class="{
           'bg-primary': notify.type === 'info',
           'bg-red-600': notify.type === 'error',

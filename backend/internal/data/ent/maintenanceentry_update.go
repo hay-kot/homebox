@@ -121,41 +121,8 @@ func (meu *MaintenanceEntryUpdate) ClearItem() *MaintenanceEntryUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (meu *MaintenanceEntryUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	meu.defaults()
-	if len(meu.hooks) == 0 {
-		if err = meu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = meu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*MaintenanceEntryMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = meu.check(); err != nil {
-				return 0, err
-			}
-			meu.mutation = mutation
-			affected, err = meu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(meu.hooks) - 1; i >= 0; i-- {
-			if meu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = meu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, meu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, MaintenanceEntryMutation](ctx, meu.sqlSave, meu.mutation, meu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -207,6 +174,9 @@ func (meu *MaintenanceEntryUpdate) check() error {
 }
 
 func (meu *MaintenanceEntryUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := meu.check(); err != nil {
+		return n, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   maintenanceentry.Table,
@@ -288,6 +258,7 @@ func (meu *MaintenanceEntryUpdate) sqlSave(ctx context.Context) (n int, err erro
 		}
 		return 0, err
 	}
+	meu.mutation.done = true
 	return n, nil
 }
 
@@ -397,47 +368,8 @@ func (meuo *MaintenanceEntryUpdateOne) Select(field string, fields ...string) *M
 
 // Save executes the query and returns the updated MaintenanceEntry entity.
 func (meuo *MaintenanceEntryUpdateOne) Save(ctx context.Context) (*MaintenanceEntry, error) {
-	var (
-		err  error
-		node *MaintenanceEntry
-	)
 	meuo.defaults()
-	if len(meuo.hooks) == 0 {
-		if err = meuo.check(); err != nil {
-			return nil, err
-		}
-		node, err = meuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*MaintenanceEntryMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = meuo.check(); err != nil {
-				return nil, err
-			}
-			meuo.mutation = mutation
-			node, err = meuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(meuo.hooks) - 1; i >= 0; i-- {
-			if meuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = meuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, meuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*MaintenanceEntry)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from MaintenanceEntryMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*MaintenanceEntry, MaintenanceEntryMutation](ctx, meuo.sqlSave, meuo.mutation, meuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -489,6 +421,9 @@ func (meuo *MaintenanceEntryUpdateOne) check() error {
 }
 
 func (meuo *MaintenanceEntryUpdateOne) sqlSave(ctx context.Context) (_node *MaintenanceEntry, err error) {
+	if err := meuo.check(); err != nil {
+		return _node, err
+	}
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   maintenanceentry.Table,
@@ -590,5 +525,6 @@ func (meuo *MaintenanceEntryUpdateOne) sqlSave(ctx context.Context) (_node *Main
 		}
 		return nil, err
 	}
+	meuo.mutation.done = true
 	return _node, nil
 }

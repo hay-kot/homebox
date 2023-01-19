@@ -172,6 +172,7 @@
               <Icon class="mr-1" name="mdi-delete" />
               Delete
             </BaseButton>
+            <PageQRCode />
           </div>
         </template>
 

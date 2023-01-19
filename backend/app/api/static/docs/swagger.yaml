@@ -1301,6 +1301,25 @@ paths:
       summary: updates a location
       tags:
       - Locations
+  /v1/qrcode:
+    get:
+      parameters:
+      - description: data to be encoded into qrcode
+        in: query
+        name: data
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: image/jpeg
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Encode data into QRCode
+      tags:
+      - Items
   /v1/status:
     get:
       produces:

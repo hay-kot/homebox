@@ -24,6 +24,7 @@ type GroupInvitationTokenQuery struct {
 	unique     *bool
 	order      []OrderFunc
 	fields     []string
+	inters     []Interceptor
 	predicates []predicate.GroupInvitationToken
 	withGroup  *GroupQuery
 	withFKs    bool
@@ -38,13 +39,13 @@ func (gitq *GroupInvitationTokenQuery) Where(ps ...predicate.GroupInvitationToke
 	return gitq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (gitq *GroupInvitationTokenQuery) Limit(limit int) *GroupInvitationTokenQuery {
 	gitq.limit = &limit
 	return gitq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (gitq *GroupInvitationTokenQuery) Offset(offset int) *GroupInvitationTokenQuery {
 	gitq.offset = &offset
 	return gitq
@@ -57,7 +58,7 @@ func (gitq *GroupInvitationTokenQuery) Unique(unique bool) *GroupInvitationToken
 	return gitq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (gitq *GroupInvitationTokenQuery) Order(o ...OrderFunc) *GroupInvitationTokenQuery {
 	gitq.order = append(gitq.order, o...)
 	return gitq
@@ -65,7 +66,7 @@ func (gitq *GroupInvitationTokenQuery) Order(o ...OrderFunc) *GroupInvitationTok
 
 // QueryGroup chains the current query on the "group" edge.
 func (gitq *GroupInvitationTokenQuery) QueryGroup() *GroupQuery {
-	query := &GroupQuery{config: gitq.config}
+	query := (&GroupClient{config: gitq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := gitq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -88,7 +89,7 @@ func (gitq *GroupInvitationTokenQuery) QueryGroup() *GroupQuery {
 // First returns the first GroupInvitationToken entity from the query.
 // Returns a *NotFoundError when no GroupInvitationToken was found.
 func (gitq *GroupInvitationTokenQuery) First(ctx context.Context) (*GroupInvitationToken, error) {
-	nodes, err := gitq.Limit(1).All(ctx)
+	nodes, err := gitq.Limit(1).All(newQueryContext(ctx, TypeGroupInvitationToken, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +112,7 @@ func (gitq *GroupInvitationTokenQuery) FirstX(ctx context.Context) *GroupInvitat
 // Returns a *NotFoundError when no GroupInvitationToken ID was found.
 func (gitq *GroupInvitationTokenQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = gitq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = gitq.Limit(1).IDs(newQueryContext(ctx, TypeGroupInvitationToken, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -134,7 +135,7 @@ func (gitq *GroupInvitationTokenQuery) FirstIDX(ctx context.Context) uuid.UUID {
 // Returns a *NotSingularError when more than one GroupInvitationToken entity is found.
 // Returns a *NotFoundError when no GroupInvitationToken entities are found.
 func (gitq *GroupInvitationTokenQuery) Only(ctx context.Context) (*GroupInvitationToken, error) {
-	nodes, err := gitq.Limit(2).All(ctx)
+	nodes, err := gitq.Limit(2).All(newQueryContext(ctx, TypeGroupInvitationToken, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +163,7 @@ func (gitq *GroupInvitationTokenQuery) OnlyX(ctx context.Context) *GroupInvitati
 // Returns a *NotFoundError when no entities are found.
 func (gitq *GroupInvitationTokenQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = gitq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = gitq.Limit(2).IDs(newQueryContext(ctx, TypeGroupInvitationToken, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -187,10 +188,12 @@ func (gitq *GroupInvitationTokenQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 
 // All executes the query and returns a list of GroupInvitationTokens.
 func (gitq *GroupInvitationTokenQuery) All(ctx context.Context) ([]*GroupInvitationToken, error) {
+	ctx = newQueryContext(ctx, TypeGroupInvitationToken, "All")
 	if err := gitq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return gitq.sqlAll(ctx)
+	qr := querierAll[[]*GroupInvitationToken, *GroupInvitationTokenQuery]()
+	return withInterceptors[[]*GroupInvitationToken](ctx, gitq, qr, gitq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -205,6 +208,7 @@ func (gitq *GroupInvitationTokenQuery) AllX(ctx context.Context) []*GroupInvitat
 // IDs executes the query and returns a list of GroupInvitationToken IDs.
 func (gitq *GroupInvitationTokenQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	var ids []uuid.UUID
+	ctx = newQueryContext(ctx, TypeGroupInvitationToken, "IDs")
 	if err := gitq.Select(groupinvitationtoken.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -222,10 +226,11 @@ func (gitq *GroupInvitationTokenQuery) IDsX(ctx context.Context) []uuid.UUID {
 
 // Count returns the count of the given query.
 func (gitq *GroupInvitationTokenQuery) Count(ctx context.Context) (int, error) {
+	ctx = newQueryContext(ctx, TypeGroupInvitationToken, "Count")
 	if err := gitq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return gitq.sqlCount(ctx)
+	return withInterceptors[int](ctx, gitq, querierCount[*GroupInvitationTokenQuery](), gitq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -239,10 +244,15 @@ func (gitq *GroupInvitationTokenQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (gitq *GroupInvitationTokenQuery) Exist(ctx context.Context) (bool, error) {
-	if err := gitq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = newQueryContext(ctx, TypeGroupInvitationToken, "Exist")
+	switch _, err := gitq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return gitq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -265,6 +275,7 @@ func (gitq *GroupInvitationTokenQuery) Clone() *GroupInvitationTokenQuery {
 		limit:      gitq.limit,
 		offset:     gitq.offset,
 		order:      append([]OrderFunc{}, gitq.order...),
+		inters:     append([]Interceptor{}, gitq.inters...),
 		predicates: append([]predicate.GroupInvitationToken{}, gitq.predicates...),
 		withGroup:  gitq.withGroup.Clone(),
 		// clone intermediate query.
@@ -277,7 +288,7 @@ func (gitq *GroupInvitationTokenQuery) Clone() *GroupInvitationTokenQuery {
 // WithGroup tells the query-builder to eager-load the nodes that are connected to
 // the "group" edge. The optional arguments are used to configure the query builder of the edge.
 func (gitq *GroupInvitationTokenQuery) WithGroup(opts ...func(*GroupQuery)) *GroupInvitationTokenQuery {
-	query := &GroupQuery{config: gitq.config}
+	query := (&GroupClient{config: gitq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -300,16 +311,11 @@ func (gitq *GroupInvitationTokenQuery) WithGroup(opts ...func(*GroupQuery)) *Gro
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (gitq *GroupInvitationTokenQuery) GroupBy(field string, fields ...string) *GroupInvitationTokenGroupBy {
-	grbuild := &GroupInvitationTokenGroupBy{config: gitq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := gitq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return gitq.sqlQuery(ctx), nil
-	}
+	gitq.fields = append([]string{field}, fields...)
+	grbuild := &GroupInvitationTokenGroupBy{build: gitq}
+	grbuild.flds = &gitq.fields
 	grbuild.label = groupinvitationtoken.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -327,10 +333,10 @@ func (gitq *GroupInvitationTokenQuery) GroupBy(field string, fields ...string) *
 //		Scan(ctx, &v)
 func (gitq *GroupInvitationTokenQuery) Select(fields ...string) *GroupInvitationTokenSelect {
 	gitq.fields = append(gitq.fields, fields...)
-	selbuild := &GroupInvitationTokenSelect{GroupInvitationTokenQuery: gitq}
-	selbuild.label = groupinvitationtoken.Label
-	selbuild.flds, selbuild.scan = &gitq.fields, selbuild.Scan
-	return selbuild
+	sbuild := &GroupInvitationTokenSelect{GroupInvitationTokenQuery: gitq}
+	sbuild.label = groupinvitationtoken.Label
+	sbuild.flds, sbuild.scan = &gitq.fields, sbuild.Scan
+	return sbuild
 }
 
 // Aggregate returns a GroupInvitationTokenSelect configured with the given aggregations.
@@ -339,6 +345,16 @@ func (gitq *GroupInvitationTokenQuery) Aggregate(fns ...AggregateFunc) *GroupInv
 }
 
 func (gitq *GroupInvitationTokenQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range gitq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, gitq); err != nil {
+				return err
+			}
+		}
+	}
 	for _, f := range gitq.fields {
 		if !groupinvitationtoken.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
@@ -435,17 +451,6 @@ func (gitq *GroupInvitationTokenQuery) sqlCount(ctx context.Context) (int, error
 	return sqlgraph.CountNodes(ctx, gitq.driver, _spec)
 }
 
-func (gitq *GroupInvitationTokenQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := gitq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (gitq *GroupInvitationTokenQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
@@ -528,13 +533,8 @@ func (gitq *GroupInvitationTokenQuery) sqlQuery(ctx context.Context) *sql.Select
 
 // GroupInvitationTokenGroupBy is the group-by builder for GroupInvitationToken entities.
 type GroupInvitationTokenGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *GroupInvitationTokenQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -543,58 +543,46 @@ func (gitgb *GroupInvitationTokenGroupBy) Aggregate(fns ...AggregateFunc) *Group
 	return gitgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (gitgb *GroupInvitationTokenGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := gitgb.path(ctx)
-	if err != nil {
+	ctx = newQueryContext(ctx, TypeGroupInvitationToken, "GroupBy")
+	if err := gitgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	gitgb.sql = query
-	return gitgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*GroupInvitationTokenQuery, *GroupInvitationTokenGroupBy](ctx, gitgb.build, gitgb, gitgb.build.inters, v)
 }
 
-func (gitgb *GroupInvitationTokenGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range gitgb.fields {
-		if !groupinvitationtoken.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (gitgb *GroupInvitationTokenGroupBy) sqlScan(ctx context.Context, root *GroupInvitationTokenQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(gitgb.fns))
+	for _, fn := range gitgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := gitgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*gitgb.flds)+len(gitgb.fns))
+		for _, f := range *gitgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*gitgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := gitgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := gitgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (gitgb *GroupInvitationTokenGroupBy) sqlQuery() *sql.Selector {
-	selector := gitgb.sql.Select()
-	aggregation := make([]string, 0, len(gitgb.fns))
-	for _, fn := range gitgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(gitgb.fields)+len(gitgb.fns))
-		for _, f := range gitgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(gitgb.fields...)...)
-}
-
 // GroupInvitationTokenSelect is the builder for selecting fields of GroupInvitationToken entities.
 type GroupInvitationTokenSelect struct {
 	*GroupInvitationTokenQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
@@ -605,26 +593,27 @@ func (gits *GroupInvitationTokenSelect) Aggregate(fns ...AggregateFunc) *GroupIn
 
 // Scan applies the selector query and scans the result into the given value.
 func (gits *GroupInvitationTokenSelect) Scan(ctx context.Context, v any) error {
+	ctx = newQueryContext(ctx, TypeGroupInvitationToken, "Select")
 	if err := gits.prepareQuery(ctx); err != nil {
 		return err
 	}
-	gits.sql = gits.GroupInvitationTokenQuery.sqlQuery(ctx)
-	return gits.sqlScan(ctx, v)
+	return scanWithInterceptors[*GroupInvitationTokenQuery, *GroupInvitationTokenSelect](ctx, gits.GroupInvitationTokenQuery, gits, gits.inters, v)
 }
 
-func (gits *GroupInvitationTokenSelect) sqlScan(ctx context.Context, v any) error {
+func (gits *GroupInvitationTokenSelect) sqlScan(ctx context.Context, root *GroupInvitationTokenQuery, v any) error {
+	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(gits.fns))
 	for _, fn := range gits.fns {
-		aggregation = append(aggregation, fn(gits.sql))
+		aggregation = append(aggregation, fn(selector))
 	}
 	switch n := len(*gits.selector.flds); {
 	case n == 0 && len(aggregation) > 0:
-		gits.sql.Select(aggregation...)
+		selector.Select(aggregation...)
 	case n != 0 && len(aggregation) > 0:
-		gits.sql.AppendSelect(aggregation...)
+		selector.AppendSelect(aggregation...)
 	}
 	rows := &sql.Rows{}
-	query, args := gits.sql.Query()
+	query, args := selector.Query()
 	if err := gits.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

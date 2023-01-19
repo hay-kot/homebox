@@ -30,6 +30,15 @@
     refresh();
   });
 
+  const lastRoute = ref(route.fullPath);
+  watchEffect(() => {
+    if (lastRoute.value.endsWith("edit")) {
+      refresh();
+    }
+
+    lastRoute.value = route.fullPath;
+  });
+
   type FilteredAttachments = {
     attachments: ItemAttachment[];
     warranty: ItemAttachment[];
@@ -325,6 +334,30 @@
   onClickOutside(refDialogBody, () => {
     closeDialog();
   });
+
+  const currentPath = computed(() => {
+    return route.path;
+  });
+
+  const tabs = computed(() => {
+    return [
+      {
+        id: "details",
+        name: "Details",
+        to: `/item/${itemId.value}`,
+      },
+      {
+        id: "log",
+        name: "Log",
+        to: `/item/${itemId.value}/log`,
+      },
+      {
+        id: "edit",
+        name: "Edit",
+        to: `/item/${itemId.value}/edit`,
+      },
+    ];
+  });
 </script>
 
 <template>
@@ -343,66 +376,66 @@
         <img class="max-w-[80vw] max-h-[80vh]" :src="dialoged.src" />
       </div>
     </dialog>
+
+    <section>
+      <BaseSectionHeader>
+        <Icon name="mdi-package-variant" class="mr-2 -mt-1 text-base-content" />
+        <span class="text-base-content">
+          {{ item ? item.name : "" }}
+        </span>
+        <div v-if="item.parent" class="text-sm breadcrumbs pb-0">
+          <ul class="text-base-content/70">
+            <li>
+              <NuxtLink :to="`/item/${item.parent.id}`"> {{ item.parent.name }}</NuxtLink>
+            </li>
+            <li>{{ item.name }}</li>
+          </ul>
+        </div>
+        <template #description>
+          <div class="flex flex-wrap gap-2 mt-3">
+            <NuxtLink ref="badge" class="badge p-3" :to="`/location/${item.location.id}`">
+              <Icon name="heroicons-map-pin" class="mr-2 swap-on"></Icon>
+              {{ item.location.name }}
+            </NuxtLink>
+            <template v-if="item.labels && item.labels.length > 0">
+              <LabelChip v-for="label in item.labels" :key="label.id" class="badge-primary" :label="label" />
+            </template>
+          </div>
+        </template>
+      </BaseSectionHeader>
+      <div class="flex flex-wrap items-center justify-between mb-6">
+        <div class="tabs">
+          <NuxtLink
+            v-for="t in tabs"
+            :key="t.id"
+            :to="t.to"
+            class="tab tab-bordered lg:tab-lg"
+            :class="`${t.to === currentPath ? 'tab-active' : ''}`"
+          >
+            {{ t.name }}
+          </NuxtLink>
+        </div>
+        <BaseButton class="btn btn-sm" @click="deleteItem()">
+          <Icon name="mdi-delete" class="mr-2" />
+          Delete
+        </BaseButton>
+      </div>
+    </section>
+
     <section>
       <div class="space-y-6">
-        <BaseCard>
-          <template #title>
-            <BaseSectionHeader>
-              <Icon name="mdi-package-variant" class="mr-2 -mt-1 text-base-content" />
-              <span class="text-base-content">
-                {{ item ? item.name : "" }}
-              </span>
-              <div v-if="item.parent" class="text-sm breadcrumbs pb-0">
-                <ul class="text-base-content/70">
-                  <li>
-                    <NuxtLink :to="`/item/${item.parent.id}`"> {{ item.parent.name }}</NuxtLink>
-                  </li>
-                  <li>{{ item.name }}</li>
-                </ul>
-              </div>
-              <template #description>
-                <div class="flex flex-wrap gap-2 mt-3">
-                  <NuxtLink ref="badge" class="badge p-3" :to="`/location/${item.location.id}`">
-                    <Icon name="heroicons-map-pin" class="mr-2 swap-on"></Icon>
-                    {{ item.location.name }}
-                  </NuxtLink>
-                  <template v-if="item.labels && item.labels.length > 0">
-                    <LabelChip v-for="label in item.labels" :key="label.id" class="badge-primary" :label="label" />
-                  </template>
-                </div>
-              </template>
-            </BaseSectionHeader>
-          </template>
+        <BaseCard v-if="!hasNested">
+          <template #title> Details </template>
           <template #title-actions>
             <div class="flex flex-wrap justify-between items-center mt-2 gap-4">
-              <label v-if="!hasNested" class="label cursor-pointer">
+              <label class="label cursor-pointer">
                 <input v-model="preferences.showEmpty" type="checkbox" class="toggle toggle-primary" />
                 <span class="label-text ml-4"> Show Empty </span>
               </label>
-              <div class="flex flex-wrap justify-end gap-2 ml-auto">
-                <BaseButton size="sm" :to="`/item/${itemId}/edit`">
-                  <template #icon>
-                    <Icon name="mdi-pencil" />
-                  </template>
-                  Edit
-                </BaseButton>
-                <BaseButton size="sm" @click="deleteItem">
-                  <template #icon>
-                    <Icon name="mdi-delete" />
-                  </template>
-                  Delete
-                </BaseButton>
-                <BaseButton size="sm" :to="`/item/${itemId}/log`">
-                  <template #icon>
-                    <Icon name="mdi-post" />
-                  </template>
-                  Log
-                </BaseButton>
-              </div>
+              <PageQRCode />
             </div>
           </template>
-
-          <DetailsSection v-if="!hasNested" :details="itemDetails" />
+          <DetailsSection :details="itemDetails" />
         </BaseCard>
 
         <NuxtPage :item="item" :page-key="itemId" />
