@@ -14,7 +14,7 @@ import (
 	_ "embed"
 )
 
-//go:embed QRIcon.png
+//go:embed assets/QRIcon.png
 var qrcodeLogo []byte
 
 // HandleGenerateQRCode godoc
