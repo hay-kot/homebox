@@ -1146,6 +1146,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/qrcode": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Items"
+                ],
+                "summary": "Encode data into QRCode",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "data to be encoded into qrcode",
+                        "name": "data",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "image/jpeg",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/status": {
             "get": {
                 "produces": [
