@@ -96,7 +96,7 @@ export interface ItemOut {
   /** @example "0" */
   purchasePrice: string;
   /** Purchase */
-  purchaseTime: Date;
+  purchaseTime: string;
   quantity: number;
   serialNumber: string;
   soldNotes: string;
@@ -148,7 +148,7 @@ export interface ItemUpdate {
   /** @example "0" */
   purchasePrice: string;
   /** Purchase */
-  purchaseTime: Date;
+  purchaseTime: string;
   quantity: number;
   /** Identifications */
   serialNumber: string;
@@ -228,7 +228,7 @@ export interface LocationUpdate {
 export interface MaintenanceEntry {
   /** @example "0" */
   cost: string;
-  date: Date;
+  date: string;
   description: string;
   id: string;
   name: string;
@@ -237,7 +237,7 @@ export interface MaintenanceEntry {
 export interface MaintenanceEntryCreate {
   /** @example "0" */
   cost: string;
-  date: Date;
+  date: string;
   description: string;
   name: string;
 }
@@ -245,7 +245,7 @@ export interface MaintenanceEntryCreate {
 export interface MaintenanceEntryUpdate {
   /** @example "0" */
   cost: string;
-  date: Date;
+  date: string;
   description: string;
   name: string;
 }
@@ -257,7 +257,7 @@ export interface MaintenanceLog {
   itemId: string;
 }
 
-export interface PaginationResultRepoItemSummary {
+export interface PaginationResultItemSummary {
   items: ItemSummary[];
   page: number;
   pageSize: number;
@@ -294,7 +294,7 @@ export interface ValueOverTime {
 }
 
 export interface ValueOverTimeEntry {
-  date: Date;
+  date: string;
   name: string;
   value: number;
 }
@@ -347,13 +347,13 @@ export interface EnsureAssetIDResult {
 }
 
 export interface GroupInvitation {
-  expiresAt: Date;
+  expiresAt: string;
   token: string;
   uses: number;
 }
 
 export interface GroupInvitationCreate {
-  expiresAt: Date;
+  expiresAt: string;
   uses: number;
 }
 
@@ -363,6 +363,6 @@ export interface ItemAttachmentToken {
 
 export interface TokenResponse {
   attachmentToken: string;
-  expiresAt: Date;
+  expiresAt: string;
   token: string;
 }

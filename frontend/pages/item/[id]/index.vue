@@ -335,12 +335,6 @@
     closeDialog();
   });
 
-  function getQRCodeUrl(): string {
-    const currentURL = window.location.href;
-
-    return `/api/v1/qrcode?data=${encodeURIComponent(currentURL)}&access_token=${api.items.attachmentToken}`;
-  }
-
   const currentPath = computed(() => {
     return route.path;
   });
@@ -438,21 +432,9 @@
                 <input v-model="preferences.showEmpty" type="checkbox" class="toggle toggle-primary" />
                 <span class="label-text ml-4"> Show Empty </span>
               </label>
-              <div class="flex flex-wrap justify-end gap-2 ml-auto">
-                <div class="dropdown dropdown-left">
-                  <label tabindex="0" class="btn btn-circle btn-sm">
-                    <Icon name="mdi-qrcode" />
-                  </label>
-                  <div tabindex="0" class="card compact dropdown-content shadow-lg bg-base-100 rounded-box w-64">
-                    <div class="card-body">
-                      <img :src="getQRCodeUrl()" />
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <PageQRCode />
             </div>
           </template>
-
           <DetailsSection :details="itemDetails" />
         </BaseCard>
 
