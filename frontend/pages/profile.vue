@@ -221,11 +221,11 @@
             <BaseButton size="sm" @click="generateToken"> Generate Invite Link </BaseButton>
           </div>
           <div v-if="token" class="pt-4 flex items-center pl-1">
-            <CopyText class="mr-2 btn-primary" :text="tokenUrl" />
+            <CopyText class="mr-2 btn-primary btn btn-outline btn-square btn-sm" :text="tokenUrl" />
             {{ tokenUrl }}
           </div>
           <div v-if="token" class="pt-4 flex items-center pl-1">
-            <CopyText class="mr-2 btn-primary" :text="token" />
+            <CopyText class="mr-2 btn-primary btn btn-outline btn-square btn-sm" :text="token" />
             {{ token }}
           </div>
         </div>

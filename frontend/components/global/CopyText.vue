@@ -1,13 +1,27 @@
 <template>
-  <button class="btn btn-outline btn-square btn-sm" @click="copyText">
+  <button class="" @click="copyText">
     <label
       class="swap swap-rotate"
       :class="{
         'swap-active': copied,
       }"
     >
-      <Icon class="swap-off h-5 w-5" name="mdi-content-copy" />
-      <Icon class="swap-on h-5 w-5" name="mdi-clipboard" />
+      <Icon
+        class="swap-off"
+        name="mdi-content-copy"
+        :style="{
+          height: `${iconSize}px`,
+          width: `${iconSize}px`,
+        }"
+      />
+      <Icon
+        class="swap-on"
+        name="mdi-clipboard"
+        :style="{
+          height: `${iconSize}px`,
+          width: `${iconSize}px`,
+        }"
+      />
     </label>
   </button>
 </template>
@@ -17,6 +31,10 @@
     text: {
       type: String as () => string,
       default: "",
+    },
+    iconSize: {
+      type: Number as () => number,
+      default: 20,
     },
   });
 

@@ -55,6 +55,7 @@
       item.value?.attachments.reduce((acc, cur) => {
         if (cur.type === "photo") {
           acc.push({
+            // @ts-expect-error - it's impossible for this to be null at this point
             src: api.authURL(`/items/${item.value.id}/attachments/${cur.id}`),
           });
         }
@@ -99,6 +100,10 @@
   });
 
   const assetID = computed<Details>(() => {
+    if (!item.value) {
+      return [];
+    }
+
     if (item.value?.assetId === "000-000") {
       return [];
     }
@@ -112,6 +117,10 @@
   });
 
   const itemDetails = computed<Details>(() => {
+    if (!item.value) {
+      return [];
+    }
+
     return [
       {
         name: "Description",
@@ -125,14 +134,17 @@
       {
         name: "Serial Number",
         text: item.value?.serialNumber,
+        copyable: true,
       },
       {
         name: "Model Number",
         text: item.value?.modelNumber,
+        copyable: true,
       },
       {
         name: "Manufacturer",
         text: item.value?.manufacturer,
+        copyable: true,
       },
       {
         name: "Insured",
@@ -384,6 +396,7 @@
         <span class="text-base-content">
           {{ item ? item.name : "" }}
         </span>
+
         <div v-if="item.parent" class="text-sm breadcrumbs pb-0">
           <ul class="text-base-content/70">
             <li>
@@ -393,6 +406,9 @@
           </ul>
         </div>
         <template #description>
+          <p class="text-lg">
+            {{ item ? item.description : "" }}
+          </p>
           <div class="flex flex-wrap gap-2 mt-3">
             <NuxtLink ref="badge" class="badge p-3" :to="`/location/${item.location.id}`">
               <Icon name="heroicons-map-pin" class="mr-2 swap-on"></Icon>
