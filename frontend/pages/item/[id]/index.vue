@@ -362,6 +362,7 @@
 
 <template>
   <BaseContainer v-if="item" class="pb-8">
+    <Title>{{ item.name }}</Title>
     <dialog ref="refDialog" class="z-[999] fixed bg-transparent">
       <div ref="refDialogBody" class="relative">
         <div class="absolute right-0 -mt-3 -mr-3 sm:-mt-4 sm:-mr-4 space-x-1">
@@ -403,14 +404,14 @@
           </div>
         </template>
       </BaseSectionHeader>
-      <div class="flex flex-wrap items-center justify-between mb-6">
-        <div class="tabs">
+      <div class="flex flex-wrap items-center justify-between mb-6 mt-3">
+        <div class="btn-group">
           <NuxtLink
             v-for="t in tabs"
             :key="t.id"
             :to="t.to"
-            class="tab tab-bordered lg:tab-lg"
-            :class="`${t.to === currentPath ? 'tab-active' : ''}`"
+            class="btn btn-sm"
+            :class="`${t.to === currentPath ? 'btn-active' : ''}`"
           >
             {{ t.name }}
           </NuxtLink>
