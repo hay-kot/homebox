@@ -1,7 +1,7 @@
 <template>
   <BaseModal v-model="modal">
     <template #title> Create Item </template>
-    <form @submit.prevent="create">
+    <form @submit.prevent="create(true)">
       <FormSelect v-model="form.location" label="Location" :items="locations ?? []" />
       <FormTextField
         ref="locationNameRef"
@@ -13,13 +13,23 @@
       <FormTextArea v-model="form.description" label="Item Description" />
       <FormMultiselect v-model="form.labels" label="Labels" :items="labels ?? []" />
       <div class="modal-action">
-        <BaseButton ref="submitBtn" type="submit" :loading="loading">
-          <template #icon>
-            <Icon name="mdi-package-variant" class="swap-off" />
-            <Icon name="mdi-package-variant-closed" class="swap-on" />
-          </template>
-          Create
-        </BaseButton>
+        <div class="flex justify-center">
+          <BaseButton ref="submitBtn" type="submit" class="rounded-r-none" :loading="loading">
+            <template #icon>
+              <Icon name="mdi-package-variant" class="swap-off h-5 w-5" />
+              <Icon name="mdi-package-variant-closed" class="swap-on h-5 w-5" />
+            </template>
+            Create
+          </BaseButton>
+          <div class="dropdown dropdown-top">
+            <label tabindex="0" class="btn rounded-l-none rounded-r-xl">
+              <Icon class="h-5 w-5" name="mdi-chevron-down" />
+            </label>
+            <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-64">
+              <li><button @click.prevent="create(false)">Create and Add Another</button></li>
+            </ul>
+          </div>
+        </div>
       </div>
     </form>
   </BaseModal>
@@ -75,15 +85,6 @@
     labels: [],
   });
 
-  function reset() {
-    form.name = "";
-    form.description = "";
-    form.color = "";
-    focused.value = false;
-    modal.value = false;
-    loading.value = false;
-  }
-
   whenever(
     () => modal.value,
     () => {
@@ -99,7 +100,7 @@
     }
   );
 
-  async function create() {
+  async function create(close = false) {
     if (!form.location) {
       return;
     }
@@ -119,7 +120,17 @@
     }
 
     toast.success("Item created");
-    reset();
-    navigateTo(`/item/${data.id}`);
+
+    // Reset
+    form.name = "";
+    form.description = "";
+    form.color = "";
+    focused.value = false;
+    loading.value = false;
+
+    if (close) {
+      modal.value = false;
+      navigateTo(`/item/${data.id}`);
+    }
   }
 </script>
