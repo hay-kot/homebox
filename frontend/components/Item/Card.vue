@@ -1,17 +1,13 @@
 <template>
   <NuxtLink class="group card rounded-md" :to="`/item/${item.id}`">
     <div class="rounded-t flex flex-col justify-center bg-neutral text-neutral-content p-5">
-      <h2 class="text-base mb-2 last:mb-0 font-bold two-line">{{ item.name }}</h2>
-      <NuxtLink
-        v-if="item.location"
-        class="inline-flex text-sm items-center hover:link"
-        :to="`/location/${item.location.id}`"
-      >
-        <Icon name="heroicons-map-pin" class="mr-1 h-4 w-4"></Icon>
-        <span>
+      <h2 class="text-lg mb-1 last:mb-0 font-bold two-line">{{ item.name }}</h2>
+      <div>
+        <NuxtLink v-if="item.location" class="text-sm hover:link" :to="`/location/${item.location.id}`">
           {{ item.location.name }}
-        </span>
-      </NuxtLink>
+        </NuxtLink>
+        <span class="flex-1"></span>
+      </div>
     </div>
     <div class="rounded-b p-4 pt-2 flex-grow col-span-4 flex flex-col gap-y-2 bg-base-100">
       <div class="flex justify-between gap-2">
