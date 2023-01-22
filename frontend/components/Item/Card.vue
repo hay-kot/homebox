@@ -16,7 +16,7 @@
     <div class="rounded-b p-4 pt-2 flex-grow col-span-4 flex flex-col gap-y-2 bg-base-100">
       <div class="flex justify-between gap-2">
         <div class="mr-auto tooltip tooltip-tip" data-tip="Purchase Price">
-          <span class="badge badge-sm badge-ghost h-5">
+          <span v-if="item.purchasePrice != '0'" class="badge badge-sm badge-ghost h-5">
             <Currency :amount="item.purchasePrice" />
           </span>
         </div>
