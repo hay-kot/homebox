@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import DatePicker from "~~/components/Form/DatePicker.vue";
   import { StatsFormat } from "~~/components/global/StatCard/types";
-  import { ItemOut } from "~~/lib/api/types/data-contracts";
+  import { ItemOut, MaintenanceEntry } from "~~/lib/api/types/data-contracts";
 
   const props = defineProps<{
     item: ItemOut;
@@ -45,6 +45,7 @@
   });
 
   const entry = reactive({
+    id: null as string | null,
     modal: false,
     name: "",
     date: new Date(),
@@ -56,7 +57,21 @@
     entry.modal = true;
   }
 
+  function resetEntry() {
+    entry.id = null;
+    entry.name = "";
+    entry.date = new Date();
+    entry.description = "";
+    entry.cost = "";
+  }
+
   async function createEntry() {
+    if (entry.id) {
+      editEntry();
+      resetEntry();
+      return;
+    }
+
     const { error } = await api.items.maintenance.create(props.item.id, {
       name: entry.name,
       date: entry.date,
@@ -72,6 +87,7 @@
     entry.modal = false;
 
     refreshLog();
+    resetEntry();
   }
 
   const confirm = useConfirm();
@@ -90,6 +106,39 @@
     }
     refreshLog();
   }
+
+  function openEditDialog(e: MaintenanceEntry) {
+    entry.modal = true;
+    entry.id = e.id;
+    entry.name = e.name;
+    entry.date = new Date(e.date);
+    entry.description = e.description;
+    entry.cost = e.cost;
+
+    console.log(e);
+  }
+
+  async function editEntry() {
+    if (!entry.id) {
+      return;
+    }
+
+    const { error } = await api.items.maintenance.update(props.item.id, entry.id, {
+      name: entry.name,
+      date: entry.date,
+      description: entry.description,
+      cost: entry.cost,
+    });
+
+    if (error) {
+      toast.error("Failed to update entry");
+      return;
+    }
+
+    entry.modal = false;
+
+    refreshLog();
+  }
 </script>
 
 <template>
@@ -102,11 +151,11 @@
         <FormTextArea v-model="entry.description" label="Notes" />
         <FormTextField v-model="entry.cost" autofocus label="Cost" />
         <div class="py-2 flex justify-end">
-          <BaseButton type="submit" class="ml-2">
+          <BaseButton type="submit" class="ml-2 mt-2">
             <template #icon>
               <Icon name="mdi-post" />
             </template>
-            Create
+            {{ entry.id ? "Update" : "Create" }}
           </BaseButton>
         </div>
       </form>
@@ -154,7 +203,13 @@
           <div class="p-6">
             <Markdown :source="e.description" />
           </div>
-          <div class="flex justify-end p-4">
+          <div class="flex justify-end p-4 gap-1">
+            <BaseButton size="sm" @click="openEditDialog(e)">
+              <template #icon>
+                <Icon name="mdi-edit" />
+              </template>
+              Edit
+            </BaseButton>
             <BaseButton size="sm" @click="deleteEntry(e.id)">
               <template #icon>
                 <Icon name="mdi-delete" />
