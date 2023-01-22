@@ -4,7 +4,7 @@ import { DaisyTheme } from "~~/lib/data/themes";
 export type LocationViewPreferences = {
   showDetails: boolean;
   showEmpty: boolean;
-  editorSimpleView: boolean;
+  editorAdvancedView: boolean;
   theme: DaisyTheme;
 };
 
@@ -18,8 +18,8 @@ export function useViewPreferences(): Ref<LocationViewPreferences> {
     {
       showDetails: true,
       showEmpty: true,
-      editorSimpleView: true,
-      theme: "garden",
+      editorAdvancedView: false,
+      theme: "homebox",
     },
     { mergeDefaults: true }
   );
