@@ -1,3 +1,7 @@
 .text-no-transform {
     text-transform: none !important;
 }
+
+.btn {
+    text-transform: none !important;
+}

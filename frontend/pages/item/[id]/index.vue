@@ -55,6 +55,7 @@
       item.value?.attachments.reduce((acc, cur) => {
         if (cur.type === "photo") {
           acc.push({
+            // @ts-expect-error - it's impossible for this to be null at this point
             src: api.authURL(`/items/${item.value.id}/attachments/${cur.id}`),
           });
         }
@@ -99,6 +100,10 @@
   });
 
   const assetID = computed<Details>(() => {
+    if (!item.value) {
+      return [];
+    }
+
     if (item.value?.assetId === "000-000") {
       return [];
     }
@@ -112,6 +117,10 @@
   });
 
   const itemDetails = computed<Details>(() => {
+    if (!item.value) {
+      return [];
+    }
+
     return [
       {
         name: "Description",
@@ -125,14 +134,17 @@
       {
         name: "Serial Number",
         text: item.value?.serialNumber,
+        copyable: true,
       },
       {
         name: "Model Number",
         text: item.value?.modelNumber,
+        copyable: true,
       },
       {
         name: "Manufacturer",
         text: item.value?.manufacturer,
+        copyable: true,
       },
       {
         name: "Insured",
@@ -362,6 +374,7 @@
 
 <template>
   <BaseContainer v-if="item" class="pb-8">
+    <Title>{{ item.name }}</Title>
     <dialog ref="refDialog" class="z-[999] fixed bg-transparent">
       <div ref="refDialogBody" class="relative">
         <div class="absolute right-0 -mt-3 -mr-3 sm:-mt-4 sm:-mr-4 space-x-1">
@@ -383,6 +396,7 @@
         <span class="text-base-content">
           {{ item ? item.name : "" }}
         </span>
+
         <div v-if="item.parent" class="text-sm breadcrumbs pb-0">
           <ul class="text-base-content/70">
             <li>
@@ -392,6 +406,9 @@
           </ul>
         </div>
         <template #description>
+          <p class="text-lg">
+            {{ item ? item.description : "" }}
+          </p>
           <div class="flex flex-wrap gap-2 mt-3">
             <NuxtLink ref="badge" class="badge p-3" :to="`/location/${item.location.id}`">
               <Icon name="heroicons-map-pin" class="mr-2 swap-on"></Icon>
@@ -403,14 +420,14 @@
           </div>
         </template>
       </BaseSectionHeader>
-      <div class="flex flex-wrap items-center justify-between mb-6">
-        <div class="tabs">
+      <div class="flex flex-wrap items-center justify-between mb-6 mt-3">
+        <div class="btn-group">
           <NuxtLink
             v-for="t in tabs"
             :key="t.id"
             :to="t.to"
-            class="tab tab-bordered lg:tab-lg"
-            :class="`${t.to === currentPath ? 'tab-active' : ''}`"
+            class="btn btn-sm"
+            :class="`${t.to === currentPath ? 'btn-active' : ''}`"
           >
             {{ t.name }}
           </NuxtLink>
@@ -503,7 +520,7 @@
       </div>
     </section>
 
-    <section v-if="!hasNested" class="my-6 px-3">
+    <section v-if="!hasNested" class="my-6">
       <BaseSectionHeader v-if="item && item.children && item.children.length > 0"> Child Items </BaseSectionHeader>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <ItemCard v-for="child in item.children" :key="child.id" :item="child" />

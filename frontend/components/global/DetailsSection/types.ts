@@ -29,6 +29,7 @@ type MarkdownDetail = BaseDetail & {
 export type Detail = BaseDetail & {
   text: StringLike;
   type?: "text";
+  copyable?: boolean;
 };
 
 export type AnyDetail = DateDetail | CurrencyDetail | LinkDetail | MarkdownDetail | Detail;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ItemAttachment, ItemField, ItemUpdate } from "~~/lib/api/types/data-contracts";
+  import { ItemAttachment, ItemField, ItemOut, ItemUpdate } from "~~/lib/api/types/data-contracts";
   import { AttachmentTypes } from "~~/lib/api/types/non-generated";
   import { useLabelStore } from "~~/stores/labels";
   import { useLocationStore } from "~~/stores/locations";
@@ -71,7 +71,7 @@
   type FormField = {
     type: "text" | "textarea" | "select" | "date" | "label" | "location" | "number" | "checkbox";
     label: string;
-    ref: string;
+    ref: keyof ItemOut;
   };
 
   const mainFields: FormField[] = [
@@ -342,10 +342,10 @@
             <span class="text-base-content"> Edit </span>
             <template #after>
               <div class="modal-action mt-3">
-                <div class="mr-auto tooltip" data-tip="Hide the cruft! ">
+                <div class="mr-auto tooltip" data-tip="Show Advanced Options">
                   <label class="label cursor-pointer mr-auto">
-                    <input v-model="preferences.editorSimpleView" type="checkbox" class="toggle toggle-primary" />
-                    <span class="label-text ml-4"> Simple View </span>
+                    <input v-model="preferences.editorAdvancedView" type="checkbox" class="toggle toggle-primary" />
+                    <span class="label-text ml-4"> Advanced </span>
                   </label>
                 </div>
                 <BaseButton size="sm" @click="saveItem">
@@ -368,7 +368,7 @@
             <FormMultiselect v-model="item.labels" label="Labels" :items="labels ?? []" />
 
             <Autocomplete
-              v-if="!preferences.editorSimpleView"
+              v-if="preferences.editorAdvancedView"
               v-model="parent"
               v-model:search="query"
               :items="results"
@@ -438,7 +438,7 @@
         </BaseCard>
 
         <div
-          v-if="!preferences.editorSimpleView"
+          v-if="preferences.editorAdvancedView"
           ref="attDropZone"
           class="overflow-visible card bg-base-100 shadow-xl sm:rounded-lg"
         >
@@ -494,7 +494,7 @@
           </div>
         </div>
 
-        <div v-if="!preferences.editorSimpleView" class="overflow-visible card bg-base-100 shadow-xl sm:rounded-lg">
+        <div v-if="preferences.editorAdvancedView" class="overflow-visible card bg-base-100 shadow-xl sm:rounded-lg">
           <div class="px-4 py-5 sm:px-6">
             <h3 class="text-lg font-medium leading-6">Purchase Details</h3>
           </div>
@@ -536,7 +536,7 @@
           </div>
         </div>
 
-        <div v-if="!preferences.editorSimpleView" class="overflow-visible card bg-base-100 shadow-xl sm:rounded-lg">
+        <div v-if="preferences.editorAdvancedView" class="overflow-visible card bg-base-100 shadow-xl sm:rounded-lg">
           <div class="px-4 py-5 sm:px-6">
             <h3 class="text-lg font-medium leading-6">Warranty Details</h3>
           </div>
@@ -578,7 +578,7 @@
           </div>
         </div>
 
-        <div v-if="!preferences.editorSimpleView" class="overflow-visible card bg-base-100 shadow-xl sm:rounded-lg">
+        <div v-if="preferences.editorAdvancedView" class="overflow-visible card bg-base-100 shadow-xl sm:rounded-lg">
           <div class="px-4 py-5 sm:px-6">
             <h3 class="text-lg font-medium leading-6">Sold Details</h3>
           </div>

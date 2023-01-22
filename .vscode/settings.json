@@ -21,4 +21,13 @@
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
   "eslint.format.enable": true,
+  "css.validate": false,
+	"tailwindCSS.includeLanguages": {
+		"vue": "html",
+		"vue-html": "html"
+	},
+	"editor.quickSuggestions": {
+		"strings": true
+	},
+  "tailwindCSS.experimental.configFile": "./frontend/tailwind.config.js"
 }
