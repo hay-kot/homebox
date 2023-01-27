@@ -1,5 +1,5 @@
 import { BaseAPI, route } from "../base";
-import { LocationOutCount, LocationCreate, LocationOut, LocationUpdate } from "../types/data-contracts";
+import { LocationOutCount, LocationCreate, LocationOut, LocationUpdate, TreeItem } from "../types/data-contracts";
 import { Results } from "../types/non-generated";
 
 export type LocationsQuery = {
@@ -9,6 +9,10 @@ export type LocationsQuery = {
 export class LocationsApi extends BaseAPI {
   getAll(q: LocationsQuery = { filterChildren: false }) {
     return this.http.get<Results<LocationOutCount>>({ url: route("/locations", q) });
+  }
+
+  getTree() {
+    return this.http.get<Results<TreeItem>>({ url: route("/locations/tree") });
   }
 
   create(body: LocationCreate) {

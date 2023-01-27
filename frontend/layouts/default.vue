@@ -165,6 +165,13 @@
       to: "/items",
     },
     {
+      icon: "mdi-map-marker",
+      id: 4,
+      active: computed(() => route.path === "/locations"),
+      name: "Locations",
+      to: "/locations",
+    },
+    {
       icon: "mdi-database",
       id: 2,
       name: "Import",
