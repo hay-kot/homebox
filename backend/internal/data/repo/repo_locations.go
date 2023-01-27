@@ -152,7 +152,9 @@ func (r *LocationRepository) getOne(ctx context.Context, where ...predicate.Loca
 		Where(where...).
 		WithGroup().
 		WithItems(func(iq *ent.ItemQuery) {
-			iq.Where(item.Archived(false)).WithLabel()
+			iq.Where(item.Archived(false)).
+				Order(ent.Asc(item.FieldName)).
+				WithLabel()
 		}).
 		WithParent().
 		WithChildren().
@@ -217,4 +219,99 @@ func (r *LocationRepository) Delete(ctx context.Context, ID uuid.UUID) error {
 func (r *LocationRepository) DeleteByGroup(ctx context.Context, GID, ID uuid.UUID) error {
 	_, err := r.db.Location.Delete().Where(location.ID(ID), location.HasGroupWith(group.ID(GID))).Exec(ctx)
 	return err
+}
+
+type TreeItem struct {
+	ID       uuid.UUID   `json:"id"`
+	Name     string      `json:"name"`
+	Children []*TreeItem `json:"children"`
+}
+
+type FlatTreeItem struct {
+	ID       uuid.UUID
+	Name     string
+	ParentID uuid.UUID
+	Level    int
+}
+
+func (lr *LocationRepository) Tree(ctx context.Context, GID uuid.UUID) ([]TreeItem, error) {
+	query := `
+		WITH recursive location_tree(id, NAME, location_children, level) AS
+		(
+			SELECT  id,
+					NAME,
+					location_children,
+					0 AS level
+			FROM    locations
+			WHERE   location_children IS NULL
+			AND     group_locations = ?
+			UNION ALL
+			SELECT  c.id,
+					c.NAME,
+					c.location_children,
+					level + 1
+			FROM   locations c
+			JOIN   location_tree p
+			ON     c.location_children = p.id
+			WHERE  level < 10 -- prevent infinite loop & excessive recursion
+		)
+		SELECT   id,
+				 NAME,
+				 level,
+				 location_children
+		FROM     location_tree
+		ORDER BY level,
+				 NAME;`
+
+	rows, err := lr.db.Sql().QueryContext(ctx, query, GID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var locations []FlatTreeItem
+	for rows.Next() {
+		var location FlatTreeItem
+		if err := rows.Scan(&location.ID, &location.Name, &location.Level, &location.ParentID); err != nil {
+			return nil, err
+		}
+		locations = append(locations, location)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return ConvertLocationsToTree(locations), nil
+}
+
+func ConvertLocationsToTree(locations []FlatTreeItem) []TreeItem {
+	var locationMap = make(map[uuid.UUID]*TreeItem, len(locations))
+
+	var rootIds []uuid.UUID
+
+	for _, location := range locations {
+		loc := &TreeItem{
+			ID:       location.ID,
+			Name:     location.Name,
+			Children: []*TreeItem{},
+		}
+
+		locationMap[location.ID] = loc
+		if location.ParentID != uuid.Nil {
+			parent, ok := locationMap[location.ParentID]
+			if ok {
+				parent.Children = append(parent.Children, loc)
+			}
+		} else {
+			rootIds = append(rootIds, location.ID)
+		}
+	}
+
+	roots := make([]TreeItem, 0, len(rootIds))
+	for _, id := range rootIds {
+		roots = append(roots, *locationMap[id])
+	}
+
+	return roots
 }

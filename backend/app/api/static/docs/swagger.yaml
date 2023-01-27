@@ -459,6 +459,17 @@ definitions:
       total:
         type: number
     type: object
+  repo.TreeItem:
+    properties:
+      children:
+        items:
+          $ref: '#/definitions/repo.TreeItem'
+        type: array
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   repo.UserOut:
     properties:
       email:
@@ -1299,6 +1310,27 @@ paths:
       security:
       - Bearer: []
       summary: updates a location
+      tags:
+      - Locations
+  /v1/locations/tree:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/server.Results'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/repo.TreeItem'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: Get All Locations
       tags:
       - Locations
   /v1/qrcode:
