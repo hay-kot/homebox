@@ -17,11 +17,11 @@ export interface DocumentOut {
 }
 
 export interface Group {
-  createdAt: Date;
+  createdAt: string;
   currency: string;
   id: string;
   name: string;
-  updatedAt: Date;
+  updatedAt: string;
 }
 
 export interface GroupStatistics {
@@ -39,11 +39,11 @@ export interface GroupUpdate {
 }
 
 export interface ItemAttachment {
-  createdAt: Date;
+  createdAt: string;
   document: DocumentOut;
   id: string;
   type: string;
-  updatedAt: Date;
+  updatedAt: string;
 }
 
 export interface ItemAttachmentUpdate {
@@ -76,7 +76,7 @@ export interface ItemOut {
   assetId: string;
   attachments: ItemAttachment[];
   children: ItemSummary[];
-  createdAt: Date;
+  createdAt: string;
   description: string;
   fields: ItemField[];
   id: string;
@@ -96,23 +96,23 @@ export interface ItemOut {
   /** @example "0" */
   purchasePrice: string;
   /** Purchase */
-  purchaseTime: Date;
+  purchaseTime: string;
   quantity: number;
   serialNumber: string;
   soldNotes: string;
   /** @example "0" */
   soldPrice: string;
   /** Sold */
-  soldTime: Date;
+  soldTime: string;
   soldTo: string;
-  updatedAt: Date;
+  updatedAt: string;
   warrantyDetails: string;
-  warrantyExpires: Date;
+  warrantyExpires: string;
 }
 
 export interface ItemSummary {
   archived: boolean;
-  createdAt: Date;
+  createdAt: string;
   description: string;
   id: string;
   insured: boolean;
@@ -123,7 +123,7 @@ export interface ItemSummary {
   /** @example "0" */
   purchasePrice: string;
   quantity: number;
-  updatedAt: Date;
+  updatedAt: string;
 }
 
 export interface ItemUpdate {
@@ -148,7 +148,7 @@ export interface ItemUpdate {
   /** @example "0" */
   purchasePrice: string;
   /** Purchase */
-  purchaseTime: Date;
+  purchaseTime: string;
   quantity: number;
   /** Identifications */
   serialNumber: string;
@@ -156,10 +156,10 @@ export interface ItemUpdate {
   /** @example "0" */
   soldPrice: string;
   /** Sold */
-  soldTime: Date;
+  soldTime: string;
   soldTo: string;
   warrantyDetails: string;
-  warrantyExpires: Date;
+  warrantyExpires: string;
 }
 
 export interface LabelCreate {
@@ -169,20 +169,20 @@ export interface LabelCreate {
 }
 
 export interface LabelOut {
-  createdAt: Date;
+  createdAt: string;
   description: string;
   id: string;
   items: ItemSummary[];
   name: string;
-  updatedAt: Date;
+  updatedAt: string;
 }
 
 export interface LabelSummary {
-  createdAt: Date;
+  createdAt: string;
   description: string;
   id: string;
   name: string;
-  updatedAt: Date;
+  updatedAt: string;
 }
 
 export interface LocationCreate {
@@ -192,30 +192,30 @@ export interface LocationCreate {
 
 export interface LocationOut {
   children: LocationSummary[];
-  createdAt: Date;
+  createdAt: string;
   description: string;
   id: string;
   items: ItemSummary[];
   name: string;
   parent: LocationSummary;
-  updatedAt: Date;
+  updatedAt: string;
 }
 
 export interface LocationOutCount {
-  createdAt: Date;
+  createdAt: string;
   description: string;
   id: string;
   itemCount: number;
   name: string;
-  updatedAt: Date;
+  updatedAt: string;
 }
 
 export interface LocationSummary {
-  createdAt: Date;
+  createdAt: string;
   description: string;
   id: string;
   name: string;
-  updatedAt: Date;
+  updatedAt: string;
 }
 
 export interface LocationUpdate {
@@ -228,7 +228,7 @@ export interface LocationUpdate {
 export interface MaintenanceEntry {
   /** @example "0" */
   cost: string;
-  date: Date;
+  date: string;
   description: string;
   id: string;
   name: string;
@@ -237,7 +237,7 @@ export interface MaintenanceEntry {
 export interface MaintenanceEntryCreate {
   /** @example "0" */
   cost: string;
-  date: Date;
+  date: string;
   description: string;
   name: string;
 }
@@ -245,7 +245,7 @@ export interface MaintenanceEntryCreate {
 export interface MaintenanceEntryUpdate {
   /** @example "0" */
   cost: string;
-  date: Date;
+  date: string;
   description: string;
   name: string;
 }
@@ -268,6 +268,12 @@ export interface TotalsByOrganizer {
   id: string;
   name: string;
   total: number;
+}
+
+export interface TreeItem {
+  children: TreeItem[];
+  id: string;
+  name: string;
 }
 
 export interface UserOut {
@@ -294,7 +300,7 @@ export interface ValueOverTime {
 }
 
 export interface ValueOverTimeEntry {
-  date: Date;
+  date: string;
   name: string;
   value: number;
 }
