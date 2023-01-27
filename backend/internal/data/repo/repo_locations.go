@@ -19,8 +19,9 @@ type LocationRepository struct {
 
 type (
 	LocationCreate struct {
-		Name        string `json:"name"`
-		Description string `json:"description"`
+		Name        string    `json:"name"`
+		ParentID    uuid.UUID `json:"parentId" extensions:"x-nullable"`
+		Description string    `json:"description"`
 	}
 
 	LocationUpdate struct {
@@ -170,11 +171,18 @@ func (r *LocationRepository) GetOneByGroup(ctx context.Context, GID, ID uuid.UUI
 }
 
 func (r *LocationRepository) Create(ctx context.Context, GID uuid.UUID, data LocationCreate) (LocationOut, error) {
-	location, err := r.db.Location.Create().
+	q := r.db.Location.Create().
 		SetName(data.Name).
 		SetDescription(data.Description).
-		SetGroupID(GID).
-		Save(ctx)
+		SetGroupID(GID)
+
+	println(data.ParentID.String())
+	if data.ParentID != uuid.Nil {
+		println("SET PARENT")
+		q.SetParentID(data.ParentID)
+	}
+
+	location, err := q.Save(ctx)
 
 	if err != nil {
 		return LocationOut{}, err
