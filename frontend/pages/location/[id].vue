@@ -131,7 +131,7 @@
       <form v-if="location" @submit.prevent="update">
         <FormTextField v-model="updateData.name" :autofocus="true" label="Location Name" />
         <FormTextArea v-model="updateData.description" label="Location Description" />
-        <FormAutocomplete v-model="parent" :items="locations" item-text="name" item-value="id" label="Parent" />
+        <LocationSelector v-model="parent" />
         <div class="modal-action">
           <BaseButton type="submit" :loading="updating"> Update </BaseButton>
         </div>

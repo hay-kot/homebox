@@ -358,13 +358,7 @@
             </template>
           </BaseSectionHeader>
           <div class="px-5 mb-6 grid md:grid-cols-2 gap-4">
-            <FormSelect
-              v-if="item"
-              v-model="item.location"
-              label="Location"
-              :items="locations ?? []"
-              compare-key="id"
-            />
+            <LocationSelector v-model="item.location" />
             <FormMultiselect v-model="item.labels" label="Labels" :items="labels ?? []" />
 
             <Autocomplete

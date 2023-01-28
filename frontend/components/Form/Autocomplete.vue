@@ -51,7 +51,7 @@
 
   interface Props {
     label: string;
-    modelValue: string | ItemsObject;
+    modelValue: string | ItemsObject | null | undefined;
     items: ItemsObject[] | string[];
     itemText?: keyof ItemsObject;
     itemSearch?: keyof ItemsObject | null;
@@ -129,7 +129,7 @@
     }
   );
 
-  function select(obj: string | ItemsObject) {
+  function select(obj: Props["modelValue"]) {
     if (isStrings(props.items)) {
       if (obj === value.value) {
         value.value = "";
