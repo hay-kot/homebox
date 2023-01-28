@@ -1,5 +1,6 @@
 export type Codes = "USD" | "EUR" | "GBP" | "JPY" | "ZAR" | "AUD" | "NOK" | "SEK" | "DKK" | "INR" | "RMB" | "BGN";
 
+
 export type Currency = {
   code: Codes;
   local: string;
