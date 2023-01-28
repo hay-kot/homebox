@@ -1,38 +1,15 @@
 <template>
-  <div ref="label" class="dropdown dropdown-end dropdown-top w-full">
-    <FormTextField v-model="dateText" tabindex="0" label="Date" :inline="inline" readonly />
-    <div tabindex="0" class="card compact dropdown-content shadow bg-base-100 rounded-box w-64" @blur="resetTime">
-      <div class="card-body">
-        <div class="grid grid-cols-7 gap-2">
-          <div v-for="d in daysIdx" :key="d">
-            <p class="text-center">
-              {{ d }}
-            </p>
-          </div>
-          <template v-for="day in days">
-            <button
-              v-if="day.number != ''"
-              :key="day.number"
-              type="button"
-              class="text-center btn-xs btn btn-outline"
-              @click="select($event, day.date)"
-            >
-              {{ day.number }}
-            </button>
-            <div v-else :key="`${day.number}-empty`"></div>
-          </template>
-        </div>
-        <div class="flex justify-between mt-1 items-center">
-          <button type="button" class="btn btn-xs" @click="prevMonth">
-            <Icon class="h-5 w-5" name="mdi-arrow-left"></Icon>
-          </button>
-          <p class="text-center">{{ month }} {{ year }}</p>
-          <button type="button" class="btn btn-xs" @click="nextMonth">
-            <Icon class="h-5 w-5" name="mdi-arrow-right"></Icon>
-          </button>
-        </div>
-      </div>
-    </div>
+  <div v-if="!inline" class="form-control w-full">
+    <label class="label">
+      <span class="label-text"> Date </span>
+    </label>
+    <input ref="input" v-model="selected" type="date" class="input input-bordered w-full" pattern="yyyy-MM-dd" />
+  </div>
+  <div v-else class="sm:grid sm:grid-cols-4 sm:items-start sm:gap-4">
+    <label class="label">
+      <span class="label-text"> Date </span>
+    </label>
+    <input v-model="selected" type="date" class="input input-bordered col-span-3 w-full mt-2" pattern="yyyy-MM-dd" />
   </div>
 </template>
 
@@ -51,88 +28,20 @@
     },
   });
 
-  const selected = useVModel(props, "modelValue", emit);
-  const dateText = computed(() => {
-    if (!validDate(selected.value)) {
-      return "";
-    }
-
-    if (selected.value) {
-      return selected.value.toLocaleDateString();
-    }
-
-    return "";
-  });
-
-  const time = ref(new Date());
-  function resetTime() {
-    time.value = new Date();
-  }
-
-  const label = ref<HTMLElement>();
-  onClickOutside(label, () => {
-    resetTime();
-  });
-
-  const month = computed(() => {
-    return time.value.toLocaleString("default", { month: "long" });
-  });
-
-  const year = computed(() => {
-    return time.value.getFullYear();
-  });
-
-  function nextMonth() {
-    time.value.setMonth(time.value.getMonth() + 1);
-    time.value = new Date(time.value);
-  }
-
-  function prevMonth() {
-    time.value.setMonth(time.value.getMonth() - 1);
-    time.value = new Date(time.value);
-  }
-
-  const daysIdx = computed(() => {
-    return ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
-  });
-
-  function select(e: MouseEvent, day: Date) {
-    selected.value = day;
-    // @ts-ignore - this is a vue3 bug
-    e.target.blur();
-    resetTime();
-  }
-
-  type DayEntry = {
-    number: number | string;
-    date: Date;
-  };
-
-  function daysInMonth(month: number, year: number) {
-    return new Date(year, month, 0).getDate();
-  }
-
-  const days = computed<DayEntry[]>(() => {
-    const days = [];
-
-    const totalDays = daysInMonth(time.value.getMonth() + 1, time.value.getFullYear());
-
-    const firstDay = new Date(time.value.getFullYear(), time.value.getMonth(), 1).getDay();
-
-    for (let i = 0; i < firstDay; i++) {
-      days.push({
-        number: "",
-        date: new Date(),
-      });
-    }
-
-    for (let i = 1; i <= totalDays; i++) {
-      days.push({
-        number: i,
-        date: new Date(time.value.getFullYear(), time.value.getMonth(), i),
-      });
-    }
-
-    return days;
+  const selected = computed({
+    get() {
+      // return modelValue as string as YYYY-MM-DD or null
+      return props.modelValue ? props.modelValue.toISOString().split("T")[0] : null;
+    },
+    set(value: string | null) {
+      // emit update:modelValue with a Date object or null
+      emit("update:modelValue", value ? new Date(value) : null);
+    },
   });
 </script>
+
+<style class="scoped">
+  ::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+</style>
