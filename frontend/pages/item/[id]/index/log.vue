@@ -114,8 +114,6 @@
     entry.date = new Date(e.date);
     entry.description = e.description;
     entry.cost = e.cost;
-
-    console.log(e);
   }
 
   async function editEntry() {

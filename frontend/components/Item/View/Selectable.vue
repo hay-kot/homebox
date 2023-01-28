@@ -19,7 +19,6 @@
   });
 
   function setViewPreference(view: ViewType) {
-    console.log("setViewPreference", view);
     preferences.value.itemDisplayView = view;
   }
 </script>
