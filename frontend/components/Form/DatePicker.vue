@@ -3,13 +3,13 @@
     <label class="label">
       <span class="label-text"> Date </span>
     </label>
-    <input ref="input" v-model="selected" type="date" class="input input-bordered w-full" pattern="yyyy-MM-dd" />
+    <input ref="input" v-model="selected" type="date" class="input input-bordered w-full" />
   </div>
   <div v-else class="sm:grid sm:grid-cols-4 sm:items-start sm:gap-4">
     <label class="label">
       <span class="label-text"> Date </span>
     </label>
-    <input v-model="selected" type="date" class="input input-bordered col-span-3 w-full mt-2" pattern="yyyy-MM-dd" />
+    <input v-model="selected" type="date" class="input input-bordered col-span-3 w-full mt-2" />
   </div>
 </template>
 

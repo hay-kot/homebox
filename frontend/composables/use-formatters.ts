@@ -63,11 +63,11 @@ export function fmtDate(value: string | Date, fmt: DateTimeFormat = "human"): st
 
   switch (fmt) {
     case "relative":
-      return useTimeAgo(dt).value + useDateFormat(dt, " (MM-DD-YYYY)").value;
+      return useTimeAgo(dt).value + useDateFormat(dt, " (YYYY-MM-DD)").value;
     case "long":
-      return useDateFormat(dt, "MM-DD-YYYY (dddd)").value;
+      return useDateFormat(dt, "YYYY-MM-DD (dddd)").value;
     case "short":
-      return useDateFormat(dt, "MM-DD-YYYY").value;
+      return useDateFormat(dt, "YYYY-MM-DD").value;
     case "human":
       // January 1st, 2021
       return `${months[dt.getMonth()]} ${dt.getDate()}${ordinalIndicator(dt.getDate())}, ${dt.getFullYear()}`;
