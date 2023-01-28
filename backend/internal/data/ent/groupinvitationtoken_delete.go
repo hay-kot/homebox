@@ -69,6 +69,12 @@ type GroupInvitationTokenDeleteOne struct {
 	gitd *GroupInvitationTokenDelete
 }
 
+// Where appends a list predicates to the GroupInvitationTokenDelete builder.
+func (gitdo *GroupInvitationTokenDeleteOne) Where(ps ...predicate.GroupInvitationToken) *GroupInvitationTokenDeleteOne {
+	gitdo.gitd.mutation.Where(ps...)
+	return gitdo
+}
+
 // Exec executes the deletion query.
 func (gitdo *GroupInvitationTokenDeleteOne) Exec(ctx context.Context) error {
 	n, err := gitdo.gitd.Exec(ctx)
@@ -84,5 +90,7 @@ func (gitdo *GroupInvitationTokenDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (gitdo *GroupInvitationTokenDeleteOne) ExecX(ctx context.Context) {
-	gitdo.gitd.ExecX(ctx)
+	if err := gitdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

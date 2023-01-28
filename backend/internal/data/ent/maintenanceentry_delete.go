@@ -69,6 +69,12 @@ type MaintenanceEntryDeleteOne struct {
 	med *MaintenanceEntryDelete
 }
 
+// Where appends a list predicates to the MaintenanceEntryDelete builder.
+func (medo *MaintenanceEntryDeleteOne) Where(ps ...predicate.MaintenanceEntry) *MaintenanceEntryDeleteOne {
+	medo.med.mutation.Where(ps...)
+	return medo
+}
+
 // Exec executes the deletion query.
 func (medo *MaintenanceEntryDeleteOne) Exec(ctx context.Context) error {
 	n, err := medo.med.Exec(ctx)
@@ -84,5 +90,7 @@ func (medo *MaintenanceEntryDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (medo *MaintenanceEntryDeleteOne) ExecX(ctx context.Context) {
-	medo.med.ExecX(ctx)
+	if err := medo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

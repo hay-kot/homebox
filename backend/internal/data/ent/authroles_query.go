@@ -19,11 +19,8 @@ import (
 // AuthRolesQuery is the builder for querying AuthRoles entities.
 type AuthRolesQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
+	ctx        *QueryContext
 	order      []OrderFunc
-	fields     []string
 	inters     []Interceptor
 	predicates []predicate.AuthRoles
 	withToken  *AuthTokensQuery
@@ -41,20 +38,20 @@ func (arq *AuthRolesQuery) Where(ps ...predicate.AuthRoles) *AuthRolesQuery {
 
 // Limit the number of records to be returned by this query.
 func (arq *AuthRolesQuery) Limit(limit int) *AuthRolesQuery {
-	arq.limit = &limit
+	arq.ctx.Limit = &limit
 	return arq
 }
 
 // Offset to start from.
 func (arq *AuthRolesQuery) Offset(offset int) *AuthRolesQuery {
-	arq.offset = &offset
+	arq.ctx.Offset = &offset
 	return arq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (arq *AuthRolesQuery) Unique(unique bool) *AuthRolesQuery {
-	arq.unique = &unique
+	arq.ctx.Unique = &unique
 	return arq
 }
 
@@ -89,7 +86,7 @@ func (arq *AuthRolesQuery) QueryToken() *AuthTokensQuery {
 // First returns the first AuthRoles entity from the query.
 // Returns a *NotFoundError when no AuthRoles was found.
 func (arq *AuthRolesQuery) First(ctx context.Context) (*AuthRoles, error) {
-	nodes, err := arq.Limit(1).All(newQueryContext(ctx, TypeAuthRoles, "First"))
+	nodes, err := arq.Limit(1).All(setContextOp(ctx, arq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +109,7 @@ func (arq *AuthRolesQuery) FirstX(ctx context.Context) *AuthRoles {
 // Returns a *NotFoundError when no AuthRoles ID was found.
 func (arq *AuthRolesQuery) FirstID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = arq.Limit(1).IDs(newQueryContext(ctx, TypeAuthRoles, "FirstID")); err != nil {
+	if ids, err = arq.Limit(1).IDs(setContextOp(ctx, arq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -135,7 +132,7 @@ func (arq *AuthRolesQuery) FirstIDX(ctx context.Context) int {
 // Returns a *NotSingularError when more than one AuthRoles entity is found.
 // Returns a *NotFoundError when no AuthRoles entities are found.
 func (arq *AuthRolesQuery) Only(ctx context.Context) (*AuthRoles, error) {
-	nodes, err := arq.Limit(2).All(newQueryContext(ctx, TypeAuthRoles, "Only"))
+	nodes, err := arq.Limit(2).All(setContextOp(ctx, arq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +160,7 @@ func (arq *AuthRolesQuery) OnlyX(ctx context.Context) *AuthRoles {
 // Returns a *NotFoundError when no entities are found.
 func (arq *AuthRolesQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = arq.Limit(2).IDs(newQueryContext(ctx, TypeAuthRoles, "OnlyID")); err != nil {
+	if ids, err = arq.Limit(2).IDs(setContextOp(ctx, arq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -188,7 +185,7 @@ func (arq *AuthRolesQuery) OnlyIDX(ctx context.Context) int {
 
 // All executes the query and returns a list of AuthRolesSlice.
 func (arq *AuthRolesQuery) All(ctx context.Context) ([]*AuthRoles, error) {
-	ctx = newQueryContext(ctx, TypeAuthRoles, "All")
+	ctx = setContextOp(ctx, arq.ctx, "All")
 	if err := arq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -208,7 +205,7 @@ func (arq *AuthRolesQuery) AllX(ctx context.Context) []*AuthRoles {
 // IDs executes the query and returns a list of AuthRoles IDs.
 func (arq *AuthRolesQuery) IDs(ctx context.Context) ([]int, error) {
 	var ids []int
-	ctx = newQueryContext(ctx, TypeAuthRoles, "IDs")
+	ctx = setContextOp(ctx, arq.ctx, "IDs")
 	if err := arq.Select(authroles.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -226,7 +223,7 @@ func (arq *AuthRolesQuery) IDsX(ctx context.Context) []int {
 
 // Count returns the count of the given query.
 func (arq *AuthRolesQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeAuthRoles, "Count")
+	ctx = setContextOp(ctx, arq.ctx, "Count")
 	if err := arq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -244,7 +241,7 @@ func (arq *AuthRolesQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (arq *AuthRolesQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeAuthRoles, "Exist")
+	ctx = setContextOp(ctx, arq.ctx, "Exist")
 	switch _, err := arq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -272,16 +269,14 @@ func (arq *AuthRolesQuery) Clone() *AuthRolesQuery {
 	}
 	return &AuthRolesQuery{
 		config:     arq.config,
-		limit:      arq.limit,
-		offset:     arq.offset,
+		ctx:        arq.ctx.Clone(),
 		order:      append([]OrderFunc{}, arq.order...),
 		inters:     append([]Interceptor{}, arq.inters...),
 		predicates: append([]predicate.AuthRoles{}, arq.predicates...),
 		withToken:  arq.withToken.Clone(),
 		// clone intermediate query.
-		sql:    arq.sql.Clone(),
-		path:   arq.path,
-		unique: arq.unique,
+		sql:  arq.sql.Clone(),
+		path: arq.path,
 	}
 }
 
@@ -311,9 +306,9 @@ func (arq *AuthRolesQuery) WithToken(opts ...func(*AuthTokensQuery)) *AuthRolesQ
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (arq *AuthRolesQuery) GroupBy(field string, fields ...string) *AuthRolesGroupBy {
-	arq.fields = append([]string{field}, fields...)
+	arq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &AuthRolesGroupBy{build: arq}
-	grbuild.flds = &arq.fields
+	grbuild.flds = &arq.ctx.Fields
 	grbuild.label = authroles.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -332,10 +327,10 @@ func (arq *AuthRolesQuery) GroupBy(field string, fields ...string) *AuthRolesGro
 //		Select(authroles.FieldRole).
 //		Scan(ctx, &v)
 func (arq *AuthRolesQuery) Select(fields ...string) *AuthRolesSelect {
-	arq.fields = append(arq.fields, fields...)
+	arq.ctx.Fields = append(arq.ctx.Fields, fields...)
 	sbuild := &AuthRolesSelect{AuthRolesQuery: arq}
 	sbuild.label = authroles.Label
-	sbuild.flds, sbuild.scan = &arq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &arq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -355,7 +350,7 @@ func (arq *AuthRolesQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range arq.fields {
+	for _, f := range arq.ctx.Fields {
 		if !authroles.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -425,6 +420,9 @@ func (arq *AuthRolesQuery) loadToken(ctx context.Context, query *AuthTokensQuery
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(authtokens.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -444,9 +442,9 @@ func (arq *AuthRolesQuery) loadToken(ctx context.Context, query *AuthTokensQuery
 
 func (arq *AuthRolesQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := arq.querySpec()
-	_spec.Node.Columns = arq.fields
-	if len(arq.fields) > 0 {
-		_spec.Unique = arq.unique != nil && *arq.unique
+	_spec.Node.Columns = arq.ctx.Fields
+	if len(arq.ctx.Fields) > 0 {
+		_spec.Unique = arq.ctx.Unique != nil && *arq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, arq.driver, _spec)
 }
@@ -464,10 +462,10 @@ func (arq *AuthRolesQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   arq.sql,
 		Unique: true,
 	}
-	if unique := arq.unique; unique != nil {
+	if unique := arq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := arq.fields; len(fields) > 0 {
+	if fields := arq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, authroles.FieldID)
 		for i := range fields {
@@ -483,10 +481,10 @@ func (arq *AuthRolesQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := arq.limit; limit != nil {
+	if limit := arq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := arq.offset; offset != nil {
+	if offset := arq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := arq.order; len(ps) > 0 {
@@ -502,7 +500,7 @@ func (arq *AuthRolesQuery) querySpec() *sqlgraph.QuerySpec {
 func (arq *AuthRolesQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(arq.driver.Dialect())
 	t1 := builder.Table(authroles.Table)
-	columns := arq.fields
+	columns := arq.ctx.Fields
 	if len(columns) == 0 {
 		columns = authroles.Columns
 	}
@@ -511,7 +509,7 @@ func (arq *AuthRolesQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = arq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if arq.unique != nil && *arq.unique {
+	if arq.ctx.Unique != nil && *arq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, p := range arq.predicates {
@@ -520,12 +518,12 @@ func (arq *AuthRolesQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range arq.order {
 		p(selector)
 	}
-	if offset := arq.offset; offset != nil {
+	if offset := arq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := arq.limit; limit != nil {
+	if limit := arq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -545,7 +543,7 @@ func (argb *AuthRolesGroupBy) Aggregate(fns ...AggregateFunc) *AuthRolesGroupBy 
 
 // Scan applies the selector query and scans the result into the given value.
 func (argb *AuthRolesGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeAuthRoles, "GroupBy")
+	ctx = setContextOp(ctx, argb.build.ctx, "GroupBy")
 	if err := argb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -593,7 +591,7 @@ func (ars *AuthRolesSelect) Aggregate(fns ...AggregateFunc) *AuthRolesSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (ars *AuthRolesSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeAuthRoles, "Select")
+	ctx = setContextOp(ctx, ars.ctx, "Select")
 	if err := ars.prepareQuery(ctx); err != nil {
 		return err
 	}

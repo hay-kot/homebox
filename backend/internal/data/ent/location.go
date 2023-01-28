@@ -173,29 +173,29 @@ func (l *Location) assignValues(columns []string, values []any) error {
 
 // QueryParent queries the "parent" edge of the Location entity.
 func (l *Location) QueryParent() *LocationQuery {
-	return (&LocationClient{config: l.config}).QueryParent(l)
+	return NewLocationClient(l.config).QueryParent(l)
 }
 
 // QueryChildren queries the "children" edge of the Location entity.
 func (l *Location) QueryChildren() *LocationQuery {
-	return (&LocationClient{config: l.config}).QueryChildren(l)
+	return NewLocationClient(l.config).QueryChildren(l)
 }
 
 // QueryGroup queries the "group" edge of the Location entity.
 func (l *Location) QueryGroup() *GroupQuery {
-	return (&LocationClient{config: l.config}).QueryGroup(l)
+	return NewLocationClient(l.config).QueryGroup(l)
 }
 
 // QueryItems queries the "items" edge of the Location entity.
 func (l *Location) QueryItems() *ItemQuery {
-	return (&LocationClient{config: l.config}).QueryItems(l)
+	return NewLocationClient(l.config).QueryItems(l)
 }
 
 // Update returns a builder for updating this Location.
 // Note that you need to call Location.Unwrap() before calling this method if this Location
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (l *Location) Update() *LocationUpdateOne {
-	return (&LocationClient{config: l.config}).UpdateOne(l)
+	return NewLocationClient(l.config).UpdateOne(l)
 }
 
 // Unwrap unwraps the Location entity that was returned from a transaction after it was closed,

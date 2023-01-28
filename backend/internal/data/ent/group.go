@@ -166,39 +166,39 @@ func (gr *Group) assignValues(columns []string, values []any) error {
 
 // QueryUsers queries the "users" edge of the Group entity.
 func (gr *Group) QueryUsers() *UserQuery {
-	return (&GroupClient{config: gr.config}).QueryUsers(gr)
+	return NewGroupClient(gr.config).QueryUsers(gr)
 }
 
 // QueryLocations queries the "locations" edge of the Group entity.
 func (gr *Group) QueryLocations() *LocationQuery {
-	return (&GroupClient{config: gr.config}).QueryLocations(gr)
+	return NewGroupClient(gr.config).QueryLocations(gr)
 }
 
 // QueryItems queries the "items" edge of the Group entity.
 func (gr *Group) QueryItems() *ItemQuery {
-	return (&GroupClient{config: gr.config}).QueryItems(gr)
+	return NewGroupClient(gr.config).QueryItems(gr)
 }
 
 // QueryLabels queries the "labels" edge of the Group entity.
 func (gr *Group) QueryLabels() *LabelQuery {
-	return (&GroupClient{config: gr.config}).QueryLabels(gr)
+	return NewGroupClient(gr.config).QueryLabels(gr)
 }
 
 // QueryDocuments queries the "documents" edge of the Group entity.
 func (gr *Group) QueryDocuments() *DocumentQuery {
-	return (&GroupClient{config: gr.config}).QueryDocuments(gr)
+	return NewGroupClient(gr.config).QueryDocuments(gr)
 }
 
 // QueryInvitationTokens queries the "invitation_tokens" edge of the Group entity.
 func (gr *Group) QueryInvitationTokens() *GroupInvitationTokenQuery {
-	return (&GroupClient{config: gr.config}).QueryInvitationTokens(gr)
+	return NewGroupClient(gr.config).QueryInvitationTokens(gr)
 }
 
 // Update returns a builder for updating this Group.
 // Note that you need to call Group.Unwrap() before calling this method if this Group
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (gr *Group) Update() *GroupUpdateOne {
-	return (&GroupClient{config: gr.config}).UpdateOne(gr)
+	return NewGroupClient(gr.config).UpdateOne(gr)
 }
 
 // Unwrap unwraps the Group entity that was returned from a transaction after it was closed,

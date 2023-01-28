@@ -324,6 +324,7 @@ func (c *AttachmentClient) DeleteOneID(id uuid.UUID) *AttachmentDeleteOne {
 func (c *AttachmentClient) Query() *AttachmentQuery {
 	return &AttachmentQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeAttachment},
 		inters: c.Interceptors(),
 	}
 }
@@ -473,6 +474,7 @@ func (c *AuthRolesClient) DeleteOneID(id int) *AuthRolesDeleteOne {
 func (c *AuthRolesClient) Query() *AuthRolesQuery {
 	return &AuthRolesQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeAuthRoles},
 		inters: c.Interceptors(),
 	}
 }
@@ -606,6 +608,7 @@ func (c *AuthTokensClient) DeleteOneID(id uuid.UUID) *AuthTokensDeleteOne {
 func (c *AuthTokensClient) Query() *AuthTokensQuery {
 	return &AuthTokensQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeAuthTokens},
 		inters: c.Interceptors(),
 	}
 }
@@ -755,6 +758,7 @@ func (c *DocumentClient) DeleteOneID(id uuid.UUID) *DocumentDeleteOne {
 func (c *DocumentClient) Query() *DocumentQuery {
 	return &DocumentQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeDocument},
 		inters: c.Interceptors(),
 	}
 }
@@ -904,6 +908,7 @@ func (c *GroupClient) DeleteOneID(id uuid.UUID) *GroupDeleteOne {
 func (c *GroupClient) Query() *GroupQuery {
 	return &GroupQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeGroup},
 		inters: c.Interceptors(),
 	}
 }
@@ -1117,6 +1122,7 @@ func (c *GroupInvitationTokenClient) DeleteOneID(id uuid.UUID) *GroupInvitationT
 func (c *GroupInvitationTokenClient) Query() *GroupInvitationTokenQuery {
 	return &GroupInvitationTokenQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeGroupInvitationToken},
 		inters: c.Interceptors(),
 	}
 }
@@ -1250,6 +1256,7 @@ func (c *ItemClient) DeleteOneID(id uuid.UUID) *ItemDeleteOne {
 func (c *ItemClient) Query() *ItemQuery {
 	return &ItemQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeItem},
 		inters: c.Interceptors(),
 	}
 }
@@ -1495,6 +1502,7 @@ func (c *ItemFieldClient) DeleteOneID(id uuid.UUID) *ItemFieldDeleteOne {
 func (c *ItemFieldClient) Query() *ItemFieldQuery {
 	return &ItemFieldQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeItemField},
 		inters: c.Interceptors(),
 	}
 }
@@ -1628,6 +1636,7 @@ func (c *LabelClient) DeleteOneID(id uuid.UUID) *LabelDeleteOne {
 func (c *LabelClient) Query() *LabelQuery {
 	return &LabelQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeLabel},
 		inters: c.Interceptors(),
 	}
 }
@@ -1777,6 +1786,7 @@ func (c *LocationClient) DeleteOneID(id uuid.UUID) *LocationDeleteOne {
 func (c *LocationClient) Query() *LocationQuery {
 	return &LocationQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeLocation},
 		inters: c.Interceptors(),
 	}
 }
@@ -1958,6 +1968,7 @@ func (c *MaintenanceEntryClient) DeleteOneID(id uuid.UUID) *MaintenanceEntryDele
 func (c *MaintenanceEntryClient) Query() *MaintenanceEntryQuery {
 	return &MaintenanceEntryQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeMaintenanceEntry},
 		inters: c.Interceptors(),
 	}
 }
@@ -2091,6 +2102,7 @@ func (c *UserClient) DeleteOneID(id uuid.UUID) *UserDeleteOne {
 func (c *UserClient) Query() *UserQuery {
 	return &UserQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeUser},
 		inters: c.Interceptors(),
 	}
 }

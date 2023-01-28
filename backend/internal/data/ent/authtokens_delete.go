@@ -69,6 +69,12 @@ type AuthTokensDeleteOne struct {
 	atd *AuthTokensDelete
 }
 
+// Where appends a list predicates to the AuthTokensDelete builder.
+func (atdo *AuthTokensDeleteOne) Where(ps ...predicate.AuthTokens) *AuthTokensDeleteOne {
+	atdo.atd.mutation.Where(ps...)
+	return atdo
+}
+
 // Exec executes the deletion query.
 func (atdo *AuthTokensDeleteOne) Exec(ctx context.Context) error {
 	n, err := atdo.atd.Exec(ctx)
@@ -84,5 +90,7 @@ func (atdo *AuthTokensDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (atdo *AuthTokensDeleteOne) ExecX(ctx context.Context) {
-	atdo.atd.ExecX(ctx)
+	if err := atdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

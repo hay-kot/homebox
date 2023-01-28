@@ -19,11 +19,8 @@ import (
 // ItemFieldQuery is the builder for querying ItemField entities.
 type ItemFieldQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
+	ctx        *QueryContext
 	order      []OrderFunc
-	fields     []string
 	inters     []Interceptor
 	predicates []predicate.ItemField
 	withItem   *ItemQuery
@@ -41,20 +38,20 @@ func (ifq *ItemFieldQuery) Where(ps ...predicate.ItemField) *ItemFieldQuery {
 
 // Limit the number of records to be returned by this query.
 func (ifq *ItemFieldQuery) Limit(limit int) *ItemFieldQuery {
-	ifq.limit = &limit
+	ifq.ctx.Limit = &limit
 	return ifq
 }
 
 // Offset to start from.
 func (ifq *ItemFieldQuery) Offset(offset int) *ItemFieldQuery {
-	ifq.offset = &offset
+	ifq.ctx.Offset = &offset
 	return ifq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (ifq *ItemFieldQuery) Unique(unique bool) *ItemFieldQuery {
-	ifq.unique = &unique
+	ifq.ctx.Unique = &unique
 	return ifq
 }
 
@@ -89,7 +86,7 @@ func (ifq *ItemFieldQuery) QueryItem() *ItemQuery {
 // First returns the first ItemField entity from the query.
 // Returns a *NotFoundError when no ItemField was found.
 func (ifq *ItemFieldQuery) First(ctx context.Context) (*ItemField, error) {
-	nodes, err := ifq.Limit(1).All(newQueryContext(ctx, TypeItemField, "First"))
+	nodes, err := ifq.Limit(1).All(setContextOp(ctx, ifq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +109,7 @@ func (ifq *ItemFieldQuery) FirstX(ctx context.Context) *ItemField {
 // Returns a *NotFoundError when no ItemField ID was found.
 func (ifq *ItemFieldQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = ifq.Limit(1).IDs(newQueryContext(ctx, TypeItemField, "FirstID")); err != nil {
+	if ids, err = ifq.Limit(1).IDs(setContextOp(ctx, ifq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -135,7 +132,7 @@ func (ifq *ItemFieldQuery) FirstIDX(ctx context.Context) uuid.UUID {
 // Returns a *NotSingularError when more than one ItemField entity is found.
 // Returns a *NotFoundError when no ItemField entities are found.
 func (ifq *ItemFieldQuery) Only(ctx context.Context) (*ItemField, error) {
-	nodes, err := ifq.Limit(2).All(newQueryContext(ctx, TypeItemField, "Only"))
+	nodes, err := ifq.Limit(2).All(setContextOp(ctx, ifq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +160,7 @@ func (ifq *ItemFieldQuery) OnlyX(ctx context.Context) *ItemField {
 // Returns a *NotFoundError when no entities are found.
 func (ifq *ItemFieldQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = ifq.Limit(2).IDs(newQueryContext(ctx, TypeItemField, "OnlyID")); err != nil {
+	if ids, err = ifq.Limit(2).IDs(setContextOp(ctx, ifq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -188,7 +185,7 @@ func (ifq *ItemFieldQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 
 // All executes the query and returns a list of ItemFields.
 func (ifq *ItemFieldQuery) All(ctx context.Context) ([]*ItemField, error) {
-	ctx = newQueryContext(ctx, TypeItemField, "All")
+	ctx = setContextOp(ctx, ifq.ctx, "All")
 	if err := ifq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -208,7 +205,7 @@ func (ifq *ItemFieldQuery) AllX(ctx context.Context) []*ItemField {
 // IDs executes the query and returns a list of ItemField IDs.
 func (ifq *ItemFieldQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	var ids []uuid.UUID
-	ctx = newQueryContext(ctx, TypeItemField, "IDs")
+	ctx = setContextOp(ctx, ifq.ctx, "IDs")
 	if err := ifq.Select(itemfield.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -226,7 +223,7 @@ func (ifq *ItemFieldQuery) IDsX(ctx context.Context) []uuid.UUID {
 
 // Count returns the count of the given query.
 func (ifq *ItemFieldQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeItemField, "Count")
+	ctx = setContextOp(ctx, ifq.ctx, "Count")
 	if err := ifq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -244,7 +241,7 @@ func (ifq *ItemFieldQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (ifq *ItemFieldQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeItemField, "Exist")
+	ctx = setContextOp(ctx, ifq.ctx, "Exist")
 	switch _, err := ifq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -272,16 +269,14 @@ func (ifq *ItemFieldQuery) Clone() *ItemFieldQuery {
 	}
 	return &ItemFieldQuery{
 		config:     ifq.config,
-		limit:      ifq.limit,
-		offset:     ifq.offset,
+		ctx:        ifq.ctx.Clone(),
 		order:      append([]OrderFunc{}, ifq.order...),
 		inters:     append([]Interceptor{}, ifq.inters...),
 		predicates: append([]predicate.ItemField{}, ifq.predicates...),
 		withItem:   ifq.withItem.Clone(),
 		// clone intermediate query.
-		sql:    ifq.sql.Clone(),
-		path:   ifq.path,
-		unique: ifq.unique,
+		sql:  ifq.sql.Clone(),
+		path: ifq.path,
 	}
 }
 
@@ -311,9 +306,9 @@ func (ifq *ItemFieldQuery) WithItem(opts ...func(*ItemQuery)) *ItemFieldQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (ifq *ItemFieldQuery) GroupBy(field string, fields ...string) *ItemFieldGroupBy {
-	ifq.fields = append([]string{field}, fields...)
+	ifq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &ItemFieldGroupBy{build: ifq}
-	grbuild.flds = &ifq.fields
+	grbuild.flds = &ifq.ctx.Fields
 	grbuild.label = itemfield.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -332,10 +327,10 @@ func (ifq *ItemFieldQuery) GroupBy(field string, fields ...string) *ItemFieldGro
 //		Select(itemfield.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (ifq *ItemFieldQuery) Select(fields ...string) *ItemFieldSelect {
-	ifq.fields = append(ifq.fields, fields...)
+	ifq.ctx.Fields = append(ifq.ctx.Fields, fields...)
 	sbuild := &ItemFieldSelect{ItemFieldQuery: ifq}
 	sbuild.label = itemfield.Label
-	sbuild.flds, sbuild.scan = &ifq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &ifq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -355,7 +350,7 @@ func (ifq *ItemFieldQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range ifq.fields {
+	for _, f := range ifq.ctx.Fields {
 		if !itemfield.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -425,6 +420,9 @@ func (ifq *ItemFieldQuery) loadItem(ctx context.Context, query *ItemQuery, nodes
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(item.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -444,9 +442,9 @@ func (ifq *ItemFieldQuery) loadItem(ctx context.Context, query *ItemQuery, nodes
 
 func (ifq *ItemFieldQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := ifq.querySpec()
-	_spec.Node.Columns = ifq.fields
-	if len(ifq.fields) > 0 {
-		_spec.Unique = ifq.unique != nil && *ifq.unique
+	_spec.Node.Columns = ifq.ctx.Fields
+	if len(ifq.ctx.Fields) > 0 {
+		_spec.Unique = ifq.ctx.Unique != nil && *ifq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, ifq.driver, _spec)
 }
@@ -464,10 +462,10 @@ func (ifq *ItemFieldQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   ifq.sql,
 		Unique: true,
 	}
-	if unique := ifq.unique; unique != nil {
+	if unique := ifq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := ifq.fields; len(fields) > 0 {
+	if fields := ifq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, itemfield.FieldID)
 		for i := range fields {
@@ -483,10 +481,10 @@ func (ifq *ItemFieldQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := ifq.limit; limit != nil {
+	if limit := ifq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := ifq.offset; offset != nil {
+	if offset := ifq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := ifq.order; len(ps) > 0 {
@@ -502,7 +500,7 @@ func (ifq *ItemFieldQuery) querySpec() *sqlgraph.QuerySpec {
 func (ifq *ItemFieldQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(ifq.driver.Dialect())
 	t1 := builder.Table(itemfield.Table)
-	columns := ifq.fields
+	columns := ifq.ctx.Fields
 	if len(columns) == 0 {
 		columns = itemfield.Columns
 	}
@@ -511,7 +509,7 @@ func (ifq *ItemFieldQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = ifq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if ifq.unique != nil && *ifq.unique {
+	if ifq.ctx.Unique != nil && *ifq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, p := range ifq.predicates {
@@ -520,12 +518,12 @@ func (ifq *ItemFieldQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range ifq.order {
 		p(selector)
 	}
-	if offset := ifq.offset; offset != nil {
+	if offset := ifq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := ifq.limit; limit != nil {
+	if limit := ifq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -545,7 +543,7 @@ func (ifgb *ItemFieldGroupBy) Aggregate(fns ...AggregateFunc) *ItemFieldGroupBy 
 
 // Scan applies the selector query and scans the result into the given value.
 func (ifgb *ItemFieldGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeItemField, "GroupBy")
+	ctx = setContextOp(ctx, ifgb.build.ctx, "GroupBy")
 	if err := ifgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -593,7 +591,7 @@ func (ifs *ItemFieldSelect) Aggregate(fns ...AggregateFunc) *ItemFieldSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (ifs *ItemFieldSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeItemField, "Select")
+	ctx = setContextOp(ctx, ifs.ctx, "Select")
 	if err := ifs.prepareQuery(ctx); err != nil {
 		return err
 	}

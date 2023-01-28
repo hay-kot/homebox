@@ -142,14 +142,14 @@ func (me *MaintenanceEntry) assignValues(columns []string, values []any) error {
 
 // QueryItem queries the "item" edge of the MaintenanceEntry entity.
 func (me *MaintenanceEntry) QueryItem() *ItemQuery {
-	return (&MaintenanceEntryClient{config: me.config}).QueryItem(me)
+	return NewMaintenanceEntryClient(me.config).QueryItem(me)
 }
 
 // Update returns a builder for updating this MaintenanceEntry.
 // Note that you need to call MaintenanceEntry.Unwrap() before calling this method if this MaintenanceEntry
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (me *MaintenanceEntry) Update() *MaintenanceEntryUpdateOne {
-	return (&MaintenanceEntryClient{config: me.config}).UpdateOne(me)
+	return NewMaintenanceEntryClient(me.config).UpdateOne(me)
 }
 
 // Unwrap unwraps the MaintenanceEntry entity that was returned from a transaction after it was closed,

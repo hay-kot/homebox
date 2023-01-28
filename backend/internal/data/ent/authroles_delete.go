@@ -69,6 +69,12 @@ type AuthRolesDeleteOne struct {
 	ard *AuthRolesDelete
 }
 
+// Where appends a list predicates to the AuthRolesDelete builder.
+func (ardo *AuthRolesDeleteOne) Where(ps ...predicate.AuthRoles) *AuthRolesDeleteOne {
+	ardo.ard.mutation.Where(ps...)
+	return ardo
+}
+
 // Exec executes the deletion query.
 func (ardo *AuthRolesDeleteOne) Exec(ctx context.Context) error {
 	n, err := ardo.ard.Exec(ctx)
@@ -84,5 +90,7 @@ func (ardo *AuthRolesDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (ardo *AuthRolesDeleteOne) ExecX(ctx context.Context) {
-	ardo.ard.ExecX(ctx)
+	if err := ardo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

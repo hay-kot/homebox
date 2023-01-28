@@ -69,6 +69,12 @@ type ItemFieldDeleteOne struct {
 	ifd *ItemFieldDelete
 }
 
+// Where appends a list predicates to the ItemFieldDelete builder.
+func (ifdo *ItemFieldDeleteOne) Where(ps ...predicate.ItemField) *ItemFieldDeleteOne {
+	ifdo.ifd.mutation.Where(ps...)
+	return ifdo
+}
+
 // Exec executes the deletion query.
 func (ifdo *ItemFieldDeleteOne) Exec(ctx context.Context) error {
 	n, err := ifdo.ifd.Exec(ctx)
@@ -84,5 +90,7 @@ func (ifdo *ItemFieldDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (ifdo *ItemFieldDeleteOne) ExecX(ctx context.Context) {
-	ifdo.ifd.ExecX(ctx)
+	if err := ifdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }
