@@ -138,18 +138,13 @@ func TestItemRepository_TreeQuery(t *testing.T) {
 
 	assert.NoError(t, err)
 
-	assert.Equal(t, 3, len(locations))
+	assert.Equal(t, 2, len(locations))
 
-	for _, loc := range locs {
-		found := false
-
-		for _, l := range locations {
-			if l.ID == loc.ID {
-				found = true
-			}
+	// Check roots
+	for _, loc := range locations {
+		if loc.ID == locs[1].ID {
+			assert.Equal(t, 1, len(loc.Children))
 		}
-
-		assert.True(t, found)
 	}
 }
 

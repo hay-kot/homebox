@@ -176,9 +176,7 @@ func (r *LocationRepository) Create(ctx context.Context, GID uuid.UUID, data Loc
 		SetDescription(data.Description).
 		SetGroupID(GID)
 
-	println(data.ParentID.String())
 	if data.ParentID != uuid.Nil {
-		println("SET PARENT")
 		q.SetParentID(data.ParentID)
 	}
 
