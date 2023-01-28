@@ -406,9 +406,7 @@
           </ul>
         </div>
         <template #description>
-          <p class="text-lg">
-            {{ item ? item.description : "" }}
-          </p>
+          <Markdown :source="item.description"> </Markdown>
           <div class="flex flex-wrap gap-2 mt-3">
             <NuxtLink ref="badge" class="badge p-3" :to="`/location/${item.location.id}`">
               <Icon name="heroicons-map-pin" class="mr-2 swap-on"></Icon>

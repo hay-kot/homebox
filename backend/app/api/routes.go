@@ -91,6 +91,7 @@ func (a *app) mountRoutes(repos *repo.AllRepos) {
 
 	a.server.Get(v1Base("/locations"), v1Ctrl.HandleLocationGetAll(), userMW...)
 	a.server.Post(v1Base("/locations"), v1Ctrl.HandleLocationCreate(), userMW...)
+	a.server.Get(v1Base("/locations/tree"), v1Ctrl.HandleLocationTreeQuery(), userMW...)
 	a.server.Get(v1Base("/locations/{id}"), v1Ctrl.HandleLocationGet(), userMW...)
 	a.server.Put(v1Base("/locations/{id}"), v1Ctrl.HandleLocationUpdate(), userMW...)
 	a.server.Delete(v1Base("/locations/{id}"), v1Ctrl.HandleLocationDelete(), userMW...)

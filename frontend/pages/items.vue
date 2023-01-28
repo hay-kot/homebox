@@ -9,7 +9,7 @@
   });
 
   useHead({
-    title: "Homebox | Home",
+    title: "Homebox | Items",
   });
 
   const searchLocked = ref(false);

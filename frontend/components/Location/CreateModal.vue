@@ -10,6 +10,7 @@
         label="Location Name"
       />
       <FormTextArea v-model="form.description" label="Location Description" />
+      <LocationSelector v-model="form.parent" />
       <div class="modal-action">
         <BaseButton type="submit" :loading="loading"> Create </BaseButton>
       </div>
@@ -18,6 +19,7 @@
 </template>
 
 <script setup lang="ts">
+  import { LocationSummary } from "~~/lib/api/types/data-contracts";
   const props = defineProps({
     modelValue: {
       type: Boolean,
@@ -31,6 +33,7 @@
   const form = reactive({
     name: "",
     description: "",
+    parent: null as LocationSummary | null,
   });
 
   whenever(
@@ -43,6 +46,7 @@
   function reset() {
     form.name = "";
     form.description = "";
+    form.parent = null;
     focused.value = false;
     modal.value = false;
     loading.value = false;
@@ -54,7 +58,11 @@
   async function create() {
     loading.value = true;
 
-    const { data, error } = await api.locations.create(form);
+    const { data, error } = await api.locations.create({
+      name: form.name,
+      description: form.description,
+      parentId: form.parent ? form.parent.id : null,
+    });
 
     if (error) {
       toast.error("Couldn't create location");

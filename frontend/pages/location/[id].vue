@@ -131,7 +131,7 @@
       <form v-if="location" @submit.prevent="update">
         <FormTextField v-model="updateData.name" :autofocus="true" label="Location Name" />
         <FormTextArea v-model="updateData.description" label="Location Description" />
-        <FormAutocomplete v-model="parent" :items="locations" item-text="name" item-value="id" label="Parent" />
+        <LocationSelector v-model="parent" />
         <div class="modal-action">
           <BaseButton type="submit" :loading="updating"> Update </BaseButton>
         </div>
@@ -179,12 +179,9 @@
         <DetailsSection :details="details" />
       </BaseCard>
 
-      <section v-if="location && location.items.length > 0">
-        <BaseSectionHeader class="mb-5"> Items </BaseSectionHeader>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          <ItemCard v-for="item in location.items" :key="item.id" :item="item" />
-        </div>
-      </section>
+      <template v-if="location && location.items.length > 0">
+        <ItemViewSelectable :items="location.items" />
+      </template>
 
       <section v-if="location && location.children.length > 0">
         <BaseSectionHeader class="mb-5"> Child Locations </BaseSectionHeader>

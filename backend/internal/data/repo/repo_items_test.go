@@ -36,6 +36,8 @@ func useItems(t *testing.T, len int) []ItemOut {
 		for _, item := range items {
 			_ = tRepos.Items.Delete(context.Background(), item.ID)
 		}
+
+		_ = tRepos.Locations.Delete(context.Background(), location.ID)
 	})
 
 	return items

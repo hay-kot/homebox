@@ -188,6 +188,7 @@ export interface LabelSummary {
 export interface LocationCreate {
   description: string;
   name: string;
+  parentId: string | null;
 }
 
 export interface LocationOut {
@@ -270,6 +271,13 @@ export interface TotalsByOrganizer {
   total: number;
 }
 
+export interface TreeItem {
+  children: TreeItem[];
+  id: string;
+  name: string;
+  type: string;
+}
+
 export interface UserOut {
   email: string;
   groupId: string;
@@ -347,13 +355,13 @@ export interface EnsureAssetIDResult {
 }
 
 export interface GroupInvitation {
-  expiresAt: string;
+  expiresAt: Date;
   token: string;
   uses: number;
 }
 
 export interface GroupInvitationCreate {
-  expiresAt: string;
+  expiresAt: Date;
   uses: number;
 }
 
@@ -363,6 +371,6 @@ export interface ItemAttachmentToken {
 
 export interface TokenResponse {
   attachmentToken: string;
-  expiresAt: string;
+  expiresAt: Date;
   token: string;
 }

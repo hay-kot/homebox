@@ -1,14 +1,22 @@
 import { BaseAPI, route } from "../base";
-import { LocationOutCount, LocationCreate, LocationOut, LocationUpdate } from "../types/data-contracts";
+import { LocationOutCount, LocationCreate, LocationOut, LocationUpdate, TreeItem } from "../types/data-contracts";
 import { Results } from "../types/non-generated";
 
 export type LocationsQuery = {
   filterChildren: boolean;
 };
 
+export type TreeQuery = {
+  withItems: boolean;
+};
+
 export class LocationsApi extends BaseAPI {
   getAll(q: LocationsQuery = { filterChildren: false }) {
     return this.http.get<Results<LocationOutCount>>({ url: route("/locations", q) });
+  }
+
+  getTree(tq = { withItems: false }) {
+    return this.http.get<Results<TreeItem>>({ url: route("/locations/tree", tq) });
   }
 
   create(body: LocationCreate) {

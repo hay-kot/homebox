@@ -322,6 +322,9 @@ definitions:
         type: string
       name:
         type: string
+      parentId:
+        type: string
+        x-nullable: true
     type: object
   repo.LocationOut:
     properties:
@@ -458,6 +461,19 @@ definitions:
         type: string
       total:
         type: number
+    type: object
+  repo.TreeItem:
+    properties:
+      children:
+        items:
+          $ref: '#/definitions/repo.TreeItem'
+        type: array
+      id:
+        type: string
+      name:
+        type: string
+      type:
+        type: string
     type: object
   repo.UserOut:
     properties:
@@ -1299,6 +1315,32 @@ paths:
       security:
       - Bearer: []
       summary: updates a location
+      tags:
+      - Locations
+  /v1/locations/tree:
+    get:
+      parameters:
+      - description: include items in response tree
+        in: query
+        name: withItems
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/server.Results'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/repo.TreeItem'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: Get All Locations
       tags:
       - Locations
   /v1/qrcode:
