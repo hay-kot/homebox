@@ -19,11 +19,8 @@ import (
 // GroupInvitationTokenQuery is the builder for querying GroupInvitationToken entities.
 type GroupInvitationTokenQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
+	ctx        *QueryContext
 	order      []OrderFunc
-	fields     []string
 	inters     []Interceptor
 	predicates []predicate.GroupInvitationToken
 	withGroup  *GroupQuery
@@ -41,20 +38,20 @@ func (gitq *GroupInvitationTokenQuery) Where(ps ...predicate.GroupInvitationToke
 
 // Limit the number of records to be returned by this query.
 func (gitq *GroupInvitationTokenQuery) Limit(limit int) *GroupInvitationTokenQuery {
-	gitq.limit = &limit
+	gitq.ctx.Limit = &limit
 	return gitq
 }
 
 // Offset to start from.
 func (gitq *GroupInvitationTokenQuery) Offset(offset int) *GroupInvitationTokenQuery {
-	gitq.offset = &offset
+	gitq.ctx.Offset = &offset
 	return gitq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (gitq *GroupInvitationTokenQuery) Unique(unique bool) *GroupInvitationTokenQuery {
-	gitq.unique = &unique
+	gitq.ctx.Unique = &unique
 	return gitq
 }
 
@@ -89,7 +86,7 @@ func (gitq *GroupInvitationTokenQuery) QueryGroup() *GroupQuery {
 // First returns the first GroupInvitationToken entity from the query.
 // Returns a *NotFoundError when no GroupInvitationToken was found.
 func (gitq *GroupInvitationTokenQuery) First(ctx context.Context) (*GroupInvitationToken, error) {
-	nodes, err := gitq.Limit(1).All(newQueryContext(ctx, TypeGroupInvitationToken, "First"))
+	nodes, err := gitq.Limit(1).All(setContextOp(ctx, gitq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +109,7 @@ func (gitq *GroupInvitationTokenQuery) FirstX(ctx context.Context) *GroupInvitat
 // Returns a *NotFoundError when no GroupInvitationToken ID was found.
 func (gitq *GroupInvitationTokenQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = gitq.Limit(1).IDs(newQueryContext(ctx, TypeGroupInvitationToken, "FirstID")); err != nil {
+	if ids, err = gitq.Limit(1).IDs(setContextOp(ctx, gitq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -135,7 +132,7 @@ func (gitq *GroupInvitationTokenQuery) FirstIDX(ctx context.Context) uuid.UUID {
 // Returns a *NotSingularError when more than one GroupInvitationToken entity is found.
 // Returns a *NotFoundError when no GroupInvitationToken entities are found.
 func (gitq *GroupInvitationTokenQuery) Only(ctx context.Context) (*GroupInvitationToken, error) {
-	nodes, err := gitq.Limit(2).All(newQueryContext(ctx, TypeGroupInvitationToken, "Only"))
+	nodes, err := gitq.Limit(2).All(setContextOp(ctx, gitq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +160,7 @@ func (gitq *GroupInvitationTokenQuery) OnlyX(ctx context.Context) *GroupInvitati
 // Returns a *NotFoundError when no entities are found.
 func (gitq *GroupInvitationTokenQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = gitq.Limit(2).IDs(newQueryContext(ctx, TypeGroupInvitationToken, "OnlyID")); err != nil {
+	if ids, err = gitq.Limit(2).IDs(setContextOp(ctx, gitq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -188,7 +185,7 @@ func (gitq *GroupInvitationTokenQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 
 // All executes the query and returns a list of GroupInvitationTokens.
 func (gitq *GroupInvitationTokenQuery) All(ctx context.Context) ([]*GroupInvitationToken, error) {
-	ctx = newQueryContext(ctx, TypeGroupInvitationToken, "All")
+	ctx = setContextOp(ctx, gitq.ctx, "All")
 	if err := gitq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -208,7 +205,7 @@ func (gitq *GroupInvitationTokenQuery) AllX(ctx context.Context) []*GroupInvitat
 // IDs executes the query and returns a list of GroupInvitationToken IDs.
 func (gitq *GroupInvitationTokenQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	var ids []uuid.UUID
-	ctx = newQueryContext(ctx, TypeGroupInvitationToken, "IDs")
+	ctx = setContextOp(ctx, gitq.ctx, "IDs")
 	if err := gitq.Select(groupinvitationtoken.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -226,7 +223,7 @@ func (gitq *GroupInvitationTokenQuery) IDsX(ctx context.Context) []uuid.UUID {
 
 // Count returns the count of the given query.
 func (gitq *GroupInvitationTokenQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeGroupInvitationToken, "Count")
+	ctx = setContextOp(ctx, gitq.ctx, "Count")
 	if err := gitq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -244,7 +241,7 @@ func (gitq *GroupInvitationTokenQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (gitq *GroupInvitationTokenQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeGroupInvitationToken, "Exist")
+	ctx = setContextOp(ctx, gitq.ctx, "Exist")
 	switch _, err := gitq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -272,16 +269,14 @@ func (gitq *GroupInvitationTokenQuery) Clone() *GroupInvitationTokenQuery {
 	}
 	return &GroupInvitationTokenQuery{
 		config:     gitq.config,
-		limit:      gitq.limit,
-		offset:     gitq.offset,
+		ctx:        gitq.ctx.Clone(),
 		order:      append([]OrderFunc{}, gitq.order...),
 		inters:     append([]Interceptor{}, gitq.inters...),
 		predicates: append([]predicate.GroupInvitationToken{}, gitq.predicates...),
 		withGroup:  gitq.withGroup.Clone(),
 		// clone intermediate query.
-		sql:    gitq.sql.Clone(),
-		path:   gitq.path,
-		unique: gitq.unique,
+		sql:  gitq.sql.Clone(),
+		path: gitq.path,
 	}
 }
 
@@ -311,9 +306,9 @@ func (gitq *GroupInvitationTokenQuery) WithGroup(opts ...func(*GroupQuery)) *Gro
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (gitq *GroupInvitationTokenQuery) GroupBy(field string, fields ...string) *GroupInvitationTokenGroupBy {
-	gitq.fields = append([]string{field}, fields...)
+	gitq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &GroupInvitationTokenGroupBy{build: gitq}
-	grbuild.flds = &gitq.fields
+	grbuild.flds = &gitq.ctx.Fields
 	grbuild.label = groupinvitationtoken.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -332,10 +327,10 @@ func (gitq *GroupInvitationTokenQuery) GroupBy(field string, fields ...string) *
 //		Select(groupinvitationtoken.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (gitq *GroupInvitationTokenQuery) Select(fields ...string) *GroupInvitationTokenSelect {
-	gitq.fields = append(gitq.fields, fields...)
+	gitq.ctx.Fields = append(gitq.ctx.Fields, fields...)
 	sbuild := &GroupInvitationTokenSelect{GroupInvitationTokenQuery: gitq}
 	sbuild.label = groupinvitationtoken.Label
-	sbuild.flds, sbuild.scan = &gitq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &gitq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -355,7 +350,7 @@ func (gitq *GroupInvitationTokenQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range gitq.fields {
+	for _, f := range gitq.ctx.Fields {
 		if !groupinvitationtoken.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -425,6 +420,9 @@ func (gitq *GroupInvitationTokenQuery) loadGroup(ctx context.Context, query *Gro
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(group.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -444,9 +442,9 @@ func (gitq *GroupInvitationTokenQuery) loadGroup(ctx context.Context, query *Gro
 
 func (gitq *GroupInvitationTokenQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := gitq.querySpec()
-	_spec.Node.Columns = gitq.fields
-	if len(gitq.fields) > 0 {
-		_spec.Unique = gitq.unique != nil && *gitq.unique
+	_spec.Node.Columns = gitq.ctx.Fields
+	if len(gitq.ctx.Fields) > 0 {
+		_spec.Unique = gitq.ctx.Unique != nil && *gitq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, gitq.driver, _spec)
 }
@@ -464,10 +462,10 @@ func (gitq *GroupInvitationTokenQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   gitq.sql,
 		Unique: true,
 	}
-	if unique := gitq.unique; unique != nil {
+	if unique := gitq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := gitq.fields; len(fields) > 0 {
+	if fields := gitq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, groupinvitationtoken.FieldID)
 		for i := range fields {
@@ -483,10 +481,10 @@ func (gitq *GroupInvitationTokenQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := gitq.limit; limit != nil {
+	if limit := gitq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := gitq.offset; offset != nil {
+	if offset := gitq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := gitq.order; len(ps) > 0 {
@@ -502,7 +500,7 @@ func (gitq *GroupInvitationTokenQuery) querySpec() *sqlgraph.QuerySpec {
 func (gitq *GroupInvitationTokenQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(gitq.driver.Dialect())
 	t1 := builder.Table(groupinvitationtoken.Table)
-	columns := gitq.fields
+	columns := gitq.ctx.Fields
 	if len(columns) == 0 {
 		columns = groupinvitationtoken.Columns
 	}
@@ -511,7 +509,7 @@ func (gitq *GroupInvitationTokenQuery) sqlQuery(ctx context.Context) *sql.Select
 		selector = gitq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if gitq.unique != nil && *gitq.unique {
+	if gitq.ctx.Unique != nil && *gitq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, p := range gitq.predicates {
@@ -520,12 +518,12 @@ func (gitq *GroupInvitationTokenQuery) sqlQuery(ctx context.Context) *sql.Select
 	for _, p := range gitq.order {
 		p(selector)
 	}
-	if offset := gitq.offset; offset != nil {
+	if offset := gitq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := gitq.limit; limit != nil {
+	if limit := gitq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -545,7 +543,7 @@ func (gitgb *GroupInvitationTokenGroupBy) Aggregate(fns ...AggregateFunc) *Group
 
 // Scan applies the selector query and scans the result into the given value.
 func (gitgb *GroupInvitationTokenGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeGroupInvitationToken, "GroupBy")
+	ctx = setContextOp(ctx, gitgb.build.ctx, "GroupBy")
 	if err := gitgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -593,7 +591,7 @@ func (gits *GroupInvitationTokenSelect) Aggregate(fns ...AggregateFunc) *GroupIn
 
 // Scan applies the selector query and scans the result into the given value.
 func (gits *GroupInvitationTokenSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeGroupInvitationToken, "Select")
+	ctx = setContextOp(ctx, gits.ctx, "Select")
 	if err := gits.prepareQuery(ctx); err != nil {
 		return err
 	}

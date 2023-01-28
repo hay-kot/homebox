@@ -170,14 +170,14 @@ func (_if *ItemField) assignValues(columns []string, values []any) error {
 
 // QueryItem queries the "item" edge of the ItemField entity.
 func (_if *ItemField) QueryItem() *ItemQuery {
-	return (&ItemFieldClient{config: _if.config}).QueryItem(_if)
+	return NewItemFieldClient(_if.config).QueryItem(_if)
 }
 
 // Update returns a builder for updating this ItemField.
 // Note that you need to call ItemField.Unwrap() before calling this method if this ItemField
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (_if *ItemField) Update() *ItemFieldUpdateOne {
-	return (&ItemFieldClient{config: _if.config}).UpdateOne(_if)
+	return NewItemFieldClient(_if.config).UpdateOne(_if)
 }
 
 // Unwrap unwraps the ItemField entity that was returned from a transaction after it was closed,

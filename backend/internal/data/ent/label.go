@@ -145,19 +145,19 @@ func (l *Label) assignValues(columns []string, values []any) error {
 
 // QueryGroup queries the "group" edge of the Label entity.
 func (l *Label) QueryGroup() *GroupQuery {
-	return (&LabelClient{config: l.config}).QueryGroup(l)
+	return NewLabelClient(l.config).QueryGroup(l)
 }
 
 // QueryItems queries the "items" edge of the Label entity.
 func (l *Label) QueryItems() *ItemQuery {
-	return (&LabelClient{config: l.config}).QueryItems(l)
+	return NewLabelClient(l.config).QueryItems(l)
 }
 
 // Update returns a builder for updating this Label.
 // Note that you need to call Label.Unwrap() before calling this method if this Label
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (l *Label) Update() *LabelUpdateOne {
-	return (&LabelClient{config: l.config}).UpdateOne(l)
+	return NewLabelClient(l.config).UpdateOne(l)
 }
 
 // Unwrap unwraps the Label entity that was returned from a transaction after it was closed,

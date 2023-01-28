@@ -137,19 +137,19 @@ func (d *Document) assignValues(columns []string, values []any) error {
 
 // QueryGroup queries the "group" edge of the Document entity.
 func (d *Document) QueryGroup() *GroupQuery {
-	return (&DocumentClient{config: d.config}).QueryGroup(d)
+	return NewDocumentClient(d.config).QueryGroup(d)
 }
 
 // QueryAttachments queries the "attachments" edge of the Document entity.
 func (d *Document) QueryAttachments() *AttachmentQuery {
-	return (&DocumentClient{config: d.config}).QueryAttachments(d)
+	return NewDocumentClient(d.config).QueryAttachments(d)
 }
 
 // Update returns a builder for updating this Document.
 // Note that you need to call Document.Unwrap() before calling this method if this Document
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (d *Document) Update() *DocumentUpdateOne {
-	return (&DocumentClient{config: d.config}).UpdateOne(d)
+	return NewDocumentClient(d.config).UpdateOne(d)
 }
 
 // Unwrap unwraps the Document entity that was returned from a transaction after it was closed,

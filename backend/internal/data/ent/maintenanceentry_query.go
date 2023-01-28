@@ -19,11 +19,8 @@ import (
 // MaintenanceEntryQuery is the builder for querying MaintenanceEntry entities.
 type MaintenanceEntryQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
+	ctx        *QueryContext
 	order      []OrderFunc
-	fields     []string
 	inters     []Interceptor
 	predicates []predicate.MaintenanceEntry
 	withItem   *ItemQuery
@@ -40,20 +37,20 @@ func (meq *MaintenanceEntryQuery) Where(ps ...predicate.MaintenanceEntry) *Maint
 
 // Limit the number of records to be returned by this query.
 func (meq *MaintenanceEntryQuery) Limit(limit int) *MaintenanceEntryQuery {
-	meq.limit = &limit
+	meq.ctx.Limit = &limit
 	return meq
 }
 
 // Offset to start from.
 func (meq *MaintenanceEntryQuery) Offset(offset int) *MaintenanceEntryQuery {
-	meq.offset = &offset
+	meq.ctx.Offset = &offset
 	return meq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (meq *MaintenanceEntryQuery) Unique(unique bool) *MaintenanceEntryQuery {
-	meq.unique = &unique
+	meq.ctx.Unique = &unique
 	return meq
 }
 
@@ -88,7 +85,7 @@ func (meq *MaintenanceEntryQuery) QueryItem() *ItemQuery {
 // First returns the first MaintenanceEntry entity from the query.
 // Returns a *NotFoundError when no MaintenanceEntry was found.
 func (meq *MaintenanceEntryQuery) First(ctx context.Context) (*MaintenanceEntry, error) {
-	nodes, err := meq.Limit(1).All(newQueryContext(ctx, TypeMaintenanceEntry, "First"))
+	nodes, err := meq.Limit(1).All(setContextOp(ctx, meq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +108,7 @@ func (meq *MaintenanceEntryQuery) FirstX(ctx context.Context) *MaintenanceEntry 
 // Returns a *NotFoundError when no MaintenanceEntry ID was found.
 func (meq *MaintenanceEntryQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = meq.Limit(1).IDs(newQueryContext(ctx, TypeMaintenanceEntry, "FirstID")); err != nil {
+	if ids, err = meq.Limit(1).IDs(setContextOp(ctx, meq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -134,7 +131,7 @@ func (meq *MaintenanceEntryQuery) FirstIDX(ctx context.Context) uuid.UUID {
 // Returns a *NotSingularError when more than one MaintenanceEntry entity is found.
 // Returns a *NotFoundError when no MaintenanceEntry entities are found.
 func (meq *MaintenanceEntryQuery) Only(ctx context.Context) (*MaintenanceEntry, error) {
-	nodes, err := meq.Limit(2).All(newQueryContext(ctx, TypeMaintenanceEntry, "Only"))
+	nodes, err := meq.Limit(2).All(setContextOp(ctx, meq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +159,7 @@ func (meq *MaintenanceEntryQuery) OnlyX(ctx context.Context) *MaintenanceEntry {
 // Returns a *NotFoundError when no entities are found.
 func (meq *MaintenanceEntryQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = meq.Limit(2).IDs(newQueryContext(ctx, TypeMaintenanceEntry, "OnlyID")); err != nil {
+	if ids, err = meq.Limit(2).IDs(setContextOp(ctx, meq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -187,7 +184,7 @@ func (meq *MaintenanceEntryQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 
 // All executes the query and returns a list of MaintenanceEntries.
 func (meq *MaintenanceEntryQuery) All(ctx context.Context) ([]*MaintenanceEntry, error) {
-	ctx = newQueryContext(ctx, TypeMaintenanceEntry, "All")
+	ctx = setContextOp(ctx, meq.ctx, "All")
 	if err := meq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -207,7 +204,7 @@ func (meq *MaintenanceEntryQuery) AllX(ctx context.Context) []*MaintenanceEntry 
 // IDs executes the query and returns a list of MaintenanceEntry IDs.
 func (meq *MaintenanceEntryQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	var ids []uuid.UUID
-	ctx = newQueryContext(ctx, TypeMaintenanceEntry, "IDs")
+	ctx = setContextOp(ctx, meq.ctx, "IDs")
 	if err := meq.Select(maintenanceentry.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -225,7 +222,7 @@ func (meq *MaintenanceEntryQuery) IDsX(ctx context.Context) []uuid.UUID {
 
 // Count returns the count of the given query.
 func (meq *MaintenanceEntryQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeMaintenanceEntry, "Count")
+	ctx = setContextOp(ctx, meq.ctx, "Count")
 	if err := meq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -243,7 +240,7 @@ func (meq *MaintenanceEntryQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (meq *MaintenanceEntryQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeMaintenanceEntry, "Exist")
+	ctx = setContextOp(ctx, meq.ctx, "Exist")
 	switch _, err := meq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -271,16 +268,14 @@ func (meq *MaintenanceEntryQuery) Clone() *MaintenanceEntryQuery {
 	}
 	return &MaintenanceEntryQuery{
 		config:     meq.config,
-		limit:      meq.limit,
-		offset:     meq.offset,
+		ctx:        meq.ctx.Clone(),
 		order:      append([]OrderFunc{}, meq.order...),
 		inters:     append([]Interceptor{}, meq.inters...),
 		predicates: append([]predicate.MaintenanceEntry{}, meq.predicates...),
 		withItem:   meq.withItem.Clone(),
 		// clone intermediate query.
-		sql:    meq.sql.Clone(),
-		path:   meq.path,
-		unique: meq.unique,
+		sql:  meq.sql.Clone(),
+		path: meq.path,
 	}
 }
 
@@ -310,9 +305,9 @@ func (meq *MaintenanceEntryQuery) WithItem(opts ...func(*ItemQuery)) *Maintenanc
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (meq *MaintenanceEntryQuery) GroupBy(field string, fields ...string) *MaintenanceEntryGroupBy {
-	meq.fields = append([]string{field}, fields...)
+	meq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &MaintenanceEntryGroupBy{build: meq}
-	grbuild.flds = &meq.fields
+	grbuild.flds = &meq.ctx.Fields
 	grbuild.label = maintenanceentry.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -331,10 +326,10 @@ func (meq *MaintenanceEntryQuery) GroupBy(field string, fields ...string) *Maint
 //		Select(maintenanceentry.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (meq *MaintenanceEntryQuery) Select(fields ...string) *MaintenanceEntrySelect {
-	meq.fields = append(meq.fields, fields...)
+	meq.ctx.Fields = append(meq.ctx.Fields, fields...)
 	sbuild := &MaintenanceEntrySelect{MaintenanceEntryQuery: meq}
 	sbuild.label = maintenanceentry.Label
-	sbuild.flds, sbuild.scan = &meq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &meq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -354,7 +349,7 @@ func (meq *MaintenanceEntryQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range meq.fields {
+	for _, f := range meq.ctx.Fields {
 		if !maintenanceentry.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -414,6 +409,9 @@ func (meq *MaintenanceEntryQuery) loadItem(ctx context.Context, query *ItemQuery
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(item.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -433,9 +431,9 @@ func (meq *MaintenanceEntryQuery) loadItem(ctx context.Context, query *ItemQuery
 
 func (meq *MaintenanceEntryQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := meq.querySpec()
-	_spec.Node.Columns = meq.fields
-	if len(meq.fields) > 0 {
-		_spec.Unique = meq.unique != nil && *meq.unique
+	_spec.Node.Columns = meq.ctx.Fields
+	if len(meq.ctx.Fields) > 0 {
+		_spec.Unique = meq.ctx.Unique != nil && *meq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, meq.driver, _spec)
 }
@@ -453,10 +451,10 @@ func (meq *MaintenanceEntryQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   meq.sql,
 		Unique: true,
 	}
-	if unique := meq.unique; unique != nil {
+	if unique := meq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := meq.fields; len(fields) > 0 {
+	if fields := meq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, maintenanceentry.FieldID)
 		for i := range fields {
@@ -472,10 +470,10 @@ func (meq *MaintenanceEntryQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := meq.limit; limit != nil {
+	if limit := meq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := meq.offset; offset != nil {
+	if offset := meq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := meq.order; len(ps) > 0 {
@@ -491,7 +489,7 @@ func (meq *MaintenanceEntryQuery) querySpec() *sqlgraph.QuerySpec {
 func (meq *MaintenanceEntryQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(meq.driver.Dialect())
 	t1 := builder.Table(maintenanceentry.Table)
-	columns := meq.fields
+	columns := meq.ctx.Fields
 	if len(columns) == 0 {
 		columns = maintenanceentry.Columns
 	}
@@ -500,7 +498,7 @@ func (meq *MaintenanceEntryQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = meq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if meq.unique != nil && *meq.unique {
+	if meq.ctx.Unique != nil && *meq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, p := range meq.predicates {
@@ -509,12 +507,12 @@ func (meq *MaintenanceEntryQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range meq.order {
 		p(selector)
 	}
-	if offset := meq.offset; offset != nil {
+	if offset := meq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := meq.limit; limit != nil {
+	if limit := meq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -534,7 +532,7 @@ func (megb *MaintenanceEntryGroupBy) Aggregate(fns ...AggregateFunc) *Maintenanc
 
 // Scan applies the selector query and scans the result into the given value.
 func (megb *MaintenanceEntryGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeMaintenanceEntry, "GroupBy")
+	ctx = setContextOp(ctx, megb.build.ctx, "GroupBy")
 	if err := megb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -582,7 +580,7 @@ func (mes *MaintenanceEntrySelect) Aggregate(fns ...AggregateFunc) *MaintenanceE
 
 // Scan applies the selector query and scans the result into the given value.
 func (mes *MaintenanceEntrySelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeMaintenanceEntry, "Select")
+	ctx = setContextOp(ctx, mes.ctx, "Select")
 	if err := mes.prepareQuery(ctx); err != nil {
 		return err
 	}

@@ -69,6 +69,12 @@ type AttachmentDeleteOne struct {
 	ad *AttachmentDelete
 }
 
+// Where appends a list predicates to the AttachmentDelete builder.
+func (ado *AttachmentDeleteOne) Where(ps ...predicate.Attachment) *AttachmentDeleteOne {
+	ado.ad.mutation.Where(ps...)
+	return ado
+}
+
 // Exec executes the deletion query.
 func (ado *AttachmentDeleteOne) Exec(ctx context.Context) error {
 	n, err := ado.ad.Exec(ctx)
@@ -84,5 +90,7 @@ func (ado *AttachmentDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (ado *AttachmentDeleteOne) ExecX(ctx context.Context) {
-	ado.ad.ExecX(ctx)
+	if err := ado.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

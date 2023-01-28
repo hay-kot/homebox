@@ -21,11 +21,8 @@ import (
 // DocumentQuery is the builder for querying Document entities.
 type DocumentQuery struct {
 	config
-	limit           *int
-	offset          *int
-	unique          *bool
+	ctx             *QueryContext
 	order           []OrderFunc
-	fields          []string
 	inters          []Interceptor
 	predicates      []predicate.Document
 	withGroup       *GroupQuery
@@ -44,20 +41,20 @@ func (dq *DocumentQuery) Where(ps ...predicate.Document) *DocumentQuery {
 
 // Limit the number of records to be returned by this query.
 func (dq *DocumentQuery) Limit(limit int) *DocumentQuery {
-	dq.limit = &limit
+	dq.ctx.Limit = &limit
 	return dq
 }
 
 // Offset to start from.
 func (dq *DocumentQuery) Offset(offset int) *DocumentQuery {
-	dq.offset = &offset
+	dq.ctx.Offset = &offset
 	return dq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (dq *DocumentQuery) Unique(unique bool) *DocumentQuery {
-	dq.unique = &unique
+	dq.ctx.Unique = &unique
 	return dq
 }
 
@@ -114,7 +111,7 @@ func (dq *DocumentQuery) QueryAttachments() *AttachmentQuery {
 // First returns the first Document entity from the query.
 // Returns a *NotFoundError when no Document was found.
 func (dq *DocumentQuery) First(ctx context.Context) (*Document, error) {
-	nodes, err := dq.Limit(1).All(newQueryContext(ctx, TypeDocument, "First"))
+	nodes, err := dq.Limit(1).All(setContextOp(ctx, dq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +134,7 @@ func (dq *DocumentQuery) FirstX(ctx context.Context) *Document {
 // Returns a *NotFoundError when no Document ID was found.
 func (dq *DocumentQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = dq.Limit(1).IDs(newQueryContext(ctx, TypeDocument, "FirstID")); err != nil {
+	if ids, err = dq.Limit(1).IDs(setContextOp(ctx, dq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -160,7 +157,7 @@ func (dq *DocumentQuery) FirstIDX(ctx context.Context) uuid.UUID {
 // Returns a *NotSingularError when more than one Document entity is found.
 // Returns a *NotFoundError when no Document entities are found.
 func (dq *DocumentQuery) Only(ctx context.Context) (*Document, error) {
-	nodes, err := dq.Limit(2).All(newQueryContext(ctx, TypeDocument, "Only"))
+	nodes, err := dq.Limit(2).All(setContextOp(ctx, dq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -188,7 +185,7 @@ func (dq *DocumentQuery) OnlyX(ctx context.Context) *Document {
 // Returns a *NotFoundError when no entities are found.
 func (dq *DocumentQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = dq.Limit(2).IDs(newQueryContext(ctx, TypeDocument, "OnlyID")); err != nil {
+	if ids, err = dq.Limit(2).IDs(setContextOp(ctx, dq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -213,7 +210,7 @@ func (dq *DocumentQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 
 // All executes the query and returns a list of Documents.
 func (dq *DocumentQuery) All(ctx context.Context) ([]*Document, error) {
-	ctx = newQueryContext(ctx, TypeDocument, "All")
+	ctx = setContextOp(ctx, dq.ctx, "All")
 	if err := dq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -233,7 +230,7 @@ func (dq *DocumentQuery) AllX(ctx context.Context) []*Document {
 // IDs executes the query and returns a list of Document IDs.
 func (dq *DocumentQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	var ids []uuid.UUID
-	ctx = newQueryContext(ctx, TypeDocument, "IDs")
+	ctx = setContextOp(ctx, dq.ctx, "IDs")
 	if err := dq.Select(document.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -251,7 +248,7 @@ func (dq *DocumentQuery) IDsX(ctx context.Context) []uuid.UUID {
 
 // Count returns the count of the given query.
 func (dq *DocumentQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeDocument, "Count")
+	ctx = setContextOp(ctx, dq.ctx, "Count")
 	if err := dq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -269,7 +266,7 @@ func (dq *DocumentQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (dq *DocumentQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeDocument, "Exist")
+	ctx = setContextOp(ctx, dq.ctx, "Exist")
 	switch _, err := dq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -297,17 +294,15 @@ func (dq *DocumentQuery) Clone() *DocumentQuery {
 	}
 	return &DocumentQuery{
 		config:          dq.config,
-		limit:           dq.limit,
-		offset:          dq.offset,
+		ctx:             dq.ctx.Clone(),
 		order:           append([]OrderFunc{}, dq.order...),
 		inters:          append([]Interceptor{}, dq.inters...),
 		predicates:      append([]predicate.Document{}, dq.predicates...),
 		withGroup:       dq.withGroup.Clone(),
 		withAttachments: dq.withAttachments.Clone(),
 		// clone intermediate query.
-		sql:    dq.sql.Clone(),
-		path:   dq.path,
-		unique: dq.unique,
+		sql:  dq.sql.Clone(),
+		path: dq.path,
 	}
 }
 
@@ -348,9 +343,9 @@ func (dq *DocumentQuery) WithAttachments(opts ...func(*AttachmentQuery)) *Docume
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (dq *DocumentQuery) GroupBy(field string, fields ...string) *DocumentGroupBy {
-	dq.fields = append([]string{field}, fields...)
+	dq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &DocumentGroupBy{build: dq}
-	grbuild.flds = &dq.fields
+	grbuild.flds = &dq.ctx.Fields
 	grbuild.label = document.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -369,10 +364,10 @@ func (dq *DocumentQuery) GroupBy(field string, fields ...string) *DocumentGroupB
 //		Select(document.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (dq *DocumentQuery) Select(fields ...string) *DocumentSelect {
-	dq.fields = append(dq.fields, fields...)
+	dq.ctx.Fields = append(dq.ctx.Fields, fields...)
 	sbuild := &DocumentSelect{DocumentQuery: dq}
 	sbuild.label = document.Label
-	sbuild.flds, sbuild.scan = &dq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &dq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -392,7 +387,7 @@ func (dq *DocumentQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range dq.fields {
+	for _, f := range dq.ctx.Fields {
 		if !document.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -470,6 +465,9 @@ func (dq *DocumentQuery) loadGroup(ctx context.Context, query *GroupQuery, nodes
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(group.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -520,9 +518,9 @@ func (dq *DocumentQuery) loadAttachments(ctx context.Context, query *AttachmentQ
 
 func (dq *DocumentQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := dq.querySpec()
-	_spec.Node.Columns = dq.fields
-	if len(dq.fields) > 0 {
-		_spec.Unique = dq.unique != nil && *dq.unique
+	_spec.Node.Columns = dq.ctx.Fields
+	if len(dq.ctx.Fields) > 0 {
+		_spec.Unique = dq.ctx.Unique != nil && *dq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, dq.driver, _spec)
 }
@@ -540,10 +538,10 @@ func (dq *DocumentQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   dq.sql,
 		Unique: true,
 	}
-	if unique := dq.unique; unique != nil {
+	if unique := dq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := dq.fields; len(fields) > 0 {
+	if fields := dq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, document.FieldID)
 		for i := range fields {
@@ -559,10 +557,10 @@ func (dq *DocumentQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := dq.limit; limit != nil {
+	if limit := dq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := dq.offset; offset != nil {
+	if offset := dq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := dq.order; len(ps) > 0 {
@@ -578,7 +576,7 @@ func (dq *DocumentQuery) querySpec() *sqlgraph.QuerySpec {
 func (dq *DocumentQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(dq.driver.Dialect())
 	t1 := builder.Table(document.Table)
-	columns := dq.fields
+	columns := dq.ctx.Fields
 	if len(columns) == 0 {
 		columns = document.Columns
 	}
@@ -587,7 +585,7 @@ func (dq *DocumentQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = dq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if dq.unique != nil && *dq.unique {
+	if dq.ctx.Unique != nil && *dq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, p := range dq.predicates {
@@ -596,12 +594,12 @@ func (dq *DocumentQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range dq.order {
 		p(selector)
 	}
-	if offset := dq.offset; offset != nil {
+	if offset := dq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := dq.limit; limit != nil {
+	if limit := dq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -621,7 +619,7 @@ func (dgb *DocumentGroupBy) Aggregate(fns ...AggregateFunc) *DocumentGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (dgb *DocumentGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeDocument, "GroupBy")
+	ctx = setContextOp(ctx, dgb.build.ctx, "GroupBy")
 	if err := dgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -669,7 +667,7 @@ func (ds *DocumentSelect) Aggregate(fns ...AggregateFunc) *DocumentSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (ds *DocumentSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeDocument, "Select")
+	ctx = setContextOp(ctx, ds.ctx, "Select")
 	if err := ds.prepareQuery(ctx); err != nil {
 		return err
 	}

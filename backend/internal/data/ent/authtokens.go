@@ -142,19 +142,19 @@ func (at *AuthTokens) assignValues(columns []string, values []any) error {
 
 // QueryUser queries the "user" edge of the AuthTokens entity.
 func (at *AuthTokens) QueryUser() *UserQuery {
-	return (&AuthTokensClient{config: at.config}).QueryUser(at)
+	return NewAuthTokensClient(at.config).QueryUser(at)
 }
 
 // QueryRoles queries the "roles" edge of the AuthTokens entity.
 func (at *AuthTokens) QueryRoles() *AuthRolesQuery {
-	return (&AuthTokensClient{config: at.config}).QueryRoles(at)
+	return NewAuthTokensClient(at.config).QueryRoles(at)
 }
 
 // Update returns a builder for updating this AuthTokens.
 // Note that you need to call AuthTokens.Unwrap() before calling this method if this AuthTokens
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (at *AuthTokens) Update() *AuthTokensUpdateOne {
-	return (&AuthTokensClient{config: at.config}).UpdateOne(at)
+	return NewAuthTokensClient(at.config).UpdateOne(at)
 }
 
 // Unwrap unwraps the AuthTokens entity that was returned from a transaction after it was closed,

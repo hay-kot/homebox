@@ -144,19 +144,19 @@ func (a *Attachment) assignValues(columns []string, values []any) error {
 
 // QueryItem queries the "item" edge of the Attachment entity.
 func (a *Attachment) QueryItem() *ItemQuery {
-	return (&AttachmentClient{config: a.config}).QueryItem(a)
+	return NewAttachmentClient(a.config).QueryItem(a)
 }
 
 // QueryDocument queries the "document" edge of the Attachment entity.
 func (a *Attachment) QueryDocument() *DocumentQuery {
-	return (&AttachmentClient{config: a.config}).QueryDocument(a)
+	return NewAttachmentClient(a.config).QueryDocument(a)
 }
 
 // Update returns a builder for updating this Attachment.
 // Note that you need to call Attachment.Unwrap() before calling this method if this Attachment
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (a *Attachment) Update() *AttachmentUpdateOne {
-	return (&AttachmentClient{config: a.config}).UpdateOne(a)
+	return NewAttachmentClient(a.config).UpdateOne(a)
 }
 
 // Unwrap unwraps the Attachment entity that was returned from a transaction after it was closed,

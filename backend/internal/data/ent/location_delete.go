@@ -69,6 +69,12 @@ type LocationDeleteOne struct {
 	ld *LocationDelete
 }
 
+// Where appends a list predicates to the LocationDelete builder.
+func (ldo *LocationDeleteOne) Where(ps ...predicate.Location) *LocationDeleteOne {
+	ldo.ld.mutation.Where(ps...)
+	return ldo
+}
+
 // Exec executes the deletion query.
 func (ldo *LocationDeleteOne) Exec(ctx context.Context) error {
 	n, err := ldo.ld.Exec(ctx)
@@ -84,5 +90,7 @@ func (ldo *LocationDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (ldo *LocationDeleteOne) ExecX(ctx context.Context) {
-	ldo.ld.ExecX(ctx)
+	if err := ldo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

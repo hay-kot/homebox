@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ardanlabs/conf/v2"
+	"github.com/ardanlabs/conf/v3"
 
 	"os"
 )

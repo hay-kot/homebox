@@ -69,6 +69,12 @@ type LabelDeleteOne struct {
 	ld *LabelDelete
 }
 
+// Where appends a list predicates to the LabelDelete builder.
+func (ldo *LabelDeleteOne) Where(ps ...predicate.Label) *LabelDeleteOne {
+	ldo.ld.mutation.Where(ps...)
+	return ldo
+}
+
 // Exec executes the deletion query.
 func (ldo *LabelDeleteOne) Exec(ctx context.Context) error {
 	n, err := ldo.ld.Exec(ctx)
@@ -84,5 +90,7 @@ func (ldo *LabelDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (ldo *LabelDeleteOne) ExecX(ctx context.Context) {
-	ldo.ld.ExecX(ctx)
+	if err := ldo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

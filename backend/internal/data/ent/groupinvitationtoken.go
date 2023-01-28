@@ -136,14 +136,14 @@ func (git *GroupInvitationToken) assignValues(columns []string, values []any) er
 
 // QueryGroup queries the "group" edge of the GroupInvitationToken entity.
 func (git *GroupInvitationToken) QueryGroup() *GroupQuery {
-	return (&GroupInvitationTokenClient{config: git.config}).QueryGroup(git)
+	return NewGroupInvitationTokenClient(git.config).QueryGroup(git)
 }
 
 // Update returns a builder for updating this GroupInvitationToken.
 // Note that you need to call GroupInvitationToken.Unwrap() before calling this method if this GroupInvitationToken
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (git *GroupInvitationToken) Update() *GroupInvitationTokenUpdateOne {
-	return (&GroupInvitationTokenClient{config: git.config}).UpdateOne(git)
+	return NewGroupInvitationTokenClient(git.config).UpdateOne(git)
 }
 
 // Unwrap unwraps the GroupInvitationToken entity that was returned from a transaction after it was closed,

@@ -390,49 +390,49 @@ func (i *Item) assignValues(columns []string, values []any) error {
 
 // QueryParent queries the "parent" edge of the Item entity.
 func (i *Item) QueryParent() *ItemQuery {
-	return (&ItemClient{config: i.config}).QueryParent(i)
+	return NewItemClient(i.config).QueryParent(i)
 }
 
 // QueryChildren queries the "children" edge of the Item entity.
 func (i *Item) QueryChildren() *ItemQuery {
-	return (&ItemClient{config: i.config}).QueryChildren(i)
+	return NewItemClient(i.config).QueryChildren(i)
 }
 
 // QueryGroup queries the "group" edge of the Item entity.
 func (i *Item) QueryGroup() *GroupQuery {
-	return (&ItemClient{config: i.config}).QueryGroup(i)
+	return NewItemClient(i.config).QueryGroup(i)
 }
 
 // QueryLabel queries the "label" edge of the Item entity.
 func (i *Item) QueryLabel() *LabelQuery {
-	return (&ItemClient{config: i.config}).QueryLabel(i)
+	return NewItemClient(i.config).QueryLabel(i)
 }
 
 // QueryLocation queries the "location" edge of the Item entity.
 func (i *Item) QueryLocation() *LocationQuery {
-	return (&ItemClient{config: i.config}).QueryLocation(i)
+	return NewItemClient(i.config).QueryLocation(i)
 }
 
 // QueryFields queries the "fields" edge of the Item entity.
 func (i *Item) QueryFields() *ItemFieldQuery {
-	return (&ItemClient{config: i.config}).QueryFields(i)
+	return NewItemClient(i.config).QueryFields(i)
 }
 
 // QueryMaintenanceEntries queries the "maintenance_entries" edge of the Item entity.
 func (i *Item) QueryMaintenanceEntries() *MaintenanceEntryQuery {
-	return (&ItemClient{config: i.config}).QueryMaintenanceEntries(i)
+	return NewItemClient(i.config).QueryMaintenanceEntries(i)
 }
 
 // QueryAttachments queries the "attachments" edge of the Item entity.
 func (i *Item) QueryAttachments() *AttachmentQuery {
-	return (&ItemClient{config: i.config}).QueryAttachments(i)
+	return NewItemClient(i.config).QueryAttachments(i)
 }
 
 // Update returns a builder for updating this Item.
 // Note that you need to call Item.Unwrap() before calling this method if this Item
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (i *Item) Update() *ItemUpdateOne {
-	return (&ItemClient{config: i.config}).UpdateOne(i)
+	return NewItemClient(i.config).UpdateOne(i)
 }
 
 // Unwrap unwraps the Item entity that was returned from a transaction after it was closed,
