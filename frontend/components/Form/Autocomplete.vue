@@ -6,7 +6,7 @@
     <div class="dropdown dropdown-top sm:dropdown-end">
       <div class="relative">
         <input
-          v-model="isearch"
+          v-model="internalSearch"
           tabindex="0"
           class="input w-full items-center flex flex-wrap border border-gray-400 rounded-lg"
           @keyup.enter="selectFirst"
@@ -26,9 +26,11 @@
         class="dropdown-content mb-1 menu shadow border border-gray-400 rounded bg-base-100 w-full z-[9999] max-h-60 overflow-y-scroll"
       >
         <li v-for="(obj, idx) in filtered" :key="idx">
-          <button type="button" @click="select(obj)">
-            {{ usingObjects ? obj[itemText] : obj }}
-          </button>
+          <div type="button" @click="select(obj)">
+            <slot name="display" v-bind="{ item: obj }">
+              {{ usingObjects ? obj[itemText] : obj }}
+            </slot>
+          </div>
         </li>
         <li class="hidden first:flex">
           <button disabled>
@@ -52,6 +54,7 @@
     modelValue: string | ItemsObject;
     items: ItemsObject[] | string[];
     itemText?: keyof ItemsObject;
+    itemSearch?: keyof ItemsObject | null;
     itemValue?: keyof ItemsObject;
     search?: string;
     noResultsText?: string;
@@ -63,21 +66,34 @@
     modelValue: "",
     items: () => [],
     itemText: "text",
-    itemValue: "value",
     search: "",
+    itemSearch: null,
+    itemValue: "value",
     noResultsText: "No Results Found",
   });
+
+  const searchKey = computed(() => props.itemSearch || props.itemText);
 
   function clear() {
     select(value.value);
   }
 
-  const isearch = ref("");
-  watch(isearch, () => {
-    internalSearch.value = isearch.value;
-  });
+  const internalSearch = ref("");
 
-  const internalSearch = useVModel(props, "search", emit);
+  watch(
+    () => props.search,
+    val => {
+      internalSearch.value = val;
+    }
+  );
+
+  watch(
+    () => internalSearch.value,
+    val => {
+      emit("update:search", val);
+    }
+  );
+
   const value = useVModel(props, "modelValue", emit);
 
   const usingObjects = computed(() => {
@@ -102,9 +118,9 @@
     () => {
       if (value.value) {
         if (typeof value.value === "string") {
-          isearch.value = value.value;
+          internalSearch.value = value.value;
         } else {
-          isearch.value = value.value[props.itemText] as string;
+          internalSearch.value = value.value[searchKey.value] as string;
         }
       }
     },
@@ -131,16 +147,16 @@
   }
 
   const filtered = computed(() => {
-    if (!isearch.value || isearch.value === "") {
+    if (!internalSearch.value || internalSearch.value === "") {
       return props.items;
     }
 
     if (isStrings(props.items)) {
-      return props.items.filter(item => item.toLowerCase().includes(isearch.value.toLowerCase()));
+      return props.items.filter(item => item.toLowerCase().includes(internalSearch.value.toLowerCase()));
     } else {
       return props.items.filter(item => {
-        if (props.itemText && props.itemText in item) {
-          return (item[props.itemText] as string).toLowerCase().includes(isearch.value.toLowerCase());
+        if (searchKey.value && searchKey.value in item) {
+          return (item[searchKey.value] as string).toLowerCase().includes(internalSearch.value.toLowerCase());
         }
         return false;
       });

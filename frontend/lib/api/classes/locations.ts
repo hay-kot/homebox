@@ -6,13 +6,17 @@ export type LocationsQuery = {
   filterChildren: boolean;
 };
 
+export type TreeQuery = {
+  withItems: boolean;
+};
+
 export class LocationsApi extends BaseAPI {
   getAll(q: LocationsQuery = { filterChildren: false }) {
     return this.http.get<Results<LocationOutCount>>({ url: route("/locations", q) });
   }
 
-  getTree() {
-    return this.http.get<Results<TreeItem>>({ url: route("/locations/tree") });
+  getTree(tq = { withItems: false }) {
+    return this.http.get<Results<TreeItem>>({ url: route("/locations/tree", tq) });
   }
 
   create(body: LocationCreate) {

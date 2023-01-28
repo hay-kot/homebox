@@ -12,11 +12,22 @@
       <FormTextArea v-model="form.description" label="Location Description" />
       <FormAutocomplete
         v-model="form.parent"
+        v-model:search="form.search"
         :items="locations"
-        item-text="name"
+        item-text="display"
         item-value="id"
+        item-search="name"
         label="Parent Location"
-      />
+      >
+        <template #display="{ item }">
+          <div>
+            <div>
+              {{ item.name }}
+            </div>
+            <div v-if="item.name != item.display" class="text-xs mt-1">{{ item.display }}</div>
+          </div>
+        </template>
+      </FormAutocomplete>
       <div class="modal-action">
         <BaseButton type="submit" :loading="loading"> Create </BaseButton>
       </div>
@@ -26,7 +37,6 @@
 
 <script setup lang="ts">
   import { LocationSummary } from "~~/lib/api/types/data-contracts";
-  import { useLocationStore } from "~~/stores/locations";
   const props = defineProps({
     modelValue: {
       type: Boolean,
@@ -34,14 +44,14 @@
     },
   });
 
-  const locationStore = useLocationStore();
+  const locations = await useFlatLocations();
 
-  const locations = computed(() => locationStore.allLocations);
   const modal = useVModel(props, "modelValue");
   const loading = ref(false);
   const focused = ref(false);
   const form = reactive({
     name: "",
+    search: "",
     description: "",
     parent: null as LocationSummary | null,
   });
@@ -56,6 +66,7 @@
   function reset() {
     form.name = "";
     form.description = "";
+    form.search = "";
     form.parent = null;
     focused.value = false;
     modal.value = false;
