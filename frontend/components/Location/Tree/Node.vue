@@ -1,18 +1,15 @@
 <script setup lang="ts">
   import { useTreeState } from "./tree-state";
-  import { ItemSummary, TreeItem } from "~~/lib/api/types/data-contracts";
+  import { TreeItem } from "~~/lib/api/types/data-contracts";
 
   type Props = {
-    type?: "location" | "item";
     treeId: string;
     item: TreeItem;
   };
-  const props = withDefaults(defineProps<Props>(), {
-    type: "location",
-  });
+  const props = withDefaults(defineProps<Props>(), {});
 
   const link = computed(() => {
-    return props.type === "location" ? `/location/${props.item.id}` : `/item/${props.item.id}`;
+    return props.item.type === "location" ? `/location/${props.item.id}` : `/item/${props.item.id}`;
   });
 
   const hasChildren = computed(() => {
@@ -34,36 +31,6 @@
     // converts a UUID to a short hash
     return props.item.id.replace(/-/g, "").substring(0, 8);
   });
-
-  const api = useUserApi();
-
-  const hasFetched = ref(false);
-  const items = ref<ItemSummary[]>([]);
-
-  async function fetchItems() {
-    const { data, error } = await api.items.getAll({
-      locations: [props.item.id],
-    });
-
-    if (error) {
-      return;
-    }
-
-    hasFetched.value = true;
-    items.value = data.items;
-
-    console.log("fetched items", items.value);
-  }
-
-  watch(
-    openRef,
-    async value => {
-      if (value && !hasFetched.value && props.type === "location") {
-        await fetchItems();
-      }
-    },
-    { immediate: true }
-  );
 </script>
 
 <template>
@@ -93,7 +60,8 @@
           <Icon name="mdi-chevron-down" class="h-6 w-6 swap-on" />
         </label>
       </div>
-      <Icon name="mdi-map-marker" class="h-4 w-4" />
+      <Icon v-if="item.type === 'location'" name="mdi-map-marker" class="h-4 w-4" />
+      <Icon v-else name="mdi-package-variant" class="h-4 w-4" />
       <NuxtLink class="hover:link text-lg" :to="link" @click.stop>{{ item.name }} </NuxtLink>
     </div>
     <div v-if="openRef" class="ml-4">
