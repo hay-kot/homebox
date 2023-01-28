@@ -232,44 +232,74 @@ func (r *LocationRepository) DeleteByGroup(ctx context.Context, GID, ID uuid.UUI
 type TreeItem struct {
 	ID       uuid.UUID   `json:"id"`
 	Name     string      `json:"name"`
+	Type     string      `json:"type"`
 	Children []*TreeItem `json:"children"`
 }
 
 type FlatTreeItem struct {
 	ID       uuid.UUID
 	Name     string
+	Type     string
 	ParentID uuid.UUID
 	Level    int
 }
 
-func (lr *LocationRepository) Tree(ctx context.Context, GID uuid.UUID) ([]TreeItem, error) {
+type TreeQuery struct {
+	WithItems bool `json:"withItems"`
+}
+
+func (lr *LocationRepository) Tree(ctx context.Context, GID uuid.UUID, tq TreeQuery) ([]TreeItem, error) {
 	query := `
-		WITH recursive location_tree(id, NAME, location_children, level) AS
+		WITH recursive location_tree(id, NAME, location_children, level, node_type) AS
 		(
 			SELECT  id,
 					NAME,
 					location_children,
-					0 AS level
+					0 AS level,
+					'location' AS node_type
 			FROM    locations
 			WHERE   location_children IS NULL
 			AND     group_locations = ?
+
 			UNION ALL
 			SELECT  c.id,
 					c.NAME,
 					c.location_children,
-					level + 1
+					level + 1,
+					'location' AS node_type
 			FROM   locations c
 			JOIN   location_tree p
 			ON     c.location_children = p.id
 			WHERE  level < 10 -- prevent infinite loop & excessive recursion
+
+			{{ WITH_ITEMS }}
 		)
 		SELECT   id,
 				 NAME,
 				 level,
-				 location_children
+				 location_children,
+				 node_type
 		FROM     location_tree
 		ORDER BY level,
+				 node_type DESC, -- sort locations before items
 				 NAME;`
+
+	if tq.WithItems {
+		itemQuery := `
+			UNION ALL
+			SELECT  i.id,
+					i.name,
+					location_items as location_children,
+					level + 1,
+					'item' AS node_type
+			FROM   items i
+			JOIN   location_tree p
+			ON     i.location_items = p.id
+			WHERE  level < 10 -- prevent infinite loop & excessive recursion`
+		query = strings.ReplaceAll(query, "{{ WITH_ITEMS }}", itemQuery)
+	} else {
+		query = strings.ReplaceAll(query, "{{ WITH_ITEMS }}", "")
+	}
 
 	rows, err := lr.db.Sql().QueryContext(ctx, query, GID)
 	if err != nil {
@@ -280,7 +310,7 @@ func (lr *LocationRepository) Tree(ctx context.Context, GID uuid.UUID) ([]TreeIt
 	var locations []FlatTreeItem
 	for rows.Next() {
 		var location FlatTreeItem
-		if err := rows.Scan(&location.ID, &location.Name, &location.Level, &location.ParentID); err != nil {
+		if err := rows.Scan(&location.ID, &location.Name, &location.Level, &location.ParentID, &location.Type); err != nil {
 			return nil, err
 		}
 		locations = append(locations, location)
@@ -302,6 +332,7 @@ func ConvertLocationsToTree(locations []FlatTreeItem) []TreeItem {
 		loc := &TreeItem{
 			ID:       location.ID,
 			Name:     location.Name,
+			Type:     location.Type,
 			Children: []*TreeItem{},
 		}
 

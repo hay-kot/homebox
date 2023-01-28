@@ -1059,6 +1059,14 @@ const docTemplate = `{
                     "Locations"
                 ],
                 "summary": "Get All Locations",
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "description": "include items in response tree",
+                        "name": "withItems",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2172,6 +2180,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "type": {
                     "type": "string"
                 }
             }

@@ -15,6 +15,7 @@ import (
 // @Summary  Get All Locations
 // @Tags     Locations
 // @Produce  json
+// @Param    withItems         query    bool   false "include items in response tree"
 // @Success  200 {object} server.Results{items=[]repo.TreeItem}
 // @Router   /v1/locations/tree [GET]
 // @Security Bearer
@@ -22,7 +23,18 @@ func (ctrl *V1Controller) HandleLocationTreeQuery() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		user := services.UseUserCtx(r.Context())
 
-		locTree, err := ctrl.repo.Locations.Tree(r.Context(), user.GroupID)
+		q := r.URL.Query()
+
+		withItems := queryBool(q.Get("withItems"))
+
+		locTree, err := ctrl.repo.Locations.Tree(
+			r.Context(),
+			user.GroupID,
+			repo.TreeQuery{
+				WithItems: withItems,
+			},
+		)
+
 		if err != nil {
 			log.Err(err).Msg("failed to get locations tree")
 			return validate.NewRequestError(err, http.StatusInternalServerError)

@@ -134,7 +134,7 @@ func TestItemRepository_TreeQuery(t *testing.T) {
 	})
 	assert.NoError(t, err)
 
-	locations, err := tRepos.Locations.Tree(context.Background(), tGroup.ID)
+	locations, err := tRepos.Locations.Tree(context.Background(), tGroup.ID, TreeQuery{WithItems: true})
 
 	assert.NoError(t, err)
 
