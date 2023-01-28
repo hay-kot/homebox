@@ -158,10 +158,10 @@
       to: "/profile",
     },
     {
-      icon: "mdi-document",
+      icon: "mdi-magnify",
       id: 3,
       active: computed(() => route.path === "/items"),
-      name: "Items",
+      name: "Search",
       to: "/items",
     },
     {
@@ -179,14 +179,6 @@
         modals.import = true;
       },
     },
-    // {
-    //   icon: "mdi-database-export",
-    //   id: 5,
-    //   name: "Export",
-    //   action: () => {
-    //     console.log("Export");
-    //   },
-    // },
   ];
 
   const labelStore = useLabelStore();
