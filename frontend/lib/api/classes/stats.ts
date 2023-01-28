@@ -1,7 +1,7 @@
 import { BaseAPI, route } from "../base";
 import { GroupStatistics, TotalsByOrganizer, ValueOverTime } from "../types/data-contracts";
 
-function YYYY_DD_MM(date?: Date): string {
+function YYYY_MM_DD(date?: Date): string {
   if (!date) {
     return "";
   }
@@ -14,7 +14,7 @@ function YYYY_DD_MM(date?: Date): string {
 export class StatsAPI extends BaseAPI {
   totalPriceOverTime(start?: Date, end?: Date) {
     return this.http.get<ValueOverTime>({
-      url: route("/groups/statistics/purchase-price", { start: YYYY_DD_MM(start), end: YYYY_DD_MM(end) }),
+      url: route("/groups/statistics/purchase-price", { start: YYYY_MM_DD(start), end: YYYY_MM_DD(end) }),
     });
   }
 
