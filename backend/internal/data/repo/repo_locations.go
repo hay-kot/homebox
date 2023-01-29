@@ -280,7 +280,7 @@ func (lr *LocationRepository) Tree(ctx context.Context, GID uuid.UUID, tq TreeQu
 		FROM     location_tree
 		ORDER BY level,
 				 node_type DESC, -- sort locations before items
-				 NAME;`
+				 lower(NAME)`
 
 	if tq.WithItems {
 		itemQuery := `

@@ -26,9 +26,7 @@ export function parseDate<T>(obj: T, keys: Array<keyof T> = []): T {
         return;
       }
 
-      // Ensure date like format YYYY/MM/DD - otherwise results will be 1 day off
-      const dateStr: string = result[key].split("T")[0].replace(/-/g, "/");
-      result[key] = new Date(dateStr);
+      result[key] = new Date(result[key]);
     }
   });
 
