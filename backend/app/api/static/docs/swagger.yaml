@@ -1094,6 +1094,38 @@ paths:
       summary: Update Maintenance Entry
       tags:
       - Maintenance
+  /v1/items/fields:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      security:
+      - Bearer: []
+      summary: imports items into the database
+      tags:
+      - Items
+  /v1/items/fields/values:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      security:
+      - Bearer: []
+      summary: imports items into the database
+      tags:
+      - Items
   /v1/items/import:
     post:
       parameters:
