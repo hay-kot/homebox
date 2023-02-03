@@ -103,8 +103,11 @@ func (a *app) mountRoutes(repos *repo.AllRepos) {
 	a.server.Delete(v1Base("/labels/{id}"), v1Ctrl.HandleLabelDelete(), userMW...)
 
 	a.server.Get(v1Base("/items"), v1Ctrl.HandleItemsGetAll(), userMW...)
-	a.server.Post(v1Base("/items/import"), v1Ctrl.HandleItemsImport(), userMW...)
 	a.server.Post(v1Base("/items"), v1Ctrl.HandleItemsCreate(), userMW...)
+	a.server.Post(v1Base("/items/import"), v1Ctrl.HandleItemsImport(), userMW...)
+	a.server.Get(v1Base("/items/fields"), v1Ctrl.HandleGetAllCustomFieldNames(), userMW...)
+	a.server.Get(v1Base("/items/fields/values"), v1Ctrl.HandleGetAllCustomFieldValues(), userMW...)
+
 	a.server.Get(v1Base("/items/{id}"), v1Ctrl.HandleItemGet(), userMW...)
 	a.server.Put(v1Base("/items/{id}"), v1Ctrl.HandleItemUpdate(), userMW...)
 	a.server.Delete(v1Base("/items/{id}"), v1Ctrl.HandleItemDelete(), userMW...)

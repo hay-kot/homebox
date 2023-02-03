@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func itemFactory() ItemCreate {
@@ -272,4 +273,49 @@ func TestItemsRepository_Update(t *testing.T) {
 	// assert.Equal(t, updateData.WarrantyExpires, got.WarrantyExpires)
 	assert.Equal(t, updateData.WarrantyDetails, got.WarrantyDetails)
 	assert.Equal(t, updateData.LifetimeWarranty, got.LifetimeWarranty)
+}
+
+func TestItemRepository_GetAllCustomFields(t *testing.T) {
+	const FIELDS_COUNT = 5
+
+	entity := useItems(t, 1)[0]
+
+	fields := make([]ItemField, FIELDS_COUNT)
+	names := make([]string, FIELDS_COUNT)
+	values := make([]string, FIELDS_COUNT)
+
+	for i := 0; i < FIELDS_COUNT; i++ {
+		name := fk.Str(10)
+		fields[i] = ItemField{
+			Name:      name,
+			Type:      "text",
+			TextValue: fk.Str(10),
+		}
+		names[i] = name
+		values[i] = fields[i].TextValue
+	}
+
+	_, err := tRepos.Items.UpdateByGroup(context.Background(), tGroup.ID, ItemUpdate{
+		ID:         entity.ID,
+		Name:       entity.Name,
+		LocationID: entity.Location.ID,
+		Fields:     fields,
+	})
+
+	require.NoError(t, err)
+
+	// Test getting all fields
+	{
+		results, err := tRepos.Items.GetAllCustomFieldNames(context.Background(), tGroup.ID)
+		assert.NoError(t, err)
+		assert.ElementsMatch(t, names, results)
+	}
+
+	// Test getting all values from field
+	{
+		results, err := tRepos.Items.GetAllCustomFieldValues(context.Background(), tUser.GroupID, names[0])
+
+		assert.NoError(t, err)
+		assert.ElementsMatch(t, values[:1], results)
+	}
 }
