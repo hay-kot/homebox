@@ -3,6 +3,7 @@ package v1
 import (
 	"errors"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/hay-kot/homebox/backend/internal/core/services"
@@ -70,7 +71,7 @@ func (ctrl *V1Controller) HandleAuthLogin() server.HandlerFunc {
 			)
 		}
 
-		newToken, err := ctrl.svc.User.Login(r.Context(), loginForm.Username, loginForm.Password)
+		newToken, err := ctrl.svc.User.Login(r.Context(), strings.ToLower(loginForm.Username), loginForm.Password)
 
 		if err != nil {
 			return validate.NewRequestError(errors.New("authentication failed"), http.StatusInternalServerError)
