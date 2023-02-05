@@ -187,8 +187,8 @@
     <BaseModal v-model="passwordChange.dialog">
       <template #title> Change Password </template>
 
-      <FormTextField v-model="passwordChange.current" label="Current Password" type="password" />
-      <FormTextField v-model="passwordChange.new" label="New Password" type="password" />
+      <FormPassword v-model="passwordChange.current" label="Current Password" />
+      <FormPassword v-model="passwordChange.new" label="New Password" />
       <PasswordScore v-model:valid="passwordChange.isValid" :password="passwordChange.new" />
 
       <div class="flex">
