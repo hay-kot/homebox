@@ -238,6 +238,7 @@
       return;
     }
 
+    eventBus.emit(EventTypes.ClearStores);
     navigateTo("/");
   }
 </script>
