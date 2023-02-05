@@ -82,20 +82,7 @@
         <Subtitle> Recently Added </Subtitle>
 
         <BaseCard v-if="breakpoints.lg">
-          <Table :headers="itemTable.headers" :data="itemTable.items">
-            <template #cell-warranty="{ item }">
-              <Icon v-if="item.warranty" name="mdi-check" class="text-green-500 h-5 w-5" />
-              <Icon v-else name="mdi-close" class="text-red-500 h-5 w-5" />
-            </template>
-            <template #cell-purchasePrice="{ item }">
-              <Currency :amount="item.purchasePrice" />
-            </template>
-            <template #cell-location_Name="{ item }">
-              <NuxtLink class="badge badge-sm badge-primary p-3" :to="`/location/${item.location.id}`">
-                {{ item.location?.name }}
-              </NuxtLink>
-            </template>
-          </Table>
+          <ItemViewTable :items="itemTable.items" />
         </BaseCard>
         <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <ItemCard v-for="item in itemTable.items" :key="item.id" :item="item" />

@@ -518,11 +518,8 @@
       </div>
     </section>
 
-    <section v-if="!hasNested" class="my-6">
-      <BaseSectionHeader v-if="item && item.children && item.children.length > 0"> Child Items </BaseSectionHeader>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <ItemCard v-for="child in item.children" :key="child.id" :item="child" />
-      </div>
+    <section v-if="!hasNested && item.children.length > 0" class="my-6">
+      <ItemViewSelectable :items="item.children" />
     </section>
   </BaseContainer>
 </template>

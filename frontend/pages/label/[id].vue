@@ -156,11 +156,8 @@
       <DetailsSection :details="details" />
     </BaseCard>
 
-    <section v-if="label">
-      <BaseSectionHeader class="mb-5"> Items </BaseSectionHeader>
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        <ItemCard v-for="item in label.items" :key="item.id" :item="item" />
-      </div>
+    <section v-if="label && label.items && label.items.length > 0">
+      <ItemViewSelectable :items="label.items" />
     </section>
   </BaseContainer>
 </template>

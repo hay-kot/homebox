@@ -6,20 +6,31 @@
           <th
             v-for="h in headers"
             :key="h.value"
-            class="text-no-transform text-sm bg-neutral text-neutral-content"
-            :class="{
-              'text-center': h.align === 'center',
-              'text-right': h.align === 'right',
-              'text-left': h.align === 'left',
-            }"
+            class="text-no-transform text-sm bg-neutral text-neutral-content cursor-pointer"
+            @click="sortBy(h.value)"
           >
-            <template v-if="typeof h === 'string'">{{ h }}</template>
-            <template v-else>{{ h.text }}</template>
+            <div
+              class="flex items-center gap-1"
+              :class="{
+                'justify-center': h.align === 'center',
+                'justify-start': h.align === 'right',
+                'justify-end': h.align === 'left',
+              }"
+            >
+              <template v-if="typeof h === 'string'">{{ h }}</template>
+              <template v-else>{{ h.text }}</template>
+              <div :class="`inline-flex ${sortByProperty === h.value ? '' : 'opacity-0'}`">
+                <span class="swap swap-rotate" :class="{ 'swap-active': pagination.descending }">
+                  <Icon name="mdi-arrow-down" class="swap-on h-5 w-5" />
+                  <Icon name="mdi-arrow-up" class="swap-off h-5 w-5" />
+                </span>
+              </div>
+            </div>
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(d, i) in data" :key="i" class="hover cursor-pointer" @click="navigateTo(`/item/${d.id}`)">
+        <tr v-for="(d, i) in data" :key="d.id" class="hover cursor-pointer" @click="navigateTo(`/item/${d.id}`)">
           <td
             v-for="h in headers"
             :key="`${h.value}-${i}`"
@@ -49,7 +60,7 @@
         </tr>
       </tbody>
     </table>
-    <div class="border-t p-3 justify-end flex">
+    <div v-if="hasPrev || hasNext" class="border-t p-3 justify-end flex">
       <div class="btn-group">
         <button :disabled="!hasPrev" class="btn btn-sm" @click="prev()">«</button>
         <button class="btn btn-sm">Page {{ pagination.page }}</button>
@@ -80,7 +91,6 @@
   });
 
   const pagination = reactive({
-    sortBy: sortByProperty.value,
     descending: false,
     page: 1,
     rowsPerPage: 10,
@@ -97,20 +107,50 @@
     return pagination.page > 1;
   });
 
+  function sortBy(property: keyof ItemSummary) {
+    if (sortByProperty.value === property) {
+      pagination.descending = !pagination.descending;
+    } else {
+      pagination.descending = false;
+    }
+    sortByProperty.value = property;
+  }
+
+  function extractSortable(item: ItemSummary, property: keyof ItemSummary): string | number | boolean {
+    const value = item[property];
+    if (typeof value === "string") {
+      // Try parse float
+      const parsed = parseFloat(value);
+      if (!isNaN(parsed)) {
+        return parsed;
+      }
+
+      return value.toLowerCase();
+    }
+
+    if (typeof value !== "number" && typeof value !== "boolean") {
+      return "";
+    }
+
+    return value;
+  }
+
+  function itemSort(a: ItemSummary, b: ItemSummary) {
+    const aLower = extractSortable(a, sortByProperty.value);
+    const bLower = extractSortable(b, sortByProperty.value);
+
+    if (aLower < bLower) {
+      return -1;
+    }
+    if (aLower > bLower) {
+      return 1;
+    }
+    return 0;
+  }
+
   const data = computed<TableData[]>(() => {
     // sort by property
-    let data = [...props.items].sort((a, b) => {
-      const aLower = a[sortByProperty.value]?.toLowerCase();
-      const bLower = b[sortByProperty.value]?.toLowerCase();
-
-      if (aLower < bLower) {
-        return -1;
-      }
-      if (aLower > bLower) {
-        return 1;
-      }
-      return 0;
-    });
+    let data = [...props.items].sort(itemSort);
 
     // sort descending
     if (pagination.descending) {
