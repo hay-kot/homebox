@@ -51,15 +51,17 @@ func (svc *UserService) RegisterUser(ctx context.Context, data UserRegistration)
 		Msg("Registering new user")
 
 	var (
-		err     error
-		group   repo.Group
-		token   repo.GroupInvitation
-		isOwner = false
+		err   error
+		group repo.Group
+		token repo.GroupInvitation
+
+		// creatingGroup is true if the user is creating a new group.
+		creatingGroup = false
 	)
 
 	switch data.GroupToken {
 	case "":
-		isOwner = true
+		creatingGroup = true
 		group, err = svc.repos.Groups.GroupCreate(ctx, "Home")
 		if err != nil {
 			log.Err(err).Msg("Failed to create group")
@@ -81,7 +83,7 @@ func (svc *UserService) RegisterUser(ctx context.Context, data UserRegistration)
 		Password:    hashed,
 		IsSuperuser: false,
 		GroupID:     group.ID,
-		IsOwner:     isOwner,
+		IsOwner:     creatingGroup,
 	}
 
 	usr, err := svc.repos.Users.Create(ctx, usrCreate)
@@ -89,21 +91,24 @@ func (svc *UserService) RegisterUser(ctx context.Context, data UserRegistration)
 		return repo.UserOut{}, err
 	}
 
-	for _, label := range defaultLabels() {
-		_, err := svc.repos.Labels.Create(ctx, group.ID, label)
-		if err != nil {
-			return repo.UserOut{}, err
+	// Create the default labels and locations for the group.
+	if creatingGroup {
+		for _, label := range defaultLabels() {
+			_, err := svc.repos.Labels.Create(ctx, group.ID, label)
+			if err != nil {
+				return repo.UserOut{}, err
+			}
+		}
+
+		for _, location := range defaultLocations() {
+			_, err := svc.repos.Locations.Create(ctx, group.ID, location)
+			if err != nil {
+				return repo.UserOut{}, err
+			}
 		}
 	}
 
-	for _, location := range defaultLocations() {
-		_, err := svc.repos.Locations.Create(ctx, group.ID, location)
-		if err != nil {
-			return repo.UserOut{}, err
-		}
-	}
-
-	// Decrement the invitation token if it was used
+	// Decrement the invitation token if it was used.
 	if token.ID != uuid.Nil {
 		err = svc.repos.Groups.InvitationUpdate(ctx, token.ID, token.Uses-1)
 		if err != nil {
