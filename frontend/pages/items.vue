@@ -301,25 +301,33 @@
         <FormMultiselect v-model="selectedLocations" label="Locations" :items="locations ?? []" />
         <div class="py-4 space-y-2">
           <p>Custom Fields</p>
-          <div v-for="(f, idx) in fieldTuples" :key="idx" class="flex gap-2">
-            <select
-              v-model="fieldTuples[idx][0]"
-              class="w-full select select-bordered max-w-xs"
-              label="Field Name"
-              :items="allFields ?? []"
-              @change="fetchValues(f[0])"
+          <div v-for="(f, idx) in fieldTuples" :key="idx" class="flex flex-wrap gap-2">
+            <div class="form-control w-full max-w-xs">
+              <label class="label">
+                <span class="label-text">Field</span>
+              </label>
+              <select
+                v-model="fieldTuples[idx][0]"
+                class="select-bordered select"
+                :items="allFields ?? []"
+                @change="fetchValues(f[0])"
+              >
+                <option v-for="fv in allFields" :key="fv" :value="fv">{{ fv }}</option>
+              </select>
+            </div>
+            <div class="form-control w-full max-w-xs">
+              <label class="label">
+                <span class="label-text">Field Value</span>
+              </label>
+              <select v-model="fieldTuples[idx][1]" class="select-bordered select" :items="fieldValuesCache[f[0]]">
+                <option v-for="v in fieldValuesCache[f[0]]" :key="v" :value="v">{{ v }}</option>
+              </select>
+            </div>
+            <button
+              type="button"
+              class="btn btn-square btn-sm md:ml-0 ml-auto mt-auto mb-2"
+              @click="fieldTuples.splice(idx, 1)"
             >
-              <option v-for="fv in allFields" :key="fv" :value="fv">{{ fv }}</option>
-            </select>
-            <select
-              v-model="fieldTuples[idx][1]"
-              class="w-full select select-bordered max-w-xs"
-              label="Value"
-              :items="fieldValuesCache[f[0]]"
-            >
-              <option v-for="v in fieldValuesCache[f[0]]" :key="v" :value="v">{{ v }}</option>
-            </select>
-            <button type="button" class="btn btn-square btn-sm my-auto" @click="fieldTuples.splice(idx, 1)">
               <Icon name="mdi-trash" class="w-5 h-5" />
             </button>
           </div>
