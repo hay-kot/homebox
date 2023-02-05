@@ -174,7 +174,7 @@
                       Don't Want To Join a Group?
                     </button>
                   </div>
-                  <FormTextField v-model="password" label="Set your password" type="password" />
+                  <FormPassword v-model="password" label="Set your password" />
                   <PasswordScore v-model:valid="canRegister" :password="password" />
                   <div class="card-actions justify-end">
                     <button
@@ -202,7 +202,7 @@
                     <p class="text-xs text-center"><b>Password</b> demo</p>
                   </template>
                   <FormTextField v-model="email" label="Email" />
-                  <FormTextField v-model="loginPassword" label="Password" type="password" />
+                  <FormPassword v-model="loginPassword" label="Password" />
                   <div class="card-actions justify-end mt-2">
                     <button type="submit" class="btn btn-primary" :class="loading ? 'loading' : ''" :disabled="loading">
                       Login
