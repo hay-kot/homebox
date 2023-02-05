@@ -653,7 +653,7 @@ func (e *ItemsRepository) GetAllCustomFieldNames(ctx context.Context, GID uuid.U
 
 	var fields []st
 
-	err := e.db.Debug().Item.Query().
+	err := e.db.Item.Query().
 		Where(
 			item.HasGroupWith(group.ID(GID)),
 		).
