@@ -181,11 +181,18 @@
     },
   ];
 
+  function isMutation(method: string | undefined) {
+    return method === "POST" || method === "PUT" || method === "DELETE";
+  }
+  function isSuccess(status: number) {
+    return status >= 200 && status < 300;
+  }
+
   const labelStore = useLabelStore();
   const reLabel = /\/api\/v1\/labels\/.*/gm;
   const rmLabelStoreObserver = defineObserver("labelStore", {
-    handler: r => {
-      if (r.status === 201 || r.url.match(reLabel)) {
+    handler: (resp, req) => {
+      if (isMutation(req?.method) && isSuccess(resp.status) && resp.url.match(reLabel)) {
         labelStore.refresh();
       }
       console.debug("labelStore handler called by observer");
@@ -195,18 +202,19 @@
   const locationStore = useLocationStore();
   const reLocation = /\/api\/v1\/locations\/.*/gm;
   const rmLocationStoreObserver = defineObserver("locationStore", {
-    handler: r => {
-      if (r.status === 201 || r.url.match(reLocation)) {
+    handler: (resp, req) => {
+      if (isMutation(req?.method) && isSuccess(resp.status) && resp.url.match(reLocation)) {
         locationStore.refreshChildren();
         locationStore.refreshParents();
       }
+
       console.debug("locationStore handler called by observer");
     },
   });
 
   const eventBus = useEventBus();
   eventBus.on(
-    EventTypes.ClearStores,
+    EventTypes.InvalidStores,
     () => {
       labelStore.refresh();
       locationStore.refreshChildren();
@@ -218,7 +226,7 @@
   onUnmounted(() => {
     rmLabelStoreObserver();
     rmLocationStoreObserver();
-    eventBus.off(EventTypes.ClearStores, "stores");
+    eventBus.off(EventTypes.InvalidStores, "stores");
   });
 
   const authStore = useAuthStore();

@@ -21,6 +21,7 @@ export type ItemsQuery = {
   locations?: string[];
   labels?: string[];
   q?: string;
+  fields?: string[];
 };
 
 export class AttachmentsAPI extends BaseAPI {
@@ -45,6 +46,16 @@ export class AttachmentsAPI extends BaseAPI {
       url: route(`/items/${id}/attachments/${attachmentId}`),
       body: data,
     });
+  }
+}
+
+export class FieldsAPI extends BaseAPI {
+  getAll() {
+    return this.http.get<string[]>({ url: route("/items/fields") });
+  }
+
+  getAllValues(field: string) {
+    return this.http.get<string[]>({ url: route(`/items/fields/values`, { field }) });
   }
 }
 
@@ -75,9 +86,11 @@ export class MaintenanceAPI extends BaseAPI {
 export class ItemsApi extends BaseAPI {
   attachments: AttachmentsAPI;
   maintenance: MaintenanceAPI;
+  fields: FieldsAPI;
 
   constructor(http: Requests, token: string) {
     super(http, token);
+    this.fields = new FieldsAPI(http);
     this.attachments = new AttachmentsAPI(http);
     this.maintenance = new MaintenanceAPI(http);
   }

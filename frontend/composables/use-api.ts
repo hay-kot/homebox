@@ -4,7 +4,7 @@ import { Requests } from "~~/lib/requests";
 import { useAuthStore } from "~~/stores/auth";
 
 export type Observer = {
-  handler: (r: Response) => void;
+  handler: (r: Response, req?: RequestInit) => void;
 };
 
 export type RemoveObserver = () => void;

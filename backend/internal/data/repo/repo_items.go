@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -19,14 +20,21 @@ type ItemsRepository struct {
 }
 
 type (
+	FieldQuery struct {
+		Name  string
+		Value string
+	}
+
 	ItemQuery struct {
 		Page            int
 		PageSize        int
 		Search          string      `json:"search"`
+		AssetID         AssetID     `json:"assetId"`
 		LocationIDs     []uuid.UUID `json:"locationIds"`
 		LabelIDs        []uuid.UUID `json:"labelIds"`
 		SortBy          string      `json:"sortBy"`
 		IncludeArchived bool        `json:"includeArchived"`
+		Fields          []FieldQuery
 	}
 
 	ItemField struct {
@@ -326,7 +334,26 @@ func (e *ItemsRepository) QueryByGroup(ctx context.Context, gid uuid.UUID, q Ite
 		)
 	}
 
+	if !q.AssetID.Nil() {
+		qb = qb.Where(item.AssetID(q.AssetID.Int()))
+	}
+
+	if len(q.Fields) > 0 {
+		predicates := make([]predicate.Item, 0, len(q.Fields))
+		for _, f := range q.Fields {
+			predicates = append(predicates, item.HasFieldsWith(
+				itemfield.And(
+					itemfield.Name(f.Name),
+					itemfield.TextValue(f.Value),
+				),
+			))
+		}
+
+		qb = qb.Where(item.Or(predicates...))
+	}
+
 	count, err := qb.Count(ctx)
+
 	if err != nil {
 		return PaginationResult[ItemSummary]{}, err
 	}
@@ -473,8 +500,8 @@ func (e *ItemsRepository) DeleteByGroup(ctx context.Context, gid, id uuid.UUID) 
 	return err
 }
 
-func (e *ItemsRepository) UpdateByGroup(ctx context.Context, gid uuid.UUID, data ItemUpdate) (ItemOut, error) {
-	q := e.db.Item.Update().Where(item.ID(data.ID), item.HasGroupWith(group.ID(gid))).
+func (e *ItemsRepository) UpdateByGroup(ctx context.Context, GID uuid.UUID, data ItemUpdate) (ItemOut, error) {
+	q := e.db.Item.Update().Where(item.ID(data.ID), item.HasGroupWith(group.ID(GID))).
 		SetName(data.Name).
 		SetDescription(data.Description).
 		SetLocationID(data.LocationID).
@@ -586,4 +613,63 @@ func (e *ItemsRepository) UpdateByGroup(ctx context.Context, gid uuid.UUID, data
 	}
 
 	return e.GetOne(ctx, data.ID)
+}
+
+func (e *ItemsRepository) GetAllCustomFieldValues(ctx context.Context, GID uuid.UUID, name string) ([]string, error) {
+	type st struct {
+		Value string `json:"text_value"`
+	}
+
+	var values []st
+
+	err := e.db.Item.Query().
+		Where(
+			item.HasGroupWith(group.ID(GID)),
+		).
+		QueryFields().
+		Where(
+			itemfield.Name(name),
+		).
+		Unique(true).
+		Select(itemfield.FieldTextValue).
+		Scan(ctx, &values)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to get field values: %w", err)
+	}
+
+	valueStrings := make([]string, len(values))
+	for i, f := range values {
+		valueStrings[i] = f.Value
+	}
+
+	return valueStrings, nil
+}
+
+func (e *ItemsRepository) GetAllCustomFieldNames(ctx context.Context, GID uuid.UUID) ([]string, error) {
+	type st struct {
+		Name string `json:"name"`
+	}
+
+	var fields []st
+
+	err := e.db.Debug().Item.Query().
+		Where(
+			item.HasGroupWith(group.ID(GID)),
+		).
+		QueryFields().
+		Unique(true).
+		Select(itemfield.FieldName).
+		Scan(ctx, &fields)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to get custom fields: %w", err)
+	}
+
+	fieldNames := make([]string, len(fields))
+	for i, f := range fields {
+		fieldNames[i] = f.Name
+	}
+
+	return fieldNames, nil
 }

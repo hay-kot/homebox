@@ -2,7 +2,7 @@ export enum EventTypes {
   // ClearStores event is used to inform the stores that _all_ the data they are using
   // is now out of date and they should refresh - This is used when the user makes large
   // changes to the data such as bulk actions or importing a CSV file
-  ClearStores,
+  InvalidStores,
 }
 
 export type EventFn = () => void;
@@ -15,7 +15,7 @@ export interface IEventBus {
 
 class EventBus implements IEventBus {
   private listeners: Record<EventTypes, Record<string, EventFn>> = {
-    [EventTypes.ClearStores]: {},
+    [EventTypes.InvalidStores]: {},
   };
 
   on(event: EventTypes, fn: EventFn, key: string): void {

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-  import { watchPostEffect } from "vue";
   import { ItemSummary, LabelSummary, LocationOutCount } from "~~/lib/api/types/data-contracts";
   import { useLabelStore } from "~~/stores/labels";
   import { useLocationStore } from "~~/stores/locations";
@@ -47,54 +46,6 @@
     page.value = Math.min(Math.ceil(total.value / pageSize.value), page.value + 1);
   }
 
-  async function resetPageSearch() {
-    if (searchLocked.value) {
-      return;
-    }
-
-    if (!initialSearch.value) {
-      page.value = 1;
-    }
-
-    items.value = [];
-    await search();
-  }
-
-  async function search() {
-    if (searchLocked.value) {
-      return;
-    }
-
-    loading.value = true;
-
-    const { data, error } = await api.items.getAll({
-      q: query.value || "",
-      locations: locIDs.value,
-      labels: labIDs.value,
-      includeArchived: includeArchived.value,
-      page: page.value,
-      pageSize: pageSize.value,
-    });
-
-    if (error) {
-      page.value = Math.max(1, page.value - 1);
-      loading.value = false;
-      return;
-    }
-
-    if (!data.items || data.items.length === 0) {
-      page.value = Math.max(1, page.value - 1);
-      loading.value = false;
-      return;
-    }
-
-    total.value = data.total;
-    items.value = data.items;
-
-    loading.value = false;
-    initialSearch.value = false;
-  }
-
   const route = useRoute();
   const router = useRouter();
 
@@ -122,6 +73,17 @@
     queryParamsInitialized.value = true;
     searchLocked.value = false;
 
+    const qFields = route.query.fields as string[];
+    if (qFields) {
+      fieldTuples.value = qFields.map(f => f.split("=") as [string, string]);
+
+      for (const t of fieldTuples.value) {
+        if (t[0] && t[1]) {
+          await fetchValues(t[0]);
+        }
+      }
+    }
+
     // trigger search if no changes
     if (!qLab && !qLoc) {
       search();
@@ -147,75 +109,187 @@
   const locIDs = computed(() => selectedLocations.value.map(l => l.id));
   const labIDs = computed(() => selectedLabels.value.map(l => l.id));
 
-  watchPostEffect(() => {
-    if (!queryParamsInitialized.value) {
-      return;
+  function parseAssetIDString(d: string) {
+    d = d.replace(/"/g, "").replace(/-/g, "");
+
+    const aidInt = parseInt(d);
+    if (isNaN(aidInt)) {
+      return [-1, false];
     }
 
-    router.push({
-      query: {
-        ...router.currentRoute.value.query,
-        lab: labIDs.value,
-      },
-    });
+    return [aidInt, true];
+  }
+
+  const byAssetId = computed(() => query.value?.startsWith("#") || false);
+  const parsedAssetId = computed(() => {
+    if (!byAssetId.value) {
+      return "";
+    } else {
+      const [aid, valid] = parseAssetIDString(query.value.replace("#", ""));
+      if (!valid) {
+        return "Invalid Asset ID";
+      } else {
+        return aid;
+      }
+    }
   });
 
-  watchPostEffect(() => {
-    if (!queryParamsInitialized.value) {
-      return;
+  const fieldTuples = ref<[string, string][]>([]);
+  const fieldValuesCache = ref<Record<string, string[]>>({});
+
+  const { data: allFields } = useAsyncData(async () => {
+    const { data, error } = await api.items.fields.getAll();
+
+    if (error) {
+      return [];
     }
 
-    router.push({
-      query: {
-        ...router.currentRoute.value.query,
-        loc: locIDs.value,
-      },
-    });
+    return data;
   });
 
-  watchEffect(() => {
-    if (!advanced.value) {
+  async function fetchValues(field: string): Promise<string[]> {
+    if (fieldValuesCache.value[field]) {
+      return fieldValuesCache.value[field];
+    }
+
+    const { data, error } = await api.items.fields.getAllValues(field);
+
+    if (error) {
+      return [];
+    }
+
+    fieldValuesCache.value[field] = data;
+
+    return data;
+  }
+
+  watch(advanced, (v, lv) => {
+    if (v === false && lv === true) {
       selectedLocations.value = [];
       selectedLabels.value = [];
+      fieldTuples.value = [];
+
+      console.log("advanced", advanced.value);
+
+      router.push({
+        query: {
+          advanced: route.query.advanced,
+          q: query.value,
+          page: page.value,
+          pageSize: pageSize.value,
+          includeArchived: includeArchived.value ? "true" : "false",
+        },
+      });
     }
   });
 
-  // resetPageHash computes a JSON string that is used to detect if the search
-  // parameters have changed. If they have changed, the page is reset to 1.
-  const resetPageHash = computed(() => {
-    const map = {
-      q: query.value,
-      includeArchived: includeArchived.value,
+  async function search() {
+    if (searchLocked.value) {
+      return;
+    }
+
+    loading.value = true;
+
+    const fields = [];
+
+    for (const t of fieldTuples.value) {
+      if (t[0] && t[1]) {
+        fields.push(`${t[0]}=${t[1]}`);
+      }
+    }
+
+    const { data, error } = await api.items.getAll({
+      q: query.value || "",
       locations: locIDs.value,
       labels: labIDs.value,
-    };
+      includeArchived: includeArchived.value,
+      page: page.value,
+      pageSize: pageSize.value,
+      fields,
+    });
 
-    return JSON.stringify(map);
-  });
+    if (error) {
+      page.value = Math.max(1, page.value - 1);
+      loading.value = false;
+      return;
+    }
 
-  watchDebounced(resetPageHash, resetPageSearch, { debounce: 250, maxWait: 1000 });
+    if (!data.items || data.items.length === 0) {
+      page.value = Math.max(1, page.value - 1);
+      loading.value = false;
+      return;
+    }
 
-  watchDebounced([page, pageSize], search, { debounce: 250, maxWait: 1000 });
+    total.value = data.total;
+    items.value = data.items;
+
+    loading.value = false;
+    initialSearch.value = false;
+  }
+
+  watchDebounced([page, pageSize, query, advanced], search, { debounce: 250, maxWait: 1000 });
+
+  async function submit() {
+    // Set URL Params
+    const fields = [];
+    for (const t of fieldTuples.value) {
+      if (t[0] && t[1]) {
+        fields.push(`${t[0]}=${t[1]}`);
+      }
+    }
+
+    // Push non-reactive query fields
+    await router.push({
+      query: {
+        // Reactive
+        advanced: "true",
+        includeArchived: includeArchived.value ? "true" : "false",
+        pageSize: pageSize.value,
+        page: page.value,
+        q: query.value,
+
+        // Non-reactive
+        loc: locIDs.value,
+        lab: labIDs.value,
+        fields,
+      },
+    });
+
+    // Reset Pagination
+    page.value = 1;
+
+    // Perform Search
+    await search();
+  }
 </script>
 
 <template>
   <BaseContainer class="mb-16">
     <FormTextField v-model="query" placeholder="Search" />
+    <div class="text-sm pl-2 pt-2">
+      <p v-if="byAssetId">Querying Asset ID Number: {{ parsedAssetId }}</p>
+    </div>
     <div class="flex mt-1">
       <label class="ml-auto label cursor-pointer">
         <input v-model="advanced" type="checkbox" class="toggle toggle-primary" />
-        <span class="label-text text-base-content ml-2"> Filters </span>
+        <span class="label-text text-base-content ml-2"> Advanced Search </span>
       </label>
     </div>
     <BaseCard v-if="advanced" class="my-1 overflow-visible">
-      <template #title> Filters </template>
+      <template #title> Search Tips </template>
       <template #subtitle>
-        Location and label filters use the 'OR' operation. If more than one is selected only one will be required for a
-        match
+        <ul class="mt-1 list-disc pl-6">
+          <li>
+            Location and label filters use the 'OR' operation. If more than one is selected only one will be required
+            for a match.
+          </li>
+          <li>Searches prefixed with '#'' will query for a asset ID (example '#000-001')</li>
+          <li>
+            Field filters use the 'OR' operation. If more than one is selected only one will be required for a match.
+          </li>
+        </ul>
       </template>
-      <div class="px-4 pb-4">
-        <FormMultiselect v-model="selectedLabels" label="Labels" :items="labels ?? []" />
-        <FormMultiselect v-model="selectedLocations" label="Locations" :items="locations ?? []" />
+      <form class="px-4 pb-4">
         <div class="flex pb-2 pt-5">
           <label class="label cursor-pointer mr-auto">
             <input v-model="includeArchived" type="checkbox" class="toggle toggle-primary" />
@@ -223,7 +297,46 @@
           </label>
           <Spacer />
         </div>
-      </div>
+        <FormMultiselect v-model="selectedLabels" label="Labels" :items="labels ?? []" />
+        <FormMultiselect v-model="selectedLocations" label="Locations" :items="locations ?? []" />
+        <div class="py-4 space-y-2">
+          <p>Custom Fields</p>
+          <div v-for="(f, idx) in fieldTuples" :key="idx" class="flex flex-wrap gap-2">
+            <div class="form-control w-full max-w-xs">
+              <label class="label">
+                <span class="label-text">Field</span>
+              </label>
+              <select
+                v-model="fieldTuples[idx][0]"
+                class="select-bordered select"
+                :items="allFields ?? []"
+                @change="fetchValues(f[0])"
+              >
+                <option v-for="fv in allFields" :key="fv" :value="fv">{{ fv }}</option>
+              </select>
+            </div>
+            <div class="form-control w-full max-w-xs">
+              <label class="label">
+                <span class="label-text">Field Value</span>
+              </label>
+              <select v-model="fieldTuples[idx][1]" class="select-bordered select" :items="fieldValuesCache[f[0]]">
+                <option v-for="v in fieldValuesCache[f[0]]" :key="v" :value="v">{{ v }}</option>
+              </select>
+            </div>
+            <button
+              type="button"
+              class="btn btn-square btn-sm md:ml-0 ml-auto mt-auto mb-2"
+              @click="fieldTuples.splice(idx, 1)"
+            >
+              <Icon name="mdi-trash" class="w-5 h-5" />
+            </button>
+          </div>
+          <BaseButton type="button" class="btn-sm mt-2" @click="() => fieldTuples.push(['', ''])"> Add</BaseButton>
+        </div>
+        <div class="flex justify-end gap-2">
+          <BaseButton @click.prevent="submit">Search</BaseButton>
+        </div>
+      </form>
     </BaseCard>
     <section class="mt-10">
       <BaseSectionHeader ref="itemsTitle"> Items </BaseSectionHeader>

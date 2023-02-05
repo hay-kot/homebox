@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
@@ -29,18 +30,48 @@ func (ctrl *V1Controller) HandleItemsGetAll() server.HandlerFunc {
 	extractQuery := func(r *http.Request) repo.ItemQuery {
 		params := r.URL.Query()
 
-		return repo.ItemQuery{
+		filterFieldItems := func(raw []string) []repo.FieldQuery {
+			var items []repo.FieldQuery
+
+			for _, v := range raw {
+				parts := strings.SplitN(v, "=", 2)
+				if len(parts) == 2 {
+					items = append(items, repo.FieldQuery{
+						Name:  parts[0],
+						Value: parts[1],
+					})
+				}
+			}
+
+			return items
+		}
+
+		v := repo.ItemQuery{
 			Page:            queryIntOrNegativeOne(params.Get("page")),
 			PageSize:        queryIntOrNegativeOne(params.Get("pageSize")),
 			Search:          params.Get("q"),
 			LocationIDs:     queryUUIDList(params, "locations"),
 			LabelIDs:        queryUUIDList(params, "labels"),
 			IncludeArchived: queryBool(params.Get("includeArchived")),
+			Fields:          filterFieldItems(params["fields"]),
 		}
+
+		if strings.HasPrefix(v.Search, "#") {
+			aidStr := strings.TrimPrefix(v.Search, "#")
+
+			aid, ok := repo.ParseAssetID(aidStr)
+			if ok {
+				v.Search = ""
+				v.AssetID = aid
+			}
+		}
+
+		return v
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := services.NewContext(r.Context())
+
 		items, err := ctrl.repo.Items.QueryByGroup(ctx, ctx.GID, extractQuery(r))
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
@@ -158,6 +189,48 @@ func (ctrl *V1Controller) handleItemsGeneral() server.HandlerFunc {
 		}
 
 		return nil
+	}
+}
+
+// HandleGetAllCustomFieldNames godocs
+// @Summary  imports items into the database
+// @Tags     Items
+// @Produce  json
+// @Success  200
+// @Router   /v1/items/fields [GET]
+// @Success  200     {object} []string
+// @Security Bearer
+func (ctrl *V1Controller) HandleGetAllCustomFieldNames() server.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) error {
+		ctx := services.NewContext(r.Context())
+
+		v, err := ctrl.repo.Items.GetAllCustomFieldNames(r.Context(), ctx.GID)
+		if err != nil {
+			return err
+		}
+
+		return server.Respond(w, http.StatusOK, v)
+	}
+}
+
+// HandleGetAllCustomFieldValues godocs
+// @Summary  imports items into the database
+// @Tags     Items
+// @Produce  json
+// @Success  200
+// @Router   /v1/items/fields/values [GET]
+// @Success  200     {object} []string
+// @Security Bearer
+func (ctrl *V1Controller) HandleGetAllCustomFieldValues() server.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) error {
+		ctx := services.NewContext(r.Context())
+
+		v, err := ctrl.repo.Items.GetAllCustomFieldValues(r.Context(), ctx.GID, r.URL.Query().Get("field"))
+		if err != nil {
+			return err
+		}
+
+		return server.Respond(w, http.StatusOK, v)
 	}
 }
 

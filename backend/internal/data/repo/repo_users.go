@@ -69,7 +69,7 @@ func (e *UserRepository) GetOneId(ctx context.Context, id uuid.UUID) (UserOut, e
 
 func (e *UserRepository) GetOneEmail(ctx context.Context, email string) (UserOut, error) {
 	return mapUserOutErr(e.db.User.Query().
-		Where(user.Email(email)).
+		Where(user.EmailEqualFold(email)).
 		WithGroup().
 		Only(ctx),
 	)

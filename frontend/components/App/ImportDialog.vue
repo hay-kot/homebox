@@ -85,6 +85,6 @@
       importRef.value.value = "";
     }
 
-    eventBus.emit(EventTypes.ClearStores);
+    eventBus.emit(EventTypes.InvalidStores);
   }
 </script>
