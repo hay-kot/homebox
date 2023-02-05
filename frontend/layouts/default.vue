@@ -214,7 +214,7 @@
 
   const eventBus = useEventBus();
   eventBus.on(
-    EventTypes.ClearStores,
+    EventTypes.InvalidStores,
     () => {
       labelStore.refresh();
       locationStore.refreshChildren();
@@ -226,7 +226,7 @@
   onUnmounted(() => {
     rmLabelStoreObserver();
     rmLocationStoreObserver();
-    eventBus.off(EventTypes.ClearStores, "stores");
+    eventBus.off(EventTypes.InvalidStores, "stores");
   });
 
   const authStore = useAuthStore();
@@ -238,7 +238,6 @@
       return;
     }
 
-    eventBus.emit(EventTypes.ClearStores);
     navigateTo("/");
   }
 </script>
