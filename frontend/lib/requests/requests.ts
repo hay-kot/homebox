@@ -5,8 +5,7 @@ export enum Method {
   DELETE = "DELETE",
 }
 
-export type RequestInterceptor = (r: Response) => void;
-export type ResponseInterceptor = (r: Response) => void;
+export type ResponseInterceptor = (r: Response, rq?: RequestInit) => void;
 
 export interface TResponse<T> {
   status: number;
@@ -32,8 +31,8 @@ export class Requests {
     this.responseInterceptors.push(interceptor);
   }
 
-  private callResponseInterceptors(response: Response) {
-    this.responseInterceptors.forEach(i => i(response));
+  private callResponseInterceptors(response: Response, request?: RequestInit) {
+    this.responseInterceptors.forEach(i => i(response, request));
   }
 
   private url(rest: string): string {
@@ -90,7 +89,7 @@ export class Requests {
     }
 
     const response = await fetch(this.url(rargs.url), payload);
-    this.callResponseInterceptors(response);
+    this.callResponseInterceptors(response, payload);
 
     const data: T = await (async () => {
       if (response.status === 204) {
