@@ -556,6 +556,11 @@ definitions:
       token:
         type: string
     type: object
+  v1.ActionAmountResult:
+    properties:
+      completed:
+        type: integer
+    type: object
   v1.ApiSummary:
     properties:
       build:
@@ -588,11 +593,6 @@ definitions:
         type: string
       new:
         type: string
-    type: object
-  v1.EnsureAssetIDResult:
-    properties:
-      completed:
-        type: integer
     type: object
   v1.GroupInvitation:
     properties:
@@ -643,10 +643,24 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/v1.EnsureAssetIDResult'
+            $ref: '#/definitions/v1.ActionAmountResult'
       security:
       - Bearer: []
-      summary: Get the current user
+      summary: Ensures all items in the database have an asset id
+      tags:
+      - Group
+  /v1/actions/zero-item-time-fields:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.ActionAmountResult'
+      security:
+      - Bearer: []
+      summary: Resets all item date fields to the beginning of the day
       tags:
       - Group
   /v1/assets/{id}:

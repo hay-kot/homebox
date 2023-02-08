@@ -17,7 +17,7 @@ export interface DocumentOut {
 }
 
 export interface Group {
-  createdAt: string;
+  createdAt: Date;
   currency: string;
   id: string;
   name: string;
@@ -39,7 +39,7 @@ export interface GroupUpdate {
 }
 
 export interface ItemAttachment {
-  createdAt: string;
+  createdAt: Date;
   document: DocumentOut;
   id: string;
   type: string;
@@ -76,7 +76,7 @@ export interface ItemOut {
   assetId: string;
   attachments: ItemAttachment[];
   children: ItemSummary[];
-  createdAt: string;
+  createdAt: Date;
   description: string;
   fields: ItemField[];
   id: string;
@@ -96,7 +96,7 @@ export interface ItemOut {
   /** @example "0" */
   purchasePrice: string;
   /** Purchase */
-  purchaseTime: Date;
+  purchaseTime: string;
   quantity: number;
   serialNumber: string;
   soldNotes: string;
@@ -112,7 +112,7 @@ export interface ItemOut {
 
 export interface ItemSummary {
   archived: boolean;
-  createdAt: string;
+  createdAt: Date;
   description: string;
   id: string;
   insured: boolean;
@@ -148,7 +148,7 @@ export interface ItemUpdate {
   /** @example "0" */
   purchasePrice: string;
   /** Purchase */
-  purchaseTime: Date;
+  purchaseTime: string;
   quantity: number;
   /** Identifications */
   serialNumber: string;
@@ -169,7 +169,7 @@ export interface LabelCreate {
 }
 
 export interface LabelOut {
-  createdAt: string;
+  createdAt: Date;
   description: string;
   id: string;
   items: ItemSummary[];
@@ -178,7 +178,7 @@ export interface LabelOut {
 }
 
 export interface LabelSummary {
-  createdAt: string;
+  createdAt: Date;
   description: string;
   id: string;
   name: string;
@@ -193,7 +193,7 @@ export interface LocationCreate {
 
 export interface LocationOut {
   children: LocationSummary[];
-  createdAt: string;
+  createdAt: Date;
   description: string;
   id: string;
   items: ItemSummary[];
@@ -203,7 +203,7 @@ export interface LocationOut {
 }
 
 export interface LocationOutCount {
-  createdAt: string;
+  createdAt: Date;
   description: string;
   id: string;
   itemCount: number;
@@ -212,7 +212,7 @@ export interface LocationOutCount {
 }
 
 export interface LocationSummary {
-  createdAt: string;
+  createdAt: Date;
   description: string;
   id: string;
   name: string;
@@ -229,7 +229,7 @@ export interface LocationUpdate {
 export interface MaintenanceEntry {
   /** @example "0" */
   cost: string;
-  date: Date;
+  date: string;
   description: string;
   id: string;
   name: string;
@@ -238,7 +238,7 @@ export interface MaintenanceEntry {
 export interface MaintenanceEntryCreate {
   /** @example "0" */
   cost: string;
-  date: Date;
+  date: string;
   description: string;
   name: string;
 }
@@ -246,7 +246,7 @@ export interface MaintenanceEntryCreate {
 export interface MaintenanceEntryUpdate {
   /** @example "0" */
   cost: string;
-  date: Date;
+  date: string;
   description: string;
   name: string;
 }
@@ -258,7 +258,7 @@ export interface MaintenanceLog {
   itemId: string;
 }
 
-export interface PaginationResultRepoItemSummary {
+export interface PaginationResultItemSummary {
   items: ItemSummary[];
   page: number;
   pageSize: number;
@@ -302,7 +302,7 @@ export interface ValueOverTime {
 }
 
 export interface ValueOverTimeEntry {
-  date: Date;
+  date: string;
   name: string;
   value: number;
 }
@@ -330,6 +330,10 @@ export interface UserRegistration {
   token: string;
 }
 
+export interface ActionAmountResult {
+  completed: number;
+}
+
 export interface ApiSummary {
   build: Build;
   demo: boolean;
@@ -350,18 +354,14 @@ export interface ChangePassword {
   new: string;
 }
 
-export interface EnsureAssetIDResult {
-  completed: number;
-}
-
 export interface GroupInvitation {
-  expiresAt: Date;
+  expiresAt: string;
   token: string;
   uses: number;
 }
 
 export interface GroupInvitationCreate {
-  expiresAt: Date;
+  expiresAt: string;
   uses: number;
 }
 
@@ -371,6 +371,6 @@ export interface ItemAttachmentToken {
 
 export interface TokenResponse {
   attachmentToken: string;
-  expiresAt: Date;
+  expiresAt: string;
   token: string;
 }

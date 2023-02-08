@@ -673,3 +673,56 @@ func (e *ItemsRepository) GetAllCustomFieldNames(ctx context.Context, GID uuid.U
 
 	return fieldNames, nil
 }
+
+// ZeroOutTimeFields is a helper function that can be invoked via the UI by a group member which will
+// set all date fields to the beginning of the day.
+//
+// This is designed to resolve a long-time bug that has since been fixed with the time selector on the
+// frontend. This function is intended to be used as a one-time fix for existing databases and may be
+// removed in the future.
+func (e *ItemsRepository) ZeroOutTimeFields(ctx context.Context, GID uuid.UUID) (int, error) {
+	q := e.db.Item.Query().Where(
+		item.HasGroupWith(group.ID(GID)),
+		item.Or(
+			item.PurchaseTimeNotNil(),
+			item.SoldTimeNotNil(),
+			item.WarrantyExpiresNotNil(),
+		),
+	)
+
+	items, err := q.All(ctx)
+	if err != nil {
+		return -1, fmt.Errorf("ZeroOutTimeFields() -> failed to get items: %w", err)
+	}
+
+	toDateOnly := func(t time.Time) time.Time {
+		return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location())
+	}
+
+	updated := 0
+
+	for _, i := range items {
+		updateQ := e.db.Item.Update().Where(item.ID(i.ID))
+
+		if !i.PurchaseTime.IsZero() {
+			updateQ.SetPurchaseTime(toDateOnly(i.PurchaseTime))
+		}
+
+		if !i.SoldTime.IsZero() {
+			updateQ.SetSoldTime(toDateOnly(i.SoldTime))
+		}
+
+		if !i.WarrantyExpires.IsZero() {
+			updateQ.SetWarrantyExpires(toDateOnly(i.WarrantyExpires))
+		}
+
+		_, err = updateQ.Save(ctx)
+		if err != nil {
+			return updated, fmt.Errorf("ZeroOutTimeFields() -> failed to update item: %w", err)
+		}
+
+		updated++
+	}
+
+	return updated, nil
+}
