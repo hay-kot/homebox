@@ -34,12 +34,36 @@ const docTemplate = `{
                 "tags": [
                     "Group"
                 ],
-                "summary": "Get the current user",
+                "summary": "Ensures all items in the database have an asset id",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/v1.EnsureAssetIDResult"
+                            "$ref": "#/definitions/v1.ActionAmountResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/actions/zero-item-time-fields": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Group"
+                ],
+                "summary": "Resets all item date fields to the beginning of the day",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.ActionAmountResult"
                         }
                     }
                 }
@@ -2365,6 +2389,14 @@ const docTemplate = `{
                 }
             }
         },
+        "v1.ActionAmountResult": {
+            "type": "object",
+            "properties": {
+                "completed": {
+                    "type": "integer"
+                }
+            }
+        },
         "v1.ApiSummary": {
             "type": "object",
             "properties": {
@@ -2413,14 +2445,6 @@ const docTemplate = `{
                 },
                 "new": {
                     "type": "string"
-                }
-            }
-        },
-        "v1.EnsureAssetIDResult": {
-            "type": "object",
-            "properties": {
-                "completed": {
-                    "type": "integer"
                 }
             }
         },

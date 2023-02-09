@@ -31,7 +31,11 @@
   const selected = computed({
     get() {
       // return modelValue as string as YYYY-MM-DD or null
-      return props.modelValue ? props.modelValue.toISOString().split("T")[0] : null;
+      if (validDate(props.modelValue)) {
+        return props.modelValue ? props.modelValue.toISOString().split("T")[0] : null;
+      }
+
+      return null;
     },
     set(value: string | null) {
       // emit update:modelValue with a Date object or null

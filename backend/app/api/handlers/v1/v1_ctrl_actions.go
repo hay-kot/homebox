@@ -9,15 +9,15 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-type EnsureAssetIDResult struct {
+type ActionAmountResult struct {
 	Completed int `json:"completed"`
 }
 
 // HandleGroupInvitationsCreate godoc
-// @Summary  Get the current user
+// @Summary  Ensures all items in the database have an asset id
 // @Tags     Group
 // @Produce  json
-// @Success  200     {object} EnsureAssetIDResult
+// @Success  200     {object} ActionAmountResult
 // @Router   /v1/actions/ensure-asset-ids [Post]
 // @Security Bearer
 func (ctrl *V1Controller) HandleEnsureAssetID() server.HandlerFunc {
@@ -30,6 +30,27 @@ func (ctrl *V1Controller) HandleEnsureAssetID() server.HandlerFunc {
 			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		return server.Respond(w, http.StatusOK, EnsureAssetIDResult{Completed: totalCompleted})
+		return server.Respond(w, http.StatusOK, ActionAmountResult{Completed: totalCompleted})
+	}
+}
+
+// HandleItemDateZeroOut godoc
+// @Summary  Resets all item date fields to the beginning of the day
+// @Tags     Group
+// @Produce  json
+// @Success  200     {object} ActionAmountResult
+// @Router   /v1/actions/zero-item-time-fields [Post]
+// @Security Bearer
+func (ctrl *V1Controller) HandleItemDateZeroOut() server.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) error {
+		ctx := services.NewContext(r.Context())
+
+		totalCompleted, err := ctrl.repo.Items.ZeroOutTimeFields(ctx, ctx.GID)
+		if err != nil {
+			log.Err(err).Msg("failed to ensure asset id")
+			return validate.NewRequestError(err, http.StatusInternalServerError)
+		}
+
+		return server.Respond(w, http.StatusOK, ActionAmountResult{Completed: totalCompleted})
 	}
 }
