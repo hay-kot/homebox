@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@faker-js/faker': ^7.5.0
+  '@headlessui/vue': ^1.7.9
   '@iconify/vue': ^3.2.1
   '@nuxtjs/eslint-config-typescript': ^12.0.0
   '@nuxtjs/tailwindcss': ^6.1.3
@@ -36,6 +37,7 @@ specifiers:
   vue-router: '4'
 
 dependencies:
+  '@headlessui/vue': 1.7.9_vue@3.2.45
   '@iconify/vue': 3.2.1_vue@3.2.45
   '@nuxtjs/tailwindcss': 6.1.3
   '@pinia/nuxt': 0.4.6_prq2uz4lho2pwp6irk4cfkrxwu
@@ -735,6 +737,15 @@ packages:
     resolution: {integrity: sha512-XK6BTq1NDMo9Xqw/YkYyGjSsg44fbNwYRx7QK2CuoQgyy+f1rrTDHoExVM5PsyXCtfl2vs2vVJ0MN0yN6LppRw==}
     engines: {node: '>=14.0.0', npm: '>=6.0.0'}
     dev: true
+
+  /@headlessui/vue/1.7.9_vue@3.2.45:
+    resolution: {integrity: sha512-vgLBKszj+m2ozaPOnjWMGnspoLJcU/06vygdEAyAS4nDjp72yA7AYbOIEgdaspUhaMs585ApyiSm3jPTuIxAzg==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      vue: ^3.2.0
+    dependencies:
+      vue: 3.2.45
+    dev: false
 
   /@humanwhocodes/config-array/0.11.7:
     resolution: {integrity: sha512-kBbPWzN8oVMLb0hOUYXhmxggL/1cJE6ydvjDIGi9EnAGUyA7cLVKQg+d/Dsm+KZwx2czGHrCmMVLiyg8s5JPKw==}

@@ -4,7 +4,7 @@ import { TreeItem } from "~~/lib/api/types/data-contracts";
 export interface FlatTreeItem {
   id: string;
   name: string;
-  display: string;
+  treeString: string;
 }
 
 export function flatTree(tree: TreeItem[]): Ref<FlatTreeItem[]> {
@@ -18,7 +18,7 @@ export function flatTree(tree: TreeItem[]): Ref<FlatTreeItem[]> {
       v.value.push({
         id: item.id,
         name: item.name,
-        display: display + item.name,
+        treeString: display + item.name,
       });
       if (item.children) {
         flatten(item.children, display + item.name + " > ");

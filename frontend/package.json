@@ -28,6 +28,7 @@
     "vitest": "^0.28.0"
   },
   "dependencies": {
+    "@headlessui/vue": "^1.7.9",
     "@iconify/vue": "^3.2.1",
     "@nuxtjs/tailwindcss": "^6.1.3",
     "@pinia/nuxt": "^0.4.1",
