@@ -16,7 +16,7 @@
   const initialSearch = ref(true);
 
   const api = useUserApi();
-  const loading = useMinLoader(2000);
+  const loading = useMinLoader(500);
   const items = ref<ItemSummary[]>([]);
   const total = ref(0);
 
@@ -33,6 +33,7 @@
   const query = useRouteQuery("q", "");
   const advanced = useRouteQuery("advanced", false);
   const includeArchived = useRouteQuery("archived", false);
+  const fieldSelector = useRouteQuery("fieldSelector", false);
 
   const totalPages = computed(() => Math.ceil(total.value / pageSize.value));
   const hasNext = computed(() => page.value * pageSize.value < total.value);
@@ -98,6 +99,9 @@
   });
 
   const locationsStore = useLocationStore();
+
+  const locationFlatTree = await useFlatLocations();
+
   const locations = computed(() => locationsStore.allLocations);
 
   const labelStore = useLabelStore();
@@ -145,6 +149,12 @@
     }
 
     return data;
+  });
+
+  watch(fieldSelector, (newV, oldV) => {
+    if (newV === false && oldV === true) {
+      fieldTuples.value = [];
+    }
   });
 
   async function fetchValues(field: string): Promise<string[]> {
@@ -198,6 +208,8 @@
       }
     }
 
+    const toast = useNotifier();
+
     const { data, error } = await api.items.getAll({
       q: query.value || "",
       locations: locIDs.value,
@@ -208,15 +220,21 @@
       fields,
     });
 
-    if (error) {
+    function resetItems() {
       page.value = Math.max(1, page.value - 1);
       loading.value = false;
+      total.value = 0;
+      items.value = [];
+    }
+
+    if (error) {
+      resetItems();
+      toast.error("Failed to search items");
       return;
     }
 
     if (!data.items || data.items.length === 0) {
-      page.value = Math.max(1, page.value - 1);
-      loading.value = false;
+      resetItems();
       return;
     }
 
@@ -227,7 +245,7 @@
     initialSearch.value = false;
   }
 
-  watchDebounced([page, pageSize, query, advanced], search, { debounce: 250, maxWait: 1000 });
+  watchDebounced([page, pageSize, query, selectedLabels, selectedLocations], search, { debounce: 250, maxWait: 1000 });
 
   async function submit() {
     // Set URL Params
@@ -243,7 +261,8 @@
       query: {
         // Reactive
         advanced: "true",
-        includeArchived: includeArchived.value ? "true" : "false",
+        archived: includeArchived.value ? "true" : "false",
+        fieldSelector: fieldSelector.value ? "true" : "false",
         pageSize: pageSize.value,
         page: page.value,
         q: query.value,
@@ -261,83 +280,141 @@
     // Perform Search
     await search();
   }
+
+  async function reset() {
+    // Set URL Params
+    const fields = [];
+    for (const t of fieldTuples.value) {
+      if (t[0] && t[1]) {
+        fields.push(`${t[0]}=${t[1]}`);
+      }
+    }
+
+    await router.push({
+      query: {
+        archived: "false",
+        fieldSelector: "false",
+        pageSize: 10,
+        page: 1,
+        q: "",
+        loc: [],
+        lab: [],
+        fields,
+      },
+    });
+
+    await search();
+  }
 </script>
 
 <template>
   <BaseContainer class="mb-16">
-    <FormTextField v-model="query" placeholder="Search" />
-    <div class="text-sm pl-2 pt-2">
-      <p v-if="byAssetId">Querying Asset ID Number: {{ parsedAssetId }}</p>
-    </div>
-    <div class="flex mt-1">
-      <label class="ml-auto label cursor-pointer">
-        <input v-model="advanced" type="checkbox" class="toggle toggle-primary" />
-        <span class="label-text text-base-content ml-2"> Advanced Search </span>
-      </label>
-    </div>
-    <BaseCard v-if="advanced" class="my-1 overflow-visible">
-      <template #title> Search Tips </template>
-      <template #subtitle>
-        <ul class="mt-1 list-disc pl-6">
-          <li>
-            Location and label filters use the 'OR' operation. If more than one is selected only one will be required
-            for a match.
-          </li>
-          <li>Searches prefixed with '#'' will query for a asset ID (example '#000-001')</li>
-          <li>
-            Field filters use the 'OR' operation. If more than one is selected only one will be required for a match.
-          </li>
-        </ul>
-      </template>
-      <form class="px-4 pb-4">
-        <div class="flex pb-2 pt-5">
-          <label class="label cursor-pointer mr-auto">
-            <input v-model="includeArchived" type="checkbox" class="toggle toggle-primary" />
-            <span class="label-text ml-4"> Include Archived Items </span>
-          </label>
-          <Spacer />
-        </div>
-        <FormMultiselect v-model="selectedLabels" label="Labels" :items="labels ?? []" />
-        <FormMultiselect v-model="selectedLocations" label="Locations" :items="locations ?? []" />
-        <div class="py-4 space-y-2">
-          <p>Custom Fields</p>
-          <div v-for="(f, idx) in fieldTuples" :key="idx" class="flex flex-wrap gap-2">
-            <div class="form-control w-full max-w-xs">
-              <label class="label">
-                <span class="label-text">Field</span>
-              </label>
-              <select
-                v-model="fieldTuples[idx][0]"
-                class="select-bordered select"
-                :items="allFields ?? []"
-                @change="fetchValues(f[0])"
-              >
-                <option v-for="fv in allFields" :key="fv" :value="fv">{{ fv }}</option>
-              </select>
-            </div>
-            <div class="form-control w-full max-w-xs">
-              <label class="label">
-                <span class="label-text">Field Value</span>
-              </label>
-              <select v-model="fieldTuples[idx][1]" class="select-bordered select" :items="fieldValuesCache[f[0]]">
-                <option v-for="v in fieldValuesCache[f[0]]" :key="v" :value="v">{{ v }}</option>
-              </select>
-            </div>
-            <button
-              type="button"
-              class="btn btn-square btn-sm md:ml-0 ml-auto mt-auto mb-2"
-              @click="fieldTuples.splice(idx, 1)"
-            >
-              <Icon name="mdi-trash" class="w-5 h-5" />
-            </button>
+    <div v-if="locations && labels">
+      <div class="flex flex-wrap md:flex-nowrap gap-4 items-end">
+        <div class="w-full">
+          <FormTextField v-model="query" placeholder="Search" />
+          <div v-if="byAssetId" class="text-sm pl-2 pt-2">
+            <p>Querying Asset ID Number: {{ parsedAssetId }}</p>
           </div>
-          <BaseButton type="button" class="btn-sm mt-2" @click="() => fieldTuples.push(['', ''])"> Add</BaseButton>
         </div>
-        <div class="flex justify-end gap-2">
-          <BaseButton @click.prevent="submit">Search</BaseButton>
+        <BaseButton class="btn-block md:w-auto" @click.prevent="submit">
+          <template #icon>
+            <Icon v-if="loading" name="mdi-loading" class="animate-spin" />
+            <Icon v-else name="mdi-search" />
+          </template>
+          Search
+        </BaseButton>
+      </div>
+
+      <div class="flex flex-wrap md:flex-nowrap gap-2 w-full py-2">
+        <SearchFilter v-model="selectedLocations" label="Locations" :options="locationFlatTree">
+          <template #display="{ item }">
+            <div>
+              <div class="flex w-full">
+                {{ item.name }}
+              </div>
+              <div v-if="item.name != item.treeString" class="text-xs mt-1">
+                {{ item.treeString }}
+              </div>
+            </div>
+          </template>
+        </SearchFilter>
+        <SearchFilter v-model="selectedLabels" label="Labels" :options="labels" />
+        <div class="dropdown">
+          <label tabindex="0" class="btn btn-xs">Options</label>
+          <div
+            tabindex="0"
+            class="dropdown-content mt-1 max-h-72 p-4 w-64 overflow-auto shadow bg-base-100 rounded-md -translate-x-24"
+          >
+            <label class="label cursor-pointer mr-auto">
+              <input v-model="includeArchived" type="checkbox" class="toggle toggle-sm toggle-primary" />
+              <span class="label-text ml-4"> Include Archived Items </span>
+            </label>
+            <label class="label cursor-pointer mr-auto">
+              <input v-model="fieldSelector" type="checkbox" class="toggle toggle-sm toggle-primary" />
+              <span class="label-text ml-4"> Field Selector </span>
+            </label>
+            <hr class="my-2" />
+            <BaseButton class="btn-block btn-sm" @click="reset"> Reset Search</BaseButton>
+          </div>
         </div>
-      </form>
-    </BaseCard>
+        <div class="dropdown ml-auto dropdown-end">
+          <label tabindex="0" class="btn btn-xs">Tips</label>
+          <div
+            tabindex="0"
+            class="dropdown-content mt-1 p-4 w-[325px] text-sm overflow-auto shadow bg-base-100 rounded-md"
+          >
+            <p class="text-base">Search Tips</p>
+            <ul class="mt-1 list-disc pl-6">
+              <li>
+                Location and label filters use the 'OR' operation. If more than one is selected only one will be
+                required for a match.
+              </li>
+              <li>Searches prefixed with '#'' will query for a asset ID (example '#000-001')</li>
+              <li>
+                Field filters use the 'OR' operation. If more than one is selected only one will be required for a
+                match.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div v-if="fieldSelector" class="py-4 space-y-2">
+        <p>Custom Fields</p>
+        <div v-for="(f, idx) in fieldTuples" :key="idx" class="flex flex-wrap gap-2">
+          <div class="form-control w-full max-w-xs">
+            <label class="label">
+              <span class="label-text">Field</span>
+            </label>
+            <select
+              v-model="fieldTuples[idx][0]"
+              class="select-bordered select"
+              :items="allFields ?? []"
+              @change="fetchValues(f[0])"
+            >
+              <option v-for="fv in allFields" :key="fv" :value="fv">{{ fv }}</option>
+            </select>
+          </div>
+          <div class="form-control w-full max-w-xs">
+            <label class="label">
+              <span class="label-text">Field Value</span>
+            </label>
+            <select v-model="fieldTuples[idx][1]" class="select-bordered select" :items="fieldValuesCache[f[0]]">
+              <option v-for="v in fieldValuesCache[f[0]]" :key="v" :value="v">{{ v }}</option>
+            </select>
+          </div>
+          <button
+            type="button"
+            class="btn btn-square btn-sm md:ml-0 ml-auto mt-auto mb-2"
+            @click="fieldTuples.splice(idx, 1)"
+          >
+            <Icon name="mdi-trash" class="w-5 h-5" />
+          </button>
+        </div>
+        <BaseButton type="button" class="btn-sm mt-2" @click="() => fieldTuples.push(['', ''])"> Add</BaseButton>
+      </div>
+    </div>
+
     <section class="mt-10">
       <BaseSectionHeader ref="itemsTitle"> Items </BaseSectionHeader>
       <p class="text-base font-medium flex items-center">

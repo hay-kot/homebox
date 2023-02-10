@@ -308,22 +308,6 @@ func (e *ItemsRepository) QueryByGroup(ctx context.Context, gid uuid.UUID, q Ite
 		qb = qb.Where(item.Archived(false))
 	}
 
-	if len(q.LabelIDs) > 0 {
-		labels := make([]predicate.Item, 0, len(q.LabelIDs))
-		for _, l := range q.LabelIDs {
-			labels = append(labels, item.HasLabelWith(label.ID(l)))
-		}
-		qb = qb.Where(item.Or(labels...))
-	}
-
-	if len(q.LocationIDs) > 0 {
-		locations := make([]predicate.Item, 0, len(q.LocationIDs))
-		for _, l := range q.LocationIDs {
-			locations = append(locations, item.HasLocationWith(location.ID(l)))
-		}
-		qb = qb.Where(item.Or(locations...))
-	}
-
 	if q.Search != "" {
 		qb.Where(
 			item.Or(
@@ -338,18 +322,50 @@ func (e *ItemsRepository) QueryByGroup(ctx context.Context, gid uuid.UUID, q Ite
 		qb = qb.Where(item.AssetID(q.AssetID.Int()))
 	}
 
-	if len(q.Fields) > 0 {
-		predicates := make([]predicate.Item, 0, len(q.Fields))
-		for _, f := range q.Fields {
-			predicates = append(predicates, item.HasFieldsWith(
-				itemfield.And(
-					itemfield.Name(f.Name),
-					itemfield.TextValue(f.Value),
-				),
-			))
+	// Filters within this block define a AND relationship where each subset
+	// of filters is OR'd together.
+	//
+	// The goal is to allow matches like where the item has
+	//  - one of the selected labels AND
+	//  - one of the selected locations AND
+	//  - one of the selected fields key/value matches
+	var andPredicates []predicate.Item
+	{
+		if len(q.LabelIDs) > 0 {
+			labelPredicates := make([]predicate.Item, 0, len(q.LabelIDs))
+			for _, l := range q.LabelIDs {
+				labelPredicates = append(labelPredicates, item.HasLabelWith(label.ID(l)))
+			}
+
+			andPredicates = append(andPredicates, item.Or(labelPredicates...))
 		}
 
-		qb = qb.Where(item.Or(predicates...))
+		if len(q.LocationIDs) > 0 {
+			locationPredicates := make([]predicate.Item, 0, len(q.LocationIDs))
+			for _, l := range q.LocationIDs {
+				locationPredicates = append(locationPredicates, item.HasLocationWith(location.ID(l)))
+			}
+
+			andPredicates = append(andPredicates, item.Or(locationPredicates...))
+		}
+
+		if len(q.Fields) > 0 {
+			fieldPredicates := make([]predicate.Item, 0, len(q.Fields))
+			for _, f := range q.Fields {
+				fieldPredicates = append(fieldPredicates, item.HasFieldsWith(
+					itemfield.And(
+						itemfield.Name(f.Name),
+						itemfield.TextValue(f.Value),
+					),
+				))
+			}
+
+			andPredicates = append(andPredicates, item.Or(fieldPredicates...))
+		}
+	}
+
+	if len(andPredicates) > 0 {
+		qb = qb.Where(item.And(andPredicates...))
 	}
 
 	count, err := qb.Count(ctx)
