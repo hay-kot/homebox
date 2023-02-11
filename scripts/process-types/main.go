@@ -9,7 +9,7 @@ import (
 func dateTypes(names []string) map[*regexp.Regexp]string {
 	result := make(map[*regexp.Regexp]string)
 	for _, name := range names {
-		result[regexp.MustCompile(fmt.Sprintf(`%s: string`, name))] = fmt.Sprintf(`%s: Date`, name)
+		result[regexp.MustCompile(fmt.Sprintf(`%s: string`, name))] = fmt.Sprintf(`%s: Date | string`, name)
 	}
 	return result
 }

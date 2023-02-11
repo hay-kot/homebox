@@ -6,7 +6,6 @@
     up the tree
    -->
     <ModalConfirm />
-    <AppImportDialog v-model="modals.import" />
     <ItemCreateModal v-model="modals.item" />
     <LabelCreateModal v-model="modals.label" />
     <LocationCreateModal v-model="modals.location" />
@@ -78,10 +77,6 @@
                     <Icon :name="n.icon" class="h-6 w-6 mr-4" />
                     {{ n.name }}
                   </NuxtLink>
-                  <button v-else class="rounded-btn" @click="n.action">
-                    <Icon :name="n.icon" class="h-6 w-6 mr-4" />
-                    {{ n.name }}
-                  </button>
                 </li>
               </ul>
             </div>
@@ -172,12 +167,11 @@
       to: "/locations",
     },
     {
-      icon: "mdi-database",
-      id: 2,
-      name: "Import",
-      action: () => {
-        modals.import = true;
-      },
+      icon: "mdi-cog",
+      id: 6,
+      active: computed(() => route.path === "/tools"),
+      name: "Tools",
+      to: "/tools",
     },
   ];
 
