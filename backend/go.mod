@@ -7,7 +7,7 @@ require (
 	entgo.io/ent v0.11.7
 	github.com/ardanlabs/conf/v3 v3.1.3
 	github.com/go-chi/chi/v5 v5.0.8
-	github.com/go-playground/validator/v10 v10.11.1
+	github.com/go-playground/validator/v10 v10.11.2
 	github.com/google/uuid v1.3.0
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/rs/zerolog v1.29.0
@@ -30,8 +30,8 @@ require (
 	github.com/go-openapi/jsonreference v0.20.0 // indirect
 	github.com/go-openapi/spec v0.20.7 // indirect
 	github.com/go-openapi/swag v0.22.3 // indirect
-	github.com/go-playground/locales v0.14.0 // indirect
-	github.com/go-playground/universal-translator v0.18.0 // indirect
+	github.com/go-playground/locales v0.14.1 // indirect
+	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/hashicorp/hcl/v2 v2.15.0 // indirect
