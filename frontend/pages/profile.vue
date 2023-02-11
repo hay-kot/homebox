@@ -40,15 +40,22 @@
 
   // Sync Initial Currency
   watch(group, () => {
-    if (group.value) {
-      const found = currencies.find(c => c.code === group.value.currency);
-      if (found) {
-        currency.value = found;
-      }
+    if (!group.value) {
+      return;
+    }
+
+    // @ts-expect-error - typescript is stupid, it should know group.value is not null
+    const found = currencies.find(c => c.code === group.value.currency);
+    if (found) {
+      currency.value = found;
     }
   });
 
   async function updateGroup() {
+    if (!group.value) {
+      return;
+    }
+
     const { data, error } = await api.group.update({
       name: group.value.name,
       currency: group.value.currency,
@@ -160,44 +167,6 @@
     passwordChange.new = "";
     passwordChange.current = "";
     passwordChange.loading = false;
-  }
-
-  async function ensureAssetIDs() {
-    const { isCanceled } = await confirm.open(
-      "Are you sure you want to ensure all assets have an ID? This will take a while and cannot be undone."
-    );
-
-    if (isCanceled) {
-      return;
-    }
-
-    const result = await api.actions.ensureAssetIDs();
-
-    if (result.error) {
-      notify.error("Failed to ensure asset IDs.");
-      return;
-    }
-
-    notify.success(`${result.data.completed} assets have been updated.`);
-  }
-
-  async function resetItemDateTimes() {
-    const { isCanceled } = await confirm.open(
-      "Are you sure you want to reset all date and time values? This will take a while and cannot be undone."
-    );
-
-    if (isCanceled) {
-      return;
-    }
-
-    const result = await api.actions.resetItemDateTimes();
-
-    if (result.error) {
-      notify.error("Failed to reset date and time values.");
-      return;
-    }
-
-    notify.success(`${result.data.completed} assets have been updated.`);
   }
 </script>
 
@@ -320,46 +289,6 @@
             </div>
           </div>
         </div>
-      </BaseCard>
-
-      <BaseCard>
-        <template #title>
-          <BaseSectionHeader>
-            <Icon name="mdi-warning" class="mr-2 -mt-1 text-base-600" />
-            <span class="text-base-600"> Actions </span>
-            <template #description>
-              Apply Actions to your inventory in bulk. These are irreversible actions. Be careful.
-            </template>
-          </BaseSectionHeader>
-
-          <div class="py-4 border-t-2 border-gray-300 space-y-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
-              <div class="col-span-3">
-                <h4>Manage Asset IDs</h4>
-                <p class="text-sm">
-                  Ensures that all items in your inventory have a valid asset_id field. This is done by finding the
-                  highest current asset_id field in the database and applying the next value to each item that has an
-                  unset asset_id field. This is done in order of the created_at field.
-                </p>
-              </div>
-              <BaseButton class="btn-primary mt-auto" @click="ensureAssetIDs"> Ensure Asset IDs </BaseButton>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
-              <div class="col-span-3">
-                <h4>Zero Item Date Times</h4>
-                <p class="text-sm">
-                  Resets the time value for all date time fields in your inventory to the beginning of the date. This is
-                  to fix a bug that was introduced early on in the development of the site that caused the time value to
-                  be stored with the time which caused issues with date fields displaying accurate values.
-                  <a class="link" href="https://github.com/hay-kot/homebox/issues/236" target="_blank">
-                    See Github Issue #236 for more details
-                  </a>
-                </p>
-              </div>
-              <BaseButton class="btn-primary mt-auto" @click="resetItemDateTimes"> Zero Item Date Times </BaseButton>
-            </div>
-          </div>
-        </template>
       </BaseCard>
 
       <BaseCard>

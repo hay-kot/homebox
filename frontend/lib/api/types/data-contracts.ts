@@ -17,11 +17,11 @@ export interface DocumentOut {
 }
 
 export interface Group {
-  createdAt: string;
+  createdAt: Date | string;
   currency: string;
   id: string;
   name: string;
-  updatedAt: string;
+  updatedAt: Date | string;
 }
 
 export interface GroupStatistics {
@@ -39,11 +39,11 @@ export interface GroupUpdate {
 }
 
 export interface ItemAttachment {
-  createdAt: string;
+  createdAt: Date | string;
   document: DocumentOut;
   id: string;
   type: string;
-  updatedAt: string;
+  updatedAt: Date | string;
 }
 
 export interface ItemAttachmentUpdate {
@@ -76,7 +76,7 @@ export interface ItemOut {
   assetId: string;
   attachments: ItemAttachment[];
   children: ItemSummary[];
-  createdAt: string;
+  createdAt: Date | string;
   description: string;
   fields: ItemField[];
   id: string;
@@ -96,23 +96,23 @@ export interface ItemOut {
   /** @example "0" */
   purchasePrice: string;
   /** Purchase */
-  purchaseTime: string;
+  purchaseTime: Date | string;
   quantity: number;
   serialNumber: string;
   soldNotes: string;
   /** @example "0" */
   soldPrice: string;
   /** Sold */
-  soldTime: string;
+  soldTime: Date | string;
   soldTo: string;
-  updatedAt: string;
+  updatedAt: Date | string;
   warrantyDetails: string;
-  warrantyExpires: string;
+  warrantyExpires: Date | string;
 }
 
 export interface ItemSummary {
   archived: boolean;
-  createdAt: string;
+  createdAt: Date | string;
   description: string;
   id: string;
   insured: boolean;
@@ -123,7 +123,7 @@ export interface ItemSummary {
   /** @example "0" */
   purchasePrice: string;
   quantity: number;
-  updatedAt: string;
+  updatedAt: Date | string;
 }
 
 export interface ItemUpdate {
@@ -148,7 +148,7 @@ export interface ItemUpdate {
   /** @example "0" */
   purchasePrice: string;
   /** Purchase */
-  purchaseTime: string;
+  purchaseTime: Date | string;
   quantity: number;
   /** Identifications */
   serialNumber: string;
@@ -156,10 +156,10 @@ export interface ItemUpdate {
   /** @example "0" */
   soldPrice: string;
   /** Sold */
-  soldTime: string;
+  soldTime: Date | string;
   soldTo: string;
   warrantyDetails: string;
-  warrantyExpires: string;
+  warrantyExpires: Date | string;
 }
 
 export interface LabelCreate {
@@ -169,20 +169,20 @@ export interface LabelCreate {
 }
 
 export interface LabelOut {
-  createdAt: string;
+  createdAt: Date | string;
   description: string;
   id: string;
   items: ItemSummary[];
   name: string;
-  updatedAt: string;
+  updatedAt: Date | string;
 }
 
 export interface LabelSummary {
-  createdAt: string;
+  createdAt: Date | string;
   description: string;
   id: string;
   name: string;
-  updatedAt: string;
+  updatedAt: Date | string;
 }
 
 export interface LocationCreate {
@@ -193,30 +193,30 @@ export interface LocationCreate {
 
 export interface LocationOut {
   children: LocationSummary[];
-  createdAt: string;
+  createdAt: Date | string;
   description: string;
   id: string;
   items: ItemSummary[];
   name: string;
   parent: LocationSummary;
-  updatedAt: string;
+  updatedAt: Date | string;
 }
 
 export interface LocationOutCount {
-  createdAt: string;
+  createdAt: Date | string;
   description: string;
   id: string;
   itemCount: number;
   name: string;
-  updatedAt: string;
+  updatedAt: Date | string;
 }
 
 export interface LocationSummary {
-  createdAt: string;
+  createdAt: Date | string;
   description: string;
   id: string;
   name: string;
-  updatedAt: string;
+  updatedAt: Date | string;
 }
 
 export interface LocationUpdate {
@@ -229,7 +229,7 @@ export interface LocationUpdate {
 export interface MaintenanceEntry {
   /** @example "0" */
   cost: string;
-  date: Date;
+  date: Date | string;
   description: string;
   id: string;
   name: string;
@@ -238,7 +238,7 @@ export interface MaintenanceEntry {
 export interface MaintenanceEntryCreate {
   /** @example "0" */
   cost: string;
-  date: Date;
+  date: Date | string;
   description: string;
   name: string;
 }
@@ -246,7 +246,7 @@ export interface MaintenanceEntryCreate {
 export interface MaintenanceEntryUpdate {
   /** @example "0" */
   cost: string;
-  date: Date;
+  date: Date | string;
   description: string;
   name: string;
 }
@@ -258,7 +258,7 @@ export interface MaintenanceLog {
   itemId: string;
 }
 
-export interface PaginationResultRepoItemSummary {
+export interface PaginationResultItemSummary {
   items: ItemSummary[];
   page: number;
   pageSize: number;
@@ -302,7 +302,7 @@ export interface ValueOverTime {
 }
 
 export interface ValueOverTimeEntry {
-  date: Date;
+  date: Date | string;
   name: string;
   value: number;
 }
@@ -355,13 +355,13 @@ export interface ChangePassword {
 }
 
 export interface GroupInvitation {
-  expiresAt: string;
+  expiresAt: Date | string;
   token: string;
   uses: number;
 }
 
 export interface GroupInvitationCreate {
-  expiresAt: string;
+  expiresAt: Date | string;
   uses: number;
 }
 
@@ -371,6 +371,6 @@ export interface ItemAttachmentToken {
 
 export interface TokenResponse {
   attachmentToken: string;
-  expiresAt: string;
+  expiresAt: Date | string;
   token: string;
 }

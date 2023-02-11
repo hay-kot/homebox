@@ -53,11 +53,16 @@
   );
 
   function setFile(e: Event) {
-    importCsv.value = e.target.files[0];
+    const result = e.target as HTMLInputElement;
+    if (!result.files || result.files.length === 0) {
+      return;
+    }
+
+    importCsv.value = result.files[0];
   }
 
   function uploadCsv() {
-    importRef.value.click();
+    importRef.value?.click();
   }
 
   const eventBus = useEventBus();
@@ -86,5 +91,7 @@
     }
 
     eventBus.emit(EventTypes.InvalidStores);
+
+    toast.success("Import successful!");
   }
 </script>
