@@ -1,11 +1,16 @@
 package services
 
-import "github.com/hay-kot/homebox/backend/internal/data/repo"
+import (
+	"github.com/hay-kot/homebox/backend/internal/core/services/reporting"
+	"github.com/hay-kot/homebox/backend/internal/data/repo"
+	"github.com/rs/zerolog/log"
+)
 
 type AllServices struct {
-	User  *UserService
-	Group *GroupService
-	Items *ItemService
+	User      *UserService
+	Group     *GroupService
+	Items     *ItemService
+	Reporting *reporting.ReportingService
 }
 
 type OptionsFunc func(*options)
@@ -40,5 +45,7 @@ func New(repos *repo.AllRepos, opts ...OptionsFunc) *AllServices {
 			repo:                 repos,
 			autoIncrementAssetID: options.autoIncrementAssetID,
 		},
+		// TODO: don't use global logger
+		Reporting: reporting.NewReportingService(repos, &log.Logger),
 	}
 }

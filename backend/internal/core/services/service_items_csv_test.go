@@ -12,10 +12,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-//go:embed testdata/import.csv
+//go:embed .testdata/import.csv
 var CSVData_Comma []byte
 
-//go:embed testdata/import.tsv
+//go:embed .testdata/import.tsv
 var CSVData_Tab []byte
 
 func loadcsv() [][]string {
