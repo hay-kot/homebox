@@ -17,7 +17,7 @@ specifiers:
   autoprefixer: ^10.4.8
   chart.js: ^4.0.1
   daisyui: ^2.24.0
-  dompurify: ^2.4.1
+  dompurify: ^3.0.0
   eslint: ^8.23.0
   eslint-config-prettier: ^8.5.0
   eslint-plugin-prettier: ^4.2.1
@@ -49,7 +49,7 @@ dependencies:
   autoprefixer: 10.4.13_postcss@8.4.19
   chart.js: 4.0.1
   daisyui: 2.43.0_2lwn2upnx27dqeg6hqdu7sq75m
-  dompurify: 2.4.1
+  dompurify: 3.0.0
   markdown-it: 13.0.1
   pinia: 2.0.28_prq2uz4lho2pwp6irk4cfkrxwu
   postcss: 8.4.19
@@ -2818,8 +2818,8 @@ packages:
     dependencies:
       domelementtype: 2.3.0
 
-  /dompurify/2.4.1:
-    resolution: {integrity: sha512-ewwFzHzrrneRjxzmK6oVz/rZn9VWspGFRDb4/rRtIsM1n36t9AKma/ye8syCpcw+XJ25kOK/hOG7t1j2I2yBqA==}
+  /dompurify/3.0.0:
+    resolution: {integrity: sha512-0g/yr2IJn4nTbxwL785YxS7/AvvgGFJw6LLWP+BzWzB1+BYOqPUT9Hy0rXrZh5HLdHnxH72aDdzvC9SdTjsuaA==}
     dev: false
 
   /domutils/2.8.0:
