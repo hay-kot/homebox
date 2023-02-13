@@ -7,7 +7,7 @@ import (
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 )
 
-// HandleGenerateQRCode godoc
+// HandleBillOfMaterialsExport godoc
 //
 //	@Summary  Generates a Bill of Materials CSV
 //	@Tags     Reporting
