@@ -13,7 +13,7 @@
             </template>
           </BaseSectionHeader>
           <div class="border-t border-gray-300 divide-gray-300 divide-y">
-            <DetailAction @click="modals.import = true">
+            <DetailAction @action="modals.import = true">
               <template #title>Import Inventory</template>
               Imports the standard CSV format for Homebox. This will <b>not</b> overwrite any existing items in your
               inventory. It will only add new items.
@@ -22,6 +22,26 @@
               <template #title>Export Inventory</template>
               Exports the standard CSV format for Homebox. This will export all items in your inventory.
             </DetailAction> -->
+          </div>
+        </template>
+      </BaseCard>
+      <BaseCard>
+        <template #title>
+          <BaseSectionHeader>
+            <Icon name="mdi-file-chart" class="mr-2 -mt-1" />
+            <span> Reports </span>
+            <template #description> Generate different reports for your inventory. </template>
+          </BaseSectionHeader>
+          <div class="border-t border-gray-300 divide-gray-300 divide-y">
+            <DetailAction @action="navigateTo('/reports/label-generator')">
+              <template #title>Asset ID Labels</template>
+              Generates a printable PDF of labels for a range of Asset ID. These are not specific to your invetory so
+              your are able to print labels ahead of time and apply them to your inventory when you receive them.
+              <template #button>
+                Label Generator
+                <Icon name="mdi-arrow-right" class="ml-2" />
+              </template>
+            </DetailAction>
           </div>
         </template>
       </BaseCard>
