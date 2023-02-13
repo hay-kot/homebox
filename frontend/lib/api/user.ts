@@ -7,6 +7,7 @@ import { UserApi } from "./classes/users";
 import { ActionsAPI } from "./classes/actions";
 import { StatsAPI } from "./classes/stats";
 import { AssetsApi } from "./classes/assets";
+import { ReportsAPI } from "./classes/reports";
 import { Requests } from "~~/lib/requests";
 
 export class UserClient extends BaseAPI {
@@ -18,6 +19,7 @@ export class UserClient extends BaseAPI {
   actions: ActionsAPI;
   stats: StatsAPI;
   assets: AssetsApi;
+  reports: ReportsAPI;
 
   constructor(requests: Requests, attachmentToken: string) {
     super(requests, attachmentToken);
@@ -30,6 +32,7 @@ export class UserClient extends BaseAPI {
     this.actions = new ActionsAPI(requests);
     this.stats = new StatsAPI(requests);
     this.assets = new AssetsApi(requests);
+    this.reports = new ReportsAPI(requests);
 
     Object.freeze(this);
   }
