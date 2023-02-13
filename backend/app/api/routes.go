@@ -136,6 +136,9 @@ func (a *app) mountRoutes(repos *repo.AllRepos) {
 		a.mwAuthToken, a.mwRoles(RoleModeOr, authroles.RoleUser.String(), authroles.RoleAttachments.String()),
 	)
 
+	// Reporting Services
+	a.server.Get(v1Base("/reporting/bill-of-materials"), v1Ctrl.HandleBillOfMaterialsExport(), userMW...)
+
 	a.server.NotFound(notFoundHandler())
 }
 
