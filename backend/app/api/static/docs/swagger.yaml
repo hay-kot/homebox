@@ -1408,6 +1408,20 @@ paths:
       summary: Encode data into QRCode
       tags:
       - Items
+  /v1/reporting/bill-of-materials:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: text/csv
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Generates a Bill of Materials CSV
+      tags:
+      - Reporting
   /v1/status:
     get:
       produces:
