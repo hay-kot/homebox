@@ -10,6 +10,7 @@
   const bordered = ref(false);
 
   const displayProperties = reactive({
+    baseURL: window.location.origin,
     assetRange: 1,
     assetRangeMax: 91,
     gapY: 0.25,
@@ -97,6 +98,7 @@
   interface InputDef {
     label: string;
     ref: keyof typeof displayProperties;
+    type?: "number" | "text";
   }
 
   const propertyInputs = computed<InputDef[]>(() => {
@@ -141,6 +143,11 @@
         label: "Page Right Padding",
         ref: "pageRightPadding",
       },
+      {
+        label: "Base URL",
+        ref: "baseURL",
+        type: "text",
+      },
     ];
   });
 
@@ -162,7 +169,12 @@
   }
 
   function getQRCodeUrl(assetID: string): string {
-    const origin = window.location.origin;
+    let origin = displayProperties.baseURL.trim();
+
+    // remove trailing slash
+    if (origin.endsWith("/")) {
+      origin = origin.slice(0, -1);
+    }
 
     const data = `${origin}/a/${assetID}`;
 
@@ -334,7 +346,7 @@
           </label>
           <input
             v-model="displayProperties[prop.ref]"
-            type="number"
+            :type="prop.type ? prop.type : 'number'"
             step="0.01"
             placeholder="Type here"
             class="input input-bordered w-full max-w-xs"
@@ -351,6 +363,7 @@
       </div>
 
       <div>
+        <p>QR Code Example {{ displayProperties.baseURL }}/a/{asset_id}</p>
         <BaseButton class="btn-block my-4" @click="calcPages"> Generate Page </BaseButton>
       </div>
     </div>
