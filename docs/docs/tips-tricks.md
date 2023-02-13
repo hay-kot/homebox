@@ -41,3 +41,8 @@ Homebox has a built-in QR code generator that can be used to generate QR codes f
 
 However, the API endpoint is available for generating QR codes on the fly for any item (or any other data) if you provide a valid API key in the query parameters. An example url would look like `/api/v1/qrcode?data=https://homebox.fly.dev/item/{uuid}&access_token={api_key}`. Currently the easiest way to get an API token is to use one from an existing URL of the QR Code in the API key, but this will be improved in the future.
 
+:octicons-tag-24: 0.8.0
+
+In version 0.8.0 We've added a custom label generation. On the tools page, there is now a link to the label-generator page where you can generate labels based on Asset ID for your inventory. These are still in early development, so please provide feedback. There's also more information on the implementation on the label generator page.
+
+[Demo](https://homebox.fly.dev/reports/label-generator)

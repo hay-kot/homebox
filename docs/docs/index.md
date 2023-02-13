@@ -34,8 +34,11 @@ Homebox is currently in early-active development and is currently in **beta** st
     - Purchased From Information
     - Item Identifications (Serial, Model, etc)
     - Categorized Attachments (Images, Manuals, General)
-    - Arbitrary/Custom Fields -  _Coming Soon!_
-- Csv Import for quickly creating and managing items - _Export Coming Soon!_
+    - Arbitrary/Custom Fields
+- Csv Import for quickly creating and managing items
+- Custom Reporting
+  - Bill of Materials Export
+  - QR Code Label Generator
 - Organize _Items_ by creating _Labels_ and _Locations_ and assigning them to items.
 - Multi-Tenant Support - All users are placed inside of a group and can only see items that are apart of their group. Invite family members to your group, or share an instance among friends!
 
