@@ -5,7 +5,7 @@ const ZERO_DATE = "0001-01-01T00:00:00Z";
 type BaseApiType = {
   createdAt: string;
   updatedAt: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   [key: string]: any;
 };
 
@@ -26,7 +26,11 @@ export function parseDate<T>(obj: T, keys: Array<keyof T> = []): T {
         return;
       }
 
-      result[key] = new Date(result[key]);
+      // transform string to ensure dates are parsed as UTC dates instead of
+      // localized time stamps
+      const asStr = result[key] as string;
+      const cleaned = asStr.replaceAll("-", "/").split("T")[0];
+      result[key] = new Date(cleaned);
     }
   });
 

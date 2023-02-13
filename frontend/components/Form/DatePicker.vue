@@ -18,7 +18,7 @@
 
   const props = defineProps({
     modelValue: {
-      type: Date,
+      type: Date as () => Date | string,
       required: false,
       default: null,
     },
@@ -32,6 +32,10 @@
     get() {
       // return modelValue as string as YYYY-MM-DD or null
       if (validDate(props.modelValue)) {
+        if (typeof props.modelValue === "string") {
+          return props.modelValue;
+        }
+
         return props.modelValue ? props.modelValue.toISOString().split("T")[0] : null;
       }
 
