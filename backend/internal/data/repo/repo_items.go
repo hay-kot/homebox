@@ -185,7 +185,8 @@ func mapItemSummary(item *ent.Item) ItemSummary {
 }
 
 var (
-	mapItemOutErr = mapTErrFunc(mapItemOut)
+	mapItemOutErr  = mapTErrFunc(mapItemOut)
+	mapItemsOutErr = mapTEachErrFunc(mapItemOut)
 )
 
 func mapFields(fields []*ent.ItemField) []ItemField {
@@ -434,8 +435,8 @@ func (e *ItemsRepository) QueryByAssetID(ctx context.Context, gid uuid.UUID, ass
 }
 
 // GetAll returns all the items in the database with the Labels and Locations eager loaded.
-func (e *ItemsRepository) GetAll(ctx context.Context, gid uuid.UUID) ([]ItemSummary, error) {
-	return mapItemsSummaryErr(e.db.Item.Query().
+func (e *ItemsRepository) GetAll(ctx context.Context, gid uuid.UUID) ([]ItemOut, error) {
+	return mapItemsOutErr(e.db.Item.Query().
 		Where(item.HasGroupWith(group.ID(gid))).
 		WithLabel().
 		WithLocation().
