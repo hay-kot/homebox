@@ -1,4 +1,4 @@
-export type Codes = "USD" | "EUR" | "GBP" | "JPY" | "ZAR" | "AUD" | "NOK" | "SEK" | "DKK" | "INR" | "RMB" | "BGN";
+export type Codes = "USD" | "EUR" | "GBP" | "JPY" | "ZAR" | "AUD" | "NOK" | "SEK" | "DKK" | "INR" | "RMB" | "BGN" | "RON";
 
 export type Currency = {
   code: Codes;
@@ -79,5 +79,11 @@ export const currencies: Currency[] = [
     local: "bg-BG",
     symbol: "lv",
     name: "Bulgarian lev",
+  },
+  {
+    code: "RON",
+    local: "ro-RO",
+    symbol: "lei",
+    name: "Romanian Lei",
   },
 ];
