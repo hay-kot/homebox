@@ -7,9 +7,9 @@ import (
 	"io"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
+	"github.com/hay-kot/homebox/backend/internal/data/types"
 )
 
 func determineSeparator(data []byte) (rune, error) {
@@ -62,15 +62,6 @@ func parseFloat(s string) float64 {
 	return f
 }
 
-func parseDate(s string) time.Time {
-	if s == "" {
-		return time.Time{}
-	}
-
-	p, _ := time.Parse("01/02/2006", s)
-	return p
-}
-
 func parseBool(s string) bool {
 	switch strings.ToLower(s) {
 	case "true", "yes", "1":
@@ -92,6 +83,7 @@ type csvRow struct {
 }
 
 func newCsvRow(row []string) csvRow {
+
 	return csvRow{
 		Location: row[1],
 		LabelStr: row[2],
@@ -109,13 +101,13 @@ func newCsvRow(row []string) csvRow {
 			Manufacturer:     row[9],
 			Notes:            row[10],
 			PurchaseFrom:     row[11],
-			PurchaseTime:     parseDate(row[13]),
+			PurchaseTime:     types.DateFromString(row[13]),
 			LifetimeWarranty: parseBool(row[14]),
-			WarrantyExpires:  parseDate(row[15]),
+			WarrantyExpires:  types.DateFromString(row[15]),
 			WarrantyDetails:  row[16],
 			SoldTo:           row[17],
 			SoldPrice:        parseFloat(row[18]),
-			SoldTime:         parseDate(row[19]),
+			SoldTime:         types.DateFromString(row[19]),
 			SoldNotes:        row[20],
 		},
 	}

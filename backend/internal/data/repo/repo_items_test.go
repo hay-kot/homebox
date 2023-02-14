@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/hay-kot/homebox/backend/internal/data/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -237,15 +238,15 @@ func TestItemsRepository_Update(t *testing.T) {
 		LabelIDs:         nil,
 		ModelNumber:      fk.Str(10),
 		Manufacturer:     fk.Str(10),
-		PurchaseTime:     time.Now(),
+		PurchaseTime:     types.DateFromTime(time.Now()),
 		PurchaseFrom:     fk.Str(10),
 		PurchasePrice:    300.99,
-		SoldTime:         time.Now(),
+		SoldTime:         types.DateFromTime(time.Now()),
 		SoldTo:           fk.Str(10),
 		SoldPrice:        300.99,
 		SoldNotes:        fk.Str(10),
 		Notes:            fk.Str(10),
-		WarrantyExpires:  time.Now(),
+		WarrantyExpires:  types.DateFromTime(time.Now()),
 		WarrantyDetails:  fk.Str(10),
 		LifetimeWarranty: true,
 	}

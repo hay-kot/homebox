@@ -1983,6 +1983,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "warrantyExpires": {
+                    "description": "Sold",
                     "type": "string"
                 }
             }

@@ -16,9 +16,11 @@ export function hasKey(obj: object, key: string): obj is Required<BaseApiType> {
 export function parseDate<T>(obj: T, keys: Array<keyof T> = []): T {
   const result = { ...obj };
   [...keys, "createdAt", "updatedAt"].forEach(key => {
-    // @ts-ignore - TS doesn't know that we're checking for the key above
+    // @ts-expect-error - TS doesn't know that we're checking for the key above
     if (hasKey(result, key)) {
-      if (result[key] === ZERO_DATE) {
+      const value = result[key] as string;
+
+      if (value === undefined || value === "" || value.startsWith(ZERO_DATE)) {
         const dt = new Date();
         dt.setFullYear(1);
 
@@ -26,11 +28,33 @@ export function parseDate<T>(obj: T, keys: Array<keyof T> = []): T {
         return;
       }
 
-      // transform string to ensure dates are parsed as UTC dates instead of
-      // localized time stamps
-      const asStr = result[key] as string;
-      const cleaned = asStr.replaceAll("-", "/").split("T")[0];
-      result[key] = new Date(cleaned);
+      // Possible Formats
+      // Date Only: YYYY-MM-DD
+      // Timestamp: 0001-01-01T00:00:00Z
+
+      // Parse timestamps with default date
+      if (value.includes("T")) {
+        result[key] = new Date(value);
+        return;
+      }
+
+      // Parse dates with default time
+      const split = value.split("-");
+
+      if (split.length !== 3) {
+        console.log(`Invalid date format: ${value}`);
+        throw new Error(`Invalid date format: ${value}`);
+      }
+
+      const [year, month, day] = split;
+
+      const dt = new Date();
+
+      dt.setFullYear(parseInt(year, 10));
+      dt.setMonth(parseInt(month, 10) - 1);
+      dt.setDate(parseInt(day, 10));
+
+      result[key] = dt;
     }
   });
 

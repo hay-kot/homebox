@@ -13,6 +13,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/ent/label"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/location"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/predicate"
+	"github.com/hay-kot/homebox/backend/internal/data/types"
 )
 
 type ItemsRepository struct {
@@ -78,20 +79,20 @@ type (
 		Manufacturer string `json:"manufacturer"`
 
 		// Warranty
-		LifetimeWarranty bool      `json:"lifetimeWarranty"`
-		WarrantyExpires  time.Time `json:"warrantyExpires"`
-		WarrantyDetails  string    `json:"warrantyDetails"`
+		LifetimeWarranty bool       `json:"lifetimeWarranty"`
+		WarrantyExpires  types.Date `json:"warrantyExpires"`
+		WarrantyDetails  string     `json:"warrantyDetails"`
 
 		// Purchase
-		PurchaseTime  time.Time `json:"purchaseTime"`
-		PurchaseFrom  string    `json:"purchaseFrom"`
-		PurchasePrice float64   `json:"purchasePrice,string"`
+		PurchaseTime  types.Date `json:"purchaseTime"`
+		PurchaseFrom  string     `json:"purchaseFrom"`
+		PurchasePrice float64    `json:"purchasePrice,string"`
 
 		// Sold
-		SoldTime  time.Time `json:"soldTime"`
-		SoldTo    string    `json:"soldTo"`
-		SoldPrice float64   `json:"soldPrice,string"`
-		SoldNotes string    `json:"soldNotes"`
+		SoldTime  types.Date `json:"soldTime"`
+		SoldTo    string     `json:"soldTo"`
+		SoldPrice float64    `json:"soldPrice,string"`
+		SoldNotes string     `json:"soldNotes"`
 
 		// Extras
 		Notes  string      `json:"notes"`
@@ -126,19 +127,19 @@ type (
 		Manufacturer string `json:"manufacturer"`
 
 		// Warranty
-		LifetimeWarranty bool      `json:"lifetimeWarranty"`
-		WarrantyExpires  time.Time `json:"warrantyExpires"`
-		WarrantyDetails  string    `json:"warrantyDetails"`
+		LifetimeWarranty bool       `json:"lifetimeWarranty"`
+		WarrantyExpires  types.Date `json:"warrantyExpires"`
+		WarrantyDetails  string     `json:"warrantyDetails"`
 
 		// Purchase
-		PurchaseTime time.Time `json:"purchaseTime"`
-		PurchaseFrom string    `json:"purchaseFrom"`
+		PurchaseTime types.Date `json:"purchaseTime"`
+		PurchaseFrom string     `json:"purchaseFrom"`
 
 		// Sold
-		SoldTime  time.Time `json:"soldTime"`
-		SoldTo    string    `json:"soldTo"`
-		SoldPrice float64   `json:"soldPrice,string"`
-		SoldNotes string    `json:"soldNotes"`
+		SoldTime  types.Date `json:"soldTime"`
+		SoldTo    string     `json:"soldTo"`
+		SoldPrice float64    `json:"soldPrice,string"`
+		SoldNotes string     `json:"soldNotes"`
 
 		// Extras
 		Notes string `json:"notes"`
@@ -232,7 +233,7 @@ func mapItemOut(item *ent.Item) ItemOut {
 		AssetID:          AssetID(item.AssetID),
 		ItemSummary:      mapItemSummary(item),
 		LifetimeWarranty: item.LifetimeWarranty,
-		WarrantyExpires:  item.WarrantyExpires,
+		WarrantyExpires:  types.DateFromTime(item.WarrantyExpires),
 		WarrantyDetails:  item.WarrantyDetails,
 
 		// Identification
@@ -241,11 +242,11 @@ func mapItemOut(item *ent.Item) ItemOut {
 		Manufacturer: item.Manufacturer,
 
 		// Purchase
-		PurchaseTime: item.PurchaseTime,
+		PurchaseTime: types.DateFromTime(item.PurchaseTime),
 		PurchaseFrom: item.PurchaseFrom,
 
 		// Sold
-		SoldTime:  item.SoldTime,
+		SoldTime:  types.DateFromTime(item.SoldTime),
 		SoldTo:    item.SoldTo,
 		SoldPrice: item.SoldPrice,
 		SoldNotes: item.SoldNotes,
@@ -526,17 +527,17 @@ func (e *ItemsRepository) UpdateByGroup(ctx context.Context, GID uuid.UUID, data
 		SetModelNumber(data.ModelNumber).
 		SetManufacturer(data.Manufacturer).
 		SetArchived(data.Archived).
-		SetPurchaseTime(data.PurchaseTime).
+		SetPurchaseTime(data.PurchaseTime.Time()).
 		SetPurchaseFrom(data.PurchaseFrom).
 		SetPurchasePrice(data.PurchasePrice).
-		SetSoldTime(data.SoldTime).
+		SetSoldTime(data.SoldTime.Time()).
 		SetSoldTo(data.SoldTo).
 		SetSoldPrice(data.SoldPrice).
 		SetSoldNotes(data.SoldNotes).
 		SetNotes(data.Notes).
 		SetLifetimeWarranty(data.LifetimeWarranty).
 		SetInsured(data.Insured).
-		SetWarrantyExpires(data.WarrantyExpires).
+		SetWarrantyExpires(data.WarrantyExpires.Time()).
 		SetWarrantyDetails(data.WarrantyDetails).
 		SetQuantity(data.Quantity).
 		SetAssetID(int(data.AssetID))
