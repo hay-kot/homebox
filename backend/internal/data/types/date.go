@@ -30,6 +30,10 @@ func DateFromTime(t time.Time) Date {
 //
 // Errors are ignored and an empty Date is returned.
 func DateFromString(s string) Date {
+	if s == "" {
+		return Date{}
+	}
+
 	t, err := time.Parse("2006-01-02", s)
 	if err != nil {
 		// TODO: Remove - used by legacy importer
