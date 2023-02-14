@@ -16,10 +16,13 @@
 [Configuration & Docker Compose](https://hay-kot.github.io/homebox/quick-start)
 
 ```bash
-docker run --name=homebox \
-    --restart=always \
-    --publish=3100:7745 \
-    ghcr.io/hay-kot/homebox:latest
+docker run -d \
+  --name homebox \
+  --restart unless-stopped \
+  -p 3100:7745 \
+  -e TZ=Europe/Bucharest \
+  -v ${HOME}/.homebox:/data \
+  ghcr.io/hay-kot/homebox:latest
 ```
 
 ## Credits
