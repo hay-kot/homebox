@@ -28,7 +28,7 @@ func (ctrl *V1Controller) HandleUserRegistration() server.HandlerFunc {
 			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		if ctrl.allowRegistration == false && regData.GroupToken == "" {
+		if !ctrl.allowRegistration && regData.GroupToken == "" {
 			return validate.NewRequestError(fmt.Errorf("user registration disabled"), http.StatusForbidden)
 		}
 
