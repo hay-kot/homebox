@@ -564,6 +564,8 @@ definitions:
     type: object
   v1.ApiSummary:
     properties:
+      allowRegistration:
+        type: boolean
       build:
         $ref: '#/definitions/v1.Build'
       demo:

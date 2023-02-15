@@ -335,6 +335,7 @@ export interface ActionAmountResult {
 }
 
 export interface ApiSummary {
+  allowRegistration: boolean;
   build: Build;
   demo: boolean;
   health: boolean;
