@@ -27,7 +27,7 @@
             <li
               :class="[
                 'relative cursor-default select-none py-2 pl-3 pr-9 duration-75 ease-in-out transition-colors',
-                active ? 'bg-primary text-white' : 'text-gray-900',
+                active ? 'bg-primary text-primary-content' : 'text-base-content',
               ]"
             >
               <slot name="display" v-bind="{ item: item, selected, active }">
