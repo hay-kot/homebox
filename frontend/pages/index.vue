@@ -101,7 +101,6 @@
 
     toast.success("Logged in successfully");
 
-    // @ts-expect-error - expires is either a date or a string, need to figure out store typing
     authStore.$patch({
       token: data.token,
       expires: data.expiresAt,
@@ -214,11 +213,13 @@
           </Transition>
           <div class="text-center mt-6">
             <button
-              class="text-base-content text-lg hover:bg-primary hover:text-primary-content px-3 py-1 rounded-xl transition-colors duration-200"
+              v-if="status && status.allowRegistration"
+              class="btn text-base-content text-lg hover:bg-primary hover:text-primary-content transition-colors duration-200"
               @click="() => toggleLogin()"
             >
-              {{ registerForm ? "Already a User? Login" : "Not a User? Register" }}
+              {{ registerForm ? "Login" : "Register" }}
             </button>
+            <p v-else class="text-base-content italic text-sm">Registration Disabled</p>
           </div>
         </div>
       </div>

@@ -44,12 +44,13 @@ type (
 	}
 
 	ApiSummary struct {
-		Healthy  bool     `json:"health"`
-		Versions []string `json:"versions"`
-		Title    string   `json:"title"`
-		Message  string   `json:"message"`
-		Build    Build    `json:"build"`
-		Demo     bool     `json:"demo"`
+		Healthy           bool     `json:"health"`
+		Versions          []string `json:"versions"`
+		Title             string   `json:"title"`
+		Message           string   `json:"message"`
+		Build             Build    `json:"build"`
+		Demo              bool     `json:"demo"`
+		AllowRegistration bool     `json:"allowRegistration"`
 	}
 )
 
@@ -82,11 +83,12 @@ func NewControllerV1(svc *services.AllServices, repos *repo.AllRepos, options ..
 func (ctrl *V1Controller) HandleBase(ready ReadyFunc, build Build) server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		return server.Respond(w, http.StatusOK, ApiSummary{
-			Healthy: ready(),
-			Title:   "Go API Template",
-			Message: "Welcome to the Go API Template Application!",
-			Build:   build,
-			Demo:    ctrl.isDemo,
+			Healthy:           ready(),
+			Title:             "Go API Template",
+			Message:           "Welcome to the Go API Template Application!",
+			Build:             build,
+			Demo:              ctrl.isDemo,
+			AllowRegistration: ctrl.allowRegistration,
 		})
 	}
 }
