@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -28,7 +29,7 @@ func (ctrl *V1Controller) HandleUserRegistration() server.HandlerFunc {
 		}
 
 		if !ctrl.allowRegistration && regData.GroupToken == "" {
-			return validate.NewRequestError(nil, http.StatusForbidden)
+			return validate.NewRequestError(fmt.Errorf("user registration disabled"), http.StatusForbidden)
 		}
 
 		_, err := ctrl.svc.User.RegisterUser(r.Context(), regData)

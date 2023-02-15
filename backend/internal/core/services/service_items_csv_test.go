@@ -50,9 +50,9 @@ func Test_CorrectDateParsing(t *testing.T) {
 		entity := newCsvRow(record)
 		expected := expected[i-1]
 
-		assert.Equal(t, expected, entity.Item.PurchaseTime, fmt.Sprintf("Failed on row %d", i))
-		assert.Equal(t, expected, entity.Item.WarrantyExpires, fmt.Sprintf("Failed on row %d", i))
-		assert.Equal(t, expected, entity.Item.SoldTime, fmt.Sprintf("Failed on row %d", i))
+		assert.Equal(t, expected, entity.Item.PurchaseTime.Time(), fmt.Sprintf("Failed on row %d", i))
+		assert.Equal(t, expected, entity.Item.WarrantyExpires.Time(), fmt.Sprintf("Failed on row %d", i))
+		assert.Equal(t, expected, entity.Item.SoldTime.Time(), fmt.Sprintf("Failed on row %d", i))
 	}
 }
 
