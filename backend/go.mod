@@ -5,7 +5,7 @@ go 1.19
 require (
 	ariga.io/atlas v0.9.1-0.20230119145809-92243f7c55cb
 	entgo.io/ent v0.11.7
-	github.com/ardanlabs/conf/v3 v3.1.3
+	github.com/ardanlabs/conf/v3 v3.1.4
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/go-playground/validator/v10 v10.11.2
 	github.com/gocarina/gocsv v0.0.0-20230123225133-763e25b40669
