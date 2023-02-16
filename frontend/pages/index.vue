@@ -212,14 +212,22 @@
             </form>
           </Transition>
           <div class="text-center mt-6">
-            <button
+            <BaseButton
               v-if="status && status.allowRegistration"
-              class="btn text-base-content text-lg hover:bg-primary hover:text-primary-content transition-colors duration-200"
+              class="btn-primary btn-wide"
               @click="() => toggleLogin()"
             >
+              <template #icon>
+                <Icon v-if="!registerForm" name="mdi-account-plus-outline" class="w-5 h-5 swap-off" />
+                <Icon v-else name="mdi-login" class="w-5 h-5 swap-off" />
+                <Icon name="mdi-arrow-right" class="w-5 h-5 swap-on" />
+              </template>
               {{ registerForm ? "Login" : "Register" }}
-            </button>
-            <p v-else class="text-base-content italic text-sm">Registration Disabled</p>
+            </BaseButton>
+            <p v-else class="text-base-content italic text-sm inline-flex items-center gap-2">
+              <Icon name="mdi-lock" class="w-4 h-4 inline-block" />
+              Registration Disabled
+            </p>
           </div>
         </div>
       </div>
