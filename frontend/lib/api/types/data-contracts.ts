@@ -159,6 +159,7 @@ export interface ItemUpdate {
   soldTime: Date | string;
   soldTo: string;
   warrantyDetails: string;
+  /** Sold */
   warrantyExpires: Date | string;
 }
 
