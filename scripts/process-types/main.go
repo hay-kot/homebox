@@ -6,12 +6,23 @@ import (
 	"regexp"
 )
 
-func dateTypes(names []string) map[*regexp.Regexp]string {
-	result := make(map[*regexp.Regexp]string)
-	for _, name := range names {
-		result[regexp.MustCompile(fmt.Sprintf(`%s: string`, name))] = fmt.Sprintf(`%s: Date | string`, name)
+type ReReplace struct {
+	Regex *regexp.Regexp
+	Text  string
+}
+
+func NewReReplace(regex string, replace string) ReReplace {
+	return ReReplace{
+		Regex: regexp.MustCompile(regex),
+		Text:  replace,
 	}
-	return result
+}
+
+func NewReDate(dateStr string) ReReplace {
+	return ReReplace{
+		Regex: regexp.MustCompile(fmt.Sprintf(`%s: string`, dateStr)),
+		Text:  fmt.Sprintf(`%s: Date | string`, dateStr),
+	}
 }
 
 func main() {
@@ -37,29 +48,24 @@ func main() {
 	}
 	text += string(data)
 
-	regexReplace := map[*regexp.Regexp]string{
-		regexp.MustCompile(` PaginationResultRepo`): " PaginationResult",
-		regexp.MustCompile(` Repo`):                 " ",
-		regexp.MustCompile(` Services`):             " ",
-		regexp.MustCompile(` V1`):                   " ",
-		regexp.MustCompile(`\?:`):                   ":",
+	replaces := [...]ReReplace{
+		NewReReplace(` Repo`, " "),
+		NewReReplace(` PaginationResultRepo`, " PaginationResult"),
+		NewReReplace(` Services`, " "),
+		NewReReplace(` V1`, " "),
+		NewReReplace(`\?:`, ":"),
+		NewReDate("createdAt"),
+		NewReDate("updatedAt"),
+		NewReDate("soldTime"),
+		NewReDate("purchaseTime"),
+		NewReDate("warrantyExpires"),
+		NewReDate("expiresAt"),
+		NewReDate("date"),
 	}
 
-	for regex, replace := range dateTypes([]string{
-		"createdAt",
-		"updatedAt",
-		"soldTime",
-		"purchaseTime",
-		"warrantyExpires",
-		"expiresAt",
-		"date",
-	}) {
-		regexReplace[regex] = replace
-	}
-
-	for regex, replace := range regexReplace {
-		fmt.Printf("Replacing '%v' -> '%s'\n", regex, replace)
-		text = regex.ReplaceAllString(text, replace)
+	for _, replace := range replaces {
+		fmt.Printf("Replacing '%v' -> '%s'\n", replace.Regex, replace.Text)
+		text = replace.Regex.ReplaceAllString(text, replace.Text)
 	}
 
 	err = os.WriteFile(path, []byte(text), 0644)
