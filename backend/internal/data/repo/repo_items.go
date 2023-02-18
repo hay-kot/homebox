@@ -45,7 +45,7 @@ type (
 		TextValue    string    `json:"textValue"`
 		NumberValue  int       `json:"numberValue"`
 		BooleanValue bool      `json:"booleanValue"`
-		TimeValue    time.Time `json:"timeValue,omitempty"`
+		// TimeValue    time.Time `json:"timeValue,omitempty"`
 	}
 
 	ItemCreate struct {
@@ -198,7 +198,7 @@ func mapFields(fields []*ent.ItemField) []ItemField {
 			TextValue:    f.TextValue,
 			NumberValue:  f.NumberValue,
 			BooleanValue: f.BooleanValue,
-			TimeValue:    f.TimeValue,
+			// TimeValue:    f.TimeValue,
 		}
 	}
 	return result
@@ -585,7 +585,7 @@ func (e *ItemsRepository) UpdateByGroup(ctx context.Context, GID uuid.UUID, data
 				SetTextValue(f.TextValue).
 				SetNumberValue(f.NumberValue).
 				SetBooleanValue(f.BooleanValue).
-				SetTimeValue(f.TimeValue).
+				// SetTimeValue(f.TimeValue).
 				Save(ctx)
 			if err != nil {
 				return ItemOut{}, err
@@ -601,8 +601,8 @@ func (e *ItemsRepository) UpdateByGroup(ctx context.Context, GID uuid.UUID, data
 			SetName(f.Name).
 			SetTextValue(f.TextValue).
 			SetNumberValue(f.NumberValue).
-			SetBooleanValue(f.BooleanValue).
-			SetTimeValue(f.TimeValue)
+			SetBooleanValue(f.BooleanValue)
+			// SetTimeValue(f.TimeValue)
 
 		_, err = opt.Save(ctx)
 		if err != nil {

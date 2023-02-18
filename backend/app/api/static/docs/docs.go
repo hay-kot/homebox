@@ -1722,9 +1722,6 @@ const docTemplate = `{
                 "textValue": {
                     "type": "string"
                 },
-                "timeValue": {
-                    "type": "string"
-                },
                 "type": {
                     "type": "string"
                 }

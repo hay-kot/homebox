@@ -66,7 +66,6 @@ export interface ItemField {
   name: string;
   numberValue: number;
   textValue: string;
-  timeValue: string;
   type: string;
 }
 

@@ -1,6 +1,11 @@
 package types
 
-import "time"
+import (
+	"errors"
+	"fmt"
+	"strings"
+	"time"
+)
 
 // Date is a custom type that implements the MarshalJSON interface
 // that applies date only formatting to the time.Time fields in order
@@ -34,17 +39,20 @@ func DateFromString(s string) Date {
 		return Date{}
 	}
 
-	t, err := time.Parse("2006-01-02", s)
-	if err != nil {
-		// TODO: Remove - used by legacy importer
-		t, err = time.Parse("01/02/2006", s)
+	try := [...]string{
+		"2006-01-02",
+		"01/02/2006",
+		time.RFC3339,
+	}
 
-		if err != nil {
-			return Date{}
+	for _, format := range try {
+		t, err := time.Parse(format, s)
+		if err == nil {
+			return DateFromTime(t)
 		}
 	}
 
-	return DateFromTime(t)
+	return Date{}
 }
 
 func (d Date) String() string {
@@ -63,22 +71,35 @@ func (d Date) MarshalJSON() ([]byte, error) {
 	return []byte(`"` + d.String() + `"`), nil
 }
 
-func (d *Date) UnmarshalJSON(data []byte) error {
-	str := string(data)
-	if str == `""` {
+func (d *Date) UnmarshalJSON(data []byte) (err error) {
+	// unescape the string if necessary `\"` -> `"`
+	str := strings.Trim(string(data), "\"")
+	fmt.Printf("str: %q\n", str)
+	if str == "" || str == "null" || str == `""` {
+		println("empty date")
 		*d = Date{}
 		return nil
 	}
 
-	// Try YYYY-MM-DD format
+	try := [...]string{
+		"2006-01-02",
+		"01/02/2006",
+		time.RFC3339,
+	}
+
+	set := false
 	var t time.Time
-	t, err := time.Parse("2006-01-02", str)
-	if err != nil {
-		// Try default interface
-		err = t.UnmarshalJSON(data)
-		if err != nil {
-			return err
+
+	for _, format := range try {
+		t, err = time.Parse(format, str)
+		if err == nil {
+			set = true
+			break
 		}
+	}
+
+	if !set {
+		return errors.New("invalid date format")
 	}
 
 	// strip the time and timezone information
