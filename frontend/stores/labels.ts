@@ -18,6 +18,8 @@ export const useLabelStore = defineStore("labels", {
           if (result.error) {
             console.error(result.error);
           }
+
+          this.allLabels = result.data.items;
         });
       }
       return state.allLabels ?? [];
