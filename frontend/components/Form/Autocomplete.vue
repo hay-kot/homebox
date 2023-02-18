@@ -28,7 +28,7 @@
         <li v-for="(obj, idx) in filtered" :key="idx">
           <div type="button" @click="select(obj)">
             <slot name="display" v-bind="{ item: obj }">
-              {{ usingObjects ? obj[itemText] : obj }}
+              {{ extractor(obj, itemText) }}
             </slot>
           </div>
         </li>
@@ -94,6 +94,14 @@
     }
   );
 
+  function extractor(obj: string | ItemsObject, key: string | number): string {
+    if (typeof obj === "string") {
+      return obj;
+    }
+
+    return obj[key] as string;
+  }
+
   const value = useVModel(props, "modelValue", emit);
 
   const usingObjects = computed(() => {
@@ -135,6 +143,7 @@
         value.value = "";
         return;
       }
+      // @ts-ignore
       value.value = obj;
     } else {
       if (obj === value.value) {
@@ -142,6 +151,7 @@
         return;
       }
 
+      // @ts-ignore
       value.value = obj;
     }
   }

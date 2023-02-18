@@ -16,6 +16,8 @@
   "devDependencies": {
     "@faker-js/faker": "^7.5.0",
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
+    "@types/dompurify": "^2.4.0",
+    "@types/markdown-it": "^12.2.3",
     "@typescript-eslint/eslint-plugin": "^5.36.2",
     "@typescript-eslint/parser": "^5.36.2",
     "eslint": "^8.23.0",
@@ -47,7 +49,7 @@
     "pinia": "^2.0.21",
     "postcss": "^8.4.16",
     "tailwindcss": "^3.1.8",
-    "vue": "^3.2.38",
+    "vue": "^3.2.45",
     "vue-chartjs": "^4.1.2",
     "vue-router": "4"
   }
