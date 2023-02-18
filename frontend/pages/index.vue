@@ -1,5 +1,4 @@
 <script setup lang="ts">
-  import { useAuthStore } from "~~/stores/auth";
   useHead({
     title: "Homebox | Organize and Tag Your Stuff",
   });
@@ -7,6 +6,8 @@
   definePageMeta({
     layout: "empty",
   });
+
+  const ctx = useAuthContext();
 
   const api = usePublicApi();
   const toast = useNotifier();
@@ -28,8 +29,7 @@
     }
   });
 
-  const authStore = useAuthStore();
-  if (!authStore.isTokenExpired) {
+  if (!ctx.isAuthorized()) {
     navigateTo("/home");
   }
 
@@ -91,7 +91,7 @@
 
   async function login() {
     loading.value = true;
-    const { data, error } = await api.login(email.value, loginPassword.value);
+    const { error } = await ctx.login(api, email.value, loginPassword.value);
 
     if (error) {
       toast.error("Invalid email or password");
@@ -100,13 +100,6 @@
     }
 
     toast.success("Logged in successfully");
-
-    // @ts-ignore
-    authStore.$patch({
-      token: data.token,
-      expires: data.expiresAt,
-      attachmentToken: data.attachmentToken,
-    });
 
     navigateTo("/home");
     loading.value = false;

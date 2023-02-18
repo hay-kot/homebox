@@ -1,11 +1,9 @@
 <script lang="ts" setup>
-  import { useAuthStore } from "~~/stores/auth";
-
-  const authStore = useAuthStore();
+  const ctx = useAuthContext();
   const api = useUserApi();
 
   async function logout() {
-    const { error } = await authStore.logout(api);
+    const { error } = await ctx.logout(api);
     if (error) {
       return;
     }
