@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { describe, test, expect } from "vitest";
-import { ItemField, LocationOut } from "../../types/data-contracts";
+import { ItemField, ItemUpdate, LocationOut } from "../../types/data-contracts";
 import { AttachmentTypes } from "../../types/non-generated";
 import { UserClient } from "../../user";
 import { factories } from "../factories";
@@ -14,6 +14,7 @@ describe("user should be able to create an item and add an attachment", () => {
    */
   async function useLocation(api: UserClient): Promise<[LocationOut, () => Promise<void>]> {
     const { response, data } = await api.locations.create({
+      parentId: null,
       name: `__test__.location.name_${increment}`,
       description: `__test__.location.description_${increment}`,
     });
@@ -86,12 +87,12 @@ describe("user should be able to create an item and add an attachment", () => {
     const itemUpdate = {
       parentId: null,
       ...item,
-      locationId: item.location.id,
+      locationId: item.location?.id || null,
       labelIds: item.labels.map(l => l.id),
       fields,
     };
 
-    const { response: updateResponse, data: item2 } = await api.items.update(item.id, itemUpdate);
+    const { response: updateResponse, data: item2 } = await api.items.update(item.id, itemUpdate as ItemUpdate);
     expect(updateResponse.status).toBe(200);
 
     expect(item2.fields).toHaveLength(fields.length);
@@ -104,7 +105,7 @@ describe("user should be able to create an item and add an attachment", () => {
 
     itemUpdate.fields = [fields[0], fields[1]];
 
-    const { response: updateResponse2, data: item3 } = await api.items.update(item.id, itemUpdate);
+    const { response: updateResponse2, data: item3 } = await api.items.update(item.id, itemUpdate as ItemUpdate);
     expect(updateResponse2.status).toBe(200);
 
     expect(item3.fields).toHaveLength(2);

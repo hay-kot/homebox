@@ -177,16 +177,7 @@ func (meu *MaintenanceEntryUpdate) sqlSave(ctx context.Context) (n int, err erro
 	if err := meu.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   maintenanceentry.Table,
-			Columns: maintenanceentry.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: maintenanceentry.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(maintenanceentry.Table, maintenanceentry.Columns, sqlgraph.NewFieldSpec(maintenanceentry.FieldID, field.TypeUUID))
 	if ps := meu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -359,6 +350,12 @@ func (meuo *MaintenanceEntryUpdateOne) ClearItem() *MaintenanceEntryUpdateOne {
 	return meuo
 }
 
+// Where appends a list predicates to the MaintenanceEntryUpdate builder.
+func (meuo *MaintenanceEntryUpdateOne) Where(ps ...predicate.MaintenanceEntry) *MaintenanceEntryUpdateOne {
+	meuo.mutation.Where(ps...)
+	return meuo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (meuo *MaintenanceEntryUpdateOne) Select(field string, fields ...string) *MaintenanceEntryUpdateOne {
@@ -424,16 +421,7 @@ func (meuo *MaintenanceEntryUpdateOne) sqlSave(ctx context.Context) (_node *Main
 	if err := meuo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   maintenanceentry.Table,
-			Columns: maintenanceentry.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: maintenanceentry.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(maintenanceentry.Table, maintenanceentry.Columns, sqlgraph.NewFieldSpec(maintenanceentry.FieldID, field.TypeUUID))
 	id, ok := meuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "MaintenanceEntry.id" for update`)}

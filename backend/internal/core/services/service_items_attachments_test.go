@@ -58,5 +58,4 @@ func TestItemService_AddAttachment(t *testing.T) {
 	bts, err := os.ReadFile(storedPath)
 	assert.NoError(t, err)
 	assert.Equal(t, contents, string(bts))
-
 }

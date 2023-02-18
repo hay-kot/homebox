@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { LocationsApi } from "~~/lib/api/classes/locations";
 import { LocationOutCount } from "~~/lib/api/types/data-contracts";
 
 export const useLocationStore = defineStore("locations", {
@@ -15,19 +16,33 @@ export const useLocationStore = defineStore("locations", {
      */
     parentLocations(state): LocationOutCount[] {
       if (state.parents === null) {
-        Promise.resolve(this.refreshParents());
+        this.client.locations.getAll({ filterChildren: true }).then(result => {
+          if (result.error) {
+            console.error(result.error);
+            return;
+          }
+
+          this.parents = result.data.items;
+        });
       }
-      return state.parents;
+      return state.parents ?? [];
     },
     allLocations(state): LocationOutCount[] {
       if (state.Locations === null) {
-        Promise.resolve(this.refreshChildren());
+        this.client.locations.getAll({ filterChildren: false }).then(result => {
+          if (result.error) {
+            console.error(result.error);
+            return;
+          }
+
+          this.Locations = result.data.items;
+        });
       }
-      return state.Locations;
+      return state.Locations ?? [];
     },
   },
   actions: {
-    async refreshParents(): Promise<LocationOutCount[]> {
+    async refreshParents(): ReturnType<LocationsApi["getAll"]> {
       const result = await this.client.locations.getAll({ filterChildren: true });
       if (result.error) {
         return result;
@@ -36,7 +51,7 @@ export const useLocationStore = defineStore("locations", {
       this.parents = result.data.items;
       return result;
     },
-    async refreshChildren(): Promise<LocationOutCount[]> {
+    async refreshChildren(): ReturnType<LocationsApi["getAll"]> {
       const result = await this.client.locations.getAll({ filterChildren: false });
       if (result.error) {
         return result;

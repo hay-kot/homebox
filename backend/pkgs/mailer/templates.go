@@ -41,7 +41,6 @@ func DefaultTemplateData() TemplateProps {
 
 func render(tpl string, data TemplateProps) (string, error) {
 	tmpl, err := template.New("name").Parse(tpl)
-
 	if err != nil {
 		return "", err
 	}

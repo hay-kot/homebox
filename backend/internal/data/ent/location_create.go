@@ -247,13 +247,7 @@ func (lc *LocationCreate) sqlSave(ctx context.Context) (*Location, error) {
 func (lc *LocationCreate) createSpec() (*Location, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Location{config: lc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: location.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: location.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(location.Table, sqlgraph.NewFieldSpec(location.FieldID, field.TypeUUID))
 	)
 	if id, ok := lc.mutation.ID(); ok {
 		_node.ID = id

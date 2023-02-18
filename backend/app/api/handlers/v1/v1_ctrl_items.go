@@ -26,7 +26,6 @@ import (
 // @Router   /v1/items [GET]
 // @Security Bearer
 func (ctrl *V1Controller) HandleItemsGetAll() server.HandlerFunc {
-
 	extractQuery := func(r *http.Request) repo.ItemQuery {
 		params := r.URL.Query()
 
@@ -244,7 +243,6 @@ func (ctrl *V1Controller) HandleGetAllCustomFieldValues() server.HandlerFunc {
 // @Security Bearer
 func (ctrl *V1Controller) HandleItemsImport() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
-
 		err := r.ParseMultipartForm(ctrl.maxUploadSize << 20)
 		if err != nil {
 			log.Err(err).Msg("failed to parse multipart form")

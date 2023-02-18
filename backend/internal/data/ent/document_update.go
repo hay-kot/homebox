@@ -165,16 +165,7 @@ func (du *DocumentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := du.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   document.Table,
-			Columns: document.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: document.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(document.Table, document.Columns, sqlgraph.NewFieldSpec(document.FieldID, field.TypeUUID))
 	if ps := du.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -376,6 +367,12 @@ func (duo *DocumentUpdateOne) RemoveAttachments(a ...*Attachment) *DocumentUpdat
 	return duo.RemoveAttachmentIDs(ids...)
 }
 
+// Where appends a list predicates to the DocumentUpdate builder.
+func (duo *DocumentUpdateOne) Where(ps ...predicate.Document) *DocumentUpdateOne {
+	duo.mutation.Where(ps...)
+	return duo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (duo *DocumentUpdateOne) Select(field string, fields ...string) *DocumentUpdateOne {
@@ -441,16 +438,7 @@ func (duo *DocumentUpdateOne) sqlSave(ctx context.Context) (_node *Document, err
 	if err := duo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   document.Table,
-			Columns: document.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: document.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(document.Table, document.Columns, sqlgraph.NewFieldSpec(document.FieldID, field.TypeUUID))
 	id, ok := duo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Document.id" for update`)}

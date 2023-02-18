@@ -62,9 +62,7 @@ func mapLocationSummary(location *ent.Location) LocationSummary {
 	}
 }
 
-var (
-	mapLocationOutErr = mapTErrFunc(mapLocationOut)
-)
+var mapLocationOutErr = mapTErrFunc(mapLocationOut)
 
 func mapLocationOut(location *ent.Location) LocationOut {
 	var parent *LocationSummary
@@ -181,7 +179,6 @@ func (r *LocationRepository) Create(ctx context.Context, GID uuid.UUID, data Loc
 	}
 
 	location, err := q.Save(ctx)
-
 	if err != nil {
 		return LocationOut{}, err
 	}
@@ -322,7 +319,7 @@ func (lr *LocationRepository) Tree(ctx context.Context, GID uuid.UUID, tq TreeQu
 }
 
 func ConvertLocationsToTree(locations []FlatTreeItem) []TreeItem {
-	var locationMap = make(map[uuid.UUID]*TreeItem, len(locations))
+	locationMap := make(map[uuid.UUID]*TreeItem, len(locations))
 
 	var rootIds []uuid.UUID
 

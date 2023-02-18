@@ -18,7 +18,7 @@
 
   const emit = defineEmits(["update:modelValue", "drop"]);
 
-  const el = ref<HTMLDivElement>(null);
+  const el = ref<HTMLDivElement>();
   const { isOverDropZone } = useDropZone(el, files => {
     emit("drop", files);
   });

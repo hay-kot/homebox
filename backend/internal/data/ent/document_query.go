@@ -228,10 +228,12 @@ func (dq *DocumentQuery) AllX(ctx context.Context) []*Document {
 }
 
 // IDs executes the query and returns a list of Document IDs.
-func (dq *DocumentQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
+func (dq *DocumentQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
+	if dq.ctx.Unique == nil && dq.path != nil {
+		dq.Unique(true)
+	}
 	ctx = setContextOp(ctx, dq.ctx, "IDs")
-	if err := dq.Select(document.FieldID).Scan(ctx, &ids); err != nil {
+	if err = dq.Select(document.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -526,20 +528,12 @@ func (dq *DocumentQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (dq *DocumentQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   document.Table,
-			Columns: document.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: document.FieldID,
-			},
-		},
-		From:   dq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(document.Table, document.Columns, sqlgraph.NewFieldSpec(document.FieldID, field.TypeUUID))
+	_spec.From = dq.sql
 	if unique := dq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if dq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := dq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

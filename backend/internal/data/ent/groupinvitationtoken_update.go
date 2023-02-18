@@ -144,16 +144,7 @@ func (gitu *GroupInvitationTokenUpdate) defaults() {
 }
 
 func (gitu *GroupInvitationTokenUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   groupinvitationtoken.Table,
-			Columns: groupinvitationtoken.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: groupinvitationtoken.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(groupinvitationtoken.Table, groupinvitationtoken.Columns, sqlgraph.NewFieldSpec(groupinvitationtoken.FieldID, field.TypeUUID))
 	if ps := gitu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -308,6 +299,12 @@ func (gituo *GroupInvitationTokenUpdateOne) ClearGroup() *GroupInvitationTokenUp
 	return gituo
 }
 
+// Where appends a list predicates to the GroupInvitationTokenUpdate builder.
+func (gituo *GroupInvitationTokenUpdateOne) Where(ps ...predicate.GroupInvitationToken) *GroupInvitationTokenUpdateOne {
+	gituo.mutation.Where(ps...)
+	return gituo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (gituo *GroupInvitationTokenUpdateOne) Select(field string, fields ...string) *GroupInvitationTokenUpdateOne {
@@ -352,16 +349,7 @@ func (gituo *GroupInvitationTokenUpdateOne) defaults() {
 }
 
 func (gituo *GroupInvitationTokenUpdateOne) sqlSave(ctx context.Context) (_node *GroupInvitationToken, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   groupinvitationtoken.Table,
-			Columns: groupinvitationtoken.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: groupinvitationtoken.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(groupinvitationtoken.Table, groupinvitationtoken.Columns, sqlgraph.NewFieldSpec(groupinvitationtoken.FieldID, field.TypeUUID))
 	id, ok := gituo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "GroupInvitationToken.id" for update`)}

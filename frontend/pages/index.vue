@@ -101,6 +101,7 @@
 
     toast.success("Logged in successfully");
 
+    // @ts-ignore
     authStore.$patch({
       token: data.token,
       expires: data.expiresAt,

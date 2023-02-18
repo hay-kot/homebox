@@ -392,7 +392,7 @@
               :items="allFields ?? []"
               @change="fetchValues(f[0])"
             >
-              <option v-for="fv in allFields" :key="fv" :value="fv">{{ fv }}</option>
+              <option v-for="(fv, _, i) in allFields" :key="i" :value="fv">{{ fv }}</option>
             </select>
           </div>
           <div class="form-control w-full max-w-xs">

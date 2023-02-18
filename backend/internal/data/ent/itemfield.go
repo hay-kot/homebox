@@ -228,9 +228,3 @@ func (_if *ItemField) String() string {
 
 // ItemFields is a parsable slice of ItemField.
 type ItemFields []*ItemField
-
-func (_if ItemFields) config(cfg config) {
-	for _i := range _if {
-		_if[_i].config = cfg
-	}
-}

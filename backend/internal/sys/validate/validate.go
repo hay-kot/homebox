@@ -14,7 +14,6 @@ func init() {
 // FieldErrors array and returned.
 func Check(val any) error {
 	err := validate.Struct(val)
-
 	if err != nil {
 		verrors, ok := err.(validator.ValidationErrors)
 		if !ok {

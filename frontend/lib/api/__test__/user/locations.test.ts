@@ -49,6 +49,8 @@ describe("locations lifecycle (create, update, delete)", () => {
     const [location, cleanup] = await useLocation(api);
 
     const updateData = {
+      id: location.id,
+      parentId: location.parent?.id,
       name: "test-location-updated",
       description: "test-description-updated",
     };

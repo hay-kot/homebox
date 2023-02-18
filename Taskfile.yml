@@ -108,6 +108,16 @@ tasks:
     cmds:
       - cd frontend && pnpm dev
 
+  ui:fix:
+    desc: Runs prettier and eslint on the frontend
+    cmds:
+      - cd frontend && pnpm run lint:fix
+
+  ui:check:
+    desc: Runs type checking
+    cmds:
+      - cd frontend && pnpm run typecheck
+
   test:ci:
     desc: Runs end-to-end test on a live server (only for use in CI)
     cmds:
@@ -116,3 +126,12 @@ tasks:
       - sleep 5
       - cd frontend && pnpm run test:ci
     silent: true
+
+  pr:
+    desc: Runs all tasks required for a PR
+    cmds:
+      - task: generate
+      - task: go:all
+      - task: ui:check
+      - task: ui:fix
+      - task: test:ci

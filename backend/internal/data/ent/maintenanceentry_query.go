@@ -202,10 +202,12 @@ func (meq *MaintenanceEntryQuery) AllX(ctx context.Context) []*MaintenanceEntry 
 }
 
 // IDs executes the query and returns a list of MaintenanceEntry IDs.
-func (meq *MaintenanceEntryQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
+func (meq *MaintenanceEntryQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
+	if meq.ctx.Unique == nil && meq.path != nil {
+		meq.Unique(true)
+	}
 	ctx = setContextOp(ctx, meq.ctx, "IDs")
-	if err := meq.Select(maintenanceentry.FieldID).Scan(ctx, &ids); err != nil {
+	if err = meq.Select(maintenanceentry.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -439,20 +441,12 @@ func (meq *MaintenanceEntryQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (meq *MaintenanceEntryQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   maintenanceentry.Table,
-			Columns: maintenanceentry.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: maintenanceentry.FieldID,
-			},
-		},
-		From:   meq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(maintenanceentry.Table, maintenanceentry.Columns, sqlgraph.NewFieldSpec(maintenanceentry.FieldID, field.TypeUUID))
+	_spec.From = meq.sql
 	if unique := meq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if meq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := meq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

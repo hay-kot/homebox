@@ -114,16 +114,7 @@ func (aru *AuthRolesUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := aru.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   authroles.Table,
-			Columns: authroles.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: authroles.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(authroles.Table, authroles.Columns, sqlgraph.NewFieldSpec(authroles.FieldID, field.TypeInt))
 	if ps := aru.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -233,6 +224,12 @@ func (aruo *AuthRolesUpdateOne) ClearToken() *AuthRolesUpdateOne {
 	return aruo
 }
 
+// Where appends a list predicates to the AuthRolesUpdate builder.
+func (aruo *AuthRolesUpdateOne) Where(ps ...predicate.AuthRoles) *AuthRolesUpdateOne {
+	aruo.mutation.Where(ps...)
+	return aruo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (aruo *AuthRolesUpdateOne) Select(field string, fields ...string) *AuthRolesUpdateOne {
@@ -281,16 +278,7 @@ func (aruo *AuthRolesUpdateOne) sqlSave(ctx context.Context) (_node *AuthRoles, 
 	if err := aruo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   authroles.Table,
-			Columns: authroles.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: authroles.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(authroles.Table, authroles.Columns, sqlgraph.NewFieldSpec(authroles.FieldID, field.TypeInt))
 	id, ok := aruo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "AuthRoles.id" for update`)}

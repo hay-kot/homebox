@@ -42,7 +42,6 @@ func (r *TokenRepository) GetUserFromToken(ctx context.Context, token []byte) (U
 		QueryUser().
 		WithGroup().
 		Only(ctx)
-
 	if err != nil {
 		return UserOut{}, err
 	}
@@ -59,7 +58,6 @@ func (r *TokenRepository) GetRoles(ctx context.Context, token string) (*set.Set[
 			authtokens.Token(tokenHash),
 		)).
 		All(ctx)
-
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +78,6 @@ func (r *TokenRepository) CreateToken(ctx context.Context, createToken UserAuthT
 		SetUserID(createToken.UserID).
 		SetExpiresAt(createToken.ExpiresAt).
 		Save(ctx)
-
 	if err != nil {
 		return UserAuthToken{}, err
 	}
@@ -90,7 +87,6 @@ func (r *TokenRepository) CreateToken(ctx context.Context, createToken UserAuthT
 			SetRole(role).
 			SetToken(dbToken).
 			Save(ctx)
-
 		if err != nil {
 			return UserAuthToken{}, err
 		}
@@ -115,7 +111,6 @@ func (r *TokenRepository) DeleteToken(ctx context.Context, token []byte) error {
 // PurgeExpiredTokens removes all expired tokens from the database
 func (r *TokenRepository) PurgeExpiredTokens(ctx context.Context) (int, error) {
 	tokensDeleted, err := r.db.AuthTokens.Delete().Where(authtokens.ExpiresAtLTE(time.Now())).Exec(ctx)
-
 	if err != nil {
 		return 0, err
 	}

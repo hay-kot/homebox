@@ -93,8 +93,6 @@ definitions:
         type: integer
       textValue:
         type: string
-      timeValue:
-        type: string
       type:
         type: string
     type: object

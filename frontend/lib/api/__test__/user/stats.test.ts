@@ -77,13 +77,20 @@ function importFileGenerator(entries: number): ImportObj[] {
 describe("group related statistics tests", () => {
   const TOTAL_ITEMS = 30;
 
-  let api: UserClient | undefined;
+  let tAPI: UserClient | undefined;
   const imports = importFileGenerator(TOTAL_ITEMS);
+
+  const api = (): UserClient => {
+    if (!tAPI) {
+      throw new Error("API not initialized");
+    }
+    return tAPI;
+  };
 
   beforeAll(async () => {
     // -- Setup --
     const { client } = await factories.client.singleUse();
-    api = client;
+    tAPI = client;
 
     const csv = toCsv(imports);
 
@@ -95,7 +102,7 @@ describe("group related statistics tests", () => {
   // Write to file system for debugging
   // fs.writeFileSync("test.csv", csv);
   test("Validate Group Statistics", async () => {
-    const { status, data } = await api.stats.group();
+    const { status, data } = await api().stats.group();
     expect(status).toBe(200);
 
     expect(data.totalItems).toEqual(TOTAL_ITEMS);
@@ -117,7 +124,7 @@ describe("group related statistics tests", () => {
   }
 
   test("Validate Labels Statistics", async () => {
-    const { status, data } = await api.stats.labels();
+    const { status, data } = await api().stats.labels();
     expect(status).toBe(200);
 
     for (const label of data) {
@@ -126,7 +133,7 @@ describe("group related statistics tests", () => {
   });
 
   test("Validate Locations Statistics", async () => {
-    const { status, data } = await api.stats.locations();
+    const { status, data } = await api().stats.locations();
     expect(status).toBe(200);
 
     for (const location of data) {
@@ -135,7 +142,7 @@ describe("group related statistics tests", () => {
   });
 
   test("Validate Purchase Over Time", async () => {
-    const { status, data } = await api.stats.totalPriceOverTime();
+    const { status, data } = await api().stats.totalPriceOverTime();
     expect(status).toBe(200);
     expect(data.entries.length).toEqual(TOTAL_ITEMS);
   });

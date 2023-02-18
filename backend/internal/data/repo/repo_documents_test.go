@@ -34,7 +34,6 @@ func useDocs(t *testing.T, num int) []DocumentOut {
 	t.Cleanup(func() {
 		for _, id := range ids {
 			err := tRepos.Docs.Delete(context.Background(), id)
-
 			if err != nil {
 				assert.True(t, ent.IsNotFound(err))
 			}

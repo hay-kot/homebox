@@ -4,7 +4,33 @@ on:
   workflow_call:
 
 jobs:
-  Frontend:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v2.2.4
+        with:
+          version: 6.0.2
+
+      - name: Install dependencies
+        run: pnpm install --shamefully-hoist
+        working-directory: frontend
+
+      - name: Run Lint
+        run: pnpm run lint:ci
+        working-directory: frontend
+
+      - name: Run Typecheck
+        run: pnpm run typecheck
+        working-directory: frontend
+
+  integration-tests:
+    name: Integration Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -33,10 +59,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
         working-directory: frontend
-
-      - name: Run linter 👀
-        run: pnpm lint
-        working-directory: "frontend"
 
       - name: Run Integration Tests
         run: task test:ci

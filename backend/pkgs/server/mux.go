@@ -40,7 +40,6 @@ func (s *Server) toHttpHandler(handler Handler, mw ...Middleware) http.HandlerFu
 		})
 
 		err := handler.ServeHTTP(w, r.WithContext(ctx))
-
 		if err != nil {
 			if IsShutdownError(err) {
 				_ = s.Shutdown("SIGTERM")

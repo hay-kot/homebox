@@ -15,9 +15,7 @@ type tokenHasKey struct {
 	key string
 }
 
-var (
-	hashedToken = tokenHasKey{key: "hashedToken"}
-)
+var hashedToken = tokenHasKey{key: "hashedToken"}
 
 type RoleMode int
 

@@ -190,9 +190,3 @@ func (at *AuthTokens) String() string {
 
 // AuthTokensSlice is a parsable slice of AuthTokens.
 type AuthTokensSlice []*AuthTokens
-
-func (at AuthTokensSlice) config(cfg config) {
-	for _i := range at {
-		at[_i].config = cfg
-	}
-}

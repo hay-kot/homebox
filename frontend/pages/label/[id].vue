@@ -28,7 +28,7 @@
       {
         name: "Name",
         text: label.value?.name,
-      },
+      } as AnyDetail,
       {
         name: "Description",
         type: "markdown",
@@ -43,16 +43,16 @@
           name: "Created",
           text: label.value?.createdAt,
           type: "date",
-        },
+        } as AnyDetail,
         {
           name: "Updated",
           text: label.value?.updatedAt,
           type: "date",
-        },
+        } as AnyDetail,
         {
           name: "Database ID",
           text: label.value?.id,
-        },
+        } as AnyDetail,
       ];
     }
 

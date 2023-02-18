@@ -68,7 +68,6 @@ func (r *AttachmentRepo) Update(ctx context.Context, itemId uuid.UUID, typ attac
 	itm, err := r.db.Attachment.UpdateOneID(itemId).
 		SetType(typ).
 		Save(ctx)
-
 	if err != nil {
 		return nil, err
 	}

@@ -40,15 +40,7 @@ func (gitd *GroupInvitationTokenDelete) ExecX(ctx context.Context) int {
 }
 
 func (gitd *GroupInvitationTokenDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: groupinvitationtoken.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: groupinvitationtoken.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(groupinvitationtoken.Table, sqlgraph.NewFieldSpec(groupinvitationtoken.FieldID, field.TypeUUID))
 	if ps := gitd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

@@ -40,15 +40,7 @@ func (ard *AuthRolesDelete) ExecX(ctx context.Context) int {
 }
 
 func (ard *AuthRolesDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: authroles.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: authroles.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(authroles.Table, sqlgraph.NewFieldSpec(authroles.FieldID, field.TypeInt))
 	if ps := ard.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

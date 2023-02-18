@@ -139,7 +139,6 @@ func TestUserRepo_Delete(t *testing.T) {
 
 	allUsers, _ = tRepos.Users.GetAll(ctx)
 	assert.Equal(t, len(allUsers), 0)
-
 }
 
 func TestUserRepo_GetSuperusers(t *testing.T) {

@@ -208,13 +208,7 @@ func (dc *DocumentCreate) sqlSave(ctx context.Context) (*Document, error) {
 func (dc *DocumentCreate) createSpec() (*Document, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Document{config: dc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: document.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: document.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(document.Table, sqlgraph.NewFieldSpec(document.FieldID, field.TypeUUID))
 	)
 	if id, ok := dc.mutation.ID(); ok {
 		_node.ID = id

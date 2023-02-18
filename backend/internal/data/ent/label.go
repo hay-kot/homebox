@@ -196,9 +196,3 @@ func (l *Label) String() string {
 
 // Labels is a parsable slice of Label.
 type Labels []*Label
-
-func (l Labels) config(cfg config) {
-	for _i := range l {
-		l[_i].config = cfg
-	}
-}

@@ -79,7 +79,6 @@ func (s *Server) Shutdown(sig string) error {
 	s.wg.Wait()
 
 	return nil
-
 }
 
 func (s *Server) Start() error {

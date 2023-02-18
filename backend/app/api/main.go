@@ -57,7 +57,7 @@ func run(cfg *config.Config) error {
 	// =========================================================================
 	// Initialize Database & Repos
 
-	err := os.MkdirAll(cfg.Storage.Data, 0755)
+	err := os.MkdirAll(cfg.Storage.Data, 0o755)
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to create data directory")
 	}

@@ -80,7 +80,6 @@ func (ctrl *V1Controller) HandleUserSelfUpdate() server.HandlerFunc {
 
 		actor := services.UseUserCtx(r.Context())
 		newData, err := ctrl.svc.User.UpdateSelf(r.Context(), actor.ID, updateData)
-
 		if err != nil {
 			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}

@@ -76,7 +76,6 @@ func SugarLogger(log zerolog.Logger) server.Middleware {
 
 	return func(next server.Handler) server.Handler {
 		return server.HandlerFunc(func(w http.ResponseWriter, r *http.Request) error {
-
 			record := &statusRecorder{ResponseWriter: w, Status: http.StatusOK}
 
 			err := next.ServeHTTP(record, r) // Blocks until the next handler returns.

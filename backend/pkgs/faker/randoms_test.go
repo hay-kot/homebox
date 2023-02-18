@@ -20,7 +20,7 @@ func ValidateUnique(values []string) bool {
 func Test_GetRandomString(t *testing.T) {
 	t.Parallel()
 	// Test that the function returns a string of the correct length
-	var generated = make([]string, Loops)
+	generated := make([]string, Loops)
 
 	faker := NewFaker()
 
@@ -36,7 +36,7 @@ func Test_GetRandomString(t *testing.T) {
 func Test_GetRandomEmail(t *testing.T) {
 	t.Parallel()
 	// Test that the function returns a string of the correct length
-	var generated = make([]string, Loops)
+	generated := make([]string, Loops)
 
 	faker := NewFaker()
 
@@ -52,8 +52,8 @@ func Test_GetRandomEmail(t *testing.T) {
 func Test_GetRandomBool(t *testing.T) {
 	t.Parallel()
 
-	var trues = 0
-	var falses = 0
+	trues := 0
+	falses := 0
 
 	faker := NewFaker()
 
@@ -91,5 +91,4 @@ func Test_RandomNumber(t *testing.T) {
 			t.Errorf("RandomNumber() failed to generate a number between %v and %v", MIN, MAX)
 		}
 	}
-
 }

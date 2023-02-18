@@ -45,7 +45,7 @@ type (
 		TextValue    string    `json:"textValue"`
 		NumberValue  int       `json:"numberValue"`
 		BooleanValue bool      `json:"booleanValue"`
-		TimeValue    time.Time `json:"timeValue,omitempty"`
+		// TimeValue    time.Time `json:"timeValue,omitempty"`
 	}
 
 	ItemCreate struct {
@@ -150,9 +150,7 @@ type (
 	}
 )
 
-var (
-	mapItemsSummaryErr = mapTEachErrFunc(mapItemSummary)
-)
+var mapItemsSummaryErr = mapTEachErrFunc(mapItemSummary)
 
 func mapItemSummary(item *ent.Item) ItemSummary {
 	var location *LocationSummary
@@ -200,7 +198,7 @@ func mapFields(fields []*ent.ItemField) []ItemField {
 			TextValue:    f.TextValue,
 			NumberValue:  f.NumberValue,
 			BooleanValue: f.BooleanValue,
-			TimeValue:    f.TimeValue,
+			// TimeValue:    f.TimeValue,
 		}
 	}
 	return result
@@ -371,7 +369,6 @@ func (e *ItemsRepository) QueryByGroup(ctx context.Context, gid uuid.UUID, q Ite
 	}
 
 	count, err := qb.Count(ctx)
-
 	if err != nil {
 		return PaginationResult[ItemSummary]{}, err
 	}
@@ -387,7 +384,6 @@ func (e *ItemsRepository) QueryByGroup(ctx context.Context, gid uuid.UUID, q Ite
 	}
 
 	items, err := mapItemsSummaryErr(qb.All(ctx))
-
 	if err != nil {
 		return PaginationResult[ItemSummary]{}, err
 	}
@@ -398,7 +394,6 @@ func (e *ItemsRepository) QueryByGroup(ctx context.Context, gid uuid.UUID, q Ite
 		Total:    count,
 		Items:    items,
 	}, nil
-
 }
 
 // QueryByAssetID returns items by asset ID. If the item does not exist, an error is returned.
@@ -422,7 +417,6 @@ func (e *ItemsRepository) QueryByAssetID(ctx context.Context, gid uuid.UUID, ass
 			WithLocation().
 			All(ctx),
 	)
-
 	if err != nil {
 		return PaginationResult[ItemSummary]{}, err
 	}
@@ -441,6 +435,7 @@ func (e *ItemsRepository) GetAll(ctx context.Context, gid uuid.UUID) ([]ItemOut,
 		Where(item.HasGroupWith(group.ID(gid))).
 		WithLabel().
 		WithLocation().
+		WithFields().
 		All(ctx))
 }
 
@@ -590,7 +585,7 @@ func (e *ItemsRepository) UpdateByGroup(ctx context.Context, GID uuid.UUID, data
 				SetTextValue(f.TextValue).
 				SetNumberValue(f.NumberValue).
 				SetBooleanValue(f.BooleanValue).
-				SetTimeValue(f.TimeValue).
+				// SetTimeValue(f.TimeValue).
 				Save(ctx)
 			if err != nil {
 				return ItemOut{}, err
@@ -606,8 +601,8 @@ func (e *ItemsRepository) UpdateByGroup(ctx context.Context, GID uuid.UUID, data
 			SetName(f.Name).
 			SetTextValue(f.TextValue).
 			SetNumberValue(f.NumberValue).
-			SetBooleanValue(f.BooleanValue).
-			SetTimeValue(f.TimeValue)
+			SetBooleanValue(f.BooleanValue)
+			// SetTimeValue(f.TimeValue)
 
 		_, err = opt.Save(ctx)
 		if err != nil {
@@ -651,7 +646,6 @@ func (e *ItemsRepository) GetAllCustomFieldValues(ctx context.Context, GID uuid.
 		Unique(true).
 		Select(itemfield.FieldTextValue).
 		Scan(ctx, &values)
-
 	if err != nil {
 		return nil, fmt.Errorf("failed to get field values: %w", err)
 	}
@@ -679,7 +673,6 @@ func (e *ItemsRepository) GetAllCustomFieldNames(ctx context.Context, GID uuid.U
 		Unique(true).
 		Select(itemfield.FieldName).
 		Scan(ctx, &fields)
-
 	if err != nil {
 		return nil, fmt.Errorf("failed to get custom fields: %w", err)
 	}

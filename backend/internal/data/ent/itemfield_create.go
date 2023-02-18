@@ -291,13 +291,7 @@ func (ifc *ItemFieldCreate) sqlSave(ctx context.Context) (*ItemField, error) {
 func (ifc *ItemFieldCreate) createSpec() (*ItemField, *sqlgraph.CreateSpec) {
 	var (
 		_node = &ItemField{config: ifc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: itemfield.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: itemfield.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(itemfield.Table, sqlgraph.NewFieldSpec(itemfield.FieldID, field.TypeUUID))
 	)
 	if id, ok := ifc.mutation.ID(); ok {
 		_node.ID = id

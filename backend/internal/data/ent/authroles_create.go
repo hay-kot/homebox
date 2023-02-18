@@ -129,13 +129,7 @@ func (arc *AuthRolesCreate) sqlSave(ctx context.Context) (*AuthRoles, error) {
 func (arc *AuthRolesCreate) createSpec() (*AuthRoles, *sqlgraph.CreateSpec) {
 	var (
 		_node = &AuthRoles{config: arc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: authroles.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: authroles.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(authroles.Table, sqlgraph.NewFieldSpec(authroles.FieldID, field.TypeInt))
 	)
 	if value, ok := arc.mutation.Role(); ok {
 		_spec.SetField(authroles.FieldRole, field.TypeEnum, value)

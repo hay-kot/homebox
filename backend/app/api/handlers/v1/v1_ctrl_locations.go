@@ -34,7 +34,6 @@ func (ctrl *V1Controller) HandleLocationTreeQuery() server.HandlerFunc {
 				WithItems: withItems,
 			},
 		)
-
 		if err != nil {
 			log.Err(err).Msg("failed to get locations tree")
 			return validate.NewRequestError(err, http.StatusInternalServerError)

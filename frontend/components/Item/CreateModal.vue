@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ItemCreate, LocationOut } from "~~/lib/api/types/data-contracts";
+  import { ItemCreate, LabelOut, LocationOut } from "~~/lib/api/types/data-contracts";
   import { useLabelStore } from "~~/stores/labels";
   import { useLocationStore } from "~~/stores/locations";
 
@@ -82,7 +82,7 @@
     name: "",
     description: "",
     color: "", // Future!
-    labels: [],
+    labels: [] as LabelOut[],
   });
 
   whenever(
@@ -91,7 +91,10 @@
       focused.value = true;
 
       if (locationId.value) {
-        form.location = locations.value.find(l => l.id === locationId.value);
+        const found = locations.value.find(l => l.id === locationId.value);
+        if (found) {
+          form.location = found;
+        }
       }
 
       if (labelId.value) {
@@ -106,7 +109,7 @@
     }
 
     const out: ItemCreate = {
-      parentId: undefined,
+      parentId: null,
       name: form.name,
       description: form.description,
       locationId: form.location.id as string,

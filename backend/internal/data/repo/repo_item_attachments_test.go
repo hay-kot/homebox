@@ -58,7 +58,6 @@ func TestAttachmentRepo_Create(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
 			got, err := tRepos.Attachments.Create(tt.args.ctx, tt.args.itemId, tt.args.docId, tt.args.typ)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("AttachmentRepo.Create() error = %v, wantErr %v", err, tt.wantErr)
@@ -119,7 +118,6 @@ func TestAttachmentRepo_Update(t *testing.T) {
 			assert.Equal(t, typ, updated.Type)
 		})
 	}
-
 }
 
 func TestAttachmentRepo_Delete(t *testing.T) {

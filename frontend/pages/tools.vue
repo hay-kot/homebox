@@ -102,8 +102,8 @@
   const confirm = useConfirm();
   const notify = useNotifier();
 
-  async function getBillOfMaterials() {
-    await api.reports.billOfMaterials();
+  function getBillOfMaterials() {
+    api.reports.billOfMaterialsURL();
   }
 
   async function ensureAssetIDs() {

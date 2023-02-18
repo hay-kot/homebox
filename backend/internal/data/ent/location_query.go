@@ -274,10 +274,12 @@ func (lq *LocationQuery) AllX(ctx context.Context) []*Location {
 }
 
 // IDs executes the query and returns a list of Location IDs.
-func (lq *LocationQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
+func (lq *LocationQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
+	if lq.ctx.Unique == nil && lq.path != nil {
+		lq.Unique(true)
+	}
 	ctx = setContextOp(ctx, lq.ctx, "IDs")
-	if err := lq.Select(location.FieldID).Scan(ctx, &ids); err != nil {
+	if err = lq.Select(location.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -674,20 +676,12 @@ func (lq *LocationQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (lq *LocationQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   location.Table,
-			Columns: location.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: location.FieldID,
-			},
-		},
-		From:   lq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(location.Table, location.Columns, sqlgraph.NewFieldSpec(location.FieldID, field.TypeUUID))
+	_spec.From = lq.sql
 	if unique := lq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if lq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := lq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

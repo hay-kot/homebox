@@ -13,7 +13,7 @@ export const setup = () => {
 export const teardown = () => {
   if (process.env.TEST_SHUTDOWN_API_SERVER) {
     const pc = exec("pkill -SIGTERM api"); // Kill background API process
-    pc.stdout.on("data", data => {
+    pc.stdout?.on("data", data => {
       console.log(`stdout: ${data}`);
     });
   }

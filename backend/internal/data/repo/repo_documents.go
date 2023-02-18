@@ -14,9 +14,7 @@ import (
 	"github.com/hay-kot/homebox/backend/pkgs/pathlib"
 )
 
-var (
-	ErrInvalidDocExtension = errors.New("invalid document extension")
-)
+var ErrInvalidDocExtension = errors.New("invalid document extension")
 
 type DocumentRepository struct {
 	db  *ent.Client
@@ -74,7 +72,7 @@ func (r *DocumentRepository) Create(ctx context.Context, gid uuid.UUID, doc Docu
 	path := r.path(gid, ext)
 
 	parent := filepath.Dir(path)
-	err := os.MkdirAll(parent, 0755)
+	err := os.MkdirAll(parent, 0o755)
 	if err != nil {
 		return DocumentOut{}, err
 	}

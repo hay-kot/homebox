@@ -228,10 +228,12 @@ func (lq *LabelQuery) AllX(ctx context.Context) []*Label {
 }
 
 // IDs executes the query and returns a list of Label IDs.
-func (lq *LabelQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
+func (lq *LabelQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
+	if lq.ctx.Unique == nil && lq.path != nil {
+		lq.Unique(true)
+	}
 	ctx = setContextOp(ctx, lq.ctx, "IDs")
-	if err := lq.Select(label.FieldID).Scan(ctx, &ids); err != nil {
+	if err = lq.Select(label.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -556,20 +558,12 @@ func (lq *LabelQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (lq *LabelQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   label.Table,
-			Columns: label.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: label.FieldID,
-			},
-		},
-		From:   lq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(label.Table, label.Columns, sqlgraph.NewFieldSpec(label.FieldID, field.TypeUUID))
+	_spec.From = lq.sql
 	if unique := lq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if lq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := lq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

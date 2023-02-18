@@ -37,5 +37,4 @@ func Test_Respond_JSON(t *testing.T) {
 	assert.Equal(t, http.StatusCreated, recorder.Code)
 	assert.JSONEq(t, recorder.Body.String(), `{"name":"dummy"}`)
 	assert.Equal(t, "application/json", recorder.Header().Get("Content-Type"))
-
 }
