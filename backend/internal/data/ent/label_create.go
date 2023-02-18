@@ -232,13 +232,7 @@ func (lc *LabelCreate) sqlSave(ctx context.Context) (*Label, error) {
 func (lc *LabelCreate) createSpec() (*Label, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Label{config: lc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: label.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: label.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(label.Table, sqlgraph.NewFieldSpec(label.FieldID, field.TypeUUID))
 	)
 	if id, ok := lc.mutation.ID(); ok {
 		_node.ID = id

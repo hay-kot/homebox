@@ -133,9 +133,3 @@ func (ar *AuthRoles) String() string {
 
 // AuthRolesSlice is a parsable slice of AuthRoles.
 type AuthRolesSlice []*AuthRoles
-
-func (ar AuthRolesSlice) config(cfg config) {
-	for _i := range ar {
-		ar[_i].config = cfg
-	}
-}

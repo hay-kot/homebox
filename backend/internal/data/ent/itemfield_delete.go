@@ -40,15 +40,7 @@ func (ifd *ItemFieldDelete) ExecX(ctx context.Context) int {
 }
 
 func (ifd *ItemFieldDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: itemfield.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: itemfield.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(itemfield.Table, sqlgraph.NewFieldSpec(itemfield.FieldID, field.TypeUUID))
 	if ps := ifd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

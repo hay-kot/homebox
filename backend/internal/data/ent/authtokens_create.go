@@ -219,13 +219,7 @@ func (atc *AuthTokensCreate) sqlSave(ctx context.Context) (*AuthTokens, error) {
 func (atc *AuthTokensCreate) createSpec() (*AuthTokens, *sqlgraph.CreateSpec) {
 	var (
 		_node = &AuthTokens{config: atc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: authtokens.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: authtokens.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(authtokens.Table, sqlgraph.NewFieldSpec(authtokens.FieldID, field.TypeUUID))
 	)
 	if id, ok := atc.mutation.ID(); ok {
 		_node.ID = id

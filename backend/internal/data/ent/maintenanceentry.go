@@ -194,9 +194,3 @@ func (me *MaintenanceEntry) String() string {
 
 // MaintenanceEntries is a parsable slice of MaintenanceEntry.
 type MaintenanceEntries []*MaintenanceEntry
-
-func (me MaintenanceEntries) config(cfg config) {
-	for _i := range me {
-		me[_i].config = cfg
-	}
-}

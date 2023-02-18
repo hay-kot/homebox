@@ -231,9 +231,3 @@ func (l *Location) String() string {
 
 // Locations is a parsable slice of Location.
 type Locations []*Location
-
-func (l Locations) config(cfg config) {
-	for _i := range l {
-		l[_i].config = cfg
-	}
-}

@@ -242,13 +242,7 @@ func (mec *MaintenanceEntryCreate) sqlSave(ctx context.Context) (*MaintenanceEnt
 func (mec *MaintenanceEntryCreate) createSpec() (*MaintenanceEntry, *sqlgraph.CreateSpec) {
 	var (
 		_node = &MaintenanceEntry{config: mec.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: maintenanceentry.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: maintenanceentry.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(maintenanceentry.Table, sqlgraph.NewFieldSpec(maintenanceentry.FieldID, field.TypeUUID))
 	)
 	if id, ok := mec.mutation.ID(); ok {
 		_node.ID = id

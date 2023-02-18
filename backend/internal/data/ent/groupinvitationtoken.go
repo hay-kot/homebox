@@ -182,9 +182,3 @@ func (git *GroupInvitationToken) String() string {
 
 // GroupInvitationTokens is a parsable slice of GroupInvitationToken.
 type GroupInvitationTokens []*GroupInvitationToken
-
-func (git GroupInvitationTokens) config(cfg config) {
-	for _i := range git {
-		git[_i].config = cfg
-	}
-}

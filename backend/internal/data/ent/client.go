@@ -266,7 +266,7 @@ func (c *AttachmentClient) Use(hooks ...Hook) {
 	c.hooks.Attachment = append(c.hooks.Attachment, hooks...)
 }
 
-// Use adds a list of query interceptors to the interceptors stack.
+// Intercept adds a list of query interceptors to the interceptors stack.
 // A call to `Intercept(f, g, h)` equals to `attachment.Intercept(f(g(h())))`.
 func (c *AttachmentClient) Intercept(interceptors ...Interceptor) {
 	c.inters.Attachment = append(c.inters.Attachment, interceptors...)
@@ -416,7 +416,7 @@ func (c *AuthRolesClient) Use(hooks ...Hook) {
 	c.hooks.AuthRoles = append(c.hooks.AuthRoles, hooks...)
 }
 
-// Use adds a list of query interceptors to the interceptors stack.
+// Intercept adds a list of query interceptors to the interceptors stack.
 // A call to `Intercept(f, g, h)` equals to `authroles.Intercept(f(g(h())))`.
 func (c *AuthRolesClient) Intercept(interceptors ...Interceptor) {
 	c.inters.AuthRoles = append(c.inters.AuthRoles, interceptors...)
@@ -550,7 +550,7 @@ func (c *AuthTokensClient) Use(hooks ...Hook) {
 	c.hooks.AuthTokens = append(c.hooks.AuthTokens, hooks...)
 }
 
-// Use adds a list of query interceptors to the interceptors stack.
+// Intercept adds a list of query interceptors to the interceptors stack.
 // A call to `Intercept(f, g, h)` equals to `authtokens.Intercept(f(g(h())))`.
 func (c *AuthTokensClient) Intercept(interceptors ...Interceptor) {
 	c.inters.AuthTokens = append(c.inters.AuthTokens, interceptors...)
@@ -700,7 +700,7 @@ func (c *DocumentClient) Use(hooks ...Hook) {
 	c.hooks.Document = append(c.hooks.Document, hooks...)
 }
 
-// Use adds a list of query interceptors to the interceptors stack.
+// Intercept adds a list of query interceptors to the interceptors stack.
 // A call to `Intercept(f, g, h)` equals to `document.Intercept(f(g(h())))`.
 func (c *DocumentClient) Intercept(interceptors ...Interceptor) {
 	c.inters.Document = append(c.inters.Document, interceptors...)
@@ -850,7 +850,7 @@ func (c *GroupClient) Use(hooks ...Hook) {
 	c.hooks.Group = append(c.hooks.Group, hooks...)
 }
 
-// Use adds a list of query interceptors to the interceptors stack.
+// Intercept adds a list of query interceptors to the interceptors stack.
 // A call to `Intercept(f, g, h)` equals to `group.Intercept(f(g(h())))`.
 func (c *GroupClient) Intercept(interceptors ...Interceptor) {
 	c.inters.Group = append(c.inters.Group, interceptors...)
@@ -1064,7 +1064,7 @@ func (c *GroupInvitationTokenClient) Use(hooks ...Hook) {
 	c.hooks.GroupInvitationToken = append(c.hooks.GroupInvitationToken, hooks...)
 }
 
-// Use adds a list of query interceptors to the interceptors stack.
+// Intercept adds a list of query interceptors to the interceptors stack.
 // A call to `Intercept(f, g, h)` equals to `groupinvitationtoken.Intercept(f(g(h())))`.
 func (c *GroupInvitationTokenClient) Intercept(interceptors ...Interceptor) {
 	c.inters.GroupInvitationToken = append(c.inters.GroupInvitationToken, interceptors...)
@@ -1198,7 +1198,7 @@ func (c *ItemClient) Use(hooks ...Hook) {
 	c.hooks.Item = append(c.hooks.Item, hooks...)
 }
 
-// Use adds a list of query interceptors to the interceptors stack.
+// Intercept adds a list of query interceptors to the interceptors stack.
 // A call to `Intercept(f, g, h)` equals to `item.Intercept(f(g(h())))`.
 func (c *ItemClient) Intercept(interceptors ...Interceptor) {
 	c.inters.Item = append(c.inters.Item, interceptors...)
@@ -1444,7 +1444,7 @@ func (c *ItemFieldClient) Use(hooks ...Hook) {
 	c.hooks.ItemField = append(c.hooks.ItemField, hooks...)
 }
 
-// Use adds a list of query interceptors to the interceptors stack.
+// Intercept adds a list of query interceptors to the interceptors stack.
 // A call to `Intercept(f, g, h)` equals to `itemfield.Intercept(f(g(h())))`.
 func (c *ItemFieldClient) Intercept(interceptors ...Interceptor) {
 	c.inters.ItemField = append(c.inters.ItemField, interceptors...)
@@ -1578,7 +1578,7 @@ func (c *LabelClient) Use(hooks ...Hook) {
 	c.hooks.Label = append(c.hooks.Label, hooks...)
 }
 
-// Use adds a list of query interceptors to the interceptors stack.
+// Intercept adds a list of query interceptors to the interceptors stack.
 // A call to `Intercept(f, g, h)` equals to `label.Intercept(f(g(h())))`.
 func (c *LabelClient) Intercept(interceptors ...Interceptor) {
 	c.inters.Label = append(c.inters.Label, interceptors...)
@@ -1728,7 +1728,7 @@ func (c *LocationClient) Use(hooks ...Hook) {
 	c.hooks.Location = append(c.hooks.Location, hooks...)
 }
 
-// Use adds a list of query interceptors to the interceptors stack.
+// Intercept adds a list of query interceptors to the interceptors stack.
 // A call to `Intercept(f, g, h)` equals to `location.Intercept(f(g(h())))`.
 func (c *LocationClient) Intercept(interceptors ...Interceptor) {
 	c.inters.Location = append(c.inters.Location, interceptors...)
@@ -1910,7 +1910,7 @@ func (c *MaintenanceEntryClient) Use(hooks ...Hook) {
 	c.hooks.MaintenanceEntry = append(c.hooks.MaintenanceEntry, hooks...)
 }
 
-// Use adds a list of query interceptors to the interceptors stack.
+// Intercept adds a list of query interceptors to the interceptors stack.
 // A call to `Intercept(f, g, h)` equals to `maintenanceentry.Intercept(f(g(h())))`.
 func (c *MaintenanceEntryClient) Intercept(interceptors ...Interceptor) {
 	c.inters.MaintenanceEntry = append(c.inters.MaintenanceEntry, interceptors...)
@@ -2044,7 +2044,7 @@ func (c *UserClient) Use(hooks ...Hook) {
 	c.hooks.User = append(c.hooks.User, hooks...)
 }
 
-// Use adds a list of query interceptors to the interceptors stack.
+// Intercept adds a list of query interceptors to the interceptors stack.
 // A call to `Intercept(f, g, h)` equals to `user.Intercept(f(g(h())))`.
 func (c *UserClient) Intercept(interceptors ...Interceptor) {
 	c.inters.User = append(c.inters.User, interceptors...)

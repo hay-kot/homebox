@@ -203,10 +203,12 @@ func (arq *AuthRolesQuery) AllX(ctx context.Context) []*AuthRoles {
 }
 
 // IDs executes the query and returns a list of AuthRoles IDs.
-func (arq *AuthRolesQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (arq *AuthRolesQuery) IDs(ctx context.Context) (ids []int, err error) {
+	if arq.ctx.Unique == nil && arq.path != nil {
+		arq.Unique(true)
+	}
 	ctx = setContextOp(ctx, arq.ctx, "IDs")
-	if err := arq.Select(authroles.FieldID).Scan(ctx, &ids); err != nil {
+	if err = arq.Select(authroles.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -450,20 +452,12 @@ func (arq *AuthRolesQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (arq *AuthRolesQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   authroles.Table,
-			Columns: authroles.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: authroles.FieldID,
-			},
-		},
-		From:   arq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(authroles.Table, authroles.Columns, sqlgraph.NewFieldSpec(authroles.FieldID, field.TypeInt))
+	_spec.From = arq.sql
 	if unique := arq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if arq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := arq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

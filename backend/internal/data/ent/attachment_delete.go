@@ -40,15 +40,7 @@ func (ad *AttachmentDelete) ExecX(ctx context.Context) int {
 }
 
 func (ad *AttachmentDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: attachment.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: attachment.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(attachment.Table, sqlgraph.NewFieldSpec(attachment.FieldID, field.TypeUUID))
 	if ps := ad.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

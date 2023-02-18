@@ -40,15 +40,7 @@ func (med *MaintenanceEntryDelete) ExecX(ctx context.Context) int {
 }
 
 func (med *MaintenanceEntryDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: maintenanceentry.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: maintenanceentry.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(maintenanceentry.Table, sqlgraph.NewFieldSpec(maintenanceentry.FieldID, field.TypeUUID))
 	if ps := med.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

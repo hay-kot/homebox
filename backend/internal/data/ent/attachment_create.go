@@ -205,13 +205,7 @@ func (ac *AttachmentCreate) sqlSave(ctx context.Context) (*Attachment, error) {
 func (ac *AttachmentCreate) createSpec() (*Attachment, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Attachment{config: ac.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: attachment.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: attachment.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(attachment.Table, sqlgraph.NewFieldSpec(attachment.FieldID, field.TypeUUID))
 	)
 	if id, ok := ac.mutation.ID(); ok {
 		_node.ID = id

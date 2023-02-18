@@ -203,10 +203,12 @@ func (gitq *GroupInvitationTokenQuery) AllX(ctx context.Context) []*GroupInvitat
 }
 
 // IDs executes the query and returns a list of GroupInvitationToken IDs.
-func (gitq *GroupInvitationTokenQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
+func (gitq *GroupInvitationTokenQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
+	if gitq.ctx.Unique == nil && gitq.path != nil {
+		gitq.Unique(true)
+	}
 	ctx = setContextOp(ctx, gitq.ctx, "IDs")
-	if err := gitq.Select(groupinvitationtoken.FieldID).Scan(ctx, &ids); err != nil {
+	if err = gitq.Select(groupinvitationtoken.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -450,20 +452,12 @@ func (gitq *GroupInvitationTokenQuery) sqlCount(ctx context.Context) (int, error
 }
 
 func (gitq *GroupInvitationTokenQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   groupinvitationtoken.Table,
-			Columns: groupinvitationtoken.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: groupinvitationtoken.FieldID,
-			},
-		},
-		From:   gitq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(groupinvitationtoken.Table, groupinvitationtoken.Columns, sqlgraph.NewFieldSpec(groupinvitationtoken.FieldID, field.TypeUUID))
+	_spec.From = gitq.sql
 	if unique := gitq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if gitq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := gitq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

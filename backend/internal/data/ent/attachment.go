@@ -189,9 +189,3 @@ func (a *Attachment) String() string {
 
 // Attachments is a parsable slice of Attachment.
 type Attachments []*Attachment
-
-func (a Attachments) config(cfg config) {
-	for _i := range a {
-		a[_i].config = cfg
-	}
-}

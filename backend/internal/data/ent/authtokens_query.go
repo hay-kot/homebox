@@ -228,10 +228,12 @@ func (atq *AuthTokensQuery) AllX(ctx context.Context) []*AuthTokens {
 }
 
 // IDs executes the query and returns a list of AuthTokens IDs.
-func (atq *AuthTokensQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
+func (atq *AuthTokensQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
+	if atq.ctx.Unique == nil && atq.path != nil {
+		atq.Unique(true)
+	}
 	ctx = setContextOp(ctx, atq.ctx, "IDs")
-	if err := atq.Select(authtokens.FieldID).Scan(ctx, &ids); err != nil {
+	if err = atq.Select(authtokens.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -522,20 +524,12 @@ func (atq *AuthTokensQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (atq *AuthTokensQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   authtokens.Table,
-			Columns: authtokens.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: authtokens.FieldID,
-			},
-		},
-		From:   atq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(authtokens.Table, authtokens.Columns, sqlgraph.NewFieldSpec(authtokens.FieldID, field.TypeUUID))
+	_spec.From = atq.sql
 	if unique := atq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if atq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := atq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
