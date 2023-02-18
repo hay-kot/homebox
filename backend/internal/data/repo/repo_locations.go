@@ -251,11 +251,11 @@ type TreeQuery struct {
 
 func (lr *LocationRepository) Tree(ctx context.Context, GID uuid.UUID, tq TreeQuery) ([]TreeItem, error) {
 	query := `
-		WITH recursive location_tree(id, NAME, location_children, level, node_type) AS
+		WITH recursive location_tree(id, NAME, parent_id, level, node_type) AS
 		(
 			SELECT  id,
 					NAME,
-					location_children,
+					location_children AS parent_id,
 					0 AS level,
 					'location' AS node_type
 			FROM    locations
@@ -265,41 +265,70 @@ func (lr *LocationRepository) Tree(ctx context.Context, GID uuid.UUID, tq TreeQu
 			UNION ALL
 			SELECT  c.id,
 					c.NAME,
-					c.location_children,
+					c.location_children AS parent_id,
 					level + 1,
 					'location' AS node_type
 			FROM   locations c
 			JOIN   location_tree p
 			ON     c.location_children = p.id
 			WHERE  level < 10 -- prevent infinite loop & excessive recursion
+		){{ WITH_ITEMS }}
 
-			{{ WITH_ITEMS }}
-		)
 		SELECT   id,
 				 NAME,
 				 level,
-				 location_children,
+				 parent_id,
 				 node_type
-		FROM     location_tree
-		ORDER BY level,
-				 node_type DESC, -- sort locations before items
+		FROM    (
+					SELECT  *
+					FROM    location_tree
+
+
+					{{ WITH_ITEMS_FROM }}
+
+
+				) tree
+		ORDER BY node_type DESC, -- sort locations before items
+				 level,
 				 lower(NAME)`
 
 	if tq.WithItems {
-		itemQuery := `
+		itemQuery := `, item_tree(id, NAME, parent_id, level, node_type) AS
+		(
+			SELECT  id,
+					NAME,
+					location_items as parent_id,
+					0 AS level,
+					'item' AS node_type
+			FROM    items
+			WHERE   item_children IS NULL
+			AND     location_items IN (SELECT id FROM location_tree)
+
 			UNION ALL
-			SELECT  i.id,
-					i.name,
-					location_items as location_children,
+
+			SELECT  c.id,
+					c.NAME,
+					c.item_children AS parent_id,
 					level + 1,
 					'item' AS node_type
-			FROM   items i
-			JOIN   location_tree p
-			ON     i.location_items = p.id
-			WHERE  level < 10 -- prevent infinite loop & excessive recursion`
+			FROM    items c
+			JOIN    item_tree p
+			ON      c.item_children = p.id
+			WHERE   c.item_children IS NOT NULL
+			AND     level < 10 -- prevent infinite loop & excessive recursion
+		)`
+
+		// Conditional table joined to main query
+		itemsFrom := `
+		UNION ALL
+		SELECT  *
+		FROM    item_tree`
+
 		query = strings.ReplaceAll(query, "{{ WITH_ITEMS }}", itemQuery)
+		query = strings.ReplaceAll(query, "{{ WITH_ITEMS_FROM }}", itemsFrom)
 	} else {
 		query = strings.ReplaceAll(query, "{{ WITH_ITEMS }}", "")
+		query = strings.ReplaceAll(query, "{{ WITH_ITEMS_FROM }}", "")
 	}
 
 	rows, err := lr.db.Sql().QueryContext(ctx, query, GID)
