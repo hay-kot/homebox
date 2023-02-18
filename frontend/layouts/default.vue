@@ -91,11 +91,10 @@
 </template>
 
 <script lang="ts" setup>
-  import { useAuthStore } from "~~/stores/auth";
   import { useLabelStore } from "~~/stores/labels";
   import { useLocationStore } from "~~/stores/locations";
 
-  const username = computed(() => authStore.self?.name || "User");
+  const username = computed(() => authCtx.self?.name || "User");
 
   // Preload currency format
   useFormatCurrency();
@@ -223,11 +222,11 @@
     eventBus.off(EventTypes.InvalidStores, "stores");
   });
 
-  const authStore = useAuthStore();
+  const authCtx = useAuthContext();
   const api = useUserApi();
 
   async function logout() {
-    const { error } = await authStore.logout(api);
+    const { error } = await authCtx.logout(api);
     if (error) {
       return;
     }

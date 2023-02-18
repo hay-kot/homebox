@@ -1,15 +1,13 @@
-import { useAuthStore } from "~~/stores/auth";
-
 export default defineNuxtRouteMiddleware(async () => {
-  const auth = useAuthStore();
+  const ctx = useAuthContext();
   const api = useUserApi();
 
-  if (!auth.self) {
+  if (!ctx.user) {
     const { data, error } = await api.user.self();
     if (error) {
       navigateTo("/");
     }
 
-    auth.$patch({ self: data.item });
+    ctx.user = data.item;
   }
 });

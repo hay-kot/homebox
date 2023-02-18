@@ -1,6 +1,5 @@
 <script setup lang="ts">
   import { Detail } from "~~/components/global/DetailsSection/types";
-  import { useAuthStore } from "~~/stores/auth";
   import { themes } from "~~/lib/data/themes";
   import { currencies, Currency } from "~~/lib/data/currency";
 
@@ -79,7 +78,7 @@
 
   const { setTheme } = useTheme();
 
-  const auth = useAuthStore();
+  const auth = useAuthContext();
 
   const details = computed(() => {
     return [
