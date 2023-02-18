@@ -24,6 +24,11 @@ jobs:
       - name: Run Lint
         run: pnpm run lint:ci
         working-directory: frontend
+
+      - name: Run Typecheck
+        run: pnpm run typecheck
+        working-directory: frontend
+
   integration-tests:
     name: Integration Tests
     runs-on: ubuntu-latest
