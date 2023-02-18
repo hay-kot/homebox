@@ -145,11 +145,11 @@
       to: "/home",
     },
     {
-      icon: "mdi-account",
-      id: 1,
-      active: computed(() => route.path === "/profile"),
-      name: "Profile",
-      to: "/profile",
+      icon: "mdi-file-tree",
+      id: 4,
+      active: computed(() => route.path === "/locations"),
+      name: "Locations",
+      to: "/locations",
     },
     {
       icon: "mdi-magnify",
@@ -159,11 +159,11 @@
       to: "/items",
     },
     {
-      icon: "mdi-map-marker",
-      id: 4,
-      active: computed(() => route.path === "/locations"),
-      name: "Locations",
-      to: "/locations",
+      icon: "mdi-account",
+      id: 1,
+      active: computed(() => route.path === "/profile"),
+      name: "Profile",
+      to: "/profile",
     },
     {
       icon: "mdi-cog",
