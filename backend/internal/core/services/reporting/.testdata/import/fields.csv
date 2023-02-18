@@ -1,0 +1,5 @@
+HB.location,HB.name,HB.quantity,HB.description,HB.field.Custom Field 1,HB.field.Custom Field 2,HB.field.Custom Field 3
+loc,Item 1,1,Description 1,Value 1[1],Value 1[2],Value 1[3]
+loc,Item 2,2,Description 2,Value 2[1],Value 2[2],Value 2[3]
+loc,Item 3,3,Description 3,Value 3[1],Value 3[2],Value 3[3]
+

@@ -45,10 +45,10 @@
             Imports the standard CSV format for Homebox. This will <b>not</b> overwrite any existing items in your
             inventory. It will only add new items.
           </DetailAction>
-          <!-- <DetailAction>
+          <DetailAction @action="getExportTSV()">
             <template #title>Export Inventory</template>
             Exports the standard CSV format for Homebox. This will export all items in your inventory.
-          </DetailAction> -->
+          </DetailAction>
         </div>
       </BaseCard>
       <BaseCard>
@@ -103,7 +103,13 @@
   const notify = useNotifier();
 
   function getBillOfMaterials() {
-    api.reports.billOfMaterialsURL();
+    const url = api.reports.billOfMaterialsURL();
+    window.open(url, "_blank");
+  }
+
+  function getExportTSV() {
+    const url = api.items.exportURL();
+    window.open(url, "_blank");
   }
 
   async function ensureAssetIDs() {

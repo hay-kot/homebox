@@ -1109,6 +1109,18 @@ paths:
       summary: Update Maintenance Entry
       tags:
       - Maintenance
+  /v1/items/export:
+    get:
+      responses:
+        "200":
+          description: text/csv
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: exports items into the database
+      tags:
+      - Items
   /v1/items/fields:
     get:
       produces:

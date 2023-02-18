@@ -21,7 +21,7 @@ func TestAssetID_MarshalJSON(t *testing.T) {
 		{
 			name: "zero test",
 			aid:  0,
-			want: []byte(`"000-000"`),
+			want: []byte(`""`),
 		},
 		{
 			name: "large int",

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/csv"
 	"strings"
 
 	"github.com/hay-kot/homebox/backend/internal/core/services"
@@ -19,13 +18,11 @@ func (a *app) SetupDemo() {
 ,Kitchen,IOT;Home Assistant; Z-Wave,1,Smart Rocker Light Dimmer,"UltraPro Z-Wave Smart Rocker Light Dimmer with QuickFit and SimpleWire, 3-Way Ready, Compatible with Alexa, Google Assistant, ZWave Hub Required, Repeater/Range Extender, White Paddle Only, 39351",,,‎39351,Honeywell,,Amazon,65.98,09/30/0202,,,,,,,
 `
 
-	var (
-		registration = services.UserRegistration{
-			Email:    "demo@example.com",
-			Name:     "Demo",
-			Password: "demo",
-		}
-	)
+	registration := services.UserRegistration{
+		Email:    "demo@example.com",
+		Name:     "Demo",
+		Password: "demo",
+	}
 
 	// First check if we've already setup a demo user and skip if so
 	_, err := a.services.User.Login(context.Background(), registration.Email, registration.Password)
@@ -42,17 +39,7 @@ func (a *app) SetupDemo() {
 	token, _ := a.services.User.Login(context.Background(), registration.Email, registration.Password)
 	self, _ := a.services.User.GetSelf(context.Background(), token.Raw)
 
-	// Read CSV Text
-	reader := csv.NewReader(strings.NewReader(csvText))
-	reader.Comma = ','
-
-	records, err := reader.ReadAll()
-	if err != nil {
-		log.Err(err).Msg("Failed to read CSV")
-		log.Fatal().Msg("Failed to setup demo")
-	}
-
-	_, err = a.services.Items.CsvImport(context.Background(), self.GroupID, records)
+	_, err = a.services.Items.CsvImport(context.Background(), self.GroupID, strings.NewReader(csvText))
 	if err != nil {
 		log.Err(err).Msg("Failed to import CSV")
 		log.Fatal().Msg("Failed to setup demo")

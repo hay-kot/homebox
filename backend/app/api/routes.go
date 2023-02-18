@@ -106,6 +106,7 @@ func (a *app) mountRoutes(repos *repo.AllRepos) {
 	a.server.Get(v1Base("/items"), v1Ctrl.HandleItemsGetAll(), userMW...)
 	a.server.Post(v1Base("/items"), v1Ctrl.HandleItemsCreate(), userMW...)
 	a.server.Post(v1Base("/items/import"), v1Ctrl.HandleItemsImport(), userMW...)
+	a.server.Get(v1Base("/items/export"), v1Ctrl.HandleItemsExport(), userMW...)
 	a.server.Get(v1Base("/items/fields"), v1Ctrl.HandleGetAllCustomFieldNames(), userMW...)
 	a.server.Get(v1Base("/items/fields/values"), v1Ctrl.HandleGetAllCustomFieldValues(), userMW...)
 
