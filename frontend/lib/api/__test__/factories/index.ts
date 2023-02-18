@@ -9,7 +9,8 @@ import { Requests } from "../../../requests";
 
 function itemField(id = null): ItemField {
   return {
-    id: id ?? "",
+    // @ts-expect-error
+    id,
     name: faker.lorem.word(),
     type: "text",
     textValue: faker.lorem.sentence(),
