@@ -109,7 +109,7 @@
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col min-h-screen">
     <div class="fill-primary min-w-full absolute top-0 z-[-1]">
       <div class="bg-primary flex-col flex min-h-[20vh]" />
       <svg
@@ -226,7 +226,7 @@
         </div>
       </div>
     </div>
-    <footer v-if="status" class="absolute text-center w-full bottom-0 pb-4">
+    <footer v-if="status" class="mt-auto text-center w-full bottom-0 pb-4">
       <p class="text-center text-sm">Version: {{ status.build.version }} ~ Build: {{ status.build.commit }}</p>
     </footer>
   </div>
