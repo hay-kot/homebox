@@ -9,7 +9,8 @@
     "README.md": "LICENSE, SECURITY.md"
   },
   "cSpell.words": [
-    "debughandlers"
+    "debughandlers",
+    "Homebox"
   ],
   // use ESLint to format code on save
   "editor.formatOnSave": false,
