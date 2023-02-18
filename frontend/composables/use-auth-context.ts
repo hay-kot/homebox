@@ -4,6 +4,7 @@ import { UserOut } from "~~/lib/api/types/data-contracts";
 import { UserClient } from "~~/lib/api/user";
 
 export interface IAuthContext {
+  self?: UserOut;
   get token(): string | null;
   get expiresAt(): string | null;
   get attachmentToken(): string | null;
