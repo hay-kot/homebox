@@ -156,7 +156,7 @@
         </template>
 
         <template #title-actions>
-          <div class="flex mt-2 gap-2">
+          <div class="flex flex-wrap mt-2 gap-2">
             <div class="form-control max-w-[160px]">
               <label class="label cursor-pointer">
                 <input v-model="preferences.showDetails" type="checkbox" class="toggle toggle-primary" />
