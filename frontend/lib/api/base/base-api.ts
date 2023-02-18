@@ -9,8 +9,8 @@ type BaseApiType = {
   [key: string]: any;
 };
 
-export function hasKey(obj: object, key: string): obj is Required<BaseApiType> {
-  return typeof obj[key] === "string";
+export function hasKey(obj: Record<string, any>, key: string): obj is Required<BaseApiType> {
+  return key in obj ? typeof obj[key] === "string" : false;
 }
 
 export function parseDate<T>(obj: T, keys: Array<keyof T> = []): T {

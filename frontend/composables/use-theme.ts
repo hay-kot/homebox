@@ -16,13 +16,13 @@ export function useTheme(): UseTheme {
     preferences.value.theme = newTheme;
 
     if (htmlEl) {
-      htmlEl.value.setAttribute("data-theme", newTheme);
+      htmlEl.value?.setAttribute("data-theme", newTheme);
     }
 
     themeRef.value = newTheme;
   };
 
-  const htmlEl = ref<HTMLElement>(null);
+  const htmlEl = ref<HTMLElement | null>();
 
   onMounted(() => {
     if (htmlEl.value) {

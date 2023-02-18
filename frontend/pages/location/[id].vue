@@ -50,16 +50,16 @@
           name: "Created",
           text: location.value?.createdAt,
           type: "date",
-        },
+        } as AnyDetail,
         {
           name: "Updated",
           text: location.value?.updatedAt,
           type: "date",
-        },
+        } as AnyDetail,
         {
           name: "Database ID",
           text: location.value?.id,
-        },
+        } as AnyDetail,
       ];
     }
 
@@ -120,7 +120,6 @@
   const locationStore = useLocationStore();
   const locations = computed(() => locationStore.allLocations);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const parent = ref<LocationSummary | any>({});
 </script>
 

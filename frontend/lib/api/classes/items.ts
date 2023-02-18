@@ -141,4 +141,8 @@ export class ItemsApi extends BaseAPI {
       data: formData,
     });
   }
+
+  exportURL() {
+    return route("/items/export");
+  }
 }

@@ -7,7 +7,7 @@ export function useRouteQuery(q: string, def: string[]): WritableComputedRef<str
 export function useRouteQuery(q: string, def: string): WritableComputedRef<string>;
 export function useRouteQuery(q: string, def: boolean): WritableComputedRef<boolean>;
 export function useRouteQuery(q: string, def: number): WritableComputedRef<number>;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export function useRouteQuery(q: string, def: any): WritableComputedRef<any> {
   const route = useRoute();
   const router = useRouter();

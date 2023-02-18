@@ -76,6 +76,7 @@ export class Requests {
 
     const token = this.token();
     if (token !== "" && payload.headers !== undefined) {
+      // @ts-expect-error - we know that the header is there
       payload.headers["Authorization"] = token; // eslint-disable-line dot-notation
     }
 
@@ -83,6 +84,7 @@ export class Requests {
       if (rargs.data) {
         payload.body = rargs.data;
       } else {
+        // @ts-expect-error - we know that the header is there
         payload.headers["Content-Type"] = "application/json";
         payload.body = JSON.stringify(rargs.body);
       }

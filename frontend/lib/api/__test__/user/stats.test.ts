@@ -77,13 +77,13 @@ function importFileGenerator(entries: number): ImportObj[] {
 describe("group related statistics tests", () => {
   const TOTAL_ITEMS = 30;
 
-  let api: UserClient | undefined;
+  let tAPI: UserClient | undefined;
   const imports = importFileGenerator(TOTAL_ITEMS);
 
   beforeAll(async () => {
     // -- Setup --
     const { client } = await factories.client.singleUse();
-    api = client;
+    tAPI = client;
 
     const csv = toCsv(imports);
 
@@ -91,6 +91,13 @@ describe("group related statistics tests", () => {
 
     expect(setupResp.status).toBe(204);
   });
+
+  if (!tAPI) {
+    throw new Error("API is not defined");
+  }
+
+  // cast api to concrete type
+  const api = tAPI;
 
   // Write to file system for debugging
   // fs.writeFileSync("test.csv", csv);

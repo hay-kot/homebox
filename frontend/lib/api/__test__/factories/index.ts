@@ -9,13 +9,13 @@ import { Requests } from "../../../requests";
 
 function itemField(id = null): ItemField {
   return {
-    id,
+    id: id ?? "",
     name: faker.lorem.word(),
     type: "text",
     textValue: faker.lorem.sentence(),
     booleanValue: false,
     numberValue: faker.datatype.number(),
-    timeValue: null,
+    timeValue: "",
   };
 }
 
@@ -32,8 +32,9 @@ function user(): UserRegistration {
   };
 }
 
-function location(): LocationCreate {
+function location(parentId: string | null = null): LocationCreate {
   return {
+    parentId,
     name: faker.address.city(),
     description: faker.lorem.sentence(),
   };
@@ -56,7 +57,7 @@ function publicClient(): PublicApi {
 function userClient(token: string): UserClient {
   overrideParts(config.BASE_URL, "/api/v1");
   const requests = new Requests("", token);
-  return new UserClient(requests);
+  return new UserClient(requests, "");
 }
 
 type TestUser = {
@@ -75,7 +76,7 @@ async function userSingleUse(): Promise<TestUser> {
   expect(result.status).toBe(200);
 
   return {
-    client: new UserClient(new Requests("", result.data.token)),
+    client: new UserClient(new Requests("", result.data.token), result.data.attachmentToken),
     user: usr,
   };
 }
