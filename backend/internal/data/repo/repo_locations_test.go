@@ -31,7 +31,6 @@ func useLocations(t *testing.T, len int) []LocationOut {
 	t.Cleanup(func() {
 		for _, loc := range out {
 			err := tRepos.Locations.Delete(context.Background(), loc.ID)
-
 			if err != nil {
 				assert.True(t, ent.IsNotFound(err))
 			}
@@ -74,7 +73,6 @@ func TestLocationRepositoryGetAllWithCount(t *testing.T) {
 			assert.Equal(t, 1, loc.ItemCount)
 		}
 	}
-
 }
 
 func TestLocationRepository_Create(t *testing.T) {

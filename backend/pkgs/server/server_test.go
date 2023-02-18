@@ -72,7 +72,6 @@ func Test_GracefulServerShutdownWithWorkers(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.True(t, isFinished)
-
 }
 
 func Test_GracefulServerShutdownWithRequests(t *testing.T) {

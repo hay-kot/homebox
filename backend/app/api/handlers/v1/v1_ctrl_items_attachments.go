@@ -82,7 +82,6 @@ func (ctrl *V1Controller) HandleItemAttachmentCreate() server.HandlerFunc {
 			attachment.Type(attachmentType),
 			file,
 		)
-
 		if err != nil {
 			log.Err(err).Msg("failed to add attachment")
 			return validate.NewRequestError(err, http.StatusInternalServerError)

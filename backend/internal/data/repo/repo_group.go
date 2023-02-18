@@ -76,9 +76,7 @@ type (
 	}
 )
 
-var (
-	mapToGroupErr = mapTErrFunc(mapToGroup)
-)
+var mapToGroupErr = mapTErrFunc(mapToGroup)
 
 func mapToGroup(g *ent.Group) Group {
 	return Group{
@@ -90,9 +88,7 @@ func mapToGroup(g *ent.Group) Group {
 	}
 }
 
-var (
-	mapToGroupInvitationErr = mapTErrFunc(mapToGroupInvitation)
-)
+var mapToGroupInvitationErr = mapTErrFunc(mapToGroupInvitation)
 
 func mapToGroupInvitation(g *ent.GroupInvitationToken) GroupInvitation {
 	return GroupInvitation{
@@ -118,7 +114,6 @@ func (r *GroupRepository) StatsLocationsByPurchasePrice(ctx context.Context, GID
 			return sql.As(sql.Sum(t.C(item.FieldPurchasePrice)), "total")
 		}).
 		Scan(ctx, &v)
-
 	if err != nil {
 		return nil, err
 	}
@@ -145,7 +140,6 @@ func (r *GroupRepository) StatsLabelsByPurchasePrice(ctx context.Context, GID uu
 			return sql.As(sql.Sum(itemTable.C(item.FieldPurchasePrice)), "total")
 		}).
 		Scan(ctx, &v)
-
 	if err != nil {
 		return nil, err
 	}
@@ -283,7 +277,6 @@ func (r *GroupRepository) InvitationCreate(ctx context.Context, groupID uuid.UUI
 		SetExpiresAt(invite.ExpiresAt).
 		SetUses(invite.Uses).
 		Save(ctx)
-
 	if err != nil {
 		return GroupInvitation{}, err
 	}

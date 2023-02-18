@@ -97,5 +97,4 @@ func Disjoint[T key](a, b Set[T]) bool {
 		}
 	}
 	return true
-
 }

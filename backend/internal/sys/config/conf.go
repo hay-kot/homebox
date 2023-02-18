@@ -4,10 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
 
 	"github.com/ardanlabs/conf/v3"
-
-	"os"
 )
 
 const (
@@ -55,7 +54,6 @@ func New() (*Config, error) {
 	const prefix = "HBOX"
 
 	help, err := conf.Parse(prefix, &cfg)
-
 	if err != nil {
 		if errors.Is(err, conf.ErrHelpWanted) {
 			fmt.Println(help)
@@ -71,11 +69,9 @@ func New() (*Config, error) {
 // This is useful for debugging. If the marshaller errors out, it will panic.
 func (c *Config) Print() {
 	res, err := json.MarshalIndent(c, "", "  ")
-
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Println(string(res))
-
 }

@@ -123,7 +123,6 @@ func (e *UserRepository) DeleteAll(ctx context.Context) error {
 
 func (e *UserRepository) GetSuperusers(ctx context.Context) ([]*ent.User, error) {
 	users, err := e.db.User.Query().Where(user.IsSuperuser(true)).All(ctx)
-
 	if err != nil {
 		return nil, err
 	}

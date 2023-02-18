@@ -125,7 +125,6 @@ func TestItemsRepository_Create(t *testing.T) {
 	// Cleanup - Also deletes item
 	err = tRepos.Locations.Delete(context.Background(), location.ID)
 	assert.NoError(t, err)
-
 }
 
 func TestItemsRepository_Create_Location(t *testing.T) {
@@ -222,7 +221,6 @@ func TestItemsRepository_Update_Labels(t *testing.T) {
 			}
 		})
 	}
-
 }
 
 func TestItemsRepository_Update(t *testing.T) {

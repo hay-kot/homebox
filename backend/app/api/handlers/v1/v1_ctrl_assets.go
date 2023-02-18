@@ -49,7 +49,6 @@ func (ctrl *V1Controller) HandleAssetGet() server.HandlerFunc {
 				return server.Respond(w, http.StatusBadRequest, "Invalid page size")
 			}
 		}
-		
 
 		items, err := ctrl.repo.Items.QueryByAssetID(r.Context(), ctx.GID, repo.AssetID(assetId), int(page), int(pageSize))
 		if err != nil {

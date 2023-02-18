@@ -30,14 +30,12 @@ func GetTestMailer() (*Mailer, error) {
 	}
 
 	return mailer, nil
-
 }
 
 func Test_Mailer(t *testing.T) {
 	t.Parallel()
 
 	mailer, err := GetTestMailer()
-
 	if err != nil {
 		t.Skip("Error Reading Test Mailer Config - Skipping")
 	}
@@ -47,7 +45,6 @@ func Test_Mailer(t *testing.T) {
 	}
 
 	message, err := RenderWelcome()
-
 	if err != nil {
 		t.Error(err)
 	}

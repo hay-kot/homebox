@@ -61,7 +61,6 @@ func TestMaintenanceEntryRepository_GetLog(t *testing.T) {
 
 	// Get the log for the item
 	log, err := tRepos.MaintEntry.GetLog(context.Background(), item.ID)
-
 	if err != nil {
 		t.Fatalf("failed to get maintenance log: %v", err)
 	}

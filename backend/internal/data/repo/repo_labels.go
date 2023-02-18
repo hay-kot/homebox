@@ -100,7 +100,6 @@ func (r *LabelRepository) Create(ctx context.Context, groupdId uuid.UUID, data L
 		SetColor(data.Color).
 		SetGroupID(groupdId).
 		Save(ctx)
-
 	if err != nil {
 		return LabelOut{}, err
 	}

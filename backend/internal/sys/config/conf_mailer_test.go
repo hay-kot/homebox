@@ -36,5 +36,4 @@ func Test_MailerReady_Failure(t *testing.T) {
 
 	mc.From = "from"
 	assert.True(t, mc.Ready())
-
 }

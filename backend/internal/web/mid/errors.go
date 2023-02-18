@@ -13,7 +13,6 @@ func Errors(log zerolog.Logger) server.Middleware {
 	return func(h server.Handler) server.Handler {
 		return server.HandlerFunc(func(w http.ResponseWriter, r *http.Request) error {
 			err := h.ServeHTTP(w, r)
-
 			if err != nil {
 				var resp server.ErrorResponse
 				var code int

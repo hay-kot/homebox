@@ -139,7 +139,6 @@ func (svc *UserService) UpdateSelf(ctx context.Context, ID uuid.UUID, data repo.
 // User Authentication
 
 func (svc *UserService) createSessionToken(ctx context.Context, userId uuid.UUID) (UserAuthTokenDetail, error) {
-
 	attachmentToken := hasher.GenerateToken()
 	attachmentData := repo.UserAuthTokenCreate{
 		UserID:    userId,
@@ -173,7 +172,6 @@ func (svc *UserService) createSessionToken(ctx context.Context, userId uuid.UUID
 
 func (svc *UserService) Login(ctx context.Context, username, password string) (UserAuthTokenDetail, error) {
 	usr, err := svc.repos.Users.GetOneEmail(ctx, username)
-
 	if err != nil {
 		// SECURITY: Perform hash to ensure response times are the same
 		hasher.CheckPasswordHash("not-a-real-password", "not-a-real-password")
@@ -197,7 +195,6 @@ func (svc *UserService) RenewToken(ctx context.Context, token string) (UserAuthT
 	hash := hasher.HashToken(token)
 
 	dbToken, err := svc.repos.AuthTokens.GetUserFromToken(ctx, hash)
-
 	if err != nil {
 		return UserAuthTokenDetail{}, ErrorInvalidToken
 	}

@@ -50,7 +50,6 @@ func (ctrl *V1Controller) HandleAuthLogin() server.HandlerFunc {
 			loginForm.Password = r.PostFormValue("password")
 		case server.ContentJSON:
 			err := server.Decode(r, loginForm)
-
 			if err != nil {
 				log.Err(err).Msg("failed to decode login form")
 			}
@@ -72,7 +71,6 @@ func (ctrl *V1Controller) HandleAuthLogin() server.HandlerFunc {
 		}
 
 		newToken, err := ctrl.svc.User.Login(r.Context(), strings.ToLower(loginForm.Username), loginForm.Password)
-
 		if err != nil {
 			return validate.NewRequestError(errors.New("authentication failed"), http.StatusInternalServerError)
 		}

@@ -28,7 +28,6 @@ var (
 )
 
 func TestDiff(t *testing.T) {
-
 	tests := []struct {
 		name string
 		args args
