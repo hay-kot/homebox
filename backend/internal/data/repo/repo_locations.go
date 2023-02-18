@@ -105,7 +105,7 @@ func (r *LocationRepository) GetAll(ctx context.Context, GID uuid.UUID, filter L
 			updated_at,
 			(
 				SELECT
-					COUNT(*)
+					SUM(items.quantity)
 				FROM
 					items
 				WHERE
@@ -135,9 +135,15 @@ func (r *LocationRepository) GetAll(ctx context.Context, GID uuid.UUID, filter L
 	for rows.Next() {
 		var ct LocationOutCount
 
-		err := rows.Scan(&ct.ID, &ct.Name, &ct.Description, &ct.CreatedAt, &ct.UpdatedAt, &ct.ItemCount)
+		var maybeCount *int
+
+		err := rows.Scan(&ct.ID, &ct.Name, &ct.Description, &ct.CreatedAt, &ct.UpdatedAt, &maybeCount)
 		if err != nil {
 			return nil, err
+		}
+
+		if maybeCount != nil {
+			ct.ItemCount = *maybeCount
 		}
 
 		list = append(list, ct)
