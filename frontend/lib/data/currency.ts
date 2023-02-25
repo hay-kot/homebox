@@ -1,4 +1,17 @@
-export type Codes = "USD" | "EUR" | "GBP" | "JPY" | "ZAR" | "AUD" | "NOK" | "SEK" | "DKK" | "INR" | "RMB" | "BGN";
+export type Codes =
+  | "USD"
+  | "EUR"
+  | "GBP"
+  | "JPY"
+  | "ZAR"
+  | "AUD"
+  | "NOK"
+  | "SEK"
+  | "DKK"
+  | "INR"
+  | "RMB"
+  | "BGN"
+  | "CHF";
 
 export type Currency = {
   code: Codes;
@@ -79,5 +92,11 @@ export const currencies: Currency[] = [
     local: "bg-BG",
     symbol: "lv",
     name: "Bulgarian lev",
+  },
+  {
+    code: "CHF",
+    local: "de-CH",
+    symbol: "chf",
+    name: "Swiss Francs",
   },
 ];

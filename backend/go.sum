@@ -41,8 +41,6 @@ github.com/go-playground/universal-translator v0.18.1/go.mod h1:xekY+UJKNuX9WP91
 github.com/go-playground/validator/v10 v10.11.2 h1:q3SHpufmypg+erIExEKUmsgmhDTyhcJ38oeKGACXohU=
 github.com/go-playground/validator/v10 v10.11.2/go.mod h1:NieE624vt4SCTJtD87arVLvdmjPAeV8BQlHtMnw9D7s=
 github.com/go-test/deep v1.0.3 h1:ZrJSEWsXzPOxaZnFteGEfooLba+ju3FYIbOrS+rQd68=
-github.com/gocarina/gocsv v0.0.0-20230123225133-763e25b40669 h1:MvZzCA/mduVWoBSVKJeMdv+AqXQmZZ8i6p8889ejt/Y=
-github.com/gocarina/gocsv v0.0.0-20230123225133-763e25b40669/go.mod h1:5YoVOkjYAQumqlV356Hj3xeYh4BdZuLE0/nRkf2NKkI=
 github.com/gocarina/gocsv v0.0.0-20230219202803-bcce7dc8d0bb h1:WZ3ADdZNC1i7uJsarVzPSSh0B27+XlmmCerFmU28T/4=
 github.com/gocarina/gocsv v0.0.0-20230219202803-bcce7dc8d0bb/go.mod h1:5YoVOkjYAQumqlV356Hj3xeYh4BdZuLE0/nRkf2NKkI=
 github.com/godbus/dbus/v5 v5.0.4/go.mod h1:xhWf0FNVPg57R7Z0UbKHbJfkEywrmjJnf7w5xrFpKfA=

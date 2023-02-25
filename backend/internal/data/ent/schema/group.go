@@ -27,7 +27,7 @@ func (Group) Fields() []ent.Field {
 			NotEmpty(),
 		field.Enum("currency").
 			Default("usd").
-			Values("usd", "eur", "gbp", "jpy", "zar", "aud", "nok", "sek", "dkk", "inr", "rmb", "bgn"),
+			Values("usd", "eur", "gbp", "jpy", "zar", "aud", "nok", "sek", "dkk", "inr", "rmb", "bgn","chf"),
 	}
 }
 
