@@ -2,7 +2,6 @@ package types
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 	"time"
 )
@@ -74,9 +73,7 @@ func (d Date) MarshalJSON() ([]byte, error) {
 func (d *Date) UnmarshalJSON(data []byte) (err error) {
 	// unescape the string if necessary `\"` -> `"`
 	str := strings.Trim(string(data), "\"")
-	fmt.Printf("str: %q\n", str)
 	if str == "" || str == "null" || str == `""` {
-		println("empty date")
 		*d = Date{}
 		return nil
 	}

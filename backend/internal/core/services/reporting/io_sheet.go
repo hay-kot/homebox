@@ -10,6 +10,7 @@ import (
 
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/data/types"
+	"github.com/rs/zerolog/log"
 )
 
 // IOSheet is the representation of a CSV/TSV sheet that is used for importing/exporting
@@ -115,7 +116,11 @@ func (s *IOSheet) Read(data io.Reader) error {
 				v = parseLabelString(val)
 			}
 
-			fmt.Printf("%s: %v (%T)\n", tag, v, v)
+			log.Debug().
+				Str("tag", tag).
+				Interface("val", v).
+				Str("type", fmt.Sprintf("%T", v)).
+				Msg("parsed value")
 
 			// Nil values are not allowed at the moment. This may change.
 			if v == nil {
@@ -185,6 +190,7 @@ func (s *IOSheet) ReadItems(items []repo.ItemOut) {
 			Quantity:    item.Quantity,
 			Description: item.Description,
 			Insured:     item.Insured,
+			Archived:    item.Archived,
 
 			PurchasePrice: item.PurchasePrice,
 			PurchaseFrom:  item.PurchaseFrom,

@@ -19,7 +19,7 @@ func (ctrl *V1Controller) HandleBillOfMaterialsExport() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		actor := services.UseUserCtx(r.Context())
 
-		csv, err := ctrl.svc.Reporting.BillOfMaterialsTSV(r.Context(), actor.GroupID)
+		csv, err := ctrl.svc.Items.ExportBillOfMaterialsTSV(r.Context(), actor.GroupID)
 		if err != nil {
 			return err
 		}

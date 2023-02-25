@@ -16,9 +16,7 @@ func getPrevMonth(now time.Time) time.Time {
 	// avoid infinite loop
 	max := 15
 	for t.Month() == now.Month() {
-		println("month is the same")
 		t = t.AddDate(0, 0, -1)
-		println(t.String())
 
 		max--
 		if max == 0 {

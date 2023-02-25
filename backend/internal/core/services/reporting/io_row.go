@@ -17,6 +17,7 @@ type ExportTSVRow struct {
 	LabelStr  LabelString    `csv:"HB.labels"`
 	ImportRef string         `csv:"HB.import_ref"`
 	AssetID   repo.AssetID   `csv:"HB.asset_id"`
+	Archived  bool           `csv:"HB.archived"`
 
 	Name        string `csv:"HB.name"`
 	Quantity    int    `csv:"HB.quantity"`

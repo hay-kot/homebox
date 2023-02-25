@@ -1,10 +1,8 @@
 package reporting
 
 import (
-	"context"
-
 	"github.com/gocarina/gocsv"
-	"github.com/google/uuid"
+	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/data/types"
 )
 
@@ -24,13 +22,7 @@ type BillOfMaterialsEntry struct {
 
 // BillOfMaterialsTSV returns a byte slice of the Bill of Materials for a given GID in TSV format
 // See BillOfMaterialsEntry for the format of the output
-func (rs *ReportingService) BillOfMaterialsTSV(ctx context.Context, GID uuid.UUID) ([]byte, error) {
-	entities, err := rs.repos.Items.GetAll(ctx, GID)
-	if err != nil {
-		rs.l.Debug().Err(err).Msg("failed to get all items for BOM Csv Reporting")
-		return nil, err
-	}
-
+func BillOfMaterialsTSV(entities []repo.ItemOut) ([]byte, error) {
 	bomEntries := make([]BillOfMaterialsEntry, len(entities))
 	for i, entity := range entities {
 		bomEntries[i] = BillOfMaterialsEntry{
