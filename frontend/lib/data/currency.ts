@@ -1,17 +1,19 @@
 export type Codes =
-  | "USD"
+  | "AUD"
+  | "BGN"
+  | "CHF"
+  | "DKK"
   | "EUR"
   | "GBP"
-  | "JPY"
-  | "ZAR"
-  | "AUD"
-  | "NOK"
-  | "SEK"
-  | "DKK"
   | "INR"
+  | "JPY"
+  | "NOK"
+  | "PLN"
   | "RMB"
-  | "BGN"
-  | "CHF";
+  | "SEK"
+  | "TRY"
+  | "USD"
+  | "ZAR";
 
 export type Currency = {
   code: Codes;
@@ -70,6 +72,12 @@ export const currencies: Currency[] = [
     name: "Norwegian Krone",
   },
   {
+    code: "PLN",
+    local: "pl-PL",
+    symbol: "zł",
+    name: "Polish Zloty",
+  },
+  {
     code: "ZAR",
     local: "en-ZA",
     symbol: "R",
@@ -80,6 +88,12 @@ export const currencies: Currency[] = [
     local: "sv-SE",
     symbol: "kr",
     name: "Swedish Krona",
+  },
+  {
+    code: "TRY",
+    local: "tr-TR",
+    symbol: "₺",
+    name: "Turkish Lira",
   },
   {
     code: "USD",
