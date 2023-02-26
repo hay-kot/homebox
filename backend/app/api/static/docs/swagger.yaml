@@ -650,6 +650,20 @@ paths:
       summary: Ensures all items in the database have an asset id
       tags:
       - Group
+  /v1/actions/ensure-import-refs:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.ActionAmountResult'
+      security:
+      - Bearer: []
+      summary: Ensures all items in the database have an import ref
+      tags:
+      - Group
   /v1/actions/zero-item-time-fields:
     post:
       produces:
@@ -1109,6 +1123,18 @@ paths:
       summary: Update Maintenance Entry
       tags:
       - Maintenance
+  /v1/items/export:
+    get:
+      responses:
+        "200":
+          description: text/csv
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: exports items into the database
+      tags:
+      - Items
   /v1/items/fields:
     get:
       produces:

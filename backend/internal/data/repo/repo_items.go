@@ -59,6 +59,7 @@ type (
 		LocationID uuid.UUID   `json:"locationId"`
 		LabelIDs   []uuid.UUID `json:"labelIds"`
 	}
+
 	ItemUpdate struct {
 		ParentID    uuid.UUID `json:"parentId" extensions:"x-nullable,x-omitempty"`
 		ID          uuid.UUID `json:"id"`
@@ -97,6 +98,12 @@ type (
 		// Extras
 		Notes  string      `json:"notes"`
 		Fields []ItemField `json:"fields"`
+	}
+
+	ItemPatch struct {
+		ID        uuid.UUID `json:"id"`
+		Quantity  *int      `json:"quantity,omitempty" extensions:"x-nullable,x-omitempty"`
+		ImportRef *string   `json:"importRef,omitempty" extensions:"x-nullable,x-omitempty"`
 	}
 
 	ItemSummary struct {
@@ -168,6 +175,7 @@ func mapItemSummary(item *ent.Item) ItemSummary {
 		ID:            item.ID,
 		Name:          item.Name,
 		Description:   item.Description,
+		ImportRef:     item.ImportRef,
 		Quantity:      item.Quantity,
 		CreatedAt:     item.CreatedAt,
 		UpdatedAt:     item.UpdatedAt,
@@ -283,6 +291,10 @@ func (e *ItemsRepository) GetOne(ctx context.Context, id uuid.UUID) (ItemOut, er
 func (e *ItemsRepository) CheckRef(ctx context.Context, GID uuid.UUID, ref string) (bool, error) {
 	q := e.db.Item.Query().Where(item.HasGroupWith(group.ID(GID)))
 	return q.Where(item.ImportRef(ref)).Exist(ctx)
+}
+
+func (e *ItemsRepository) GetByRef(ctx context.Context, GID uuid.UUID, ref string) (ItemOut, error) {
+	return e.getOne(ctx, item.ImportRef(ref), item.HasGroupWith(group.ID(GID)))
 }
 
 // GetOneByGroup returns a single item by ID. If the item does not exist, an error is returned.
@@ -626,6 +638,44 @@ func (e *ItemsRepository) UpdateByGroup(ctx context.Context, GID uuid.UUID, data
 	}
 
 	return e.GetOne(ctx, data.ID)
+}
+
+func (e *ItemsRepository) GetAllZeroImportRef(ctx context.Context, GID uuid.UUID) ([]uuid.UUID, error) {
+	var ids []uuid.UUID
+
+	err := e.db.Item.Query().
+		Where(
+			item.HasGroupWith(group.ID(GID)),
+			item.Or(
+				item.ImportRefEQ(""),
+				item.ImportRefIsNil(),
+			),
+		).
+		Select(item.FieldID).
+		Scan(ctx, &ids)
+	if err != nil {
+		return nil, err
+	}
+
+	return ids, nil
+}
+
+func (e *ItemsRepository) Patch(ctx context.Context, GID, ID uuid.UUID, data ItemPatch) error {
+	q := e.db.Item.Update().
+		Where(
+			item.ID(ID),
+			item.HasGroupWith(group.ID(GID)),
+		)
+
+	if data.ImportRef != nil {
+		q.SetImportRef(*data.ImportRef)
+	}
+
+	if data.Quantity != nil {
+		q.SetQuantity(*data.Quantity)
+	}
+
+	return q.Exec(ctx)
 }
 
 func (e *ItemsRepository) GetAllCustomFieldValues(ctx context.Context, GID uuid.UUID, name string) ([]string, error) {

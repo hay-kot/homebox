@@ -38,8 +38,7 @@ func (Item) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("import_ref").
 			Optional().
-			MaxLen(100).
-			Immutable(),
+			MaxLen(100),
 		field.String("notes").
 			MaxLen(1000).
 			Optional(),

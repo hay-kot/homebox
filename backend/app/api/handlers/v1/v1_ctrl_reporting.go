@@ -19,13 +19,13 @@ func (ctrl *V1Controller) HandleBillOfMaterialsExport() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		actor := services.UseUserCtx(r.Context())
 
-		csv, err := ctrl.svc.Reporting.BillOfMaterialsTSV(r.Context(), actor.GroupID)
+		csv, err := ctrl.svc.Items.ExportBillOfMaterialsTSV(r.Context(), actor.GroupID)
 		if err != nil {
 			return err
 		}
 
-		w.Header().Set("Content-Type", "text/csv")
-		w.Header().Set("Content-Disposition", "attachment; filename=bom.csv")
+		w.Header().Set("Content-Type", "text/tsv")
+		w.Header().Set("Content-Disposition", "attachment; filename=bill-of-materials.tsv")
 		_, err = w.Write(csv)
 		return err
 	}

@@ -13,4 +13,10 @@ export class ActionsAPI extends BaseAPI {
       url: route("/actions/zero-item-time-fields"),
     });
   }
+
+  ensureImportRefs() {
+    return this.http.post<void, ActionAmountResult>({
+      url: route("/actions/ensure-import-refs"),
+    });
+  }
 }

@@ -4,27 +4,27 @@ import { UserClient } from "../../user";
 import { factories } from "../factories";
 
 type ImportObj = {
-  ImportRef: string;
-  Location: string;
-  Labels: string;
-  Quantity: string;
-  Name: string;
-  Description: string;
-  Insured: boolean;
-  SerialNumber: string;
-  ModelNumber: string;
-  Manufacturer: string;
-  Notes: string;
-  PurchaseFrom: string;
-  PurchasedPrice: number;
-  PurchasedTime: string;
-  LifetimeWarranty: boolean;
-  WarrantyExpires: string;
-  WarrantyDetails: string;
-  SoldTo: string;
-  SoldPrice: number;
-  SoldTime: string;
-  SoldNotes: string;
+  [`HB.import_ref`]: string;
+  [`HB.location`]: string;
+  [`HB.labels`]: string;
+  [`HB.quantity`]: number;
+  [`HB.name`]: string;
+  [`HB.description`]: string;
+  [`HB.insured`]: boolean;
+  [`HB.serial_number`]: string;
+  [`HB.model_number`]: string;
+  [`HB.manufacturer`]: string;
+  [`HB.notes`]: string;
+  [`HB.purchase_price`]: number;
+  [`HB.purchase_from`]: string;
+  [`HB.purchase_time`]: string;
+  [`HB.lifetime_warranty`]: boolean;
+  [`HB.warranty_expires`]: string;
+  [`HB.warranty_details`]: string;
+  [`HB.sold_to`]: string;
+  [`HB.sold_price`]: number;
+  [`HB.sold_time`]: string;
+  [`HB.sold_notes`]: string;
 };
 
 function toCsv(data: ImportObj[]): string {
@@ -36,7 +36,7 @@ function toCsv(data: ImportObj[]): string {
 }
 
 function importFileGenerator(entries: number): ImportObj[] {
-  const imports: ImportObj[] = [];
+  const imports: Partial<ImportObj>[] = [];
 
   const pick = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
 
@@ -45,37 +45,41 @@ function importFileGenerator(entries: number): ImportObj[] {
 
   const half = Math.floor(entries / 2);
 
+  // YYYY-MM-DD
+  const formatDate = (date: Date) => date.toISOString().split("T")[0];
+
   for (let i = 0; i < entries; i++) {
     imports.push({
-      ImportRef: faker.database.mongodbObjectId(),
-      Location: pick(locations),
-      Labels: labels,
-      Quantity: faker.random.numeric(1),
-      Name: faker.random.words(3),
-      Description: "",
-      Insured: faker.datatype.boolean(),
-      SerialNumber: faker.random.alphaNumeric(5),
-      ModelNumber: faker.random.alphaNumeric(5),
-      Manufacturer: faker.random.alphaNumeric(5),
-      Notes: "",
-      PurchaseFrom: faker.name.fullName(),
-      PurchasedPrice: faker.datatype.number(100),
-      PurchasedTime: faker.date.past().toDateString(),
-      LifetimeWarranty: half > i,
-      WarrantyExpires: faker.date.future().toDateString(),
-      WarrantyDetails: "",
-      SoldTo: faker.name.fullName(),
-      SoldPrice: faker.datatype.number(100),
-      SoldTime: faker.date.past().toDateString(),
-      SoldNotes: "",
+      [`HB.import_ref`]: faker.database.mongodbObjectId(),
+      [`HB.location`]: pick(locations),
+      [`HB.labels`]: labels,
+      [`HB.quantity`]: Number(faker.random.numeric(2)),
+      [`HB.name`]: faker.random.words(3),
+      [`HB.description`]: "",
+      [`HB.insured`]: faker.datatype.boolean(),
+      [`HB.serial_number`]: faker.random.alphaNumeric(5),
+      [`HB.model_number`]: faker.random.alphaNumeric(5),
+      [`HB.manufacturer`]: faker.random.alphaNumeric(5),
+      [`HB.notes`]: "",
+      [`HB.purchase_from`]: faker.name.fullName(),
+      [`HB.purchase_price`]: faker.datatype.number(100),
+      [`HB.purchase_time`]: faker.date.past().toDateString(),
+      [`HB.lifetime_warranty`]: half > i,
+      [`HB.warranty_details`]: "",
+      [`HB.sold_to`]: faker.name.fullName(),
+      [`HB.sold_price`]: faker.datatype.number(100),
+      [`HB.sold_time`]: formatDate(faker.date.past()),
+      [`HB.sold_notes`]: "",
     });
   }
 
-  return imports;
+  return imports as ImportObj[];
 }
 
 describe("group related statistics tests", () => {
   const TOTAL_ITEMS = 30;
+  const labelData: Record<string, number> = {};
+  const locationData: Record<string, number> = {};
 
   let tAPI: UserClient | undefined;
   const imports = importFileGenerator(TOTAL_ITEMS);
@@ -97,10 +101,26 @@ describe("group related statistics tests", () => {
     const setupResp = await client.items.import(new Blob([csv], { type: "text/csv" }));
 
     expect(setupResp.status).toBe(204);
+
+    for (const item of imports) {
+      const labels = item[`HB.labels`].split(";");
+      for (const label of labels) {
+        if (labelData[label]) {
+          labelData[label] += item[`HB.purchase_price`];
+        } else {
+          labelData[label] = item[`HB.purchase_price`];
+        }
+      }
+
+      const location = item[`HB.location`];
+      if (locationData[location]) {
+        locationData[location] += item[`HB.purchase_price`];
+      } else {
+        locationData[location] = item[`HB.purchase_price`];
+      }
+    }
   });
 
-  // Write to file system for debugging
-  // fs.writeFileSync("test.csv", csv);
   test("Validate Group Statistics", async () => {
     const { status, data } = await api().stats.group();
     expect(status).toBe(200);
@@ -111,17 +131,6 @@ describe("group related statistics tests", () => {
     expect(data.totalUsers).toEqual(1);
     expect(data.totalWithWarranty).toEqual(Math.floor(TOTAL_ITEMS / 2));
   });
-
-  const labelData: Record<string, number> = {};
-  const locationData: Record<string, number> = {};
-
-  for (const item of imports) {
-    for (const label of item.Labels.split(";")) {
-      labelData[label] = (labelData[label] || 0) + item.PurchasedPrice;
-    }
-
-    locationData[item.Location] = (locationData[item.Location] || 0) + item.PurchasedPrice;
-  }
 
   test("Validate Labels Statistics", async () => {
     const { status, data } = await api().stats.labels();

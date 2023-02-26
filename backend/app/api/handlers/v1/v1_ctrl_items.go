@@ -2,6 +2,7 @@ package v1
 
 import (
 	"database/sql"
+	"encoding/csv"
 	"errors"
 	"net/http"
 	"strings"
@@ -255,20 +256,37 @@ func (ctrl *V1Controller) HandleItemsImport() server.HandlerFunc {
 			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		data, err := services.ReadCsv(file)
-		if err != nil {
-			log.Err(err).Msg("failed to read csv")
-			return validate.NewRequestError(err, http.StatusInternalServerError)
-		}
-
 		user := services.UseUserCtx(r.Context())
 
-		_, err = ctrl.svc.Items.CsvImport(r.Context(), user.GroupID, data)
+		_, err = ctrl.svc.Items.CsvImport(r.Context(), user.GroupID, file)
 		if err != nil {
 			log.Err(err).Msg("failed to import items")
 			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
 		return server.Respond(w, http.StatusNoContent, nil)
+	}
+}
+
+// HandleItemsImport godocs
+// @Summary  exports items into the database
+// @Tags     Items
+// @Success 200 {string} string "text/csv"
+// @Router   /v1/items/export [GET]
+// @Security Bearer
+func (ctrl *V1Controller) HandleItemsExport() server.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) error {
+		ctx := services.NewContext(r.Context())
+
+		csvData, err := ctrl.svc.Items.ExportTSV(r.Context(), ctx.GID)
+		if err != nil {
+			log.Err(err).Msg("failed to export items")
+			return validate.NewRequestError(err, http.StatusInternalServerError)
+		}
+
+		w.Header().Set("Content-Type", "text/tsv")
+		w.Header().Set("Content-Disposition", "attachment;filename=homebox-items.tsv")
+		writer := csv.NewWriter(w)
+		return writer.WriteAll(csvData)
 	}
 }

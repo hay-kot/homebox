@@ -2,7 +2,6 @@ package repo
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -81,7 +80,6 @@ func TestUserRepo_GetAll(t *testing.T) {
 	assert.Equal(t, len(created), len(allUsers))
 
 	for _, usr := range created {
-		fmt.Printf("%+v\n", usr)
 		for _, usr2 := range allUsers {
 			if usr.ID == usr2.ID {
 				assert.Equal(t, usr.Email, usr2.Email)
