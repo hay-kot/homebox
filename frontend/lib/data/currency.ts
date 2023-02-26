@@ -10,6 +10,7 @@ export type Codes =
   | "NOK"
   | "PLN"
   | "RMB"
+  | "RON"
   | "SEK"
   | "TRY"
   | "USD"
@@ -76,6 +77,12 @@ export const currencies: Currency[] = [
     local: "pl-PL",
     symbol: "zł",
     name: "Polish Zloty",
+  },
+  {
+    code: "RON",
+    local: "ro-RO",
+    symbol: "lei",
+    name: "Romanian Leu",
   },
   {
     code: "ZAR",
