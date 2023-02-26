@@ -44,12 +44,11 @@ markdown_extensions:
       custom_checkbox: true
   - admonition
   - attr_list
-  - pymdownx.tabbed
   - pymdownx.superfences
 
 nav:
   - Home: index.md
   - Quick Start: quick-start.md
   - Tips and Tricks: tips-tricks.md
-  - Importing Data: import-csv.md
+  - Import and Export: import-csv.md
   - Building The Binary: build.md
