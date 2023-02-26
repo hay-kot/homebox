@@ -1,4 +1,3 @@
-import fs from "fs";
 import { faker } from "@faker-js/faker";
 import { beforeAll, describe, expect, test } from "vitest";
 import { UserClient } from "../../user";
@@ -9,8 +8,7 @@ type ImportObj = {
   [`HB.location`]: string;
   [`HB.labels`]: string;
   [`HB.quantity`]: number;
-  [`HB.name`]: string;
-  [`HB.description`]: string;
+  [`HB.name`]: string;  [`HB.description`]: string;
   [`HB.insured`]: boolean;
   [`HB.serial_number`]: string;
   [`HB.model_number`]: string;
