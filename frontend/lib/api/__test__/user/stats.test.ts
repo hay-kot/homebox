@@ -99,9 +99,6 @@ describe("group related statistics tests", () => {
 
     const csv = toCsv(imports);
 
-    // write to file system for debugging
-    fs.writeFileSync("test.csv", csv);
-
     const setupResp = await client.items.import(new Blob([csv], { type: "text/csv" }));
 
     expect(setupResp.status).toBe(204);
