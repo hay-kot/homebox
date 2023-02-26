@@ -2,7 +2,7 @@
   <BaseCard>
     <table class="table w-full">
       <thead>
-        <tr class="bg-primary">
+        <tr>
           <th
             v-for="h in headers"
             :key="h.value"
