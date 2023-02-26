@@ -8,7 +8,8 @@ type ImportObj = {
   [`HB.location`]: string;
   [`HB.labels`]: string;
   [`HB.quantity`]: number;
-  [`HB.name`]: string;  [`HB.description`]: string;
+  [`HB.name`]: string;
+  [`HB.description`]: string;
   [`HB.insured`]: boolean;
   [`HB.serial_number`]: string;
   [`HB.model_number`]: string;
