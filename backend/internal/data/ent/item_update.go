@@ -67,6 +67,26 @@ func (iu *ItemUpdate) ClearDescription() *ItemUpdate {
 	return iu
 }
 
+// SetImportRef sets the "import_ref" field.
+func (iu *ItemUpdate) SetImportRef(s string) *ItemUpdate {
+	iu.mutation.SetImportRef(s)
+	return iu
+}
+
+// SetNillableImportRef sets the "import_ref" field if the given value is not nil.
+func (iu *ItemUpdate) SetNillableImportRef(s *string) *ItemUpdate {
+	if s != nil {
+		iu.SetImportRef(*s)
+	}
+	return iu
+}
+
+// ClearImportRef clears the value of the "import_ref" field.
+func (iu *ItemUpdate) ClearImportRef() *ItemUpdate {
+	iu.mutation.ClearImportRef()
+	return iu
+}
+
 // SetNotes sets the "notes" field.
 func (iu *ItemUpdate) SetNotes(s string) *ItemUpdate {
 	iu.mutation.SetNotes(s)
@@ -713,6 +733,11 @@ func (iu *ItemUpdate) check() error {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "Item.description": %w`, err)}
 		}
 	}
+	if v, ok := iu.mutation.ImportRef(); ok {
+		if err := item.ImportRefValidator(v); err != nil {
+			return &ValidationError{Name: "import_ref", err: fmt.Errorf(`ent: validator failed for field "Item.import_ref": %w`, err)}
+		}
+	}
 	if v, ok := iu.mutation.Notes(); ok {
 		if err := item.NotesValidator(v); err != nil {
 			return &ValidationError{Name: "notes", err: fmt.Errorf(`ent: validator failed for field "Item.notes": %w`, err)}
@@ -772,6 +797,9 @@ func (iu *ItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if iu.mutation.DescriptionCleared() {
 		_spec.ClearField(item.FieldDescription, field.TypeString)
+	}
+	if value, ok := iu.mutation.ImportRef(); ok {
+		_spec.SetField(item.FieldImportRef, field.TypeString, value)
 	}
 	if iu.mutation.ImportRefCleared() {
 		_spec.ClearField(item.FieldImportRef, field.TypeString)
@@ -1299,6 +1327,26 @@ func (iuo *ItemUpdateOne) SetNillableDescription(s *string) *ItemUpdateOne {
 // ClearDescription clears the value of the "description" field.
 func (iuo *ItemUpdateOne) ClearDescription() *ItemUpdateOne {
 	iuo.mutation.ClearDescription()
+	return iuo
+}
+
+// SetImportRef sets the "import_ref" field.
+func (iuo *ItemUpdateOne) SetImportRef(s string) *ItemUpdateOne {
+	iuo.mutation.SetImportRef(s)
+	return iuo
+}
+
+// SetNillableImportRef sets the "import_ref" field if the given value is not nil.
+func (iuo *ItemUpdateOne) SetNillableImportRef(s *string) *ItemUpdateOne {
+	if s != nil {
+		iuo.SetImportRef(*s)
+	}
+	return iuo
+}
+
+// ClearImportRef clears the value of the "import_ref" field.
+func (iuo *ItemUpdateOne) ClearImportRef() *ItemUpdateOne {
+	iuo.mutation.ClearImportRef()
 	return iuo
 }
 
@@ -1961,6 +2009,11 @@ func (iuo *ItemUpdateOne) check() error {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "Item.description": %w`, err)}
 		}
 	}
+	if v, ok := iuo.mutation.ImportRef(); ok {
+		if err := item.ImportRefValidator(v); err != nil {
+			return &ValidationError{Name: "import_ref", err: fmt.Errorf(`ent: validator failed for field "Item.import_ref": %w`, err)}
+		}
+	}
 	if v, ok := iuo.mutation.Notes(); ok {
 		if err := item.NotesValidator(v); err != nil {
 			return &ValidationError{Name: "notes", err: fmt.Errorf(`ent: validator failed for field "Item.notes": %w`, err)}
@@ -2037,6 +2090,9 @@ func (iuo *ItemUpdateOne) sqlSave(ctx context.Context) (_node *Item, err error) 
 	}
 	if iuo.mutation.DescriptionCleared() {
 		_spec.ClearField(item.FieldDescription, field.TypeString)
+	}
+	if value, ok := iuo.mutation.ImportRef(); ok {
+		_spec.SetField(item.FieldImportRef, field.TypeString, value)
 	}
 	if iuo.mutation.ImportRefCleared() {
 		_spec.ClearField(item.FieldImportRef, field.TypeString)

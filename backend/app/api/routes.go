@@ -89,6 +89,7 @@ func (a *app) mountRoutes(repos *repo.AllRepos) {
 
 	a.server.Post(v1Base("/actions/ensure-asset-ids"), v1Ctrl.HandleEnsureAssetID(), userMW...)
 	a.server.Post(v1Base("/actions/zero-item-time-fields"), v1Ctrl.HandleItemDateZeroOut(), userMW...)
+	a.server.Post(v1Base("/actions/ensure-import-refs"), v1Ctrl.HandleEnsureImportRefs(), userMW...)
 
 	a.server.Get(v1Base("/locations"), v1Ctrl.HandleLocationGetAll(), userMW...)
 	a.server.Post(v1Base("/locations"), v1Ctrl.HandleLocationCreate(), userMW...)

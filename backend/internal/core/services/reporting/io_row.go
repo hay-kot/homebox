@@ -13,9 +13,9 @@ type ExportItemFields struct {
 }
 
 type ExportTSVRow struct {
+	ImportRef string         `csv:"HB.import_ref"`
 	Location  LocationString `csv:"HB.location"`
 	LabelStr  LabelString    `csv:"HB.labels"`
-	ImportRef string         `csv:"HB.import_ref"`
 	AssetID   repo.AssetID   `csv:"HB.asset_id"`
 	Archived  bool           `csv:"HB.archived"`
 

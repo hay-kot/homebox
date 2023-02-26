@@ -64,6 +64,27 @@ func (svc *ItemService) EnsureAssetID(ctx context.Context, GID uuid.UUID) (int, 
 	return finished, nil
 }
 
+func (svc *ItemService) EnsureImportRef(ctx context.Context, GID uuid.UUID) (int, error) {
+	ids, err := svc.repo.Items.GetAllZeroImportRef(ctx, GID)
+	if err != nil {
+		return 0, err
+	}
+
+	finished := 0
+	for _, itemID := range ids {
+		ref := uuid.New().String()[0:8]
+
+		err = svc.repo.Items.Patch(ctx, GID, itemID, repo.ItemPatch{ImportRef: &ref})
+		if err != nil {
+			return 0, err
+		}
+
+		finished++
+	}
+
+	return finished, nil
+}
+
 func serializeLocation[T ~[]string](location T) string {
 	return strings.Join(location, "/")
 }
@@ -143,9 +164,10 @@ func (svc *ItemService) CsvImport(ctx context.Context, GID uuid.UUID, data io.Re
 	for i := range sheet.Rows {
 		row := sheet.Rows[i]
 
+		createRequired := true
+
 		// ========================================
 		// Preflight check for existing item
-		// TODO: Allow updates to existing items by matching on ImportRef
 		if row.ImportRef != "" {
 			exists, err := svc.repo.Items.CheckRef(ctx, GID, row.ImportRef)
 			if err != nil {
@@ -153,7 +175,7 @@ func (svc *ItemService) CsvImport(ctx context.Context, GID uuid.UUID, data io.Re
 			}
 
 			if exists {
-				continue
+				createRequired = false
 			}
 		}
 
@@ -227,18 +249,31 @@ func (svc *ItemService) CsvImport(ctx context.Context, GID uuid.UUID, data io.Re
 
 		// ========================================
 		// Create Item
-		newItem := repo.ItemCreate{
-			ImportRef:   row.ImportRef,
-			Name:        row.Name,
-			Description: row.Description,
-			AssetID:     effAID,
-			LocationID:  locationID,
-			LabelIDs:    labelIds,
+		var item repo.ItemOut
+		switch {
+		case createRequired:
+			newItem := repo.ItemCreate{
+				ImportRef:   row.ImportRef,
+				Name:        row.Name,
+				Description: row.Description,
+				AssetID:     effAID,
+				LocationID:  locationID,
+				LabelIDs:    labelIds,
+			}
+
+			item, err = svc.repo.Items.Create(ctx, GID, newItem)
+			if err != nil {
+				return 0, err
+			}
+		default:
+			item, err = svc.repo.Items.GetByRef(ctx, GID, row.ImportRef)
+			if err != nil {
+				return 0, err
+			}
 		}
 
-		item, err := svc.repo.Items.Create(ctx, GID, newItem)
-		if err != nil {
-			return 0, err
+		if item.ID == uuid.Nil {
+			panic("item ID is nil on import - this should never happen")
 		}
 
 		fields := make([]repo.ItemField, len(row.Fields))

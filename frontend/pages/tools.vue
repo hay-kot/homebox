@@ -68,6 +68,11 @@
             current asset_id field in the database and applying the next value to each item that has an unset asset_id
             field. This is done in order of the created_at field.
           </DetailAction>
+          <DetailAction @action="ensureImportRefs">
+            <template #title>Ensures Import Refs</template>
+            Ensures that all items in your inventory have a valid import_ref field. This is done by randomly generating
+            a 8 character string for each item that has an unset import_ref field.
+          </DetailAction>
           <DetailAction @click="resetItemDateTimes">
             <template #title> Zero Item Date Times</template>
             Resets the time value for all date time fields in your inventory to the beginning of the date. This is to
@@ -125,6 +130,25 @@
 
     if (result.error) {
       notify.error("Failed to ensure asset IDs.");
+      return;
+    }
+
+    notify.success(`${result.data.completed} assets have been updated.`);
+  }
+
+  async function ensureImportRefs() {
+    const { isCanceled } = await confirm.open(
+      "Are you sure you want to ensure all assets have an import_ref? This can take a while and cannot be undone."
+    );
+
+    if (isCanceled) {
+      return;
+    }
+
+    const result = await api.actions.ensureImportRefs();
+
+    if (result.error) {
+      notify.error("Failed to ensure import refs.");
       return;
     }
 

@@ -289,6 +289,8 @@ func (s *IOSheet) TSV() ([][]string, error) {
 				v = val.Interface().(LocationString).String()
 			case reflect.TypeOf(LabelString{}):
 				v = val.Interface().(LabelString).String()
+			default:
+				log.Debug().Str("type", field.Type.String()).Msg("unknown type")
 			}
 
 			memcsv[rowIdx][col] = v
