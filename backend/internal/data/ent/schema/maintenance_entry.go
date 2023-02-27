@@ -1,8 +1,6 @@
 package schema
 
 import (
-	"time"
-
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
@@ -24,7 +22,9 @@ func (MaintenanceEntry) Fields() []ent.Field {
 	return []ent.Field{
 		field.UUID("item_id", uuid.UUID{}),
 		field.Time("date").
-			Default(time.Now),
+			Optional(),
+		field.Time("scheduled_date").
+			Optional(),
 		field.String("name").
 			MaxLen(255).
 			NotEmpty(),

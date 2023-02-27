@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/maintenanceentry"
+	"github.com/hay-kot/homebox/backend/internal/data/types"
 )
 
 // MaintenanceEntryRepository is a repository for maintenance entries that are
@@ -17,25 +18,28 @@ type MaintenanceEntryRepository struct {
 }
 type (
 	MaintenanceEntryCreate struct {
-		Date        time.Time `json:"date"`
-		Name        string    `json:"name"`
-		Description string    `json:"description"`
-		Cost        float64   `json:"cost,string"`
+		CompletedDate types.Date `json:"completedDate"`
+		ScheduledDate types.Date `json:"scheduledDate"`
+		Name          string     `json:"name"`
+		Description   string     `json:"description"`
+		Cost          float64    `json:"cost,string"`
 	}
 
 	MaintenanceEntry struct {
-		ID          uuid.UUID `json:"id"`
-		Date        time.Time `json:"date"`
-		Name        string    `json:"name"`
-		Description string    `json:"description"`
-		Cost        float64   `json:"cost,string"`
+		ID            uuid.UUID  `json:"id"`
+		CompletedDate types.Date `json:"completedDate"`
+		ScheduledDate types.Date `json:"scheduledDate"`
+		Name          string     `json:"name"`
+		Description   string     `json:"description"`
+		Cost          float64    `json:"cost,string"`
 	}
 
 	MaintenanceEntryUpdate struct {
-		Date        time.Time `json:"date"`
-		Name        string    `json:"name"`
-		Description string    `json:"description"`
-		Cost        float64   `json:"cost,string"`
+		CompletedDate types.Date `json:"completedDate"`
+		ScheduledDate types.Date `json:"scheduledDate"`
+		Name          string     `json:"name"`
+		Description   string     `json:"description"`
+		Cost          float64    `json:"cost,string"`
 	}
 
 	MaintenanceLog struct {
@@ -53,18 +57,20 @@ var (
 
 func mapMaintenanceEntry(entry *ent.MaintenanceEntry) MaintenanceEntry {
 	return MaintenanceEntry{
-		ID:          entry.ID,
-		Date:        entry.Date,
-		Name:        entry.Name,
-		Description: entry.Description,
-		Cost:        entry.Cost,
+		ID:            entry.ID,
+		CompletedDate: types.Date(entry.Date),
+		ScheduledDate: types.Date(entry.ScheduledDate),
+		Name:          entry.Name,
+		Description:   entry.Description,
+		Cost:          entry.Cost,
 	}
 }
 
 func (r *MaintenanceEntryRepository) Create(ctx context.Context, itemID uuid.UUID, input MaintenanceEntryCreate) (MaintenanceEntry, error) {
 	item, err := r.db.MaintenanceEntry.Create().
 		SetItemID(itemID).
-		SetDate(input.Date).
+		SetDate(input.CompletedDate.Time()).
+		SetScheduledDate(input.ScheduledDate.Time()).
 		SetName(input.Name).
 		SetDescription(input.Description).
 		SetCost(input.Cost).
@@ -75,7 +81,8 @@ func (r *MaintenanceEntryRepository) Create(ctx context.Context, itemID uuid.UUI
 
 func (r *MaintenanceEntryRepository) Update(ctx context.Context, ID uuid.UUID, input MaintenanceEntryUpdate) (MaintenanceEntry, error) {
 	item, err := r.db.MaintenanceEntry.UpdateOneID(ID).
-		SetDate(input.Date).
+		SetDate(input.CompletedDate.Time()).
+		SetScheduledDate(input.ScheduledDate.Time()).
 		SetName(input.Name).
 		SetDescription(input.Description).
 		SetCost(input.Cost).
@@ -84,14 +91,36 @@ func (r *MaintenanceEntryRepository) Update(ctx context.Context, ID uuid.UUID, i
 	return mapMaintenanceEntryErr(item, err)
 }
 
-func (r *MaintenanceEntryRepository) GetLog(ctx context.Context, itemID uuid.UUID) (MaintenanceLog, error) {
+type MaintenanceLogQuery struct {
+	Completed bool
+	Scheduled bool
+}
+
+func (r *MaintenanceEntryRepository) GetLog(ctx context.Context, itemID uuid.UUID, query MaintenanceLogQuery) (MaintenanceLog, error) {
 	log := MaintenanceLog{
 		ItemID: itemID,
 	}
 
-	entries, err := r.db.MaintenanceEntry.Query().
-		Where(maintenanceentry.ItemID(itemID)).
-		Order(ent.Desc(maintenanceentry.FieldDate)).
+	q := r.db.MaintenanceEntry.Query().Where(maintenanceentry.ItemID(itemID))
+
+	if query.Completed {
+		q = q.Where(maintenanceentry.And(
+			maintenanceentry.DateNotNil(),
+			maintenanceentry.DateNEQ(time.Time{}),
+		))
+
+	} else if query.Scheduled {
+		q = q.Where(maintenanceentry.And(
+			maintenanceentry.Or(
+				maintenanceentry.DateIsNil(),
+				maintenanceentry.DateEQ(time.Time{}),
+			),
+			maintenanceentry.ScheduledDateNotNil(),
+			maintenanceentry.ScheduledDateNEQ(time.Time{}),
+		))
+	}
+
+	entries, err := q.Order(ent.Desc(maintenanceentry.FieldDate)).
 		All(ctx)
 	if err != nil {
 		return MaintenanceLog{}, err
@@ -102,7 +131,7 @@ func (r *MaintenanceEntryRepository) GetLog(ctx context.Context, itemID uuid.UUI
 	var maybeTotal *float64
 	var maybeAverage *float64
 
-	q := `
+	statement := `
 SELECT
   SUM(cost_total) AS total_of_totals,
   AVG(cost_total) AS avg_of_averages
@@ -119,7 +148,7 @@ FROM
       my
   )`
 
-	row := r.db.Sql().QueryRowContext(ctx, q, itemID)
+	row := r.db.Sql().QueryRowContext(ctx, statement, itemID)
 	err = row.Scan(&maybeTotal, &maybeAverage)
 	if err != nil {
 		return MaintenanceLog{}, err

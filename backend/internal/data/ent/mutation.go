@@ -8918,22 +8918,23 @@ func (m *LocationMutation) ResetEdge(name string) error {
 // MaintenanceEntryMutation represents an operation that mutates the MaintenanceEntry nodes in the graph.
 type MaintenanceEntryMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uuid.UUID
-	created_at    *time.Time
-	updated_at    *time.Time
-	date          *time.Time
-	name          *string
-	description   *string
-	cost          *float64
-	addcost       *float64
-	clearedFields map[string]struct{}
-	item          *uuid.UUID
-	cleareditem   bool
-	done          bool
-	oldValue      func(context.Context) (*MaintenanceEntry, error)
-	predicates    []predicate.MaintenanceEntry
+	op             Op
+	typ            string
+	id             *uuid.UUID
+	created_at     *time.Time
+	updated_at     *time.Time
+	date           *time.Time
+	scheduled_date *time.Time
+	name           *string
+	description    *string
+	cost           *float64
+	addcost        *float64
+	clearedFields  map[string]struct{}
+	item           *uuid.UUID
+	cleareditem    bool
+	done           bool
+	oldValue       func(context.Context) (*MaintenanceEntry, error)
+	predicates     []predicate.MaintenanceEntry
 }
 
 var _ ent.Mutation = (*MaintenanceEntryMutation)(nil)
@@ -9179,9 +9180,71 @@ func (m *MaintenanceEntryMutation) OldDate(ctx context.Context) (v time.Time, er
 	return oldValue.Date, nil
 }
 
+// ClearDate clears the value of the "date" field.
+func (m *MaintenanceEntryMutation) ClearDate() {
+	m.date = nil
+	m.clearedFields[maintenanceentry.FieldDate] = struct{}{}
+}
+
+// DateCleared returns if the "date" field was cleared in this mutation.
+func (m *MaintenanceEntryMutation) DateCleared() bool {
+	_, ok := m.clearedFields[maintenanceentry.FieldDate]
+	return ok
+}
+
 // ResetDate resets all changes to the "date" field.
 func (m *MaintenanceEntryMutation) ResetDate() {
 	m.date = nil
+	delete(m.clearedFields, maintenanceentry.FieldDate)
+}
+
+// SetScheduledDate sets the "scheduled_date" field.
+func (m *MaintenanceEntryMutation) SetScheduledDate(t time.Time) {
+	m.scheduled_date = &t
+}
+
+// ScheduledDate returns the value of the "scheduled_date" field in the mutation.
+func (m *MaintenanceEntryMutation) ScheduledDate() (r time.Time, exists bool) {
+	v := m.scheduled_date
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldScheduledDate returns the old "scheduled_date" field's value of the MaintenanceEntry entity.
+// If the MaintenanceEntry object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MaintenanceEntryMutation) OldScheduledDate(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldScheduledDate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldScheduledDate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldScheduledDate: %w", err)
+	}
+	return oldValue.ScheduledDate, nil
+}
+
+// ClearScheduledDate clears the value of the "scheduled_date" field.
+func (m *MaintenanceEntryMutation) ClearScheduledDate() {
+	m.scheduled_date = nil
+	m.clearedFields[maintenanceentry.FieldScheduledDate] = struct{}{}
+}
+
+// ScheduledDateCleared returns if the "scheduled_date" field was cleared in this mutation.
+func (m *MaintenanceEntryMutation) ScheduledDateCleared() bool {
+	_, ok := m.clearedFields[maintenanceentry.FieldScheduledDate]
+	return ok
+}
+
+// ResetScheduledDate resets all changes to the "scheduled_date" field.
+func (m *MaintenanceEntryMutation) ResetScheduledDate() {
+	m.scheduled_date = nil
+	delete(m.clearedFields, maintenanceentry.FieldScheduledDate)
 }
 
 // SetName sets the "name" field.
@@ -9385,7 +9448,7 @@ func (m *MaintenanceEntryMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *MaintenanceEntryMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.created_at != nil {
 		fields = append(fields, maintenanceentry.FieldCreatedAt)
 	}
@@ -9397,6 +9460,9 @@ func (m *MaintenanceEntryMutation) Fields() []string {
 	}
 	if m.date != nil {
 		fields = append(fields, maintenanceentry.FieldDate)
+	}
+	if m.scheduled_date != nil {
+		fields = append(fields, maintenanceentry.FieldScheduledDate)
 	}
 	if m.name != nil {
 		fields = append(fields, maintenanceentry.FieldName)
@@ -9423,6 +9489,8 @@ func (m *MaintenanceEntryMutation) Field(name string) (ent.Value, bool) {
 		return m.ItemID()
 	case maintenanceentry.FieldDate:
 		return m.Date()
+	case maintenanceentry.FieldScheduledDate:
+		return m.ScheduledDate()
 	case maintenanceentry.FieldName:
 		return m.Name()
 	case maintenanceentry.FieldDescription:
@@ -9446,6 +9514,8 @@ func (m *MaintenanceEntryMutation) OldField(ctx context.Context, name string) (e
 		return m.OldItemID(ctx)
 	case maintenanceentry.FieldDate:
 		return m.OldDate(ctx)
+	case maintenanceentry.FieldScheduledDate:
+		return m.OldScheduledDate(ctx)
 	case maintenanceentry.FieldName:
 		return m.OldName(ctx)
 	case maintenanceentry.FieldDescription:
@@ -9488,6 +9558,13 @@ func (m *MaintenanceEntryMutation) SetField(name string, value ent.Value) error 
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDate(v)
+		return nil
+	case maintenanceentry.FieldScheduledDate:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetScheduledDate(v)
 		return nil
 	case maintenanceentry.FieldName:
 		v, ok := value.(string)
@@ -9555,6 +9632,12 @@ func (m *MaintenanceEntryMutation) AddField(name string, value ent.Value) error 
 // mutation.
 func (m *MaintenanceEntryMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(maintenanceentry.FieldDate) {
+		fields = append(fields, maintenanceentry.FieldDate)
+	}
+	if m.FieldCleared(maintenanceentry.FieldScheduledDate) {
+		fields = append(fields, maintenanceentry.FieldScheduledDate)
+	}
 	if m.FieldCleared(maintenanceentry.FieldDescription) {
 		fields = append(fields, maintenanceentry.FieldDescription)
 	}
@@ -9572,6 +9655,12 @@ func (m *MaintenanceEntryMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *MaintenanceEntryMutation) ClearField(name string) error {
 	switch name {
+	case maintenanceentry.FieldDate:
+		m.ClearDate()
+		return nil
+	case maintenanceentry.FieldScheduledDate:
+		m.ClearScheduledDate()
+		return nil
 	case maintenanceentry.FieldDescription:
 		m.ClearDescription()
 		return nil
@@ -9594,6 +9683,9 @@ func (m *MaintenanceEntryMutation) ResetField(name string) error {
 		return nil
 	case maintenanceentry.FieldDate:
 		m.ResetDate()
+		return nil
+	case maintenanceentry.FieldScheduledDate:
+		m.ResetScheduledDate()
 		return nil
 	case maintenanceentry.FieldName:
 		m.ResetName()

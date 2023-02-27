@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/hay-kot/homebox/backend/internal/data/types"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -43,10 +44,10 @@ func TestMaintenanceEntryRepository_GetLog(t *testing.T) {
 		}
 
 		created[i] = MaintenanceEntryCreate{
-			Date:        dt,
-			Name:        "Maintenance",
-			Description: "Maintenance description",
-			Cost:        10,
+			CompletedDate: types.DateFromTime(dt),
+			Name:          "Maintenance",
+			Description:   "Maintenance description",
+			Cost:          10,
 		}
 	}
 
@@ -58,7 +59,9 @@ func TestMaintenanceEntryRepository_GetLog(t *testing.T) {
 	}
 
 	// Get the log for the item
-	log, err := tRepos.MaintEntry.GetLog(context.Background(), item.ID)
+	log, err := tRepos.MaintEntry.GetLog(context.Background(), item.ID, MaintenanceLogQuery{
+		Completed: true,
+	})
 	if err != nil {
 		t.Fatalf("failed to get maintenance log: %v", err)
 	}

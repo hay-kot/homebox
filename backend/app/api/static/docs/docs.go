@@ -2204,12 +2204,13 @@ const docTemplate = `{
         "repo.MaintenanceEntry": {
             "type": "object",
             "properties": {
+                "completedDate": {
+                    "description": "Sold",
+                    "type": "string"
+                },
                 "cost": {
                     "type": "string",
                     "example": "0"
-                },
-                "date": {
-                    "type": "string"
                 },
                 "description": {
                     "type": "string"
@@ -2219,23 +2220,32 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "scheduledDate": {
+                    "description": "Sold",
+                    "type": "string"
                 }
             }
         },
         "repo.MaintenanceEntryCreate": {
             "type": "object",
             "properties": {
+                "completedDate": {
+                    "description": "Sold",
+                    "type": "string"
+                },
                 "cost": {
                     "type": "string",
                     "example": "0"
-                },
-                "date": {
-                    "type": "string"
                 },
                 "description": {
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "scheduledDate": {
+                    "description": "Sold",
                     "type": "string"
                 }
             }
@@ -2243,17 +2253,22 @@ const docTemplate = `{
         "repo.MaintenanceEntryUpdate": {
             "type": "object",
             "properties": {
+                "completedDate": {
+                    "description": "Sold",
+                    "type": "string"
+                },
                 "cost": {
                     "type": "string",
                     "example": "0"
-                },
-                "date": {
-                    "type": "string"
                 },
                 "description": {
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "scheduledDate": {
+                    "description": "Sold",
                     "type": "string"
                 }
             }

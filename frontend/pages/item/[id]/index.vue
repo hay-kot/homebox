@@ -360,8 +360,8 @@
       },
       {
         id: "log",
-        name: "Log",
-        to: `/item/${itemId.value}/log`,
+        name: "Maintenance",
+        to: `/item/${itemId.value}/maintenance`,
       },
       {
         id: "edit",

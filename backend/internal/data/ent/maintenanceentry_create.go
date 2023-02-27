@@ -70,6 +70,20 @@ func (mec *MaintenanceEntryCreate) SetNillableDate(t *time.Time) *MaintenanceEnt
 	return mec
 }
 
+// SetScheduledDate sets the "scheduled_date" field.
+func (mec *MaintenanceEntryCreate) SetScheduledDate(t time.Time) *MaintenanceEntryCreate {
+	mec.mutation.SetScheduledDate(t)
+	return mec
+}
+
+// SetNillableScheduledDate sets the "scheduled_date" field if the given value is not nil.
+func (mec *MaintenanceEntryCreate) SetNillableScheduledDate(t *time.Time) *MaintenanceEntryCreate {
+	if t != nil {
+		mec.SetScheduledDate(*t)
+	}
+	return mec
+}
+
 // SetName sets the "name" field.
 func (mec *MaintenanceEntryCreate) SetName(s string) *MaintenanceEntryCreate {
 	mec.mutation.SetName(s)
@@ -166,10 +180,6 @@ func (mec *MaintenanceEntryCreate) defaults() {
 		v := maintenanceentry.DefaultUpdatedAt()
 		mec.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := mec.mutation.Date(); !ok {
-		v := maintenanceentry.DefaultDate()
-		mec.mutation.SetDate(v)
-	}
 	if _, ok := mec.mutation.Cost(); !ok {
 		v := maintenanceentry.DefaultCost
 		mec.mutation.SetCost(v)
@@ -190,9 +200,6 @@ func (mec *MaintenanceEntryCreate) check() error {
 	}
 	if _, ok := mec.mutation.ItemID(); !ok {
 		return &ValidationError{Name: "item_id", err: errors.New(`ent: missing required field "MaintenanceEntry.item_id"`)}
-	}
-	if _, ok := mec.mutation.Date(); !ok {
-		return &ValidationError{Name: "date", err: errors.New(`ent: missing required field "MaintenanceEntry.date"`)}
 	}
 	if _, ok := mec.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "MaintenanceEntry.name"`)}
@@ -259,6 +266,10 @@ func (mec *MaintenanceEntryCreate) createSpec() (*MaintenanceEntry, *sqlgraph.Cr
 	if value, ok := mec.mutation.Date(); ok {
 		_spec.SetField(maintenanceentry.FieldDate, field.TypeTime, value)
 		_node.Date = value
+	}
+	if value, ok := mec.mutation.ScheduledDate(); ok {
+		_spec.SetField(maintenanceentry.FieldScheduledDate, field.TypeTime, value)
+		_node.ScheduledDate = value
 	}
 	if value, ok := mec.mutation.Name(); ok {
 		_spec.SetField(maintenanceentry.FieldName, field.TypeString, value)

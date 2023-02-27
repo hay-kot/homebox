@@ -135,7 +135,8 @@ describe("user should be able to create an item and add an attachment", () => {
       const { response, data } = await api.items.maintenance.create(item.id, {
         name: faker.vehicle.model(),
         description: faker.lorem.paragraph(1),
-        date: faker.date.past(1),
+        completedDate: faker.date.past(1),
+        scheduledDate: "null",
         cost: faker.datatype.number(100).toString(),
       });
 
