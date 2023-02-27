@@ -10,8 +10,20 @@
   const api = useUserApi();
   const toast = useNotifier();
 
+  const scheduled = ref(true);
+
+  watch(
+    () => scheduled.value,
+    () => {
+      refreshLog();
+    }
+  );
+
   const { data: log, refresh: refreshLog } = useAsyncData(async () => {
-    const { data } = await api.items.maintenance.getLog(props.item.id);
+    const { data } = await api.items.maintenance.getLog(props.item.id, {
+      scheduled: scheduled.value,
+      completed: !scheduled.value,
+    });
     return data;
   });
 
@@ -48,7 +60,8 @@
     id: null as string | null,
     modal: false,
     name: "",
-    date: new Date(),
+    completedDate: null as Date | null,
+    scheduledDate: null as Date | null,
     description: "",
     cost: "",
   });
@@ -60,7 +73,8 @@
   function resetEntry() {
     entry.id = null;
     entry.name = "";
-    entry.date = new Date();
+    entry.completedDate = null;
+    entry.scheduledDate = null;
     entry.description = "";
     entry.cost = "";
   }
@@ -74,9 +88,10 @@
 
     const { error } = await api.items.maintenance.create(props.item.id, {
       name: entry.name,
-      date: entry.date,
+      completedDate: entry.completedDate ?? "",
+      scheduledDate: entry.scheduledDate ?? "",
       description: entry.description,
-      cost: entry.cost,
+      cost: parseFloat(entry.cost) ? entry.cost : "0",
     });
 
     if (error) {
@@ -108,10 +123,12 @@
   }
 
   function openEditDialog(e: MaintenanceEntry) {
+    console.log(e);
     entry.modal = true;
     entry.id = e.id;
     entry.name = e.name;
-    entry.date = new Date(e.date);
+    entry.completedDate = new Date(e.completedDate);
+    entry.scheduledDate = new Date(e.scheduledDate);
     entry.description = e.description;
     entry.cost = e.cost;
   }
@@ -123,7 +140,8 @@
 
     const { error } = await api.items.maintenance.update(props.item.id, entry.id, {
       name: entry.name,
-      date: entry.date,
+      completedDate: entry.completedDate ?? "null",
+      scheduledDate: entry.scheduledDate ?? "null",
       description: entry.description,
       cost: entry.cost,
     });
@@ -142,10 +160,13 @@
 <template>
   <div v-if="log">
     <BaseModal v-model="entry.modal">
-      <template #title> Create Entry </template>
+      <template #title>
+        {{ entry.id ? "Edit Entry" : "New Entry" }}
+      </template>
       <form @submit.prevent="createEntry">
         <FormTextField v-model="entry.name" autofocus label="Entry Name" />
-        <DatePicker v-model="entry.date" label="Date" />
+        <DatePicker v-model="entry.completedDate" label="Completed Date" />
+        <DatePicker v-model="entry.scheduledDate" label="Scheduled Date" />
         <FormTextArea v-model="entry.description" label="Notes" />
         <FormTextField v-model="entry.cost" autofocus label="Cost" />
         <div class="py-2 flex justify-end">
@@ -171,11 +192,19 @@
         />
       </div>
       <div class="flex">
+        <div class="btn-group">
+          <button class="btn btn-sm" :class="`${scheduled ? 'btn-active' : ''}`" @click="scheduled = true">
+            Scheduled
+          </button>
+          <button class="btn btn-sm" :class="`${scheduled ? '' : 'btn-active'}`" @click="scheduled = false">
+            Completed
+          </button>
+        </div>
         <BaseButton class="ml-auto" size="sm" @click="newEntry()">
           <template #icon>
-            <Icon name="mdi-post" />
+            <Icon name="mdi-plus" />
           </template>
-          Log Maintenance
+          New
         </BaseButton>
       </div>
       <div class="container space-y-6">
@@ -185,10 +214,14 @@
               {{ e.name }}
             </span>
             <template #description>
-              <div class="flex gap-2">
-                <div class="badge p-3">
+              <div class="flex flex-wrap gap-2">
+                <div v-if="validDate(e.completedDate)" class="badge p-3">
+                  <Icon name="mdi-check" class="mr-2" />
+                  <DateTime :date="e.completedDate" format="human" />
+                </div>
+                <div v-else-if="validDate(e.scheduledDate)" class="badge p-3">
                   <Icon name="mdi-calendar" class="mr-2" />
-                  <DateTime :date="e.date" format="human" />
+                  <DateTime :date="e.scheduledDate" format="human" />
                 </div>
                 <div class="tooltip tooltip-primary" data-tip="Cost">
                   <div class="badge badge-primary p-3">

@@ -26,6 +26,8 @@ type MaintenanceEntry struct {
 	ItemID uuid.UUID `json:"item_id,omitempty"`
 	// Date holds the value of the "date" field.
 	Date time.Time `json:"date,omitempty"`
+	// ScheduledDate holds the value of the "scheduled_date" field.
+	ScheduledDate time.Time `json:"scheduled_date,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Description holds the value of the "description" field.
@@ -68,7 +70,7 @@ func (*MaintenanceEntry) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullFloat64)
 		case maintenanceentry.FieldName, maintenanceentry.FieldDescription:
 			values[i] = new(sql.NullString)
-		case maintenanceentry.FieldCreatedAt, maintenanceentry.FieldUpdatedAt, maintenanceentry.FieldDate:
+		case maintenanceentry.FieldCreatedAt, maintenanceentry.FieldUpdatedAt, maintenanceentry.FieldDate, maintenanceentry.FieldScheduledDate:
 			values[i] = new(sql.NullTime)
 		case maintenanceentry.FieldID, maintenanceentry.FieldItemID:
 			values[i] = new(uuid.UUID)
@@ -116,6 +118,12 @@ func (me *MaintenanceEntry) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field date", values[i])
 			} else if value.Valid {
 				me.Date = value.Time
+			}
+		case maintenanceentry.FieldScheduledDate:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field scheduled_date", values[i])
+			} else if value.Valid {
+				me.ScheduledDate = value.Time
 			}
 		case maintenanceentry.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -179,6 +187,9 @@ func (me *MaintenanceEntry) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("date=")
 	builder.WriteString(me.Date.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("scheduled_date=")
+	builder.WriteString(me.ScheduledDate.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(me.Name)

@@ -61,6 +61,8 @@ func main() {
 		NewReDate("warrantyExpires"),
 		NewReDate("expiresAt"),
 		NewReDate("date"),
+		NewReDate("completedDate"),
+		NewReDate("scheduledDate"),
 	}
 
 	for _, replace := range replaces {

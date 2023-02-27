@@ -227,28 +227,37 @@ export interface LocationUpdate {
 }
 
 export interface MaintenanceEntry {
+  /** Sold */
+  completedDate: Date | string;
   /** @example "0" */
   cost: string;
-  date: Date | string;
   description: string;
   id: string;
   name: string;
+  /** Sold */
+  scheduledDate: Date | string;
 }
 
 export interface MaintenanceEntryCreate {
+  /** Sold */
+  completedDate: Date | string;
   /** @example "0" */
   cost: string;
-  date: Date | string;
   description: string;
   name: string;
+  /** Sold */
+  scheduledDate: Date | string;
 }
 
 export interface MaintenanceEntryUpdate {
+  /** Sold */
+  completedDate: Date | string;
   /** @example "0" */
   cost: string;
-  date: Date | string;
   description: string;
   name: string;
+  /** Sold */
+  scheduledDate: Date | string;
 }
 
 export interface MaintenanceLog {

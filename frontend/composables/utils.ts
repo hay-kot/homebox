@@ -5,6 +5,10 @@ export function validDate(dt: Date | string | null | undefined): boolean {
 
   // If it's a string, try to parse it
   if (typeof dt === "string") {
+    if (dt.startsWith("0001")) {
+      return false;
+    }
+
     const parsed = new Date(dt);
     if (isNaN(parsed.getTime())) {
       return false;

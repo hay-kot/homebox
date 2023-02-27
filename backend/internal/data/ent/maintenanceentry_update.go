@@ -56,6 +56,32 @@ func (meu *MaintenanceEntryUpdate) SetNillableDate(t *time.Time) *MaintenanceEnt
 	return meu
 }
 
+// ClearDate clears the value of the "date" field.
+func (meu *MaintenanceEntryUpdate) ClearDate() *MaintenanceEntryUpdate {
+	meu.mutation.ClearDate()
+	return meu
+}
+
+// SetScheduledDate sets the "scheduled_date" field.
+func (meu *MaintenanceEntryUpdate) SetScheduledDate(t time.Time) *MaintenanceEntryUpdate {
+	meu.mutation.SetScheduledDate(t)
+	return meu
+}
+
+// SetNillableScheduledDate sets the "scheduled_date" field if the given value is not nil.
+func (meu *MaintenanceEntryUpdate) SetNillableScheduledDate(t *time.Time) *MaintenanceEntryUpdate {
+	if t != nil {
+		meu.SetScheduledDate(*t)
+	}
+	return meu
+}
+
+// ClearScheduledDate clears the value of the "scheduled_date" field.
+func (meu *MaintenanceEntryUpdate) ClearScheduledDate() *MaintenanceEntryUpdate {
+	meu.mutation.ClearScheduledDate()
+	return meu
+}
+
 // SetName sets the "name" field.
 func (meu *MaintenanceEntryUpdate) SetName(s string) *MaintenanceEntryUpdate {
 	meu.mutation.SetName(s)
@@ -191,6 +217,15 @@ func (meu *MaintenanceEntryUpdate) sqlSave(ctx context.Context) (n int, err erro
 	if value, ok := meu.mutation.Date(); ok {
 		_spec.SetField(maintenanceentry.FieldDate, field.TypeTime, value)
 	}
+	if meu.mutation.DateCleared() {
+		_spec.ClearField(maintenanceentry.FieldDate, field.TypeTime)
+	}
+	if value, ok := meu.mutation.ScheduledDate(); ok {
+		_spec.SetField(maintenanceentry.FieldScheduledDate, field.TypeTime, value)
+	}
+	if meu.mutation.ScheduledDateCleared() {
+		_spec.ClearField(maintenanceentry.FieldScheduledDate, field.TypeTime)
+	}
 	if value, ok := meu.mutation.Name(); ok {
 		_spec.SetField(maintenanceentry.FieldName, field.TypeString, value)
 	}
@@ -284,6 +319,32 @@ func (meuo *MaintenanceEntryUpdateOne) SetNillableDate(t *time.Time) *Maintenanc
 	if t != nil {
 		meuo.SetDate(*t)
 	}
+	return meuo
+}
+
+// ClearDate clears the value of the "date" field.
+func (meuo *MaintenanceEntryUpdateOne) ClearDate() *MaintenanceEntryUpdateOne {
+	meuo.mutation.ClearDate()
+	return meuo
+}
+
+// SetScheduledDate sets the "scheduled_date" field.
+func (meuo *MaintenanceEntryUpdateOne) SetScheduledDate(t time.Time) *MaintenanceEntryUpdateOne {
+	meuo.mutation.SetScheduledDate(t)
+	return meuo
+}
+
+// SetNillableScheduledDate sets the "scheduled_date" field if the given value is not nil.
+func (meuo *MaintenanceEntryUpdateOne) SetNillableScheduledDate(t *time.Time) *MaintenanceEntryUpdateOne {
+	if t != nil {
+		meuo.SetScheduledDate(*t)
+	}
+	return meuo
+}
+
+// ClearScheduledDate clears the value of the "scheduled_date" field.
+func (meuo *MaintenanceEntryUpdateOne) ClearScheduledDate() *MaintenanceEntryUpdateOne {
+	meuo.mutation.ClearScheduledDate()
 	return meuo
 }
 
@@ -451,6 +512,15 @@ func (meuo *MaintenanceEntryUpdateOne) sqlSave(ctx context.Context) (_node *Main
 	}
 	if value, ok := meuo.mutation.Date(); ok {
 		_spec.SetField(maintenanceentry.FieldDate, field.TypeTime, value)
+	}
+	if meuo.mutation.DateCleared() {
+		_spec.ClearField(maintenanceentry.FieldDate, field.TypeTime)
+	}
+	if value, ok := meuo.mutation.ScheduledDate(); ok {
+		_spec.SetField(maintenanceentry.FieldScheduledDate, field.TypeTime, value)
+	}
+	if meuo.mutation.ScheduledDateCleared() {
+		_spec.ClearField(maintenanceentry.FieldScheduledDate, field.TypeTime)
 	}
 	if value, ok := meuo.mutation.Name(); ok {
 		_spec.SetField(maintenanceentry.FieldName, field.TypeString, value)

@@ -21,6 +21,8 @@ const (
 	FieldItemID = "item_id"
 	// FieldDate holds the string denoting the date field in the database.
 	FieldDate = "date"
+	// FieldScheduledDate holds the string denoting the scheduled_date field in the database.
+	FieldScheduledDate = "scheduled_date"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldDescription holds the string denoting the description field in the database.
@@ -47,6 +49,7 @@ var Columns = []string{
 	FieldUpdatedAt,
 	FieldItemID,
 	FieldDate,
+	FieldScheduledDate,
 	FieldName,
 	FieldDescription,
 	FieldCost,
@@ -69,8 +72,6 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// DefaultDate holds the default value on creation for the "date" field.
-	DefaultDate func() time.Time
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
 	// DescriptionValidator is a validator for the "description" field. It is called by the builders before save.

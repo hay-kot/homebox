@@ -1,13 +1,13 @@
 <template>
   <div v-if="!inline" class="form-control w-full">
     <label class="label">
-      <span class="label-text"> Date </span>
+      <span class="label-text"> {{ label }}</span>
     </label>
     <input ref="input" v-model="selected" type="date" class="input input-bordered w-full" />
   </div>
   <div v-else class="sm:grid sm:grid-cols-4 sm:items-start sm:gap-4">
     <label class="label">
-      <span class="label-text"> Date </span>
+      <span class="label-text"> {{ label }} </span>
     </label>
     <input v-model="selected" type="date" class="input input-bordered col-span-3 w-full mt-2" />
   </div>
@@ -18,13 +18,17 @@
 
   const props = defineProps({
     modelValue: {
-      type: Date as () => Date | string,
+      type: Date as () => Date | string | null,
       required: false,
       default: null,
     },
     inline: {
       type: Boolean,
       default: false,
+    },
+    label: {
+      type: String,
+      default: "Date",
     },
   });
 

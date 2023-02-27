@@ -2,6 +2,7 @@ package v1
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
@@ -66,7 +67,14 @@ func (ctrl *V1Controller) handleMaintenanceLog() server.HandlerFunc {
 
 		switch r.Method {
 		case http.MethodGet:
-			mlog, err := ctrl.repo.MaintEntry.GetLog(ctx, itemID)
+			completed, _ := strconv.ParseBool(r.URL.Query().Get("completed"))
+			scheduled, _ := strconv.ParseBool(r.URL.Query().Get("scheduled"))
+			query := repo.MaintenanceLogQuery{
+				Completed: completed,
+				Scheduled: scheduled,
+			}
+
+			mlog, err := ctrl.repo.MaintEntry.GetLog(ctx, itemID, query)
 			if err != nil {
 				log.Err(err).Msg("failed to get items")
 				return validate.NewRequestError(err, http.StatusInternalServerError)

@@ -59,9 +59,14 @@ export class FieldsAPI extends BaseAPI {
   }
 }
 
+type MaintenanceEntryQuery = {
+  scheduled?: boolean;
+  completed?: boolean;
+};
+
 export class MaintenanceAPI extends BaseAPI {
-  getLog(itemId: string) {
-    return this.http.get<MaintenanceLog>({ url: route(`/items/${itemId}/maintenance`) });
+  getLog(itemId: string, q: MaintenanceEntryQuery = {}) {
+    return this.http.get<MaintenanceLog>({ url: route(`/items/${itemId}/maintenance`, q) });
   }
 
   create(itemId: string, data: MaintenanceEntryCreate) {

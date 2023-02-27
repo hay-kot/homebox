@@ -76,6 +76,11 @@ func Date(v time.Time) predicate.MaintenanceEntry {
 	return predicate.MaintenanceEntry(sql.FieldEQ(FieldDate, v))
 }
 
+// ScheduledDate applies equality check predicate on the "scheduled_date" field. It's identical to ScheduledDateEQ.
+func ScheduledDate(v time.Time) predicate.MaintenanceEntry {
+	return predicate.MaintenanceEntry(sql.FieldEQ(FieldScheduledDate, v))
+}
+
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.MaintenanceEntry {
 	return predicate.MaintenanceEntry(sql.FieldEQ(FieldName, v))
@@ -229,6 +234,66 @@ func DateLT(v time.Time) predicate.MaintenanceEntry {
 // DateLTE applies the LTE predicate on the "date" field.
 func DateLTE(v time.Time) predicate.MaintenanceEntry {
 	return predicate.MaintenanceEntry(sql.FieldLTE(FieldDate, v))
+}
+
+// DateIsNil applies the IsNil predicate on the "date" field.
+func DateIsNil() predicate.MaintenanceEntry {
+	return predicate.MaintenanceEntry(sql.FieldIsNull(FieldDate))
+}
+
+// DateNotNil applies the NotNil predicate on the "date" field.
+func DateNotNil() predicate.MaintenanceEntry {
+	return predicate.MaintenanceEntry(sql.FieldNotNull(FieldDate))
+}
+
+// ScheduledDateEQ applies the EQ predicate on the "scheduled_date" field.
+func ScheduledDateEQ(v time.Time) predicate.MaintenanceEntry {
+	return predicate.MaintenanceEntry(sql.FieldEQ(FieldScheduledDate, v))
+}
+
+// ScheduledDateNEQ applies the NEQ predicate on the "scheduled_date" field.
+func ScheduledDateNEQ(v time.Time) predicate.MaintenanceEntry {
+	return predicate.MaintenanceEntry(sql.FieldNEQ(FieldScheduledDate, v))
+}
+
+// ScheduledDateIn applies the In predicate on the "scheduled_date" field.
+func ScheduledDateIn(vs ...time.Time) predicate.MaintenanceEntry {
+	return predicate.MaintenanceEntry(sql.FieldIn(FieldScheduledDate, vs...))
+}
+
+// ScheduledDateNotIn applies the NotIn predicate on the "scheduled_date" field.
+func ScheduledDateNotIn(vs ...time.Time) predicate.MaintenanceEntry {
+	return predicate.MaintenanceEntry(sql.FieldNotIn(FieldScheduledDate, vs...))
+}
+
+// ScheduledDateGT applies the GT predicate on the "scheduled_date" field.
+func ScheduledDateGT(v time.Time) predicate.MaintenanceEntry {
+	return predicate.MaintenanceEntry(sql.FieldGT(FieldScheduledDate, v))
+}
+
+// ScheduledDateGTE applies the GTE predicate on the "scheduled_date" field.
+func ScheduledDateGTE(v time.Time) predicate.MaintenanceEntry {
+	return predicate.MaintenanceEntry(sql.FieldGTE(FieldScheduledDate, v))
+}
+
+// ScheduledDateLT applies the LT predicate on the "scheduled_date" field.
+func ScheduledDateLT(v time.Time) predicate.MaintenanceEntry {
+	return predicate.MaintenanceEntry(sql.FieldLT(FieldScheduledDate, v))
+}
+
+// ScheduledDateLTE applies the LTE predicate on the "scheduled_date" field.
+func ScheduledDateLTE(v time.Time) predicate.MaintenanceEntry {
+	return predicate.MaintenanceEntry(sql.FieldLTE(FieldScheduledDate, v))
+}
+
+// ScheduledDateIsNil applies the IsNil predicate on the "scheduled_date" field.
+func ScheduledDateIsNil() predicate.MaintenanceEntry {
+	return predicate.MaintenanceEntry(sql.FieldIsNull(FieldScheduledDate))
+}
+
+// ScheduledDateNotNil applies the NotNil predicate on the "scheduled_date" field.
+func ScheduledDateNotNil() predicate.MaintenanceEntry {
+	return predicate.MaintenanceEntry(sql.FieldNotNull(FieldScheduledDate))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.

@@ -323,7 +323,8 @@ var (
 		{Name: "id", Type: field.TypeUUID},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "date", Type: field.TypeTime},
+		{Name: "date", Type: field.TypeTime, Nullable: true},
+		{Name: "scheduled_date", Type: field.TypeTime, Nullable: true},
 		{Name: "name", Type: field.TypeString, Size: 255},
 		{Name: "description", Type: field.TypeString, Nullable: true, Size: 2500},
 		{Name: "cost", Type: field.TypeFloat64, Default: 0},
@@ -337,7 +338,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "maintenance_entries_items_maintenance_entries",
-				Columns:    []*schema.Column{MaintenanceEntriesColumns[7]},
+				Columns:    []*schema.Column{MaintenanceEntriesColumns[8]},
 				RefColumns: []*schema.Column{ItemsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},

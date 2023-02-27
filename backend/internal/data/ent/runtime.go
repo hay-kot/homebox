@@ -446,12 +446,8 @@ func init() {
 	maintenanceentry.DefaultUpdatedAt = maintenanceentryDescUpdatedAt.Default.(func() time.Time)
 	// maintenanceentry.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	maintenanceentry.UpdateDefaultUpdatedAt = maintenanceentryDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// maintenanceentryDescDate is the schema descriptor for date field.
-	maintenanceentryDescDate := maintenanceentryFields[1].Descriptor()
-	// maintenanceentry.DefaultDate holds the default value on creation for the date field.
-	maintenanceentry.DefaultDate = maintenanceentryDescDate.Default.(func() time.Time)
 	// maintenanceentryDescName is the schema descriptor for name field.
-	maintenanceentryDescName := maintenanceentryFields[2].Descriptor()
+	maintenanceentryDescName := maintenanceentryFields[3].Descriptor()
 	// maintenanceentry.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	maintenanceentry.NameValidator = func() func(string) error {
 		validators := maintenanceentryDescName.Validators
@@ -469,11 +465,11 @@ func init() {
 		}
 	}()
 	// maintenanceentryDescDescription is the schema descriptor for description field.
-	maintenanceentryDescDescription := maintenanceentryFields[3].Descriptor()
+	maintenanceentryDescDescription := maintenanceentryFields[4].Descriptor()
 	// maintenanceentry.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
 	maintenanceentry.DescriptionValidator = maintenanceentryDescDescription.Validators[0].(func(string) error)
 	// maintenanceentryDescCost is the schema descriptor for cost field.
-	maintenanceentryDescCost := maintenanceentryFields[4].Descriptor()
+	maintenanceentryDescCost := maintenanceentryFields[5].Descriptor()
 	// maintenanceentry.DefaultCost holds the default value on creation for the cost field.
 	maintenanceentry.DefaultCost = maintenanceentryDescCost.Default.(float64)
 	// maintenanceentryDescID is the schema descriptor for id field.
