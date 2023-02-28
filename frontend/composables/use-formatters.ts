@@ -21,6 +21,7 @@ export async function useFormatCurrency() {
 }
 
 export type DateTimeFormat = "relative" | "long" | "short" | "human";
+export type DateTimeType = "date" | "time" | "datetime";
 
 function ordinalIndicator(num: number) {
   if (num > 3 && num < 21) return "th";
@@ -36,7 +37,7 @@ function ordinalIndicator(num: number) {
   }
 }
 
-export function fmtDate(value: string | Date, fmt: DateTimeFormat = "human"): string {
+export function fmtDate(value: string | Date, fmt: DateTimeFormat = "human", fmtType: DateTimeType): string {
   const months = [
     "January",
     "February",
@@ -59,6 +60,11 @@ export function fmtDate(value: string | Date, fmt: DateTimeFormat = "human"): st
 
   if (!validDate(dt)) {
     return "";
+  }
+
+  if (fmtType === "date") {
+    // Offset local time
+    dt.setHours(dt.getHours() + dt.getTimezoneOffset() / 60);
   }
 
   switch (fmt) {

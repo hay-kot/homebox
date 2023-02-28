@@ -8,6 +8,7 @@ type BaseDetail = {
 type DateDetail = BaseDetail & {
   type: "date";
   text: Date | string;
+  date: boolean;
 };
 
 type CurrencyDetail = BaseDetail & {
