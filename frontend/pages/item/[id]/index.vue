@@ -246,6 +246,7 @@
         name: "Warranty Expires",
         text: item.value?.warrantyExpires || "",
         type: "date",
+        date: true,
       });
     }
 
@@ -280,6 +281,7 @@
         name: "Purchase Date",
         text: item.value?.purchaseTime || "",
         type: "date",
+        date: true,
       },
     ];
   });
@@ -306,6 +308,7 @@
         name: "Sold At",
         text: item.value?.soldTime || "",
         type: "date",
+        date: true,
       },
     ];
   });

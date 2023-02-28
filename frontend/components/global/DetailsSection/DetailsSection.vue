@@ -7,7 +7,11 @@
         </dt>
         <dd class="text-sm text-base-content text-start sm:col-span-2">
           <slot :name="detail.slot || detail.name" v-bind="{ detail }">
-            <DateTime v-if="detail.type == 'date'" :date="detail.text" />
+            <DateTime
+              v-if="detail.type == 'date'"
+              :date="detail.text"
+              :datetime-type="detail.date ? 'date' : 'datetime'"
+            />
             <Currency v-else-if="detail.type == 'currency'" :amount="detail.text" />
             <template v-else-if="detail.type === 'link'">
               <div class="tooltip tooltip-primary tooltip-right" :data-tip="detail.href">

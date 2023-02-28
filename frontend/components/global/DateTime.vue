@@ -3,16 +3,18 @@
 </template>
 
 <script setup lang="ts">
-  type DateTimeFormat = "relative" | "long" | "short" | "human";
+  import { DateTimeFormat, DateTimeType } from "~~/composables/use-formatters";
 
   type Props = {
     date?: Date | string;
     format?: DateTimeFormat;
+    datetimeType?: DateTimeType;
   };
 
   const props = withDefaults(defineProps<Props>(), {
     date: undefined,
     format: "relative",
+    datetimeType: "date",
   });
 
   const value = computed(() => {
@@ -20,6 +22,6 @@
       return "";
     }
 
-    return fmtDate(props.date, props.format);
+    return fmtDate(props.date, props.format, props.datetimeType);
   });
 </script>

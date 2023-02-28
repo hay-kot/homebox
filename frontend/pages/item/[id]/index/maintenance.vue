@@ -217,11 +217,11 @@
               <div class="flex flex-wrap gap-2">
                 <div v-if="validDate(e.completedDate)" class="badge p-3">
                   <Icon name="mdi-check" class="mr-2" />
-                  <DateTime :date="e.completedDate" format="human" />
+                  <DateTime :date="e.completedDate" format="human" datetime-type="date" />
                 </div>
                 <div v-else-if="validDate(e.scheduledDate)" class="badge p-3">
                   <Icon name="mdi-calendar" class="mr-2" />
-                  <DateTime :date="e.scheduledDate" format="human" />
+                  <DateTime :date="e.scheduledDate" format="human" datetime-type="date" />
                 </div>
                 <div class="tooltip tooltip-primary" data-tip="Cost">
                   <div class="badge badge-primary p-3">

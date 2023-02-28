@@ -35,18 +35,38 @@
   const selected = computed({
     get() {
       // return modelValue as string as YYYY-MM-DD or null
-      if (validDate(props.modelValue)) {
-        if (typeof props.modelValue === "string") {
-          return props.modelValue;
+
+      // String
+      if (typeof props.modelValue === "string") {
+        // Empty string
+        if (props.modelValue === "") {
+          return null;
         }
 
-        return props.modelValue ? props.modelValue.toISOString().split("T")[0] : null;
+        // Invalid Date string
+        if (props.modelValue === "Invalid Date") {
+          return null;
+        }
+
+        // Valid Date string
+        return props.modelValue;
+      }
+
+      // Date
+      if (props.modelValue instanceof Date) {
+        if (isNaN(props.modelValue.getTime())) {
+          return null;
+        }
+
+        // Valid Date
+        return props.modelValue.toISOString().split("T")[0];
       }
 
       return null;
     },
     set(value: string | null) {
       // emit update:modelValue with a Date object or null
+      console.log("SET", value);
       emit("update:modelValue", value ? new Date(value) : null);
     },
   });
