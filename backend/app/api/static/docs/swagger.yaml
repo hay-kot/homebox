@@ -451,6 +451,51 @@ definitions:
       itemId:
         type: string
     type: object
+  repo.NotifierCreate:
+    properties:
+      isActive:
+        type: boolean
+      name:
+        maxLength: 255
+        minLength: 1
+        type: string
+      url:
+        type: string
+    required:
+    - name
+    - url
+    type: object
+  repo.NotifierOut:
+    properties:
+      createdAt:
+        type: string
+      groupId:
+        type: string
+      id:
+        type: string
+      isActive:
+        type: boolean
+      name:
+        type: string
+      updatedAt:
+        type: string
+      userId:
+        type: string
+    type: object
+  repo.NotifierUpdate:
+    properties:
+      isActive:
+        type: boolean
+      name:
+        maxLength: 255
+        minLength: 1
+        type: string
+      url:
+        type: string
+        x-nullable: true
+    required:
+    - name
+    type: object
   repo.PaginationResult-repo_ItemSummary:
     properties:
       items:
@@ -1428,6 +1473,109 @@ paths:
       summary: Get All Locations
       tags:
       - Locations
+  /v1/notifiers:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/server.Results'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/repo.NotifierOut'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: Get All notifier
+      tags:
+      - Notifiers
+    post:
+      parameters:
+      - description: Notifier Data
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/repo.NotifierCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/repo.NotifierOut'
+      security:
+      - Bearer: []
+      summary: Create a new notifier
+      tags:
+      - Notifiers
+  /v1/notifiers/{id}:
+    delete:
+      parameters:
+      - description: Notifier ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+      security:
+      - Bearer: []
+      summary: Delete a notifier
+      tags:
+      - Notifiers
+    put:
+      parameters:
+      - description: Notifier ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Notifier Data
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/repo.NotifierUpdate'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/repo.NotifierOut'
+      security:
+      - Bearer: []
+      summary: Update a notifier
+      tags:
+      - Notifiers
+  /v1/notifiers/test:
+    post:
+      parameters:
+      - description: Notifier ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: URL
+        in: query
+        name: url
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - Bearer: []
+      summary: Test notifier
+      tags:
+      - Notifiers
   /v1/qrcode:
     get:
       parameters:

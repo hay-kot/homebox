@@ -36,13 +36,13 @@ func NewNotifierRepository(db *ent.Client) *NotifierRepository {
 type (
 	NotifierCreate struct {
 		Name     string `json:"name" validate:"required,min=1,max=255"`
-		IsActive bool   `json:"isEnabled" validate:"required,min=1,max=255"`
+		IsActive bool   `json:"isActive"`
 		URL      string `json:"url" validate:"required"`
 	}
 
 	NotifierUpdate struct {
 		Name     string  `json:"name" validate:"required,min=1,max=255"`
-		IsActive bool    `json:"isEnabled" validate:"required,min=1,max=255"`
+		IsActive bool    `json:"isActive"`
 		URL      *string `json:"url" extensions:"x-nullable"`
 	}
 
@@ -54,13 +54,13 @@ type (
 		UpdatedAt time.Time `json:"updatedAt"`
 
 		Name     string `json:"name"`
-		IsActive bool   `json:"isEnabled"`
+		IsActive bool   `json:"isActive"`
 		URL      string `json:"-"` // URL field is not exposed to the client
 	}
 )
 
 func (r *NotifierRepository) GetByUser(ctx context.Context, userID uuid.UUID) ([]NotifierOut, error) {
-	notifier, err := r.db.Notifier.Query().Where(notifier.GroupID(userID)).All(ctx)
+	notifier, err := r.db.Notifier.Query().Where(notifier.UserID(userID)).All(ctx)
 	return r.mapper.MapEachErr(notifier, err)
 }
 
