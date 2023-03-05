@@ -1,4 +1,4 @@
-h1:ZyM3lKzq56l2l2mr1wjKS6sl7vS1i1gCMEw3aWz6Bjk=
+h1:VjVLPBHzJ8N1Hiw+Aeitb0alnVn9UFilnajCzc+pie8=
 20220929052825_init.sql h1:ZlCqm1wzjDmofeAcSX3jE4h4VcdTNGpRg2eabztDy9Q=
 20221001210956_group_invitations.sql h1:YQKJFtE39wFOcRNbZQ/d+ZlHwrcfcsZlcv/pLEYdpjw=
 20221009173029_add_user_roles.sql h1:vWmzAfgEWQeGk0Vn70zfVPCcfEZth3E0JcvyKTjpYyU=
@@ -11,3 +11,4 @@ h1:ZyM3lKzq56l2l2mr1wjKS6sl7vS1i1gCMEw3aWz6Bjk=
 20221205234812_cascade_delete_roles.sql h1:VIiaImR48nCHF3uFbOYOX1E79Ta5HsUBetGaSAbh9Gk=
 20230227024134_add_scheduled_date.sql h1:8qO5OBZ0AzsfYEQOAQQrYIjyhSwM+v1A+/ylLSoiyoc=
 20230305065819_add_notifier_types.sql h1:r5xrgCKYQ2o9byBqYeAX1zdp94BLdaxf4vq9OmGHNl0=
+20230305071524_add_group_id_to_notifiers.sql h1:xDShqbyClcFhvJbwclOHdczgXbdffkxXNWjV61hL/t4=
