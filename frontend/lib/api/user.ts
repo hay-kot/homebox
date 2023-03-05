@@ -8,6 +8,7 @@ import { ActionsAPI } from "./classes/actions";
 import { StatsAPI } from "./classes/stats";
 import { AssetsApi } from "./classes/assets";
 import { ReportsAPI } from "./classes/reports";
+import { NotifiersAPI } from "./classes/notifiers";
 import { Requests } from "~~/lib/requests";
 
 export class UserClient extends BaseAPI {
@@ -20,6 +21,7 @@ export class UserClient extends BaseAPI {
   stats: StatsAPI;
   assets: AssetsApi;
   reports: ReportsAPI;
+  notifiers: NotifiersAPI;
 
   constructor(requests: Requests, attachmentToken: string) {
     super(requests, attachmentToken);
@@ -33,6 +35,7 @@ export class UserClient extends BaseAPI {
     this.stats = new StatsAPI(requests);
     this.assets = new AssetsApi(requests);
     this.reports = new ReportsAPI(requests);
+    this.notifiers = new NotifiersAPI(requests);
 
     Object.freeze(this);
   }

@@ -267,6 +267,36 @@ export interface MaintenanceLog {
   itemId: string;
 }
 
+export interface NotifierCreate {
+  isActive: boolean;
+  /**
+   * @minLength 1
+   * @maxLength 255
+   */
+  name: string;
+  url: string;
+}
+
+export interface NotifierOut {
+  createdAt: Date | string;
+  groupId: string;
+  id: string;
+  isActive: boolean;
+  name: string;
+  updatedAt: Date | string;
+  userId: string;
+}
+
+export interface NotifierUpdate {
+  isActive: boolean;
+  /**
+   * @minLength 1
+   * @maxLength 255
+   */
+  name: string;
+  url: string | null;
+}
+
 export interface PaginationResultItemSummary {
   items: ItemSummary[];
   page: number;
