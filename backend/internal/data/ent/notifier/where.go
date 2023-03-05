@@ -71,6 +71,11 @@ func UserID(v uuid.UUID) predicate.Notifier {
 	return predicate.Notifier(sql.FieldEQ(FieldUserID, v))
 }
 
+// GroupID applies equality check predicate on the "group_id" field. It's identical to GroupIDEQ.
+func GroupID(v uuid.UUID) predicate.Notifier {
+	return predicate.Notifier(sql.FieldEQ(FieldGroupID, v))
+}
+
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.Notifier {
 	return predicate.Notifier(sql.FieldEQ(FieldName, v))
@@ -184,6 +189,26 @@ func UserIDIn(vs ...uuid.UUID) predicate.Notifier {
 // UserIDNotIn applies the NotIn predicate on the "user_id" field.
 func UserIDNotIn(vs ...uuid.UUID) predicate.Notifier {
 	return predicate.Notifier(sql.FieldNotIn(FieldUserID, vs...))
+}
+
+// GroupIDEQ applies the EQ predicate on the "group_id" field.
+func GroupIDEQ(v uuid.UUID) predicate.Notifier {
+	return predicate.Notifier(sql.FieldEQ(FieldGroupID, v))
+}
+
+// GroupIDNEQ applies the NEQ predicate on the "group_id" field.
+func GroupIDNEQ(v uuid.UUID) predicate.Notifier {
+	return predicate.Notifier(sql.FieldNEQ(FieldGroupID, v))
+}
+
+// GroupIDIn applies the In predicate on the "group_id" field.
+func GroupIDIn(vs ...uuid.UUID) predicate.Notifier {
+	return predicate.Notifier(sql.FieldIn(FieldGroupID, vs...))
+}
+
+// GroupIDNotIn applies the NotIn predicate on the "group_id" field.
+func GroupIDNotIn(vs ...uuid.UUID) predicate.Notifier {
+	return predicate.Notifier(sql.FieldNotIn(FieldGroupID, vs...))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
@@ -344,6 +369,33 @@ func HasUserWith(preds ...predicate.User) predicate.Notifier {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(UserInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasGroup applies the HasEdge predicate on the "group" edge.
+func HasGroup() predicate.Notifier {
+	return predicate.Notifier(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, GroupTable, GroupColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasGroupWith applies the HasEdge predicate on the "group" edge with a given conditions (other predicates).
+func HasGroupWith(preds ...predicate.Group) predicate.Notifier {
+	return predicate.Notifier(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(GroupInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, GroupTable, GroupColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

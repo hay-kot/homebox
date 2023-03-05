@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/notifier"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/predicate"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/user"
@@ -24,6 +25,7 @@ type NotifierQuery struct {
 	inters     []Interceptor
 	predicates []predicate.Notifier
 	withUser   *UserQuery
+	withGroup  *GroupQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -75,6 +77,28 @@ func (nq *NotifierQuery) QueryUser() *UserQuery {
 			sqlgraph.From(notifier.Table, notifier.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, notifier.UserTable, notifier.UserColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(nq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryGroup chains the current query on the "group" edge.
+func (nq *NotifierQuery) QueryGroup() *GroupQuery {
+	query := (&GroupClient{config: nq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := nq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := nq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(notifier.Table, notifier.FieldID, selector),
+			sqlgraph.To(group.Table, group.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, notifier.GroupTable, notifier.GroupColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(nq.driver.Dialect(), step)
 		return fromU, nil
@@ -275,6 +299,7 @@ func (nq *NotifierQuery) Clone() *NotifierQuery {
 		inters:     append([]Interceptor{}, nq.inters...),
 		predicates: append([]predicate.Notifier{}, nq.predicates...),
 		withUser:   nq.withUser.Clone(),
+		withGroup:  nq.withGroup.Clone(),
 		// clone intermediate query.
 		sql:  nq.sql.Clone(),
 		path: nq.path,
@@ -289,6 +314,17 @@ func (nq *NotifierQuery) WithUser(opts ...func(*UserQuery)) *NotifierQuery {
 		opt(query)
 	}
 	nq.withUser = query
+	return nq
+}
+
+// WithGroup tells the query-builder to eager-load the nodes that are connected to
+// the "group" edge. The optional arguments are used to configure the query builder of the edge.
+func (nq *NotifierQuery) WithGroup(opts ...func(*GroupQuery)) *NotifierQuery {
+	query := (&GroupClient{config: nq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	nq.withGroup = query
 	return nq
 }
 
@@ -370,8 +406,9 @@ func (nq *NotifierQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Not
 	var (
 		nodes       = []*Notifier{}
 		_spec       = nq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			nq.withUser != nil,
+			nq.withGroup != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -395,6 +432,12 @@ func (nq *NotifierQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Not
 	if query := nq.withUser; query != nil {
 		if err := nq.loadUser(ctx, query, nodes, nil,
 			func(n *Notifier, e *User) { n.Edges.User = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := nq.withGroup; query != nil {
+		if err := nq.loadGroup(ctx, query, nodes, nil,
+			func(n *Notifier, e *Group) { n.Edges.Group = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -423,6 +466,35 @@ func (nq *NotifierQuery) loadUser(ctx context.Context, query *UserQuery, nodes [
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "user_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (nq *NotifierQuery) loadGroup(ctx context.Context, query *GroupQuery, nodes []*Notifier, init func(*Notifier), assign func(*Notifier, *Group)) error {
+	ids := make([]uuid.UUID, 0, len(nodes))
+	nodeids := make(map[uuid.UUID][]*Notifier)
+	for i := range nodes {
+		fk := nodes[i].GroupID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(group.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "group_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

@@ -18,6 +18,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/ent/item"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/label"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/location"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/notifier"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/predicate"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/user"
 )
@@ -35,6 +36,7 @@ type GroupQuery struct {
 	withLabels           *LabelQuery
 	withDocuments        *DocumentQuery
 	withInvitationTokens *GroupInvitationTokenQuery
+	withNotifiers        *NotifierQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -196,6 +198,28 @@ func (gq *GroupQuery) QueryInvitationTokens() *GroupInvitationTokenQuery {
 			sqlgraph.From(group.Table, group.FieldID, selector),
 			sqlgraph.To(groupinvitationtoken.Table, groupinvitationtoken.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, group.InvitationTokensTable, group.InvitationTokensColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(gq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryNotifiers chains the current query on the "notifiers" edge.
+func (gq *GroupQuery) QueryNotifiers() *NotifierQuery {
+	query := (&NotifierClient{config: gq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := gq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := gq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(group.Table, group.FieldID, selector),
+			sqlgraph.To(notifier.Table, notifier.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, group.NotifiersTable, group.NotifiersColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(gq.driver.Dialect(), step)
 		return fromU, nil
@@ -401,6 +425,7 @@ func (gq *GroupQuery) Clone() *GroupQuery {
 		withLabels:           gq.withLabels.Clone(),
 		withDocuments:        gq.withDocuments.Clone(),
 		withInvitationTokens: gq.withInvitationTokens.Clone(),
+		withNotifiers:        gq.withNotifiers.Clone(),
 		// clone intermediate query.
 		sql:  gq.sql.Clone(),
 		path: gq.path,
@@ -470,6 +495,17 @@ func (gq *GroupQuery) WithInvitationTokens(opts ...func(*GroupInvitationTokenQue
 		opt(query)
 	}
 	gq.withInvitationTokens = query
+	return gq
+}
+
+// WithNotifiers tells the query-builder to eager-load the nodes that are connected to
+// the "notifiers" edge. The optional arguments are used to configure the query builder of the edge.
+func (gq *GroupQuery) WithNotifiers(opts ...func(*NotifierQuery)) *GroupQuery {
+	query := (&NotifierClient{config: gq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	gq.withNotifiers = query
 	return gq
 }
 
@@ -551,13 +587,14 @@ func (gq *GroupQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Group,
 	var (
 		nodes       = []*Group{}
 		_spec       = gq.querySpec()
-		loadedTypes = [6]bool{
+		loadedTypes = [7]bool{
 			gq.withUsers != nil,
 			gq.withLocations != nil,
 			gq.withItems != nil,
 			gq.withLabels != nil,
 			gq.withDocuments != nil,
 			gq.withInvitationTokens != nil,
+			gq.withNotifiers != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -619,6 +656,13 @@ func (gq *GroupQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Group,
 			func(n *Group, e *GroupInvitationToken) {
 				n.Edges.InvitationTokens = append(n.Edges.InvitationTokens, e)
 			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := gq.withNotifiers; query != nil {
+		if err := gq.loadNotifiers(ctx, query, nodes,
+			func(n *Group) { n.Edges.Notifiers = []*Notifier{} },
+			func(n *Group, e *Notifier) { n.Edges.Notifiers = append(n.Edges.Notifiers, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -806,6 +850,33 @@ func (gq *GroupQuery) loadInvitationTokens(ctx context.Context, query *GroupInvi
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "group_invitation_tokens" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (gq *GroupQuery) loadNotifiers(ctx context.Context, query *NotifierQuery, nodes []*Group, init func(*Group), assign func(*Group, *Notifier)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*Group)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.Where(predicate.Notifier(func(s *sql.Selector) {
+		s.Where(sql.InValues(group.NotifiersColumn, fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.GroupID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "group_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}

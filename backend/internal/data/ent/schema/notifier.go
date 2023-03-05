@@ -24,6 +24,7 @@ func (Notifier) Mixin() []ent.Mixin {
 func (Notifier) Fields() []ent.Field {
 	return []ent.Field{
 		field.UUID("user_id", uuid.UUID{}),
+		field.UUID("group_id", uuid.UUID{}),
 		field.String("name").
 			MaxLen(255).
 			NotEmpty(),
@@ -44,6 +45,11 @@ func (Notifier) Edges() []ent.Edge {
 			Ref("notifiers").
 			Required().
 			Unique(),
+		edge.From("group", Group.Type).
+			Field("group_id").
+			Ref("notifiers").
+			Required().
+			Unique(),
 	}
 }
 
@@ -51,5 +57,8 @@ func (Notifier) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("user_id"),
 		index.Fields("user_id", "is_active"),
+
+		index.Fields("group_id"),
+		index.Fields("group_id", "is_active"),
 	}
 }

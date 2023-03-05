@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/notifier"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/user"
 )
@@ -24,6 +25,8 @@ type Notifier struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// UserID holds the value of the "user_id" field.
 	UserID uuid.UUID `json:"user_id,omitempty"`
+	// GroupID holds the value of the "group_id" field.
+	GroupID uuid.UUID `json:"group_id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// URL holds the value of the "url" field.
@@ -39,9 +42,11 @@ type Notifier struct {
 type NotifierEdges struct {
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`
+	// Group holds the value of the group edge.
+	Group *Group `json:"group,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -57,6 +62,19 @@ func (e NotifierEdges) UserOrErr() (*User, error) {
 	return nil, &NotLoadedError{edge: "user"}
 }
 
+// GroupOrErr returns the Group value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e NotifierEdges) GroupOrErr() (*Group, error) {
+	if e.loadedTypes[1] {
+		if e.Group == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: group.Label}
+		}
+		return e.Group, nil
+	}
+	return nil, &NotLoadedError{edge: "group"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Notifier) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -68,7 +86,7 @@ func (*Notifier) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case notifier.FieldCreatedAt, notifier.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case notifier.FieldID, notifier.FieldUserID:
+		case notifier.FieldID, notifier.FieldUserID, notifier.FieldGroupID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Notifier", columns[i])
@@ -109,6 +127,12 @@ func (n *Notifier) assignValues(columns []string, values []any) error {
 			} else if value != nil {
 				n.UserID = *value
 			}
+		case notifier.FieldGroupID:
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field group_id", values[i])
+			} else if value != nil {
+				n.GroupID = *value
+			}
 		case notifier.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
@@ -135,6 +159,11 @@ func (n *Notifier) assignValues(columns []string, values []any) error {
 // QueryUser queries the "user" edge of the Notifier entity.
 func (n *Notifier) QueryUser() *UserQuery {
 	return NewNotifierClient(n.config).QueryUser(n)
+}
+
+// QueryGroup queries the "group" edge of the Notifier entity.
+func (n *Notifier) QueryGroup() *GroupQuery {
+	return NewNotifierClient(n.config).QueryGroup(n)
 }
 
 // Update returns a builder for updating this Notifier.
@@ -168,6 +197,9 @@ func (n *Notifier) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("user_id=")
 	builder.WriteString(fmt.Sprintf("%v", n.UserID))
+	builder.WriteString(", ")
+	builder.WriteString("group_id=")
+	builder.WriteString(fmt.Sprintf("%v", n.GroupID))
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(n.Name)

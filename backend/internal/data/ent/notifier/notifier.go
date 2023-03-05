@@ -19,6 +19,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
+	// FieldGroupID holds the string denoting the group_id field in the database.
+	FieldGroupID = "group_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldURL holds the string denoting the url field in the database.
@@ -27,6 +29,8 @@ const (
 	FieldIsActive = "is_active"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
+	// EdgeGroup holds the string denoting the group edge name in mutations.
+	EdgeGroup = "group"
 	// Table holds the table name of the notifier in the database.
 	Table = "notifiers"
 	// UserTable is the table that holds the user relation/edge.
@@ -36,6 +40,13 @@ const (
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
 	UserColumn = "user_id"
+	// GroupTable is the table that holds the group relation/edge.
+	GroupTable = "notifiers"
+	// GroupInverseTable is the table name for the Group entity.
+	// It exists in this package in order to avoid circular dependency with the "group" package.
+	GroupInverseTable = "groups"
+	// GroupColumn is the table column denoting the group relation/edge.
+	GroupColumn = "group_id"
 )
 
 // Columns holds all SQL columns for notifier fields.
@@ -44,6 +55,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldUserID,
+	FieldGroupID,
 	FieldName,
 	FieldURL,
 	FieldIsActive,

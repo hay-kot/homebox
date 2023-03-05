@@ -352,6 +352,7 @@ var (
 		{Name: "name", Type: field.TypeString, Size: 255},
 		{Name: "url", Type: field.TypeString, Size: 2083},
 		{Name: "is_active", Type: field.TypeBool, Default: true},
+		{Name: "group_id", Type: field.TypeUUID},
 		{Name: "user_id", Type: field.TypeUUID},
 	}
 	// NotifiersTable holds the schema information for the "notifiers" table.
@@ -361,8 +362,14 @@ var (
 		PrimaryKey: []*schema.Column{NotifiersColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "notifiers_users_notifiers",
+				Symbol:     "notifiers_groups_notifiers",
 				Columns:    []*schema.Column{NotifiersColumns[6]},
+				RefColumns: []*schema.Column{GroupsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "notifiers_users_notifiers",
+				Columns:    []*schema.Column{NotifiersColumns[7]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -371,10 +378,20 @@ var (
 			{
 				Name:    "notifier_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{NotifiersColumns[6]},
+				Columns: []*schema.Column{NotifiersColumns[7]},
 			},
 			{
 				Name:    "notifier_user_id_is_active",
+				Unique:  false,
+				Columns: []*schema.Column{NotifiersColumns[7], NotifiersColumns[5]},
+			},
+			{
+				Name:    "notifier_group_id",
+				Unique:  false,
+				Columns: []*schema.Column{NotifiersColumns[6]},
+			},
+			{
+				Name:    "notifier_group_id_is_active",
 				Unique:  false,
 				Columns: []*schema.Column{NotifiersColumns[6], NotifiersColumns[5]},
 			},
@@ -467,7 +484,8 @@ func init() {
 	LocationsTable.ForeignKeys[0].RefTable = GroupsTable
 	LocationsTable.ForeignKeys[1].RefTable = LocationsTable
 	MaintenanceEntriesTable.ForeignKeys[0].RefTable = ItemsTable
-	NotifiersTable.ForeignKeys[0].RefTable = UsersTable
+	NotifiersTable.ForeignKeys[0].RefTable = GroupsTable
+	NotifiersTable.ForeignKeys[1].RefTable = UsersTable
 	UsersTable.ForeignKeys[0].RefTable = GroupsTable
 	LabelItemsTable.ForeignKeys[0].RefTable = LabelsTable
 	LabelItemsTable.ForeignKeys[1].RefTable = ItemsTable

@@ -2307,6 +2307,9 @@ type GroupMutation struct {
 	invitation_tokens        map[uuid.UUID]struct{}
 	removedinvitation_tokens map[uuid.UUID]struct{}
 	clearedinvitation_tokens bool
+	notifiers                map[uuid.UUID]struct{}
+	removednotifiers         map[uuid.UUID]struct{}
+	clearednotifiers         bool
 	done                     bool
 	oldValue                 func(context.Context) (*Group, error)
 	predicates               []predicate.Group
@@ -2884,6 +2887,60 @@ func (m *GroupMutation) ResetInvitationTokens() {
 	m.removedinvitation_tokens = nil
 }
 
+// AddNotifierIDs adds the "notifiers" edge to the Notifier entity by ids.
+func (m *GroupMutation) AddNotifierIDs(ids ...uuid.UUID) {
+	if m.notifiers == nil {
+		m.notifiers = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.notifiers[ids[i]] = struct{}{}
+	}
+}
+
+// ClearNotifiers clears the "notifiers" edge to the Notifier entity.
+func (m *GroupMutation) ClearNotifiers() {
+	m.clearednotifiers = true
+}
+
+// NotifiersCleared reports if the "notifiers" edge to the Notifier entity was cleared.
+func (m *GroupMutation) NotifiersCleared() bool {
+	return m.clearednotifiers
+}
+
+// RemoveNotifierIDs removes the "notifiers" edge to the Notifier entity by IDs.
+func (m *GroupMutation) RemoveNotifierIDs(ids ...uuid.UUID) {
+	if m.removednotifiers == nil {
+		m.removednotifiers = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.notifiers, ids[i])
+		m.removednotifiers[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedNotifiers returns the removed IDs of the "notifiers" edge to the Notifier entity.
+func (m *GroupMutation) RemovedNotifiersIDs() (ids []uuid.UUID) {
+	for id := range m.removednotifiers {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// NotifiersIDs returns the "notifiers" edge IDs in the mutation.
+func (m *GroupMutation) NotifiersIDs() (ids []uuid.UUID) {
+	for id := range m.notifiers {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetNotifiers resets all changes to the "notifiers" edge.
+func (m *GroupMutation) ResetNotifiers() {
+	m.notifiers = nil
+	m.clearednotifiers = false
+	m.removednotifiers = nil
+}
+
 // Where appends a list predicates to the GroupMutation builder.
 func (m *GroupMutation) Where(ps ...predicate.Group) {
 	m.predicates = append(m.predicates, ps...)
@@ -3068,7 +3125,7 @@ func (m *GroupMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *GroupMutation) AddedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.users != nil {
 		edges = append(edges, group.EdgeUsers)
 	}
@@ -3086,6 +3143,9 @@ func (m *GroupMutation) AddedEdges() []string {
 	}
 	if m.invitation_tokens != nil {
 		edges = append(edges, group.EdgeInvitationTokens)
+	}
+	if m.notifiers != nil {
+		edges = append(edges, group.EdgeNotifiers)
 	}
 	return edges
 }
@@ -3130,13 +3190,19 @@ func (m *GroupMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case group.EdgeNotifiers:
+		ids := make([]ent.Value, 0, len(m.notifiers))
+		for id := range m.notifiers {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *GroupMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.removedusers != nil {
 		edges = append(edges, group.EdgeUsers)
 	}
@@ -3154,6 +3220,9 @@ func (m *GroupMutation) RemovedEdges() []string {
 	}
 	if m.removedinvitation_tokens != nil {
 		edges = append(edges, group.EdgeInvitationTokens)
+	}
+	if m.removednotifiers != nil {
+		edges = append(edges, group.EdgeNotifiers)
 	}
 	return edges
 }
@@ -3198,13 +3267,19 @@ func (m *GroupMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case group.EdgeNotifiers:
+		ids := make([]ent.Value, 0, len(m.removednotifiers))
+		for id := range m.removednotifiers {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *GroupMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.clearedusers {
 		edges = append(edges, group.EdgeUsers)
 	}
@@ -3222,6 +3297,9 @@ func (m *GroupMutation) ClearedEdges() []string {
 	}
 	if m.clearedinvitation_tokens {
 		edges = append(edges, group.EdgeInvitationTokens)
+	}
+	if m.clearednotifiers {
+		edges = append(edges, group.EdgeNotifiers)
 	}
 	return edges
 }
@@ -3242,6 +3320,8 @@ func (m *GroupMutation) EdgeCleared(name string) bool {
 		return m.cleareddocuments
 	case group.EdgeInvitationTokens:
 		return m.clearedinvitation_tokens
+	case group.EdgeNotifiers:
+		return m.clearednotifiers
 	}
 	return false
 }
@@ -3275,6 +3355,9 @@ func (m *GroupMutation) ResetEdge(name string) error {
 		return nil
 	case group.EdgeInvitationTokens:
 		m.ResetInvitationTokens()
+		return nil
+	case group.EdgeNotifiers:
+		m.ResetNotifiers()
 		return nil
 	}
 	return fmt.Errorf("unknown Group edge %s", name)
@@ -9790,6 +9873,8 @@ type NotifierMutation struct {
 	clearedFields map[string]struct{}
 	user          *uuid.UUID
 	cleareduser   bool
+	group         *uuid.UUID
+	clearedgroup  bool
 	done          bool
 	oldValue      func(context.Context) (*Notifier, error)
 	predicates    []predicate.Notifier
@@ -10007,6 +10092,42 @@ func (m *NotifierMutation) ResetUserID() {
 	m.user = nil
 }
 
+// SetGroupID sets the "group_id" field.
+func (m *NotifierMutation) SetGroupID(u uuid.UUID) {
+	m.group = &u
+}
+
+// GroupID returns the value of the "group_id" field in the mutation.
+func (m *NotifierMutation) GroupID() (r uuid.UUID, exists bool) {
+	v := m.group
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGroupID returns the old "group_id" field's value of the Notifier entity.
+// If the Notifier object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *NotifierMutation) OldGroupID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGroupID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGroupID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGroupID: %w", err)
+	}
+	return oldValue.GroupID, nil
+}
+
+// ResetGroupID resets all changes to the "group_id" field.
+func (m *NotifierMutation) ResetGroupID() {
+	m.group = nil
+}
+
 // SetName sets the "name" field.
 func (m *NotifierMutation) SetName(s string) {
 	m.name = &s
@@ -10141,6 +10262,32 @@ func (m *NotifierMutation) ResetUser() {
 	m.cleareduser = false
 }
 
+// ClearGroup clears the "group" edge to the Group entity.
+func (m *NotifierMutation) ClearGroup() {
+	m.clearedgroup = true
+}
+
+// GroupCleared reports if the "group" edge to the Group entity was cleared.
+func (m *NotifierMutation) GroupCleared() bool {
+	return m.clearedgroup
+}
+
+// GroupIDs returns the "group" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// GroupID instead. It exists only for internal usage by the builders.
+func (m *NotifierMutation) GroupIDs() (ids []uuid.UUID) {
+	if id := m.group; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetGroup resets all changes to the "group" edge.
+func (m *NotifierMutation) ResetGroup() {
+	m.group = nil
+	m.clearedgroup = false
+}
+
 // Where appends a list predicates to the NotifierMutation builder.
 func (m *NotifierMutation) Where(ps ...predicate.Notifier) {
 	m.predicates = append(m.predicates, ps...)
@@ -10175,7 +10322,7 @@ func (m *NotifierMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *NotifierMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.created_at != nil {
 		fields = append(fields, notifier.FieldCreatedAt)
 	}
@@ -10184,6 +10331,9 @@ func (m *NotifierMutation) Fields() []string {
 	}
 	if m.user != nil {
 		fields = append(fields, notifier.FieldUserID)
+	}
+	if m.group != nil {
+		fields = append(fields, notifier.FieldGroupID)
 	}
 	if m.name != nil {
 		fields = append(fields, notifier.FieldName)
@@ -10208,6 +10358,8 @@ func (m *NotifierMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case notifier.FieldUserID:
 		return m.UserID()
+	case notifier.FieldGroupID:
+		return m.GroupID()
 	case notifier.FieldName:
 		return m.Name()
 	case notifier.FieldURL:
@@ -10229,6 +10381,8 @@ func (m *NotifierMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldUpdatedAt(ctx)
 	case notifier.FieldUserID:
 		return m.OldUserID(ctx)
+	case notifier.FieldGroupID:
+		return m.OldGroupID(ctx)
 	case notifier.FieldName:
 		return m.OldName(ctx)
 	case notifier.FieldURL:
@@ -10264,6 +10418,13 @@ func (m *NotifierMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUserID(v)
+		return nil
+	case notifier.FieldGroupID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGroupID(v)
 		return nil
 	case notifier.FieldName:
 		v, ok := value.(string)
@@ -10344,6 +10505,9 @@ func (m *NotifierMutation) ResetField(name string) error {
 	case notifier.FieldUserID:
 		m.ResetUserID()
 		return nil
+	case notifier.FieldGroupID:
+		m.ResetGroupID()
+		return nil
 	case notifier.FieldName:
 		m.ResetName()
 		return nil
@@ -10359,9 +10523,12 @@ func (m *NotifierMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *NotifierMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.user != nil {
 		edges = append(edges, notifier.EdgeUser)
+	}
+	if m.group != nil {
+		edges = append(edges, notifier.EdgeGroup)
 	}
 	return edges
 }
@@ -10374,13 +10541,17 @@ func (m *NotifierMutation) AddedIDs(name string) []ent.Value {
 		if id := m.user; id != nil {
 			return []ent.Value{*id}
 		}
+	case notifier.EdgeGroup:
+		if id := m.group; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *NotifierMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	return edges
 }
 
@@ -10392,9 +10563,12 @@ func (m *NotifierMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *NotifierMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.cleareduser {
 		edges = append(edges, notifier.EdgeUser)
+	}
+	if m.clearedgroup {
+		edges = append(edges, notifier.EdgeGroup)
 	}
 	return edges
 }
@@ -10405,6 +10579,8 @@ func (m *NotifierMutation) EdgeCleared(name string) bool {
 	switch name {
 	case notifier.EdgeUser:
 		return m.cleareduser
+	case notifier.EdgeGroup:
+		return m.clearedgroup
 	}
 	return false
 }
@@ -10416,6 +10592,9 @@ func (m *NotifierMutation) ClearEdge(name string) error {
 	case notifier.EdgeUser:
 		m.ClearUser()
 		return nil
+	case notifier.EdgeGroup:
+		m.ClearGroup()
+		return nil
 	}
 	return fmt.Errorf("unknown Notifier unique edge %s", name)
 }
@@ -10426,6 +10605,9 @@ func (m *NotifierMutation) ResetEdge(name string) error {
 	switch name {
 	case notifier.EdgeUser:
 		m.ResetUser()
+		return nil
+	case notifier.EdgeGroup:
+		m.ResetGroup()
 		return nil
 	}
 	return fmt.Errorf("unknown Notifier edge %s", name)

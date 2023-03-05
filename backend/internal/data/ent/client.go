@@ -1033,6 +1033,22 @@ func (c *GroupClient) QueryInvitationTokens(gr *Group) *GroupInvitationTokenQuer
 	return query
 }
 
+// QueryNotifiers queries the notifiers edge of a Group.
+func (c *GroupClient) QueryNotifiers(gr *Group) *NotifierQuery {
+	query := (&NotifierClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := gr.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(group.Table, group.FieldID, id),
+			sqlgraph.To(notifier.Table, notifier.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, group.NotifiersTable, group.NotifiersColumn),
+		)
+		fromV = sqlgraph.Neighbors(gr.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *GroupClient) Hooks() []Hook {
 	return c.hooks.Group
@@ -2140,6 +2156,22 @@ func (c *NotifierClient) QueryUser(n *Notifier) *UserQuery {
 			sqlgraph.From(notifier.Table, notifier.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, notifier.UserTable, notifier.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(n.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryGroup queries the group edge of a Notifier.
+func (c *NotifierClient) QueryGroup(n *Notifier) *GroupQuery {
+	query := (&GroupClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := n.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(notifier.Table, notifier.FieldID, id),
+			sqlgraph.To(group.Table, group.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, notifier.GroupTable, notifier.GroupColumn),
 		)
 		fromV = sqlgraph.Neighbors(n.driver.Dialect(), step)
 		return fromV, nil

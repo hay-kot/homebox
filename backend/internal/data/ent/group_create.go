@@ -17,6 +17,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/ent/item"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/label"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/location"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/notifier"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/user"
 )
 
@@ -177,6 +178,21 @@ func (gc *GroupCreate) AddInvitationTokens(g ...*GroupInvitationToken) *GroupCre
 		ids[i] = g[i].ID
 	}
 	return gc.AddInvitationTokenIDs(ids...)
+}
+
+// AddNotifierIDs adds the "notifiers" edge to the Notifier entity by IDs.
+func (gc *GroupCreate) AddNotifierIDs(ids ...uuid.UUID) *GroupCreate {
+	gc.mutation.AddNotifierIDs(ids...)
+	return gc
+}
+
+// AddNotifiers adds the "notifiers" edges to the Notifier entity.
+func (gc *GroupCreate) AddNotifiers(n ...*Notifier) *GroupCreate {
+	ids := make([]uuid.UUID, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return gc.AddNotifierIDs(ids...)
 }
 
 // Mutation returns the GroupMutation object of the builder.
@@ -413,6 +429,25 @@ func (gc *GroupCreate) createSpec() (*Group, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: groupinvitationtoken.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := gc.mutation.NotifiersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.NotifiersTable,
+			Columns: []string{group.NotifiersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: notifier.FieldID,
 				},
 			},
 		}
