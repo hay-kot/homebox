@@ -1,0 +1,18 @@
+---
+messages:
+  pre: |
+    # Ent Model Generation
+
+    With Boilerplate!
+  post: |
+    Complete!
+
+questions:
+  - name: "model"
+    prompt:
+      message: "What is the name of the model? (PascalCase)"
+    required: true
+
+rewrites:
+  - from: 'templates/model.go'
+    to: 'backend/internal/data/ent/schema/{{ lower .Scaffold.model }}.go'
