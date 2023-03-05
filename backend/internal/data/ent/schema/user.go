@@ -35,11 +35,11 @@ func (User) Fields() []ent.Field {
 			Sensitive(),
 		field.Bool("is_superuser").
 			Default(false),
+		field.Bool("superuser").
+			Default(false),
 		field.Enum("role").
 			Default("user").
 			Values("user", "owner"),
-		field.Bool("superuser").
-			Default(false),
 		field.Time("activated_on").
 			Optional(),
 	}
@@ -53,6 +53,10 @@ func (User) Edges() []ent.Edge {
 			Required().
 			Unique(),
 		edge.To("auth_tokens", AuthTokens.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
+		edge.To("notifiers", Notifier.Type).
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,
 			}),
