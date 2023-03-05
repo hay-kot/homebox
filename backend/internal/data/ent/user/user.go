@@ -26,16 +26,18 @@ const (
 	FieldPassword = "password"
 	// FieldIsSuperuser holds the string denoting the is_superuser field in the database.
 	FieldIsSuperuser = "is_superuser"
-	// FieldRole holds the string denoting the role field in the database.
-	FieldRole = "role"
 	// FieldSuperuser holds the string denoting the superuser field in the database.
 	FieldSuperuser = "superuser"
+	// FieldRole holds the string denoting the role field in the database.
+	FieldRole = "role"
 	// FieldActivatedOn holds the string denoting the activated_on field in the database.
 	FieldActivatedOn = "activated_on"
 	// EdgeGroup holds the string denoting the group edge name in mutations.
 	EdgeGroup = "group"
 	// EdgeAuthTokens holds the string denoting the auth_tokens edge name in mutations.
 	EdgeAuthTokens = "auth_tokens"
+	// EdgeNotifiers holds the string denoting the notifiers edge name in mutations.
+	EdgeNotifiers = "notifiers"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// GroupTable is the table that holds the group relation/edge.
@@ -52,6 +54,13 @@ const (
 	AuthTokensInverseTable = "auth_tokens"
 	// AuthTokensColumn is the table column denoting the auth_tokens relation/edge.
 	AuthTokensColumn = "user_auth_tokens"
+	// NotifiersTable is the table that holds the notifiers relation/edge.
+	NotifiersTable = "notifiers"
+	// NotifiersInverseTable is the table name for the Notifier entity.
+	// It exists in this package in order to avoid circular dependency with the "notifier" package.
+	NotifiersInverseTable = "notifiers"
+	// NotifiersColumn is the table column denoting the notifiers relation/edge.
+	NotifiersColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -63,8 +72,8 @@ var Columns = []string{
 	FieldEmail,
 	FieldPassword,
 	FieldIsSuperuser,
-	FieldRole,
 	FieldSuperuser,
+	FieldRole,
 	FieldActivatedOn,
 }
 

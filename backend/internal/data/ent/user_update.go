@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authtokens"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/notifier"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/predicate"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/user"
 )
@@ -69,20 +70,6 @@ func (uu *UserUpdate) SetNillableIsSuperuser(b *bool) *UserUpdate {
 	return uu
 }
 
-// SetRole sets the "role" field.
-func (uu *UserUpdate) SetRole(u user.Role) *UserUpdate {
-	uu.mutation.SetRole(u)
-	return uu
-}
-
-// SetNillableRole sets the "role" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableRole(u *user.Role) *UserUpdate {
-	if u != nil {
-		uu.SetRole(*u)
-	}
-	return uu
-}
-
 // SetSuperuser sets the "superuser" field.
 func (uu *UserUpdate) SetSuperuser(b bool) *UserUpdate {
 	uu.mutation.SetSuperuser(b)
@@ -93,6 +80,20 @@ func (uu *UserUpdate) SetSuperuser(b bool) *UserUpdate {
 func (uu *UserUpdate) SetNillableSuperuser(b *bool) *UserUpdate {
 	if b != nil {
 		uu.SetSuperuser(*b)
+	}
+	return uu
+}
+
+// SetRole sets the "role" field.
+func (uu *UserUpdate) SetRole(u user.Role) *UserUpdate {
+	uu.mutation.SetRole(u)
+	return uu
+}
+
+// SetNillableRole sets the "role" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableRole(u *user.Role) *UserUpdate {
+	if u != nil {
+		uu.SetRole(*u)
 	}
 	return uu
 }
@@ -143,6 +144,21 @@ func (uu *UserUpdate) AddAuthTokens(a ...*AuthTokens) *UserUpdate {
 	return uu.AddAuthTokenIDs(ids...)
 }
 
+// AddNotifierIDs adds the "notifiers" edge to the Notifier entity by IDs.
+func (uu *UserUpdate) AddNotifierIDs(ids ...uuid.UUID) *UserUpdate {
+	uu.mutation.AddNotifierIDs(ids...)
+	return uu
+}
+
+// AddNotifiers adds the "notifiers" edges to the Notifier entity.
+func (uu *UserUpdate) AddNotifiers(n ...*Notifier) *UserUpdate {
+	ids := make([]uuid.UUID, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return uu.AddNotifierIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -173,6 +189,27 @@ func (uu *UserUpdate) RemoveAuthTokens(a ...*AuthTokens) *UserUpdate {
 		ids[i] = a[i].ID
 	}
 	return uu.RemoveAuthTokenIDs(ids...)
+}
+
+// ClearNotifiers clears all "notifiers" edges to the Notifier entity.
+func (uu *UserUpdate) ClearNotifiers() *UserUpdate {
+	uu.mutation.ClearNotifiers()
+	return uu
+}
+
+// RemoveNotifierIDs removes the "notifiers" edge to Notifier entities by IDs.
+func (uu *UserUpdate) RemoveNotifierIDs(ids ...uuid.UUID) *UserUpdate {
+	uu.mutation.RemoveNotifierIDs(ids...)
+	return uu
+}
+
+// RemoveNotifiers removes "notifiers" edges to Notifier entities.
+func (uu *UserUpdate) RemoveNotifiers(n ...*Notifier) *UserUpdate {
+	ids := make([]uuid.UUID, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return uu.RemoveNotifierIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -266,11 +303,11 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.IsSuperuser(); ok {
 		_spec.SetField(user.FieldIsSuperuser, field.TypeBool, value)
 	}
-	if value, ok := uu.mutation.Role(); ok {
-		_spec.SetField(user.FieldRole, field.TypeEnum, value)
-	}
 	if value, ok := uu.mutation.Superuser(); ok {
 		_spec.SetField(user.FieldSuperuser, field.TypeBool, value)
+	}
+	if value, ok := uu.mutation.Role(); ok {
+		_spec.SetField(user.FieldRole, field.TypeEnum, value)
 	}
 	if value, ok := uu.mutation.ActivatedOn(); ok {
 		_spec.SetField(user.FieldActivatedOn, field.TypeTime, value)
@@ -367,6 +404,60 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.NotifiersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.NotifiersTable,
+			Columns: []string{user.NotifiersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: notifier.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedNotifiersIDs(); len(nodes) > 0 && !uu.mutation.NotifiersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.NotifiersTable,
+			Columns: []string{user.NotifiersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: notifier.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.NotifiersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.NotifiersTable,
+			Columns: []string{user.NotifiersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: notifier.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -425,20 +516,6 @@ func (uuo *UserUpdateOne) SetNillableIsSuperuser(b *bool) *UserUpdateOne {
 	return uuo
 }
 
-// SetRole sets the "role" field.
-func (uuo *UserUpdateOne) SetRole(u user.Role) *UserUpdateOne {
-	uuo.mutation.SetRole(u)
-	return uuo
-}
-
-// SetNillableRole sets the "role" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableRole(u *user.Role) *UserUpdateOne {
-	if u != nil {
-		uuo.SetRole(*u)
-	}
-	return uuo
-}
-
 // SetSuperuser sets the "superuser" field.
 func (uuo *UserUpdateOne) SetSuperuser(b bool) *UserUpdateOne {
 	uuo.mutation.SetSuperuser(b)
@@ -449,6 +526,20 @@ func (uuo *UserUpdateOne) SetSuperuser(b bool) *UserUpdateOne {
 func (uuo *UserUpdateOne) SetNillableSuperuser(b *bool) *UserUpdateOne {
 	if b != nil {
 		uuo.SetSuperuser(*b)
+	}
+	return uuo
+}
+
+// SetRole sets the "role" field.
+func (uuo *UserUpdateOne) SetRole(u user.Role) *UserUpdateOne {
+	uuo.mutation.SetRole(u)
+	return uuo
+}
+
+// SetNillableRole sets the "role" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableRole(u *user.Role) *UserUpdateOne {
+	if u != nil {
+		uuo.SetRole(*u)
 	}
 	return uuo
 }
@@ -499,6 +590,21 @@ func (uuo *UserUpdateOne) AddAuthTokens(a ...*AuthTokens) *UserUpdateOne {
 	return uuo.AddAuthTokenIDs(ids...)
 }
 
+// AddNotifierIDs adds the "notifiers" edge to the Notifier entity by IDs.
+func (uuo *UserUpdateOne) AddNotifierIDs(ids ...uuid.UUID) *UserUpdateOne {
+	uuo.mutation.AddNotifierIDs(ids...)
+	return uuo
+}
+
+// AddNotifiers adds the "notifiers" edges to the Notifier entity.
+func (uuo *UserUpdateOne) AddNotifiers(n ...*Notifier) *UserUpdateOne {
+	ids := make([]uuid.UUID, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return uuo.AddNotifierIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -529,6 +635,27 @@ func (uuo *UserUpdateOne) RemoveAuthTokens(a ...*AuthTokens) *UserUpdateOne {
 		ids[i] = a[i].ID
 	}
 	return uuo.RemoveAuthTokenIDs(ids...)
+}
+
+// ClearNotifiers clears all "notifiers" edges to the Notifier entity.
+func (uuo *UserUpdateOne) ClearNotifiers() *UserUpdateOne {
+	uuo.mutation.ClearNotifiers()
+	return uuo
+}
+
+// RemoveNotifierIDs removes the "notifiers" edge to Notifier entities by IDs.
+func (uuo *UserUpdateOne) RemoveNotifierIDs(ids ...uuid.UUID) *UserUpdateOne {
+	uuo.mutation.RemoveNotifierIDs(ids...)
+	return uuo
+}
+
+// RemoveNotifiers removes "notifiers" edges to Notifier entities.
+func (uuo *UserUpdateOne) RemoveNotifiers(n ...*Notifier) *UserUpdateOne {
+	ids := make([]uuid.UUID, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return uuo.RemoveNotifierIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -652,11 +779,11 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	if value, ok := uuo.mutation.IsSuperuser(); ok {
 		_spec.SetField(user.FieldIsSuperuser, field.TypeBool, value)
 	}
-	if value, ok := uuo.mutation.Role(); ok {
-		_spec.SetField(user.FieldRole, field.TypeEnum, value)
-	}
 	if value, ok := uuo.mutation.Superuser(); ok {
 		_spec.SetField(user.FieldSuperuser, field.TypeBool, value)
+	}
+	if value, ok := uuo.mutation.Role(); ok {
+		_spec.SetField(user.FieldRole, field.TypeEnum, value)
 	}
 	if value, ok := uuo.mutation.ActivatedOn(); ok {
 		_spec.SetField(user.FieldActivatedOn, field.TypeTime, value)
@@ -745,6 +872,60 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: authtokens.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.NotifiersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.NotifiersTable,
+			Columns: []string{user.NotifiersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: notifier.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedNotifiersIDs(); len(nodes) > 0 && !uuo.mutation.NotifiersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.NotifiersTable,
+			Columns: []string{user.NotifiersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: notifier.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.NotifiersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.NotifiersTable,
+			Columns: []string{user.NotifiersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: notifier.FieldID,
 				},
 			},
 		}

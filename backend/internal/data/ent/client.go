@@ -22,6 +22,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/ent/label"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/location"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/maintenanceentry"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/notifier"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/user"
 
 	"entgo.io/ent/dialect"
@@ -56,6 +57,8 @@ type Client struct {
 	Location *LocationClient
 	// MaintenanceEntry is the client for interacting with the MaintenanceEntry builders.
 	MaintenanceEntry *MaintenanceEntryClient
+	// Notifier is the client for interacting with the Notifier builders.
+	Notifier *NotifierClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 }
@@ -82,6 +85,7 @@ func (c *Client) init() {
 	c.Label = NewLabelClient(c.config)
 	c.Location = NewLocationClient(c.config)
 	c.MaintenanceEntry = NewMaintenanceEntryClient(c.config)
+	c.Notifier = NewNotifierClient(c.config)
 	c.User = NewUserClient(c.config)
 }
 
@@ -127,6 +131,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Label:                NewLabelClient(cfg),
 		Location:             NewLocationClient(cfg),
 		MaintenanceEntry:     NewMaintenanceEntryClient(cfg),
+		Notifier:             NewNotifierClient(cfg),
 		User:                 NewUserClient(cfg),
 	}, nil
 }
@@ -158,6 +163,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Label:                NewLabelClient(cfg),
 		Location:             NewLocationClient(cfg),
 		MaintenanceEntry:     NewMaintenanceEntryClient(cfg),
+		Notifier:             NewNotifierClient(cfg),
 		User:                 NewUserClient(cfg),
 	}, nil
 }
@@ -198,6 +204,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Label.Use(hooks...)
 	c.Location.Use(hooks...)
 	c.MaintenanceEntry.Use(hooks...)
+	c.Notifier.Use(hooks...)
 	c.User.Use(hooks...)
 }
 
@@ -215,6 +222,7 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.Label.Intercept(interceptors...)
 	c.Location.Intercept(interceptors...)
 	c.MaintenanceEntry.Intercept(interceptors...)
+	c.Notifier.Intercept(interceptors...)
 	c.User.Intercept(interceptors...)
 }
 
@@ -243,6 +251,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Location.mutate(ctx, m)
 	case *MaintenanceEntryMutation:
 		return c.MaintenanceEntry.mutate(ctx, m)
+	case *NotifierMutation:
+		return c.Notifier.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
 	default:
@@ -2028,6 +2038,140 @@ func (c *MaintenanceEntryClient) mutate(ctx context.Context, m *MaintenanceEntry
 	}
 }
 
+// NotifierClient is a client for the Notifier schema.
+type NotifierClient struct {
+	config
+}
+
+// NewNotifierClient returns a client for the Notifier from the given config.
+func NewNotifierClient(c config) *NotifierClient {
+	return &NotifierClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `notifier.Hooks(f(g(h())))`.
+func (c *NotifierClient) Use(hooks ...Hook) {
+	c.hooks.Notifier = append(c.hooks.Notifier, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `notifier.Intercept(f(g(h())))`.
+func (c *NotifierClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Notifier = append(c.inters.Notifier, interceptors...)
+}
+
+// Create returns a builder for creating a Notifier entity.
+func (c *NotifierClient) Create() *NotifierCreate {
+	mutation := newNotifierMutation(c.config, OpCreate)
+	return &NotifierCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Notifier entities.
+func (c *NotifierClient) CreateBulk(builders ...*NotifierCreate) *NotifierCreateBulk {
+	return &NotifierCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Notifier.
+func (c *NotifierClient) Update() *NotifierUpdate {
+	mutation := newNotifierMutation(c.config, OpUpdate)
+	return &NotifierUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *NotifierClient) UpdateOne(n *Notifier) *NotifierUpdateOne {
+	mutation := newNotifierMutation(c.config, OpUpdateOne, withNotifier(n))
+	return &NotifierUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *NotifierClient) UpdateOneID(id uuid.UUID) *NotifierUpdateOne {
+	mutation := newNotifierMutation(c.config, OpUpdateOne, withNotifierID(id))
+	return &NotifierUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Notifier.
+func (c *NotifierClient) Delete() *NotifierDelete {
+	mutation := newNotifierMutation(c.config, OpDelete)
+	return &NotifierDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *NotifierClient) DeleteOne(n *Notifier) *NotifierDeleteOne {
+	return c.DeleteOneID(n.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *NotifierClient) DeleteOneID(id uuid.UUID) *NotifierDeleteOne {
+	builder := c.Delete().Where(notifier.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &NotifierDeleteOne{builder}
+}
+
+// Query returns a query builder for Notifier.
+func (c *NotifierClient) Query() *NotifierQuery {
+	return &NotifierQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeNotifier},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Notifier entity by its id.
+func (c *NotifierClient) Get(ctx context.Context, id uuid.UUID) (*Notifier, error) {
+	return c.Query().Where(notifier.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *NotifierClient) GetX(ctx context.Context, id uuid.UUID) *Notifier {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a Notifier.
+func (c *NotifierClient) QueryUser(n *Notifier) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := n.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(notifier.Table, notifier.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, notifier.UserTable, notifier.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(n.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *NotifierClient) Hooks() []Hook {
+	return c.hooks.Notifier
+}
+
+// Interceptors returns the client interceptors.
+func (c *NotifierClient) Interceptors() []Interceptor {
+	return c.inters.Notifier
+}
+
+func (c *NotifierClient) mutate(ctx context.Context, m *NotifierMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&NotifierCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&NotifierUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&NotifierUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&NotifierDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Notifier mutation op: %q", m.Op())
+	}
+}
+
 // UserClient is a client for the User schema.
 type UserClient struct {
 	config
@@ -2146,6 +2290,22 @@ func (c *UserClient) QueryAuthTokens(u *User) *AuthTokensQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(authtokens.Table, authtokens.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.AuthTokensTable, user.AuthTokensColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryNotifiers queries the notifiers edge of a User.
+func (c *UserClient) QueryNotifiers(u *User) *NotifierQuery {
+	query := (&NotifierClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(notifier.Table, notifier.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.NotifiersTable, user.NotifiersColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

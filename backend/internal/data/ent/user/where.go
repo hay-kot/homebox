@@ -381,6 +381,16 @@ func IsSuperuserNEQ(v bool) predicate.User {
 	return predicate.User(sql.FieldNEQ(FieldIsSuperuser, v))
 }
 
+// SuperuserEQ applies the EQ predicate on the "superuser" field.
+func SuperuserEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldSuperuser, v))
+}
+
+// SuperuserNEQ applies the NEQ predicate on the "superuser" field.
+func SuperuserNEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldSuperuser, v))
+}
+
 // RoleEQ applies the EQ predicate on the "role" field.
 func RoleEQ(v Role) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldRole, v))
@@ -399,16 +409,6 @@ func RoleIn(vs ...Role) predicate.User {
 // RoleNotIn applies the NotIn predicate on the "role" field.
 func RoleNotIn(vs ...Role) predicate.User {
 	return predicate.User(sql.FieldNotIn(FieldRole, vs...))
-}
-
-// SuperuserEQ applies the EQ predicate on the "superuser" field.
-func SuperuserEQ(v bool) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldSuperuser, v))
-}
-
-// SuperuserNEQ applies the NEQ predicate on the "superuser" field.
-func SuperuserNEQ(v bool) predicate.User {
-	return predicate.User(sql.FieldNEQ(FieldSuperuser, v))
 }
 
 // ActivatedOnEQ applies the EQ predicate on the "activated_on" field.
@@ -506,6 +506,33 @@ func HasAuthTokensWith(preds ...predicate.AuthTokens) predicate.User {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(AuthTokensInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, AuthTokensTable, AuthTokensColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasNotifiers applies the HasEdge predicate on the "notifiers" edge.
+func HasNotifiers() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, NotifiersTable, NotifiersColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasNotifiersWith applies the HasEdge predicate on the "notifiers" edge with a given conditions (other predicates).
+func HasNotifiersWith(preds ...predicate.Notifier) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(NotifiersInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, NotifiersTable, NotifiersColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

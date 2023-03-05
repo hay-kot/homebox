@@ -141,6 +141,18 @@ func (f MaintenanceEntryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.V
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MaintenanceEntryMutation", m)
 }
 
+// The NotifierFunc type is an adapter to allow the use of ordinary
+// function as Notifier mutator.
+type NotifierFunc func(context.Context, *ent.NotifierMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f NotifierFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.NotifierMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.NotifierMutation", m)
+}
+
 // The UserFunc type is an adapter to allow the use of ordinary
 // function as User mutator.
 type UserFunc func(context.Context, *ent.UserMutation) (ent.Value, error)
