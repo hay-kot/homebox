@@ -5,7 +5,8 @@ import (
 	"errors"
 )
 
-type UnauthorizedError struct{}
+type UnauthorizedError struct {
+}
 
 func (err *UnauthorizedError) Error() string {
 	return "unauthorized"
@@ -28,7 +29,7 @@ func (err *InvalidRouteKeyError) Error() string {
 	return "invalid route key: " + err.key
 }
 
-func NewInvalidRouteKeyError(key string) error {
+func NewRouteKeyError(key string) error {
 	return &InvalidRouteKeyError{key}
 }
 
