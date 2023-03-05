@@ -6,6 +6,7 @@ require (
 	ariga.io/atlas v0.9.1-0.20230119145809-92243f7c55cb
 	entgo.io/ent v0.11.8
 	github.com/ardanlabs/conf/v3 v3.1.4
+	github.com/containrrr/shoutrrr v0.7.1
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/go-playground/validator/v10 v10.11.2
 	github.com/gocarina/gocsv v0.0.0-20230219202803-bcce7dc8d0bb
@@ -25,6 +26,7 @@ require (
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/fatih/color v1.13.0 // indirect
 	github.com/fogleman/gg v1.3.0 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
