@@ -361,7 +361,7 @@
         <div v-if="notifiers.data.value" class="mx-4 divide-y divide-gray-400 rounded-md border border-gray-400">
           <article v-for="n in notifiers.data.value" :key="n.id" class="p-2">
             <div class="flex flex-wrap items-center gap-2">
-              <p class="mr-auto text-xl">{{ n.name }}</p>
+              <p class="mr-auto text-lg">{{ n.name }}</p>
               <div class="flex gap-2 justify-end">
                 <div class="tooltip" data-tip="Delete">
                   <button class="btn btn-sm btn-square" @click="deleteNotifier(n.id)">
@@ -377,8 +377,8 @@
             </div>
             <div class="flex justify-between py-1 flex-wrap text-sm">
               <p>
-                <span v-if="n.isActive" class="text-success font-bold"> Active </span>
-                <span v-else class="text-error font-bold"> Inactive</span>
+                <span v-if="n.isActive" class="badge badge-success"> Active </span>
+                <span v-else class="badge badge-error"> Inactive</span>
               </p>
               <p>
                 Created
