@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://hay-kot.github.io/scaffold/schema.json
 messages:
   pre: |
     # Ent Model Generation
