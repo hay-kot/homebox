@@ -1,4 +1,3 @@
-// Package adapters provides functions to adapt functions to the server.Handler interface.
 package adapters
 
 import (
