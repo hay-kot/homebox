@@ -24,6 +24,7 @@ theme:
     - navigation.expand
     - navigation.sections
     - navigation.tabs.sticky
+    - navigation.tabs
   favicon: assets/img/favicon.svg
   logo: assets/img/favicon.svg
 
@@ -32,6 +33,8 @@ plugins:
 
 extra_css:
   - assets/stylesheets/extras.css
+extra_javascript:
+  - assets/js/redoc.js
 
 markdown_extensions:
   - pymdownx.emoji:
@@ -47,8 +50,10 @@ markdown_extensions:
   - pymdownx.superfences
 
 nav:
-  - Home: index.md
-  - Quick Start: quick-start.md
-  - Tips and Tricks: tips-tricks.md
-  - Import and Export: import-csv.md
-  - Building The Binary: build.md
+  - Home:
+    - Home: index.md
+    - Quick Start: quick-start.md
+    - Tips and Tricks: tips-tricks.md
+    - Import and Export: import-csv.md
+    - Building The Binary: build.md
+  - API: "https://redocly.github.io/redoc/?url=https://hay-kot.github.io/homebox/api/openapi-2.0.json"
