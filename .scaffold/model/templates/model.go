@@ -13,6 +13,9 @@ type {{ .Scaffold.model }} struct {
 func ({{ .Scaffold.model }}) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixins.BaseMixin{},
+		{{- if .Scaffold.by_group }}
+		GroupMixin{ref: "{{ snakecase .Scaffold.model  }}s"},
+		{{- end }}
 	}
 }
 
