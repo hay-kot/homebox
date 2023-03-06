@@ -37,15 +37,15 @@ func (nu *NotifierUpdate) SetUpdatedAt(t time.Time) *NotifierUpdate {
 	return nu
 }
 
-// SetUserID sets the "user_id" field.
-func (nu *NotifierUpdate) SetUserID(u uuid.UUID) *NotifierUpdate {
-	nu.mutation.SetUserID(u)
-	return nu
-}
-
 // SetGroupID sets the "group_id" field.
 func (nu *NotifierUpdate) SetGroupID(u uuid.UUID) *NotifierUpdate {
 	nu.mutation.SetGroupID(u)
+	return nu
+}
+
+// SetUserID sets the "user_id" field.
+func (nu *NotifierUpdate) SetUserID(u uuid.UUID) *NotifierUpdate {
+	nu.mutation.SetUserID(u)
 	return nu
 }
 
@@ -75,14 +75,14 @@ func (nu *NotifierUpdate) SetNillableIsActive(b *bool) *NotifierUpdate {
 	return nu
 }
 
-// SetUser sets the "user" edge to the User entity.
-func (nu *NotifierUpdate) SetUser(u *User) *NotifierUpdate {
-	return nu.SetUserID(u.ID)
-}
-
 // SetGroup sets the "group" edge to the Group entity.
 func (nu *NotifierUpdate) SetGroup(g *Group) *NotifierUpdate {
 	return nu.SetGroupID(g.ID)
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (nu *NotifierUpdate) SetUser(u *User) *NotifierUpdate {
+	return nu.SetUserID(u.ID)
 }
 
 // Mutation returns the NotifierMutation object of the builder.
@@ -90,15 +90,15 @@ func (nu *NotifierUpdate) Mutation() *NotifierMutation {
 	return nu.mutation
 }
 
-// ClearUser clears the "user" edge to the User entity.
-func (nu *NotifierUpdate) ClearUser() *NotifierUpdate {
-	nu.mutation.ClearUser()
-	return nu
-}
-
 // ClearGroup clears the "group" edge to the Group entity.
 func (nu *NotifierUpdate) ClearGroup() *NotifierUpdate {
 	nu.mutation.ClearGroup()
+	return nu
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (nu *NotifierUpdate) ClearUser() *NotifierUpdate {
+	nu.mutation.ClearUser()
 	return nu
 }
 
@@ -150,11 +150,11 @@ func (nu *NotifierUpdate) check() error {
 			return &ValidationError{Name: "url", err: fmt.Errorf(`ent: validator failed for field "Notifier.url": %w`, err)}
 		}
 	}
-	if _, ok := nu.mutation.UserID(); nu.mutation.UserCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Notifier.user"`)
-	}
 	if _, ok := nu.mutation.GroupID(); nu.mutation.GroupCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Notifier.group"`)
+	}
+	if _, ok := nu.mutation.UserID(); nu.mutation.UserCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Notifier.user"`)
 	}
 	return nil
 }
@@ -182,41 +182,6 @@ func (nu *NotifierUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := nu.mutation.IsActive(); ok {
 		_spec.SetField(notifier.FieldIsActive, field.TypeBool, value)
-	}
-	if nu.mutation.UserCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   notifier.UserTable,
-			Columns: []string{notifier.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: user.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := nu.mutation.UserIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   notifier.UserTable,
-			Columns: []string{notifier.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: user.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if nu.mutation.GroupCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -253,6 +218,41 @@ func (nu *NotifierUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if nu.mutation.UserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   notifier.UserTable,
+			Columns: []string{notifier.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: user.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := nu.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   notifier.UserTable,
+			Columns: []string{notifier.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, nu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{notifier.Label}
@@ -279,15 +279,15 @@ func (nuo *NotifierUpdateOne) SetUpdatedAt(t time.Time) *NotifierUpdateOne {
 	return nuo
 }
 
-// SetUserID sets the "user_id" field.
-func (nuo *NotifierUpdateOne) SetUserID(u uuid.UUID) *NotifierUpdateOne {
-	nuo.mutation.SetUserID(u)
-	return nuo
-}
-
 // SetGroupID sets the "group_id" field.
 func (nuo *NotifierUpdateOne) SetGroupID(u uuid.UUID) *NotifierUpdateOne {
 	nuo.mutation.SetGroupID(u)
+	return nuo
+}
+
+// SetUserID sets the "user_id" field.
+func (nuo *NotifierUpdateOne) SetUserID(u uuid.UUID) *NotifierUpdateOne {
+	nuo.mutation.SetUserID(u)
 	return nuo
 }
 
@@ -317,14 +317,14 @@ func (nuo *NotifierUpdateOne) SetNillableIsActive(b *bool) *NotifierUpdateOne {
 	return nuo
 }
 
-// SetUser sets the "user" edge to the User entity.
-func (nuo *NotifierUpdateOne) SetUser(u *User) *NotifierUpdateOne {
-	return nuo.SetUserID(u.ID)
-}
-
 // SetGroup sets the "group" edge to the Group entity.
 func (nuo *NotifierUpdateOne) SetGroup(g *Group) *NotifierUpdateOne {
 	return nuo.SetGroupID(g.ID)
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (nuo *NotifierUpdateOne) SetUser(u *User) *NotifierUpdateOne {
+	return nuo.SetUserID(u.ID)
 }
 
 // Mutation returns the NotifierMutation object of the builder.
@@ -332,15 +332,15 @@ func (nuo *NotifierUpdateOne) Mutation() *NotifierMutation {
 	return nuo.mutation
 }
 
-// ClearUser clears the "user" edge to the User entity.
-func (nuo *NotifierUpdateOne) ClearUser() *NotifierUpdateOne {
-	nuo.mutation.ClearUser()
-	return nuo
-}
-
 // ClearGroup clears the "group" edge to the Group entity.
 func (nuo *NotifierUpdateOne) ClearGroup() *NotifierUpdateOne {
 	nuo.mutation.ClearGroup()
+	return nuo
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (nuo *NotifierUpdateOne) ClearUser() *NotifierUpdateOne {
+	nuo.mutation.ClearUser()
 	return nuo
 }
 
@@ -405,11 +405,11 @@ func (nuo *NotifierUpdateOne) check() error {
 			return &ValidationError{Name: "url", err: fmt.Errorf(`ent: validator failed for field "Notifier.url": %w`, err)}
 		}
 	}
-	if _, ok := nuo.mutation.UserID(); nuo.mutation.UserCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Notifier.user"`)
-	}
 	if _, ok := nuo.mutation.GroupID(); nuo.mutation.GroupCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Notifier.group"`)
+	}
+	if _, ok := nuo.mutation.UserID(); nuo.mutation.UserCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Notifier.user"`)
 	}
 	return nil
 }
@@ -455,41 +455,6 @@ func (nuo *NotifierUpdateOne) sqlSave(ctx context.Context) (_node *Notifier, err
 	if value, ok := nuo.mutation.IsActive(); ok {
 		_spec.SetField(notifier.FieldIsActive, field.TypeBool, value)
 	}
-	if nuo.mutation.UserCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   notifier.UserTable,
-			Columns: []string{notifier.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: user.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := nuo.mutation.UserIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   notifier.UserTable,
-			Columns: []string{notifier.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: user.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if nuo.mutation.GroupCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -517,6 +482,41 @@ func (nuo *NotifierUpdateOne) sqlSave(ctx context.Context) (_node *Notifier, err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: group.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if nuo.mutation.UserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   notifier.UserTable,
+			Columns: []string{notifier.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: user.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := nuo.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   notifier.UserTable,
+			Columns: []string{notifier.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: user.FieldID,
 				},
 			},
 		}

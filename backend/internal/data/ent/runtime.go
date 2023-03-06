@@ -493,7 +493,7 @@ func init() {
 	// notifier.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	notifier.UpdateDefaultUpdatedAt = notifierDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// notifierDescName is the schema descriptor for name field.
-	notifierDescName := notifierFields[2].Descriptor()
+	notifierDescName := notifierFields[0].Descriptor()
 	// notifier.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	notifier.NameValidator = func() func(string) error {
 		validators := notifierDescName.Validators
@@ -511,7 +511,7 @@ func init() {
 		}
 	}()
 	// notifierDescURL is the schema descriptor for url field.
-	notifierDescURL := notifierFields[3].Descriptor()
+	notifierDescURL := notifierFields[1].Descriptor()
 	// notifier.URLValidator is a validator for the "url" field. It is called by the builders before save.
 	notifier.URLValidator = func() func(string) error {
 		validators := notifierDescURL.Validators
@@ -529,7 +529,7 @@ func init() {
 		}
 	}()
 	// notifierDescIsActive is the schema descriptor for is_active field.
-	notifierDescIsActive := notifierFields[4].Descriptor()
+	notifierDescIsActive := notifierFields[2].Descriptor()
 	// notifier.DefaultIsActive holds the default value on creation for the is_active field.
 	notifier.DefaultIsActive = notifierDescIsActive.Default.(bool)
 	// notifierDescID is the schema descriptor for id field.

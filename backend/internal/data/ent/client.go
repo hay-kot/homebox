@@ -2147,22 +2147,6 @@ func (c *NotifierClient) GetX(ctx context.Context, id uuid.UUID) *Notifier {
 	return obj
 }
 
-// QueryUser queries the user edge of a Notifier.
-func (c *NotifierClient) QueryUser(n *Notifier) *UserQuery {
-	query := (&UserClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := n.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(notifier.Table, notifier.FieldID, id),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, notifier.UserTable, notifier.UserColumn),
-		)
-		fromV = sqlgraph.Neighbors(n.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryGroup queries the group edge of a Notifier.
 func (c *NotifierClient) QueryGroup(n *Notifier) *GroupQuery {
 	query := (&GroupClient{config: c.config}).Query()
@@ -2172,6 +2156,22 @@ func (c *NotifierClient) QueryGroup(n *Notifier) *GroupQuery {
 			sqlgraph.From(notifier.Table, notifier.FieldID, id),
 			sqlgraph.To(group.Table, group.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, notifier.GroupTable, notifier.GroupColumn),
+		)
+		fromV = sqlgraph.Neighbors(n.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryUser queries the user edge of a Notifier.
+func (c *NotifierClient) QueryUser(n *Notifier) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := n.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(notifier.Table, notifier.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, notifier.UserTable, notifier.UserColumn),
 		)
 		fromV = sqlgraph.Neighbors(n.driver.Dialect(), step)
 		return fromV, nil

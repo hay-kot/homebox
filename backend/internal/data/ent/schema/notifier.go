@@ -2,11 +2,9 @@ package schema
 
 import (
 	"entgo.io/ent"
-	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 
-	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/schema/mixins"
 )
 
@@ -17,14 +15,20 @@ type Notifier struct {
 func (Notifier) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixins.BaseMixin{},
+		GroupMixin{
+			ref:   "notifiers",
+			field: "group_id",
+		},
+		UserMixin{
+			ref:   "notifiers",
+			field: "user_id",
+		},
 	}
 }
 
 // Fields of the Notifier.
 func (Notifier) Fields() []ent.Field {
 	return []ent.Field{
-		field.UUID("user_id", uuid.UUID{}),
-		field.UUID("group_id", uuid.UUID{}),
 		field.String("name").
 			MaxLen(255).
 			NotEmpty(),
@@ -34,22 +38,6 @@ func (Notifier) Fields() []ent.Field {
 			NotEmpty(),
 		field.Bool("is_active").
 			Default(true),
-	}
-}
-
-// Edges of the Notifier.
-func (Notifier) Edges() []ent.Edge {
-	return []ent.Edge{
-		edge.From("user", User.Type).
-			Field("user_id").
-			Ref("notifiers").
-			Required().
-			Unique(),
-		edge.From("group", Group.Type).
-			Field("group_id").
-			Ref("notifiers").
-			Required().
-			Unique(),
 	}
 }
 

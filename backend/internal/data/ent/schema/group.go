@@ -6,6 +6,7 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
+	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/schema/mixins"
 )
 
@@ -56,15 +57,31 @@ func (Group) Edges() []ent.Edge {
 // GroupMixin when embedded in an ent.Schema, adds a reference to
 // the Group entity.
 type GroupMixin struct {
-	ref string
+	ref   string
+	field string
 	mixin.Schema
 }
 
-func (g GroupMixin) Edges() []ent.Edge {
-	return []ent.Edge{
-		edge.From("group", Group.Type).
-			Ref(g.ref).
-			Unique().
-			Required(),
+func (g GroupMixin) Fields() []ent.Field {
+	if g.field != "" {
+		return []ent.Field{
+			field.UUID(g.field, uuid.UUID{}),
+		}
 	}
+
+	return nil
+
+}
+
+func (g GroupMixin) Edges() []ent.Edge {
+	edge := edge.From("group", Group.Type).
+		Ref(g.ref).
+		Unique().
+		Required()
+
+	if g.field != "" {
+		edge = edge.Field(g.field)
+	}
+
+	return []ent.Edge{edge}
 }

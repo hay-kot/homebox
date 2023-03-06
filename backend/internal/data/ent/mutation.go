@@ -9871,10 +9871,10 @@ type NotifierMutation struct {
 	url           *string
 	is_active     *bool
 	clearedFields map[string]struct{}
-	user          *uuid.UUID
-	cleareduser   bool
 	group         *uuid.UUID
 	clearedgroup  bool
+	user          *uuid.UUID
+	cleareduser   bool
 	done          bool
 	oldValue      func(context.Context) (*Notifier, error)
 	predicates    []predicate.Notifier
@@ -10056,42 +10056,6 @@ func (m *NotifierMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// SetUserID sets the "user_id" field.
-func (m *NotifierMutation) SetUserID(u uuid.UUID) {
-	m.user = &u
-}
-
-// UserID returns the value of the "user_id" field in the mutation.
-func (m *NotifierMutation) UserID() (r uuid.UUID, exists bool) {
-	v := m.user
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUserID returns the old "user_id" field's value of the Notifier entity.
-// If the Notifier object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *NotifierMutation) OldUserID(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUserID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
-	}
-	return oldValue.UserID, nil
-}
-
-// ResetUserID resets all changes to the "user_id" field.
-func (m *NotifierMutation) ResetUserID() {
-	m.user = nil
-}
-
 // SetGroupID sets the "group_id" field.
 func (m *NotifierMutation) SetGroupID(u uuid.UUID) {
 	m.group = &u
@@ -10126,6 +10090,42 @@ func (m *NotifierMutation) OldGroupID(ctx context.Context) (v uuid.UUID, err err
 // ResetGroupID resets all changes to the "group_id" field.
 func (m *NotifierMutation) ResetGroupID() {
 	m.group = nil
+}
+
+// SetUserID sets the "user_id" field.
+func (m *NotifierMutation) SetUserID(u uuid.UUID) {
+	m.user = &u
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *NotifierMutation) UserID() (r uuid.UUID, exists bool) {
+	v := m.user
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the Notifier entity.
+// If the Notifier object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *NotifierMutation) OldUserID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *NotifierMutation) ResetUserID() {
+	m.user = nil
 }
 
 // SetName sets the "name" field.
@@ -10236,32 +10236,6 @@ func (m *NotifierMutation) ResetIsActive() {
 	m.is_active = nil
 }
 
-// ClearUser clears the "user" edge to the User entity.
-func (m *NotifierMutation) ClearUser() {
-	m.cleareduser = true
-}
-
-// UserCleared reports if the "user" edge to the User entity was cleared.
-func (m *NotifierMutation) UserCleared() bool {
-	return m.cleareduser
-}
-
-// UserIDs returns the "user" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// UserID instead. It exists only for internal usage by the builders.
-func (m *NotifierMutation) UserIDs() (ids []uuid.UUID) {
-	if id := m.user; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetUser resets all changes to the "user" edge.
-func (m *NotifierMutation) ResetUser() {
-	m.user = nil
-	m.cleareduser = false
-}
-
 // ClearGroup clears the "group" edge to the Group entity.
 func (m *NotifierMutation) ClearGroup() {
 	m.clearedgroup = true
@@ -10286,6 +10260,32 @@ func (m *NotifierMutation) GroupIDs() (ids []uuid.UUID) {
 func (m *NotifierMutation) ResetGroup() {
 	m.group = nil
 	m.clearedgroup = false
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (m *NotifierMutation) ClearUser() {
+	m.cleareduser = true
+}
+
+// UserCleared reports if the "user" edge to the User entity was cleared.
+func (m *NotifierMutation) UserCleared() bool {
+	return m.cleareduser
+}
+
+// UserIDs returns the "user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserID instead. It exists only for internal usage by the builders.
+func (m *NotifierMutation) UserIDs() (ids []uuid.UUID) {
+	if id := m.user; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUser resets all changes to the "user" edge.
+func (m *NotifierMutation) ResetUser() {
+	m.user = nil
+	m.cleareduser = false
 }
 
 // Where appends a list predicates to the NotifierMutation builder.
@@ -10329,11 +10329,11 @@ func (m *NotifierMutation) Fields() []string {
 	if m.updated_at != nil {
 		fields = append(fields, notifier.FieldUpdatedAt)
 	}
-	if m.user != nil {
-		fields = append(fields, notifier.FieldUserID)
-	}
 	if m.group != nil {
 		fields = append(fields, notifier.FieldGroupID)
+	}
+	if m.user != nil {
+		fields = append(fields, notifier.FieldUserID)
 	}
 	if m.name != nil {
 		fields = append(fields, notifier.FieldName)
@@ -10356,10 +10356,10 @@ func (m *NotifierMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case notifier.FieldUpdatedAt:
 		return m.UpdatedAt()
-	case notifier.FieldUserID:
-		return m.UserID()
 	case notifier.FieldGroupID:
 		return m.GroupID()
+	case notifier.FieldUserID:
+		return m.UserID()
 	case notifier.FieldName:
 		return m.Name()
 	case notifier.FieldURL:
@@ -10379,10 +10379,10 @@ func (m *NotifierMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldCreatedAt(ctx)
 	case notifier.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
-	case notifier.FieldUserID:
-		return m.OldUserID(ctx)
 	case notifier.FieldGroupID:
 		return m.OldGroupID(ctx)
+	case notifier.FieldUserID:
+		return m.OldUserID(ctx)
 	case notifier.FieldName:
 		return m.OldName(ctx)
 	case notifier.FieldURL:
@@ -10412,19 +10412,19 @@ func (m *NotifierMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdatedAt(v)
 		return nil
-	case notifier.FieldUserID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUserID(v)
-		return nil
 	case notifier.FieldGroupID:
 		v, ok := value.(uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetGroupID(v)
+		return nil
+	case notifier.FieldUserID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
 		return nil
 	case notifier.FieldName:
 		v, ok := value.(string)
@@ -10502,11 +10502,11 @@ func (m *NotifierMutation) ResetField(name string) error {
 	case notifier.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
-	case notifier.FieldUserID:
-		m.ResetUserID()
-		return nil
 	case notifier.FieldGroupID:
 		m.ResetGroupID()
+		return nil
+	case notifier.FieldUserID:
+		m.ResetUserID()
 		return nil
 	case notifier.FieldName:
 		m.ResetName()
@@ -10524,11 +10524,11 @@ func (m *NotifierMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *NotifierMutation) AddedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.user != nil {
-		edges = append(edges, notifier.EdgeUser)
-	}
 	if m.group != nil {
 		edges = append(edges, notifier.EdgeGroup)
+	}
+	if m.user != nil {
+		edges = append(edges, notifier.EdgeUser)
 	}
 	return edges
 }
@@ -10537,12 +10537,12 @@ func (m *NotifierMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *NotifierMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case notifier.EdgeUser:
-		if id := m.user; id != nil {
-			return []ent.Value{*id}
-		}
 	case notifier.EdgeGroup:
 		if id := m.group; id != nil {
+			return []ent.Value{*id}
+		}
+	case notifier.EdgeUser:
+		if id := m.user; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -10564,11 +10564,11 @@ func (m *NotifierMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *NotifierMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.cleareduser {
-		edges = append(edges, notifier.EdgeUser)
-	}
 	if m.clearedgroup {
 		edges = append(edges, notifier.EdgeGroup)
+	}
+	if m.cleareduser {
+		edges = append(edges, notifier.EdgeUser)
 	}
 	return edges
 }
@@ -10577,10 +10577,10 @@ func (m *NotifierMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *NotifierMutation) EdgeCleared(name string) bool {
 	switch name {
-	case notifier.EdgeUser:
-		return m.cleareduser
 	case notifier.EdgeGroup:
 		return m.clearedgroup
+	case notifier.EdgeUser:
+		return m.cleareduser
 	}
 	return false
 }
@@ -10589,11 +10589,11 @@ func (m *NotifierMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *NotifierMutation) ClearEdge(name string) error {
 	switch name {
-	case notifier.EdgeUser:
-		m.ClearUser()
-		return nil
 	case notifier.EdgeGroup:
 		m.ClearGroup()
+		return nil
+	case notifier.EdgeUser:
+		m.ClearUser()
 		return nil
 	}
 	return fmt.Errorf("unknown Notifier unique edge %s", name)
@@ -10603,11 +10603,11 @@ func (m *NotifierMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *NotifierMutation) ResetEdge(name string) error {
 	switch name {
-	case notifier.EdgeUser:
-		m.ResetUser()
-		return nil
 	case notifier.EdgeGroup:
 		m.ResetGroup()
+		return nil
+	case notifier.EdgeUser:
+		m.ResetUser()
 		return nil
 	}
 	return fmt.Errorf("unknown Notifier edge %s", name)

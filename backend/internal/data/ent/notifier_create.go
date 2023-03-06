@@ -51,15 +51,15 @@ func (nc *NotifierCreate) SetNillableUpdatedAt(t *time.Time) *NotifierCreate {
 	return nc
 }
 
-// SetUserID sets the "user_id" field.
-func (nc *NotifierCreate) SetUserID(u uuid.UUID) *NotifierCreate {
-	nc.mutation.SetUserID(u)
-	return nc
-}
-
 // SetGroupID sets the "group_id" field.
 func (nc *NotifierCreate) SetGroupID(u uuid.UUID) *NotifierCreate {
 	nc.mutation.SetGroupID(u)
+	return nc
+}
+
+// SetUserID sets the "user_id" field.
+func (nc *NotifierCreate) SetUserID(u uuid.UUID) *NotifierCreate {
+	nc.mutation.SetUserID(u)
 	return nc
 }
 
@@ -103,14 +103,14 @@ func (nc *NotifierCreate) SetNillableID(u *uuid.UUID) *NotifierCreate {
 	return nc
 }
 
-// SetUser sets the "user" edge to the User entity.
-func (nc *NotifierCreate) SetUser(u *User) *NotifierCreate {
-	return nc.SetUserID(u.ID)
-}
-
 // SetGroup sets the "group" edge to the Group entity.
 func (nc *NotifierCreate) SetGroup(g *Group) *NotifierCreate {
 	return nc.SetGroupID(g.ID)
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (nc *NotifierCreate) SetUser(u *User) *NotifierCreate {
+	return nc.SetUserID(u.ID)
 }
 
 // Mutation returns the NotifierMutation object of the builder.
@@ -174,11 +174,11 @@ func (nc *NotifierCreate) check() error {
 	if _, ok := nc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Notifier.updated_at"`)}
 	}
-	if _, ok := nc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "Notifier.user_id"`)}
-	}
 	if _, ok := nc.mutation.GroupID(); !ok {
 		return &ValidationError{Name: "group_id", err: errors.New(`ent: missing required field "Notifier.group_id"`)}
+	}
+	if _, ok := nc.mutation.UserID(); !ok {
+		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "Notifier.user_id"`)}
 	}
 	if _, ok := nc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Notifier.name"`)}
@@ -199,11 +199,11 @@ func (nc *NotifierCreate) check() error {
 	if _, ok := nc.mutation.IsActive(); !ok {
 		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "Notifier.is_active"`)}
 	}
-	if _, ok := nc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "Notifier.user"`)}
-	}
 	if _, ok := nc.mutation.GroupID(); !ok {
 		return &ValidationError{Name: "group", err: errors.New(`ent: missing required edge "Notifier.group"`)}
+	}
+	if _, ok := nc.mutation.UserID(); !ok {
+		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "Notifier.user"`)}
 	}
 	return nil
 }
@@ -260,26 +260,6 @@ func (nc *NotifierCreate) createSpec() (*Notifier, *sqlgraph.CreateSpec) {
 		_spec.SetField(notifier.FieldIsActive, field.TypeBool, value)
 		_node.IsActive = value
 	}
-	if nodes := nc.mutation.UserIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   notifier.UserTable,
-			Columns: []string{notifier.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: user.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.UserID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
 	if nodes := nc.mutation.GroupIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -298,6 +278,26 @@ func (nc *NotifierCreate) createSpec() (*Notifier, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.GroupID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := nc.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   notifier.UserTable,
+			Columns: []string{notifier.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.UserID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

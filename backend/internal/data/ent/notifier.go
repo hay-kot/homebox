@@ -23,10 +23,10 @@ type Notifier struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// UserID holds the value of the "user_id" field.
-	UserID uuid.UUID `json:"user_id,omitempty"`
 	// GroupID holds the value of the "group_id" field.
 	GroupID uuid.UUID `json:"group_id,omitempty"`
+	// UserID holds the value of the "user_id" field.
+	UserID uuid.UUID `json:"user_id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// URL holds the value of the "url" field.
@@ -40,32 +40,19 @@ type Notifier struct {
 
 // NotifierEdges holds the relations/edges for other nodes in the graph.
 type NotifierEdges struct {
-	// User holds the value of the user edge.
-	User *User `json:"user,omitempty"`
 	// Group holds the value of the group edge.
 	Group *Group `json:"group,omitempty"`
+	// User holds the value of the user edge.
+	User *User `json:"user,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
 }
 
-// UserOrErr returns the User value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e NotifierEdges) UserOrErr() (*User, error) {
-	if e.loadedTypes[0] {
-		if e.User == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: user.Label}
-		}
-		return e.User, nil
-	}
-	return nil, &NotLoadedError{edge: "user"}
-}
-
 // GroupOrErr returns the Group value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e NotifierEdges) GroupOrErr() (*Group, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[0] {
 		if e.Group == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: group.Label}
@@ -73,6 +60,19 @@ func (e NotifierEdges) GroupOrErr() (*Group, error) {
 		return e.Group, nil
 	}
 	return nil, &NotLoadedError{edge: "group"}
+}
+
+// UserOrErr returns the User value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e NotifierEdges) UserOrErr() (*User, error) {
+	if e.loadedTypes[1] {
+		if e.User == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: user.Label}
+		}
+		return e.User, nil
+	}
+	return nil, &NotLoadedError{edge: "user"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -86,7 +86,7 @@ func (*Notifier) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case notifier.FieldCreatedAt, notifier.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case notifier.FieldID, notifier.FieldUserID, notifier.FieldGroupID:
+		case notifier.FieldID, notifier.FieldGroupID, notifier.FieldUserID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Notifier", columns[i])
@@ -121,17 +121,17 @@ func (n *Notifier) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				n.UpdatedAt = value.Time
 			}
-		case notifier.FieldUserID:
-			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field user_id", values[i])
-			} else if value != nil {
-				n.UserID = *value
-			}
 		case notifier.FieldGroupID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field group_id", values[i])
 			} else if value != nil {
 				n.GroupID = *value
+			}
+		case notifier.FieldUserID:
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field user_id", values[i])
+			} else if value != nil {
+				n.UserID = *value
 			}
 		case notifier.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -156,14 +156,14 @@ func (n *Notifier) assignValues(columns []string, values []any) error {
 	return nil
 }
 
-// QueryUser queries the "user" edge of the Notifier entity.
-func (n *Notifier) QueryUser() *UserQuery {
-	return NewNotifierClient(n.config).QueryUser(n)
-}
-
 // QueryGroup queries the "group" edge of the Notifier entity.
 func (n *Notifier) QueryGroup() *GroupQuery {
 	return NewNotifierClient(n.config).QueryGroup(n)
+}
+
+// QueryUser queries the "user" edge of the Notifier entity.
+func (n *Notifier) QueryUser() *UserQuery {
+	return NewNotifierClient(n.config).QueryUser(n)
 }
 
 // Update returns a builder for updating this Notifier.
@@ -195,11 +195,11 @@ func (n *Notifier) String() string {
 	builder.WriteString("updated_at=")
 	builder.WriteString(n.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("user_id=")
-	builder.WriteString(fmt.Sprintf("%v", n.UserID))
-	builder.WriteString(", ")
 	builder.WriteString("group_id=")
 	builder.WriteString(fmt.Sprintf("%v", n.GroupID))
+	builder.WriteString(", ")
+	builder.WriteString("user_id=")
+	builder.WriteString(fmt.Sprintf("%v", n.UserID))
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(n.Name)
