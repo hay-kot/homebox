@@ -16,6 +16,7 @@ func (Label) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixins.BaseMixin{},
 		mixins.DetailsMixin{},
+		GroupMixin{ref: "labels"},
 	}
 }
 
@@ -31,10 +32,6 @@ func (Label) Fields() []ent.Field {
 // Edges of the Label.
 func (Label) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("group", Group.Type).
-			Ref("labels").
-			Required().
-			Unique(),
 		edge.To("items", Item.Type),
 	}
 }

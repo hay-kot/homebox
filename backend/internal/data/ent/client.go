@@ -1301,6 +1301,22 @@ func (c *ItemClient) GetX(ctx context.Context, id uuid.UUID) *Item {
 	return obj
 }
 
+// QueryGroup queries the group edge of a Item.
+func (c *ItemClient) QueryGroup(i *Item) *GroupQuery {
+	query := (&GroupClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := i.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(item.Table, item.FieldID, id),
+			sqlgraph.To(group.Table, group.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, item.GroupTable, item.GroupColumn),
+		)
+		fromV = sqlgraph.Neighbors(i.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryParent queries the parent edge of a Item.
 func (c *ItemClient) QueryParent(i *Item) *ItemQuery {
 	query := (&ItemClient{config: c.config}).Query()
@@ -1326,22 +1342,6 @@ func (c *ItemClient) QueryChildren(i *Item) *ItemQuery {
 			sqlgraph.From(item.Table, item.FieldID, id),
 			sqlgraph.To(item.Table, item.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, item.ChildrenTable, item.ChildrenColumn),
-		)
-		fromV = sqlgraph.Neighbors(i.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryGroup queries the group edge of a Item.
-func (c *ItemClient) QueryGroup(i *Item) *GroupQuery {
-	query := (&GroupClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := i.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(item.Table, item.FieldID, id),
-			sqlgraph.To(group.Table, group.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, item.GroupTable, item.GroupColumn),
 		)
 		fromV = sqlgraph.Neighbors(i.driver.Dialect(), step)
 		return fromV, nil
@@ -1831,6 +1831,22 @@ func (c *LocationClient) GetX(ctx context.Context, id uuid.UUID) *Location {
 	return obj
 }
 
+// QueryGroup queries the group edge of a Location.
+func (c *LocationClient) QueryGroup(l *Location) *GroupQuery {
+	query := (&GroupClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := l.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(location.Table, location.FieldID, id),
+			sqlgraph.To(group.Table, group.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, location.GroupTable, location.GroupColumn),
+		)
+		fromV = sqlgraph.Neighbors(l.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryParent queries the parent edge of a Location.
 func (c *LocationClient) QueryParent(l *Location) *LocationQuery {
 	query := (&LocationClient{config: c.config}).Query()
@@ -1856,22 +1872,6 @@ func (c *LocationClient) QueryChildren(l *Location) *LocationQuery {
 			sqlgraph.From(location.Table, location.FieldID, id),
 			sqlgraph.To(location.Table, location.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, location.ChildrenTable, location.ChildrenColumn),
-		)
-		fromV = sqlgraph.Neighbors(l.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryGroup queries the group edge of a Location.
-func (c *LocationClient) QueryGroup(l *Location) *GroupQuery {
-	query := (&GroupClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := l.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(location.Table, location.FieldID, id),
-			sqlgraph.To(group.Table, group.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, location.GroupTable, location.GroupColumn),
 		)
 		fromV = sqlgraph.Neighbors(l.driver.Dialect(), step)
 		return fromV, nil

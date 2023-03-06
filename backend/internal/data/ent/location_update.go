@@ -63,6 +63,17 @@ func (lu *LocationUpdate) ClearDescription() *LocationUpdate {
 	return lu
 }
 
+// SetGroupID sets the "group" edge to the Group entity by ID.
+func (lu *LocationUpdate) SetGroupID(id uuid.UUID) *LocationUpdate {
+	lu.mutation.SetGroupID(id)
+	return lu
+}
+
+// SetGroup sets the "group" edge to the Group entity.
+func (lu *LocationUpdate) SetGroup(g *Group) *LocationUpdate {
+	return lu.SetGroupID(g.ID)
+}
+
 // SetParentID sets the "parent" edge to the Location entity by ID.
 func (lu *LocationUpdate) SetParentID(id uuid.UUID) *LocationUpdate {
 	lu.mutation.SetParentID(id)
@@ -97,17 +108,6 @@ func (lu *LocationUpdate) AddChildren(l ...*Location) *LocationUpdate {
 	return lu.AddChildIDs(ids...)
 }
 
-// SetGroupID sets the "group" edge to the Group entity by ID.
-func (lu *LocationUpdate) SetGroupID(id uuid.UUID) *LocationUpdate {
-	lu.mutation.SetGroupID(id)
-	return lu
-}
-
-// SetGroup sets the "group" edge to the Group entity.
-func (lu *LocationUpdate) SetGroup(g *Group) *LocationUpdate {
-	return lu.SetGroupID(g.ID)
-}
-
 // AddItemIDs adds the "items" edge to the Item entity by IDs.
 func (lu *LocationUpdate) AddItemIDs(ids ...uuid.UUID) *LocationUpdate {
 	lu.mutation.AddItemIDs(ids...)
@@ -126,6 +126,12 @@ func (lu *LocationUpdate) AddItems(i ...*Item) *LocationUpdate {
 // Mutation returns the LocationMutation object of the builder.
 func (lu *LocationUpdate) Mutation() *LocationMutation {
 	return lu.mutation
+}
+
+// ClearGroup clears the "group" edge to the Group entity.
+func (lu *LocationUpdate) ClearGroup() *LocationUpdate {
+	lu.mutation.ClearGroup()
+	return lu
 }
 
 // ClearParent clears the "parent" edge to the Location entity.
@@ -153,12 +159,6 @@ func (lu *LocationUpdate) RemoveChildren(l ...*Location) *LocationUpdate {
 		ids[i] = l[i].ID
 	}
 	return lu.RemoveChildIDs(ids...)
-}
-
-// ClearGroup clears the "group" edge to the Group entity.
-func (lu *LocationUpdate) ClearGroup() *LocationUpdate {
-	lu.mutation.ClearGroup()
-	return lu
 }
 
 // ClearItems clears all "items" edges to the Item entity.
@@ -260,6 +260,41 @@ func (lu *LocationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if lu.mutation.DescriptionCleared() {
 		_spec.ClearField(location.FieldDescription, field.TypeString)
 	}
+	if lu.mutation.GroupCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   location.GroupTable,
+			Columns: []string{location.GroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: group.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := lu.mutation.GroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   location.GroupTable,
+			Columns: []string{location.GroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: group.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if lu.mutation.ParentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -341,41 +376,6 @@ func (lu *LocationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: location.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if lu.mutation.GroupCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   location.GroupTable,
-			Columns: []string{location.GroupColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: group.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := lu.mutation.GroupIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   location.GroupTable,
-			Columns: []string{location.GroupColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: group.FieldID,
 				},
 			},
 		}
@@ -490,6 +490,17 @@ func (luo *LocationUpdateOne) ClearDescription() *LocationUpdateOne {
 	return luo
 }
 
+// SetGroupID sets the "group" edge to the Group entity by ID.
+func (luo *LocationUpdateOne) SetGroupID(id uuid.UUID) *LocationUpdateOne {
+	luo.mutation.SetGroupID(id)
+	return luo
+}
+
+// SetGroup sets the "group" edge to the Group entity.
+func (luo *LocationUpdateOne) SetGroup(g *Group) *LocationUpdateOne {
+	return luo.SetGroupID(g.ID)
+}
+
 // SetParentID sets the "parent" edge to the Location entity by ID.
 func (luo *LocationUpdateOne) SetParentID(id uuid.UUID) *LocationUpdateOne {
 	luo.mutation.SetParentID(id)
@@ -524,17 +535,6 @@ func (luo *LocationUpdateOne) AddChildren(l ...*Location) *LocationUpdateOne {
 	return luo.AddChildIDs(ids...)
 }
 
-// SetGroupID sets the "group" edge to the Group entity by ID.
-func (luo *LocationUpdateOne) SetGroupID(id uuid.UUID) *LocationUpdateOne {
-	luo.mutation.SetGroupID(id)
-	return luo
-}
-
-// SetGroup sets the "group" edge to the Group entity.
-func (luo *LocationUpdateOne) SetGroup(g *Group) *LocationUpdateOne {
-	return luo.SetGroupID(g.ID)
-}
-
 // AddItemIDs adds the "items" edge to the Item entity by IDs.
 func (luo *LocationUpdateOne) AddItemIDs(ids ...uuid.UUID) *LocationUpdateOne {
 	luo.mutation.AddItemIDs(ids...)
@@ -553,6 +553,12 @@ func (luo *LocationUpdateOne) AddItems(i ...*Item) *LocationUpdateOne {
 // Mutation returns the LocationMutation object of the builder.
 func (luo *LocationUpdateOne) Mutation() *LocationMutation {
 	return luo.mutation
+}
+
+// ClearGroup clears the "group" edge to the Group entity.
+func (luo *LocationUpdateOne) ClearGroup() *LocationUpdateOne {
+	luo.mutation.ClearGroup()
+	return luo
 }
 
 // ClearParent clears the "parent" edge to the Location entity.
@@ -580,12 +586,6 @@ func (luo *LocationUpdateOne) RemoveChildren(l ...*Location) *LocationUpdateOne 
 		ids[i] = l[i].ID
 	}
 	return luo.RemoveChildIDs(ids...)
-}
-
-// ClearGroup clears the "group" edge to the Group entity.
-func (luo *LocationUpdateOne) ClearGroup() *LocationUpdateOne {
-	luo.mutation.ClearGroup()
-	return luo
 }
 
 // ClearItems clears all "items" edges to the Item entity.
@@ -717,6 +717,41 @@ func (luo *LocationUpdateOne) sqlSave(ctx context.Context) (_node *Location, err
 	if luo.mutation.DescriptionCleared() {
 		_spec.ClearField(location.FieldDescription, field.TypeString)
 	}
+	if luo.mutation.GroupCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   location.GroupTable,
+			Columns: []string{location.GroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: group.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := luo.mutation.GroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   location.GroupTable,
+			Columns: []string{location.GroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: group.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if luo.mutation.ParentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -798,41 +833,6 @@ func (luo *LocationUpdateOne) sqlSave(ctx context.Context) (_node *Location, err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: location.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if luo.mutation.GroupCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   location.GroupTable,
-			Columns: []string{location.GroupColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: group.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := luo.mutation.GroupIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   location.GroupTable,
-			Columns: []string{location.GroupColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: group.FieldID,
 				},
 			},
 		}

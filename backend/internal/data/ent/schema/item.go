@@ -18,6 +18,7 @@ func (Item) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixins.BaseMixin{},
 		mixins.DetailsMixin{},
+		GroupMixin{ref: "items"},
 	}
 }
 
@@ -101,10 +102,6 @@ func (Item) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("children", Item.Type).
 			From("parent").
-			Unique(),
-		edge.From("group", Group.Type).
-			Ref("items").
-			Required().
 			Unique(),
 		edge.From("label", Label.Type).
 			Ref("items"),

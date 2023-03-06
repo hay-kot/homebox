@@ -355,6 +355,17 @@ func (ic *ItemCreate) SetNillableID(u *uuid.UUID) *ItemCreate {
 	return ic
 }
 
+// SetGroupID sets the "group" edge to the Group entity by ID.
+func (ic *ItemCreate) SetGroupID(id uuid.UUID) *ItemCreate {
+	ic.mutation.SetGroupID(id)
+	return ic
+}
+
+// SetGroup sets the "group" edge to the Group entity.
+func (ic *ItemCreate) SetGroup(g *Group) *ItemCreate {
+	return ic.SetGroupID(g.ID)
+}
+
 // SetParentID sets the "parent" edge to the Item entity by ID.
 func (ic *ItemCreate) SetParentID(id uuid.UUID) *ItemCreate {
 	ic.mutation.SetParentID(id)
@@ -387,17 +398,6 @@ func (ic *ItemCreate) AddChildren(i ...*Item) *ItemCreate {
 		ids[j] = i[j].ID
 	}
 	return ic.AddChildIDs(ids...)
-}
-
-// SetGroupID sets the "group" edge to the Group entity by ID.
-func (ic *ItemCreate) SetGroupID(id uuid.UUID) *ItemCreate {
-	ic.mutation.SetGroupID(id)
-	return ic
-}
-
-// SetGroup sets the "group" edge to the Group entity.
-func (ic *ItemCreate) SetGroup(g *Group) *ItemCreate {
-	return ic.SetGroupID(g.ID)
 }
 
 // AddLabelIDs adds the "label" edge to the Label entity by IDs.
@@ -763,6 +763,26 @@ func (ic *ItemCreate) createSpec() (*Item, *sqlgraph.CreateSpec) {
 		_spec.SetField(item.FieldSoldNotes, field.TypeString, value)
 		_node.SoldNotes = value
 	}
+	if nodes := ic.mutation.GroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   item.GroupTable,
+			Columns: []string{item.GroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: group.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.group_items = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := ic.mutation.ParentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -800,26 +820,6 @@ func (ic *ItemCreate) createSpec() (*Item, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := ic.mutation.GroupIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   item.GroupTable,
-			Columns: []string{item.GroupColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: group.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.group_items = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ic.mutation.LabelIDs(); len(nodes) > 0 {

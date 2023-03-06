@@ -57,7 +57,6 @@ func (Notifier) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("user_id"),
 		index.Fields("user_id", "is_active"),
-
 		index.Fields("group_id"),
 		index.Fields("group_id", "is_active"),
 	}

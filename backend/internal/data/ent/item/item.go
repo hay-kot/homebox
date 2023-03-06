@@ -59,12 +59,12 @@ const (
 	FieldSoldPrice = "sold_price"
 	// FieldSoldNotes holds the string denoting the sold_notes field in the database.
 	FieldSoldNotes = "sold_notes"
+	// EdgeGroup holds the string denoting the group edge name in mutations.
+	EdgeGroup = "group"
 	// EdgeParent holds the string denoting the parent edge name in mutations.
 	EdgeParent = "parent"
 	// EdgeChildren holds the string denoting the children edge name in mutations.
 	EdgeChildren = "children"
-	// EdgeGroup holds the string denoting the group edge name in mutations.
-	EdgeGroup = "group"
 	// EdgeLabel holds the string denoting the label edge name in mutations.
 	EdgeLabel = "label"
 	// EdgeLocation holds the string denoting the location edge name in mutations.
@@ -77,6 +77,13 @@ const (
 	EdgeAttachments = "attachments"
 	// Table holds the table name of the item in the database.
 	Table = "items"
+	// GroupTable is the table that holds the group relation/edge.
+	GroupTable = "items"
+	// GroupInverseTable is the table name for the Group entity.
+	// It exists in this package in order to avoid circular dependency with the "group" package.
+	GroupInverseTable = "groups"
+	// GroupColumn is the table column denoting the group relation/edge.
+	GroupColumn = "group_items"
 	// ParentTable is the table that holds the parent relation/edge.
 	ParentTable = "items"
 	// ParentColumn is the table column denoting the parent relation/edge.
@@ -85,13 +92,6 @@ const (
 	ChildrenTable = "items"
 	// ChildrenColumn is the table column denoting the children relation/edge.
 	ChildrenColumn = "item_children"
-	// GroupTable is the table that holds the group relation/edge.
-	GroupTable = "items"
-	// GroupInverseTable is the table name for the Group entity.
-	// It exists in this package in order to avoid circular dependency with the "group" package.
-	GroupInverseTable = "groups"
-	// GroupColumn is the table column denoting the group relation/edge.
-	GroupColumn = "group_items"
 	// LabelTable is the table that holds the label relation/edge. The primary key declared below.
 	LabelTable = "label_items"
 	// LabelInverseTable is the table name for the Label entity.

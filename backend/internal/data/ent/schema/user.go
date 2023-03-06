@@ -16,6 +16,7 @@ type User struct {
 func (User) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixins.BaseMixin{},
+		GroupMixin{ref: "users"},
 	}
 }
 
@@ -48,10 +49,6 @@ func (User) Fields() []ent.Field {
 // Edges of the User.
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("group", Group.Type).
-			Ref("users").
-			Required().
-			Unique(),
 		edge.To("auth_tokens", AuthTokens.Type).
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,
