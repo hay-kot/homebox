@@ -28,13 +28,14 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
+                "description": "Ensures all items in the database have an asset ID",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Group"
+                    "Actions"
                 ],
-                "summary": "Ensures all items in the database have an asset id",
+                "summary": "Ensure Asset IDs",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -52,13 +53,14 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
+                "description": "Ensures all items in the database have an import ref",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Group"
+                    "Actions"
                 ],
-                "summary": "Ensures all items in the database have an import ref",
+                "summary": "Ensures Import Refs",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -76,13 +78,14 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
+                "description": "Resets all item date fields to the beginning of the day",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Group"
+                    "Actions"
                 ],
-                "summary": "Resets all item date fields to the beginning of the day",
+                "summary": "Zero Out Time Fields",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -104,9 +107,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Assets"
+                    "Items"
                 ],
-                "summary": "Gets an item by Asset ID",
+                "summary": "Get Item by Asset ID",
                 "parameters": [
                     {
                         "type": "string",
@@ -139,7 +142,7 @@ const docTemplate = `{
                 "tags": [
                     "Group"
                 ],
-                "summary": "Get the current user's group",
+                "summary": "Get Group",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -161,7 +164,7 @@ const docTemplate = `{
                 "tags": [
                     "Group"
                 ],
-                "summary": "Updates some fields of the current users group",
+                "summary": "Update Group",
                 "parameters": [
                     {
                         "description": "User Data",
@@ -196,7 +199,7 @@ const docTemplate = `{
                 "tags": [
                     "Group"
                 ],
-                "summary": "Get the current user",
+                "summary": "Create Group Invitation",
                 "parameters": [
                     {
                         "description": "User Data",
@@ -231,7 +234,7 @@ const docTemplate = `{
                 "tags": [
                     "Statistics"
                 ],
-                "summary": "Get the current user's group statistics",
+                "summary": "Get Group Statistics",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -255,7 +258,7 @@ const docTemplate = `{
                 "tags": [
                     "Statistics"
                 ],
-                "summary": "Get the current user's group statistics",
+                "summary": "Get Label Statistics",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -282,7 +285,7 @@ const docTemplate = `{
                 "tags": [
                     "Statistics"
                 ],
-                "summary": "Get the current user's group statistics",
+                "summary": "Get Location Statistics",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -309,7 +312,7 @@ const docTemplate = `{
                 "tags": [
                     "Statistics"
                 ],
-                "summary": "Queries the changes overtime of the purchase price over time",
+                "summary": "Get Purchase Price Statistics",
                 "parameters": [
                     {
                         "type": "string",
@@ -347,7 +350,7 @@ const docTemplate = `{
                 "tags": [
                     "Items"
                 ],
-                "summary": "Get All Items",
+                "summary": "Query All Items",
                 "parameters": [
                     {
                         "type": "string",
@@ -409,7 +412,7 @@ const docTemplate = `{
                 "tags": [
                     "Items"
                 ],
-                "summary": "Create a new item",
+                "summary": "Create Item",
                 "parameters": [
                     {
                         "description": "Item Data",
@@ -441,7 +444,7 @@ const docTemplate = `{
                 "tags": [
                     "Items"
                 ],
-                "summary": "exports items into the database",
+                "summary": "Export Items",
                 "responses": {
                     "200": {
                         "description": "text/csv",
@@ -465,7 +468,7 @@ const docTemplate = `{
                 "tags": [
                     "Items"
                 ],
-                "summary": "imports items into the database",
+                "summary": "Get All Custom Field Names",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -492,7 +495,7 @@ const docTemplate = `{
                 "tags": [
                     "Items"
                 ],
-                "summary": "imports items into the database",
+                "summary": "Get All Custom Field Values",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -519,7 +522,7 @@ const docTemplate = `{
                 "tags": [
                     "Items"
                 ],
-                "summary": "imports items into the database",
+                "summary": "Import Items",
                 "parameters": [
                     {
                         "type": "file",
@@ -549,7 +552,7 @@ const docTemplate = `{
                 "tags": [
                     "Items"
                 ],
-                "summary": "Gets a item and fields",
+                "summary": "Get Item",
                 "parameters": [
                     {
                         "type": "string",
@@ -580,7 +583,7 @@ const docTemplate = `{
                 "tags": [
                     "Items"
                 ],
-                "summary": "updates a item",
+                "summary": "Update Item",
                 "parameters": [
                     {
                         "type": "string",
@@ -620,7 +623,7 @@ const docTemplate = `{
                 "tags": [
                     "Items"
                 ],
-                "summary": "deletes a item",
+                "summary": "Delete Item",
                 "parameters": [
                     {
                         "type": "string",
@@ -650,7 +653,7 @@ const docTemplate = `{
                 "tags": [
                     "Items Attachments"
                 ],
-                "summary": "imports items into the database",
+                "summary": "Create Item Attachment",
                 "parameters": [
                     {
                         "type": "string",
@@ -710,7 +713,7 @@ const docTemplate = `{
                 "tags": [
                     "Items Attachments"
                 ],
-                "summary": "retrieves an attachment for an item",
+                "summary": "Get Item Attachment",
                 "parameters": [
                     {
                         "type": "string",
@@ -745,7 +748,7 @@ const docTemplate = `{
                 "tags": [
                     "Items Attachments"
                 ],
-                "summary": "retrieves an attachment for an item",
+                "summary": "Update Item Attachment",
                 "parameters": [
                     {
                         "type": "string",
@@ -789,7 +792,7 @@ const docTemplate = `{
                 "tags": [
                     "Items Attachments"
                 ],
-                "summary": "retrieves an attachment for an item",
+                "summary": "Delete Item Attachment",
                 "parameters": [
                     {
                         "type": "string",
@@ -974,7 +977,7 @@ const docTemplate = `{
                 "tags": [
                     "Labels"
                 ],
-                "summary": "Create a new label",
+                "summary": "Create Label",
                 "parameters": [
                     {
                         "description": "Label Data",
@@ -1009,7 +1012,7 @@ const docTemplate = `{
                 "tags": [
                     "Labels"
                 ],
-                "summary": "Gets a label and fields",
+                "summary": "Get Label",
                 "parameters": [
                     {
                         "type": "string",
@@ -1040,7 +1043,7 @@ const docTemplate = `{
                 "tags": [
                     "Labels"
                 ],
-                "summary": "updates a label",
+                "summary": "Update Label",
                 "parameters": [
                     {
                         "type": "string",
@@ -1071,7 +1074,7 @@ const docTemplate = `{
                 "tags": [
                     "Labels"
                 ],
-                "summary": "deletes a label",
+                "summary": "Delete Label",
                 "parameters": [
                     {
                         "type": "string",
@@ -1146,7 +1149,7 @@ const docTemplate = `{
                 "tags": [
                     "Locations"
                 ],
-                "summary": "Create a new location",
+                "summary": "Create Location",
                 "parameters": [
                     {
                         "description": "Location Data",
@@ -1181,7 +1184,7 @@ const docTemplate = `{
                 "tags": [
                     "Locations"
                 ],
-                "summary": "Get All Locations",
+                "summary": "Get Locations Tree",
                 "parameters": [
                     {
                         "type": "boolean",
@@ -1228,7 +1231,7 @@ const docTemplate = `{
                 "tags": [
                     "Locations"
                 ],
-                "summary": "Gets a location and fields",
+                "summary": "Get Location",
                 "parameters": [
                     {
                         "type": "string",
@@ -1259,7 +1262,7 @@ const docTemplate = `{
                 "tags": [
                     "Locations"
                 ],
-                "summary": "updates a location",
+                "summary": "Update Location",
                 "parameters": [
                     {
                         "type": "string",
@@ -1299,7 +1302,7 @@ const docTemplate = `{
                 "tags": [
                     "Locations"
                 ],
-                "summary": "deletes a location",
+                "summary": "Delete Location",
                 "parameters": [
                     {
                         "type": "string",
@@ -1329,7 +1332,7 @@ const docTemplate = `{
                 "tags": [
                     "Notifiers"
                 ],
-                "summary": "Get All notifier",
+                "summary": "Get Notifiers",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1366,7 +1369,7 @@ const docTemplate = `{
                 "tags": [
                     "Notifiers"
                 ],
-                "summary": "Create a new notifier",
+                "summary": "Create Notifier",
                 "parameters": [
                     {
                         "description": "Notifier Data",
@@ -1401,7 +1404,7 @@ const docTemplate = `{
                 "tags": [
                     "Notifiers"
                 ],
-                "summary": "Test notifier",
+                "summary": "Test Notifier",
                 "parameters": [
                     {
                         "type": "string",
@@ -1435,7 +1438,7 @@ const docTemplate = `{
                 "tags": [
                     "Notifiers"
                 ],
-                "summary": "Update a notifier",
+                "summary": "Update Notifier",
                 "parameters": [
                     {
                         "type": "string",
@@ -1472,7 +1475,7 @@ const docTemplate = `{
                 "tags": [
                     "Notifiers"
                 ],
-                "summary": "Delete a notifier",
+                "summary": "Delete a Notifier",
                 "parameters": [
                     {
                         "type": "string",
@@ -1502,7 +1505,7 @@ const docTemplate = `{
                 "tags": [
                     "Items"
                 ],
-                "summary": "Encode data into QRCode",
+                "summary": "Create QR Code",
                 "parameters": [
                     {
                         "type": "string",
@@ -1534,7 +1537,7 @@ const docTemplate = `{
                 "tags": [
                     "Reporting"
                 ],
-                "summary": "Generates a Bill of Materials CSV",
+                "summary": "Export Bill of Materials",
                 "responses": {
                     "200": {
                         "description": "text/csv",
@@ -1553,7 +1556,7 @@ const docTemplate = `{
                 "tags": [
                     "Base"
                 ],
-                "summary": "Retrieves the basic information about the API",
+                "summary": "Application Info",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1574,7 +1577,7 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Updates the users password",
+                "summary": "Change Password",
                 "parameters": [
                     {
                         "description": "Password Payload",
@@ -1677,7 +1680,7 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Get the current user",
+                "summary": "Register New User",
                 "parameters": [
                     {
                         "description": "User Data",
@@ -1709,7 +1712,7 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Get the current user",
+                "summary": "Get User Self",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1743,7 +1746,7 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Update the current user",
+                "summary": "Update Account",
                 "parameters": [
                     {
                         "description": "User Data",
@@ -1788,7 +1791,7 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Deletes the user account",
+                "summary": "Delete Account",
                 "responses": {
                     "204": {
                         "description": "No Content"
@@ -2836,8 +2839,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "",
 	BasePath:         "/api",
 	Schemes:          []string{},
-	Title:            "Go API Templates",
-	Description:      "This is a simple Rest API Server Template that implements some basic User and Authentication patterns to help you get started and bootstrap your next project!.",
+	Title:            "Homebox API",
+	Description:      "Track, Manage, and Organize your Shit.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

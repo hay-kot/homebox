@@ -12,12 +12,13 @@ import (
 )
 
 // HandleLabelsGetAll godoc
-// @Summary  Get All Labels
-// @Tags     Labels
-// @Produce  json
-// @Success  200 {object} server.Results{items=[]repo.LabelOut}
-// @Router   /v1/labels [GET]
-// @Security Bearer
+//
+//	@Summary  Get All Labels
+//	@Tags     Labels
+//	@Produce  json
+//	@Success  200 {object} server.Results{items=[]repo.LabelOut}
+//	@Router   /v1/labels [GET]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleLabelsGetAll() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		user := services.UseUserCtx(r.Context())
@@ -31,13 +32,14 @@ func (ctrl *V1Controller) HandleLabelsGetAll() server.HandlerFunc {
 }
 
 // HandleLabelsCreate godoc
-// @Summary  Create a new label
-// @Tags     Labels
-// @Produce  json
-// @Param    payload body     repo.LabelCreate true "Label Data"
-// @Success  200     {object} repo.LabelSummary
-// @Router   /v1/labels [POST]
-// @Security Bearer
+//
+//	@Summary  Create Label
+//	@Tags     Labels
+//	@Produce  json
+//	@Param    payload body     repo.LabelCreate true "Label Data"
+//	@Success  200     {object} repo.LabelSummary
+//	@Router   /v1/labels [POST]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleLabelsCreate() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		createData := repo.LabelCreate{}
@@ -58,37 +60,40 @@ func (ctrl *V1Controller) HandleLabelsCreate() server.HandlerFunc {
 }
 
 // HandleLabelDelete godocs
-// @Summary  deletes a label
-// @Tags     Labels
-// @Produce  json
-// @Param    id path string true "Label ID"
-// @Success  204
-// @Router   /v1/labels/{id} [DELETE]
-// @Security Bearer
+//
+//	@Summary  Delete Label
+//	@Tags     Labels
+//	@Produce  json
+//	@Param    id path string true "Label ID"
+//	@Success  204
+//	@Router   /v1/labels/{id} [DELETE]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleLabelDelete() server.HandlerFunc {
 	return ctrl.handleLabelsGeneral()
 }
 
 // HandleLabelGet godocs
-// @Summary  Gets a label and fields
-// @Tags     Labels
-// @Produce  json
-// @Param    id  path     string true "Label ID"
-// @Success  200 {object} repo.LabelOut
-// @Router   /v1/labels/{id} [GET]
-// @Security Bearer
+//
+//	@Summary  Get Label
+//	@Tags     Labels
+//	@Produce  json
+//	@Param    id  path     string true "Label ID"
+//	@Success  200 {object} repo.LabelOut
+//	@Router   /v1/labels/{id} [GET]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleLabelGet() server.HandlerFunc {
 	return ctrl.handleLabelsGeneral()
 }
 
 // HandleLabelUpdate godocs
-// @Summary  updates a label
-// @Tags     Labels
-// @Produce  json
-// @Param    id  path     string true "Label ID"
-// @Success  200 {object} repo.LabelOut
-// @Router   /v1/labels/{id} [PUT]
-// @Security Bearer
+//
+//	@Summary  Update Label
+//	@Tags     Labels
+//	@Produce  json
+//	@Param    id  path     string true "Label ID"
+//	@Success  200 {object} repo.LabelOut
+//	@Router   /v1/labels/{id} [PUT]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleLabelUpdate() server.HandlerFunc {
 	return ctrl.handleLabelsGeneral()
 }

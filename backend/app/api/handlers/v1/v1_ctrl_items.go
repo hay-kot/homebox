@@ -15,17 +15,18 @@ import (
 )
 
 // HandleItemsGetAll godoc
-// @Summary  Get All Items
-// @Tags     Items
-// @Produce  json
-// @Param    q         query    string   false "search string"
-// @Param    page      query    int      false "page number"
-// @Param    pageSize  query    int      false "items per page"
-// @Param    labels    query    []string false "label Ids"    collectionFormat(multi)
-// @Param    locations query    []string false "location Ids" collectionFormat(multi)
-// @Success  200       {object} repo.PaginationResult[repo.ItemSummary]{}
-// @Router   /v1/items [GET]
-// @Security Bearer
+//
+//	@Summary  Query All Items
+//	@Tags     Items
+//	@Produce  json
+//	@Param    q         query    string   false "search string"
+//	@Param    page      query    int      false "page number"
+//	@Param    pageSize  query    int      false "items per page"
+//	@Param    labels    query    []string false "label Ids"    collectionFormat(multi)
+//	@Param    locations query    []string false "location Ids" collectionFormat(multi)
+//	@Success  200       {object} repo.PaginationResult[repo.ItemSummary]{}
+//	@Router   /v1/items [GET]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleItemsGetAll() server.HandlerFunc {
 	extractQuery := func(r *http.Request) repo.ItemQuery {
 		params := r.URL.Query()
@@ -87,13 +88,14 @@ func (ctrl *V1Controller) HandleItemsGetAll() server.HandlerFunc {
 }
 
 // HandleItemsCreate godoc
-// @Summary  Create a new item
-// @Tags     Items
-// @Produce  json
-// @Param    payload body     repo.ItemCreate true "Item Data"
-// @Success  200     {object} repo.ItemSummary
-// @Router   /v1/items [POST]
-// @Security Bearer
+//
+//	@Summary  Create Item
+//	@Tags     Items
+//	@Produce  json
+//	@Param    payload body     repo.ItemCreate true "Item Data"
+//	@Success  200     {object} repo.ItemSummary
+//	@Router   /v1/items [POST]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleItemsCreate() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		createData := repo.ItemCreate{}
@@ -114,38 +116,41 @@ func (ctrl *V1Controller) HandleItemsCreate() server.HandlerFunc {
 }
 
 // HandleItemGet godocs
-// @Summary  Gets a item and fields
-// @Tags     Items
-// @Produce  json
-// @Param    id  path     string true "Item ID"
-// @Success  200 {object} repo.ItemOut
-// @Router   /v1/items/{id} [GET]
-// @Security Bearer
+//
+//	@Summary  Get Item
+//	@Tags     Items
+//	@Produce  json
+//	@Param    id  path     string true "Item ID"
+//	@Success  200 {object} repo.ItemOut
+//	@Router   /v1/items/{id} [GET]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleItemGet() server.HandlerFunc {
 	return ctrl.handleItemsGeneral()
 }
 
 // HandleItemDelete godocs
-// @Summary  deletes a item
-// @Tags     Items
-// @Produce  json
-// @Param    id path string true "Item ID"
-// @Success  204
-// @Router   /v1/items/{id} [DELETE]
-// @Security Bearer
+//
+//	@Summary  Delete Item
+//	@Tags     Items
+//	@Produce  json
+//	@Param    id path string true "Item ID"
+//	@Success  204
+//	@Router   /v1/items/{id} [DELETE]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleItemDelete() server.HandlerFunc {
 	return ctrl.handleItemsGeneral()
 }
 
 // HandleItemUpdate godocs
-// @Summary  updates a item
-// @Tags     Items
-// @Produce  json
-// @Param    id      path     string          true "Item ID"
-// @Param    payload body     repo.ItemUpdate true "Item Data"
-// @Success  200     {object} repo.ItemOut
-// @Router   /v1/items/{id} [PUT]
-// @Security Bearer
+//
+//	@Summary  Update Item
+//	@Tags     Items
+//	@Produce  json
+//	@Param    id      path     string          true "Item ID"
+//	@Param    payload body     repo.ItemUpdate true "Item Data"
+//	@Success  200     {object} repo.ItemOut
+//	@Router   /v1/items/{id} [PUT]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleItemUpdate() server.HandlerFunc {
 	return ctrl.handleItemsGeneral()
 }
@@ -193,13 +198,14 @@ func (ctrl *V1Controller) handleItemsGeneral() server.HandlerFunc {
 }
 
 // HandleGetAllCustomFieldNames godocs
-// @Summary  imports items into the database
-// @Tags     Items
-// @Produce  json
-// @Success  200
-// @Router   /v1/items/fields [GET]
-// @Success  200     {object} []string
-// @Security Bearer
+//
+//	@Summary  Get All Custom Field Names
+//	@Tags     Items
+//	@Produce  json
+//	@Success  200
+//	@Router   /v1/items/fields [GET]
+//	@Success  200     {object} []string
+//	@Security Bearer
 func (ctrl *V1Controller) HandleGetAllCustomFieldNames() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := services.NewContext(r.Context())
@@ -214,13 +220,14 @@ func (ctrl *V1Controller) HandleGetAllCustomFieldNames() server.HandlerFunc {
 }
 
 // HandleGetAllCustomFieldValues godocs
-// @Summary  imports items into the database
-// @Tags     Items
-// @Produce  json
-// @Success  200
-// @Router   /v1/items/fields/values [GET]
-// @Success  200     {object} []string
-// @Security Bearer
+//
+//	@Summary  Get All Custom Field Values
+//	@Tags     Items
+//	@Produce  json
+//	@Success  200
+//	@Router   /v1/items/fields/values [GET]
+//	@Success  200     {object} []string
+//	@Security Bearer
 func (ctrl *V1Controller) HandleGetAllCustomFieldValues() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := services.NewContext(r.Context())
@@ -235,13 +242,14 @@ func (ctrl *V1Controller) HandleGetAllCustomFieldValues() server.HandlerFunc {
 }
 
 // HandleItemsImport godocs
-// @Summary  imports items into the database
-// @Tags     Items
-// @Produce  json
-// @Success  204
-// @Param    csv formData file true "Image to upload"
-// @Router   /v1/items/import [Post]
-// @Security Bearer
+//
+//	@Summary  Import Items
+//	@Tags     Items
+//	@Produce  json
+//	@Success  204
+//	@Param    csv formData file true "Image to upload"
+//	@Router   /v1/items/import [Post]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleItemsImport() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		err := r.ParseMultipartForm(ctrl.maxUploadSize << 20)
@@ -268,12 +276,13 @@ func (ctrl *V1Controller) HandleItemsImport() server.HandlerFunc {
 	}
 }
 
-// HandleItemsImport godocs
-// @Summary  exports items into the database
-// @Tags     Items
-// @Success 200 {string} string "text/csv"
-// @Router   /v1/items/export [GET]
-// @Security Bearer
+// HandleItemsExport godocs
+//
+//	@Summary  Export Items
+//	@Tags     Items
+//	@Success 200 {string} string "text/csv"
+//	@Router   /v1/items/export [GET]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleItemsExport() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := services.NewContext(r.Context())

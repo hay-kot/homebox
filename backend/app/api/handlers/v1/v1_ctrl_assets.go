@@ -14,14 +14,15 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// HandleItemGet godocs
-// @Summary  Gets an item by Asset ID
-// @Tags     Assets
-// @Produce  json
-// @Param    id  path     string true "Asset ID"
-// @Success  200       {object} repo.PaginationResult[repo.ItemSummary]{}
-// @Router   /v1/assets/{id} [GET]
-// @Security Bearer
+// HandleAssetGet godocs
+//
+//	@Summary  Get Item by Asset ID
+//	@Tags     Items
+//	@Produce  json
+//	@Param    id  path     string true "Asset ID"
+//	@Success  200       {object} repo.PaginationResult[repo.ItemSummary]{}
+//	@Router   /v1/assets/{id} [GET]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleAssetGet() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := services.NewContext(r.Context())

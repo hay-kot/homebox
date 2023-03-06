@@ -27,9 +27,9 @@ var (
 	buildTime = "now"
 )
 
-// @title                      Go API Templates
+// @title                      Homebox API
 // @version                    1.0
-// @description                This is a simple Rest API Server Template that implements some basic User and Authentication patterns to help you get started and bootstrap your next project!.
+// @description                Track, Manage, and Organize your Shit.
 // @contact.name               Don't
 // @license.name               MIT
 // @BasePath                   /api

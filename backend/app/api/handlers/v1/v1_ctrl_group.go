@@ -25,24 +25,26 @@ type (
 )
 
 // HandleGroupGet godoc
-// @Summary  Get the current user's group
-// @Tags     Group
-// @Produce  json
-// @Success  200 {object} repo.Group
-// @Router   /v1/groups [Get]
-// @Security Bearer
+//
+//	@Summary  Get Group
+//	@Tags     Group
+//	@Produce  json
+//	@Success  200 {object} repo.Group
+//	@Router   /v1/groups [Get]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleGroupGet() server.HandlerFunc {
 	return ctrl.handleGroupGeneral()
 }
 
 // HandleGroupUpdate godoc
-// @Summary  Updates some fields of the current users group
-// @Tags     Group
-// @Produce  json
-// @Param    payload body     repo.GroupUpdate true "User Data"
-// @Success  200     {object} repo.Group
-// @Router   /v1/groups [Put]
-// @Security Bearer
+//
+//	@Summary  Update Group
+//	@Tags     Group
+//	@Produce  json
+//	@Param    payload body     repo.GroupUpdate true "User Data"
+//	@Success  200     {object} repo.Group
+//	@Router   /v1/groups [Put]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleGroupUpdate() server.HandlerFunc {
 	return ctrl.handleGroupGeneral()
 }
@@ -81,13 +83,14 @@ func (ctrl *V1Controller) handleGroupGeneral() server.HandlerFunc {
 }
 
 // HandleGroupInvitationsCreate godoc
-// @Summary  Get the current user
-// @Tags     Group
-// @Produce  json
-// @Param    payload body     GroupInvitationCreate true "User Data"
-// @Success  200     {object} GroupInvitation
-// @Router   /v1/groups/invitations [Post]
-// @Security Bearer
+//
+//	@Summary  Create Group Invitation
+//	@Tags     Group
+//	@Produce  json
+//	@Param    payload body     GroupInvitationCreate true "User Data"
+//	@Success  200     {object} GroupInvitation
+//	@Router   /v1/groups/invitations [Post]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleGroupInvitationsCreate() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		data := GroupInvitationCreate{}

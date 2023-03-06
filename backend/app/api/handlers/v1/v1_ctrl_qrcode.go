@@ -19,7 +19,7 @@ var qrcodeLogo []byte
 
 // HandleGenerateQRCode godoc
 //
-//	@Summary  Encode data into QRCode
+//	@Summary  Create QR Code
 //	@Tags     Items
 //	@Produce  json
 //	@Param    data      query    string   false "data to be encoded into qrcode"
