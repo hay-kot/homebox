@@ -28,6 +28,7 @@ tasks:
           --path ./backend/app/api/static/docs/swagger.json \
           --output ./frontend/lib/api/types
       - go run ./scripts/process-types/*.go ./frontend/lib/api/types/data-contracts.ts
+      - cp ./backend/app/api/static/docs/swagger.json docs/docs/api/openapi-2.0.json
     sources:
       - "./backend/app/api/**/*"
       - "./backend/internal/data/**"

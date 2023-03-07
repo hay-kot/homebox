@@ -9,7 +9,7 @@ import (
 
 // HandleBillOfMaterialsExport godoc
 //
-//	@Summary  Generates a Bill of Materials CSV
+//	@Summary  Export Bill of Materials
 //	@Tags     Reporting
 //	@Produce  json
 //	@Success 200 {string} string "text/csv"

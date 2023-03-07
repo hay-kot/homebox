@@ -21,7 +21,7 @@ func (ctrl *V1Controller) routeID(r *http.Request) (uuid.UUID, error) {
 func (ctrl *V1Controller) routeUUID(r *http.Request, key string) (uuid.UUID, error) {
 	ID, err := uuid.Parse(chi.URLParam(r, key))
 	if err != nil {
-		return uuid.Nil, validate.NewInvalidRouteKeyError(key)
+		return uuid.Nil, validate.NewRouteKeyError(key)
 	}
 	return ID, nil
 }

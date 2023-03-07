@@ -398,6 +398,33 @@ func HasInvitationTokensWith(preds ...predicate.GroupInvitationToken) predicate.
 	})
 }
 
+// HasNotifiers applies the HasEdge predicate on the "notifiers" edge.
+func HasNotifiers() predicate.Group {
+	return predicate.Group(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, NotifiersTable, NotifiersColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasNotifiersWith applies the HasEdge predicate on the "notifiers" edge with a given conditions (other predicates).
+func HasNotifiersWith(preds ...predicate.Notifier) predicate.Group {
+	return predicate.Group(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(NotifiersInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, NotifiersTable, NotifiersColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Group) predicate.Group {
 	return predicate.Group(func(s *sql.Selector) {

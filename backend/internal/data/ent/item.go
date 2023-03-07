@@ -75,12 +75,12 @@ type Item struct {
 
 // ItemEdges holds the relations/edges for other nodes in the graph.
 type ItemEdges struct {
+	// Group holds the value of the group edge.
+	Group *Group `json:"group,omitempty"`
 	// Parent holds the value of the parent edge.
 	Parent *Item `json:"parent,omitempty"`
 	// Children holds the value of the children edge.
 	Children []*Item `json:"children,omitempty"`
-	// Group holds the value of the group edge.
-	Group *Group `json:"group,omitempty"`
 	// Label holds the value of the label edge.
 	Label []*Label `json:"label,omitempty"`
 	// Location holds the value of the location edge.
@@ -96,10 +96,23 @@ type ItemEdges struct {
 	loadedTypes [8]bool
 }
 
+// GroupOrErr returns the Group value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ItemEdges) GroupOrErr() (*Group, error) {
+	if e.loadedTypes[0] {
+		if e.Group == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: group.Label}
+		}
+		return e.Group, nil
+	}
+	return nil, &NotLoadedError{edge: "group"}
+}
+
 // ParentOrErr returns the Parent value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ItemEdges) ParentOrErr() (*Item, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		if e.Parent == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: item.Label}
@@ -112,23 +125,10 @@ func (e ItemEdges) ParentOrErr() (*Item, error) {
 // ChildrenOrErr returns the Children value or an error if the edge
 // was not loaded in eager-loading.
 func (e ItemEdges) ChildrenOrErr() ([]*Item, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		return e.Children, nil
 	}
 	return nil, &NotLoadedError{edge: "children"}
-}
-
-// GroupOrErr returns the Group value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e ItemEdges) GroupOrErr() (*Group, error) {
-	if e.loadedTypes[2] {
-		if e.Group == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: group.Label}
-		}
-		return e.Group, nil
-	}
-	return nil, &NotLoadedError{edge: "group"}
 }
 
 // LabelOrErr returns the Label value or an error if the edge
@@ -388,6 +388,11 @@ func (i *Item) assignValues(columns []string, values []any) error {
 	return nil
 }
 
+// QueryGroup queries the "group" edge of the Item entity.
+func (i *Item) QueryGroup() *GroupQuery {
+	return NewItemClient(i.config).QueryGroup(i)
+}
+
 // QueryParent queries the "parent" edge of the Item entity.
 func (i *Item) QueryParent() *ItemQuery {
 	return NewItemClient(i.config).QueryParent(i)
@@ -396,11 +401,6 @@ func (i *Item) QueryParent() *ItemQuery {
 // QueryChildren queries the "children" edge of the Item entity.
 func (i *Item) QueryChildren() *ItemQuery {
 	return NewItemClient(i.config).QueryChildren(i)
-}
-
-// QueryGroup queries the "group" edge of the Item entity.
-func (i *Item) QueryGroup() *GroupQuery {
-	return NewItemClient(i.config).QueryGroup(i)
 }
 
 // QueryLabel queries the "label" edge of the Item entity.

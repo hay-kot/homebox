@@ -16,6 +16,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/ent/label"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/location"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/maintenanceentry"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/notifier"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/schema"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/user"
 )
@@ -476,6 +477,65 @@ func init() {
 	maintenanceentryDescID := maintenanceentryMixinFields0[0].Descriptor()
 	// maintenanceentry.DefaultID holds the default value on creation for the id field.
 	maintenanceentry.DefaultID = maintenanceentryDescID.Default.(func() uuid.UUID)
+	notifierMixin := schema.Notifier{}.Mixin()
+	notifierMixinFields0 := notifierMixin[0].Fields()
+	_ = notifierMixinFields0
+	notifierFields := schema.Notifier{}.Fields()
+	_ = notifierFields
+	// notifierDescCreatedAt is the schema descriptor for created_at field.
+	notifierDescCreatedAt := notifierMixinFields0[1].Descriptor()
+	// notifier.DefaultCreatedAt holds the default value on creation for the created_at field.
+	notifier.DefaultCreatedAt = notifierDescCreatedAt.Default.(func() time.Time)
+	// notifierDescUpdatedAt is the schema descriptor for updated_at field.
+	notifierDescUpdatedAt := notifierMixinFields0[2].Descriptor()
+	// notifier.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	notifier.DefaultUpdatedAt = notifierDescUpdatedAt.Default.(func() time.Time)
+	// notifier.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	notifier.UpdateDefaultUpdatedAt = notifierDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// notifierDescName is the schema descriptor for name field.
+	notifierDescName := notifierFields[0].Descriptor()
+	// notifier.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	notifier.NameValidator = func() func(string) error {
+		validators := notifierDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// notifierDescURL is the schema descriptor for url field.
+	notifierDescURL := notifierFields[1].Descriptor()
+	// notifier.URLValidator is a validator for the "url" field. It is called by the builders before save.
+	notifier.URLValidator = func() func(string) error {
+		validators := notifierDescURL.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(url string) error {
+			for _, fn := range fns {
+				if err := fn(url); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// notifierDescIsActive is the schema descriptor for is_active field.
+	notifierDescIsActive := notifierFields[2].Descriptor()
+	// notifier.DefaultIsActive holds the default value on creation for the is_active field.
+	notifier.DefaultIsActive = notifierDescIsActive.Default.(bool)
+	// notifierDescID is the schema descriptor for id field.
+	notifierDescID := notifierMixinFields0[0].Descriptor()
+	// notifier.DefaultID holds the default value on creation for the id field.
+	notifier.DefaultID = notifierDescID.Default.(func() uuid.UUID)
 	userMixin := schema.User{}.Mixin()
 	userMixinFields0 := userMixin[0].Fields()
 	_ = userMixinFields0
@@ -550,7 +610,7 @@ func init() {
 	// user.DefaultIsSuperuser holds the default value on creation for the is_superuser field.
 	user.DefaultIsSuperuser = userDescIsSuperuser.Default.(bool)
 	// userDescSuperuser is the schema descriptor for superuser field.
-	userDescSuperuser := userFields[5].Descriptor()
+	userDescSuperuser := userFields[4].Descriptor()
 	// user.DefaultSuperuser holds the default value on creation for the superuser field.
 	user.DefaultSuperuser = userDescSuperuser.Default.(bool)
 	// userDescID is the schema descriptor for id field.

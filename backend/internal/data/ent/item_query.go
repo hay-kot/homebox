@@ -29,9 +29,9 @@ type ItemQuery struct {
 	order                  []OrderFunc
 	inters                 []Interceptor
 	predicates             []predicate.Item
+	withGroup              *GroupQuery
 	withParent             *ItemQuery
 	withChildren           *ItemQuery
-	withGroup              *GroupQuery
 	withLabel              *LabelQuery
 	withLocation           *LocationQuery
 	withFields             *ItemFieldQuery
@@ -74,6 +74,28 @@ func (iq *ItemQuery) Order(o ...OrderFunc) *ItemQuery {
 	return iq
 }
 
+// QueryGroup chains the current query on the "group" edge.
+func (iq *ItemQuery) QueryGroup() *GroupQuery {
+	query := (&GroupClient{config: iq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := iq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := iq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(item.Table, item.FieldID, selector),
+			sqlgraph.To(group.Table, group.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, item.GroupTable, item.GroupColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(iq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // QueryParent chains the current query on the "parent" edge.
 func (iq *ItemQuery) QueryParent() *ItemQuery {
 	query := (&ItemClient{config: iq.config}).Query()
@@ -111,28 +133,6 @@ func (iq *ItemQuery) QueryChildren() *ItemQuery {
 			sqlgraph.From(item.Table, item.FieldID, selector),
 			sqlgraph.To(item.Table, item.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, item.ChildrenTable, item.ChildrenColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(iq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryGroup chains the current query on the "group" edge.
-func (iq *ItemQuery) QueryGroup() *GroupQuery {
-	query := (&GroupClient{config: iq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := iq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := iq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(item.Table, item.FieldID, selector),
-			sqlgraph.To(group.Table, group.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, item.GroupTable, item.GroupColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(iq.driver.Dialect(), step)
 		return fromU, nil
@@ -442,9 +442,9 @@ func (iq *ItemQuery) Clone() *ItemQuery {
 		order:                  append([]OrderFunc{}, iq.order...),
 		inters:                 append([]Interceptor{}, iq.inters...),
 		predicates:             append([]predicate.Item{}, iq.predicates...),
+		withGroup:              iq.withGroup.Clone(),
 		withParent:             iq.withParent.Clone(),
 		withChildren:           iq.withChildren.Clone(),
-		withGroup:              iq.withGroup.Clone(),
 		withLabel:              iq.withLabel.Clone(),
 		withLocation:           iq.withLocation.Clone(),
 		withFields:             iq.withFields.Clone(),
@@ -454,6 +454,17 @@ func (iq *ItemQuery) Clone() *ItemQuery {
 		sql:  iq.sql.Clone(),
 		path: iq.path,
 	}
+}
+
+// WithGroup tells the query-builder to eager-load the nodes that are connected to
+// the "group" edge. The optional arguments are used to configure the query builder of the edge.
+func (iq *ItemQuery) WithGroup(opts ...func(*GroupQuery)) *ItemQuery {
+	query := (&GroupClient{config: iq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	iq.withGroup = query
+	return iq
 }
 
 // WithParent tells the query-builder to eager-load the nodes that are connected to
@@ -475,17 +486,6 @@ func (iq *ItemQuery) WithChildren(opts ...func(*ItemQuery)) *ItemQuery {
 		opt(query)
 	}
 	iq.withChildren = query
-	return iq
-}
-
-// WithGroup tells the query-builder to eager-load the nodes that are connected to
-// the "group" edge. The optional arguments are used to configure the query builder of the edge.
-func (iq *ItemQuery) WithGroup(opts ...func(*GroupQuery)) *ItemQuery {
-	query := (&GroupClient{config: iq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	iq.withGroup = query
 	return iq
 }
 
@@ -624,9 +624,9 @@ func (iq *ItemQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Item, e
 		withFKs     = iq.withFKs
 		_spec       = iq.querySpec()
 		loadedTypes = [8]bool{
+			iq.withGroup != nil,
 			iq.withParent != nil,
 			iq.withChildren != nil,
-			iq.withGroup != nil,
 			iq.withLabel != nil,
 			iq.withLocation != nil,
 			iq.withFields != nil,
@@ -634,7 +634,7 @@ func (iq *ItemQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Item, e
 			iq.withAttachments != nil,
 		}
 	)
-	if iq.withParent != nil || iq.withGroup != nil || iq.withLocation != nil {
+	if iq.withGroup != nil || iq.withParent != nil || iq.withLocation != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -658,6 +658,12 @@ func (iq *ItemQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Item, e
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := iq.withGroup; query != nil {
+		if err := iq.loadGroup(ctx, query, nodes, nil,
+			func(n *Item, e *Group) { n.Edges.Group = e }); err != nil {
+			return nil, err
+		}
+	}
 	if query := iq.withParent; query != nil {
 		if err := iq.loadParent(ctx, query, nodes, nil,
 			func(n *Item, e *Item) { n.Edges.Parent = e }); err != nil {
@@ -668,12 +674,6 @@ func (iq *ItemQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Item, e
 		if err := iq.loadChildren(ctx, query, nodes,
 			func(n *Item) { n.Edges.Children = []*Item{} },
 			func(n *Item, e *Item) { n.Edges.Children = append(n.Edges.Children, e) }); err != nil {
-			return nil, err
-		}
-	}
-	if query := iq.withGroup; query != nil {
-		if err := iq.loadGroup(ctx, query, nodes, nil,
-			func(n *Item, e *Group) { n.Edges.Group = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -714,6 +714,38 @@ func (iq *ItemQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Item, e
 	return nodes, nil
 }
 
+func (iq *ItemQuery) loadGroup(ctx context.Context, query *GroupQuery, nodes []*Item, init func(*Item), assign func(*Item, *Group)) error {
+	ids := make([]uuid.UUID, 0, len(nodes))
+	nodeids := make(map[uuid.UUID][]*Item)
+	for i := range nodes {
+		if nodes[i].group_items == nil {
+			continue
+		}
+		fk := *nodes[i].group_items
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(group.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "group_items" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 func (iq *ItemQuery) loadParent(ctx context.Context, query *ItemQuery, nodes []*Item, init func(*Item), assign func(*Item, *Item)) error {
 	ids := make([]uuid.UUID, 0, len(nodes))
 	nodeids := make(map[uuid.UUID][]*Item)
@@ -774,38 +806,6 @@ func (iq *ItemQuery) loadChildren(ctx context.Context, query *ItemQuery, nodes [
 			return fmt.Errorf(`unexpected foreign-key "item_children" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
-	}
-	return nil
-}
-func (iq *ItemQuery) loadGroup(ctx context.Context, query *GroupQuery, nodes []*Item, init func(*Item), assign func(*Item, *Group)) error {
-	ids := make([]uuid.UUID, 0, len(nodes))
-	nodeids := make(map[uuid.UUID][]*Item)
-	for i := range nodes {
-		if nodes[i].group_items == nil {
-			continue
-		}
-		fk := *nodes[i].group_items
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	if len(ids) == 0 {
-		return nil
-	}
-	query.Where(group.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "group_items" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
 	}
 	return nil
 }

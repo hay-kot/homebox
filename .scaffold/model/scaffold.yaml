@@ -1,0 +1,33 @@
+---
+# yaml-language-server: $schema=https://hay-kot.github.io/scaffold/schema.json
+messages:
+  pre: |
+    # Ent Model Generation
+
+    With Boilerplate!
+  post: |
+    Complete!
+
+questions:
+  - name: "model"
+    prompt:
+      message: "What is the name of the model? (PascalCase)"
+    required: true
+
+  - name: "by_group"
+    prompt:
+      confirm: "Include a Group Edge? (group_id -> id)"
+    required: true
+
+rewrites:
+  - from: 'templates/model.go'
+    to: 'backend/internal/data/ent/schema/{{ lower .Scaffold.model }}.go'
+
+inject:
+  - name: "Insert Groups Edge"
+    path: 'backend/internal/data/ent/schema/group.go'
+    at: // $scaffold_edge
+    template: |
+      {{- if .Scaffold.by_group -}}
+      owned("{{ lower .Scaffold.model }}s", {{ .Scaffold.model }}.Type),
+      {{- end -}}

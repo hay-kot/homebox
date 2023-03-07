@@ -29,35 +29,41 @@ func actionHandlerFactory(ref string, fn func(context.Context, uuid.UUID) (int, 
 	}
 }
 
-// HandleGroupInvitationsCreate godoc
-// @Summary  Ensures all items in the database have an asset id
-// @Tags     Group
-// @Produce  json
-// @Success  200     {object} ActionAmountResult
-// @Router   /v1/actions/ensure-asset-ids [Post]
-// @Security Bearer
+// HandleEnsureAssetID godoc
+//
+//	@Summary     Ensure Asset IDs
+//	@Description Ensures all items in the database have an asset ID
+//	@Tags        Actions
+//	@Produce     json
+//	@Success     200     {object} ActionAmountResult
+//	@Router      /v1/actions/ensure-asset-ids [Post]
+//	@Security    Bearer
 func (ctrl *V1Controller) HandleEnsureAssetID() server.HandlerFunc {
 	return actionHandlerFactory("ensure asset IDs", ctrl.svc.Items.EnsureAssetID)
 }
 
 // HandleEnsureImportRefs godoc
-// @Summary  Ensures all items in the database have an import ref
-// @Tags     Group
-// @Produce  json
-// @Success  200     {object} ActionAmountResult
-// @Router   /v1/actions/ensure-import-refs [Post]
-// @Security Bearer
+//
+//	@Summary  Ensures Import Refs
+//	@Description  Ensures all items in the database have an import ref
+//	@Tags     Actions
+//	@Produce  json
+//	@Success  200     {object} ActionAmountResult
+//	@Router   /v1/actions/ensure-import-refs [Post]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleEnsureImportRefs() server.HandlerFunc {
 	return actionHandlerFactory("ensure import refs", ctrl.svc.Items.EnsureImportRef)
 }
 
 // HandleItemDateZeroOut godoc
-// @Summary  Resets all item date fields to the beginning of the day
-// @Tags     Group
-// @Produce  json
-// @Success  200     {object} ActionAmountResult
-// @Router   /v1/actions/zero-item-time-fields [Post]
-// @Security Bearer
+//
+//	@Summary      Zero Out Time Fields
+//	@Description  Resets all item date fields to the beginning of the day
+//	@Tags         Actions
+//	@Produce      json
+//	@Success      200     {object} ActionAmountResult
+//	@Router       /v1/actions/zero-item-time-fields [Post]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleItemDateZeroOut() server.HandlerFunc {
 	return actionHandlerFactory("zero out date time", ctrl.repo.Items.ZeroOutTimeFields)
 }

@@ -126,6 +126,13 @@ func (a *app) mountRoutes(repos *repo.AllRepos) {
 
 	a.server.Get(v1Base("/asset/{id}"), v1Ctrl.HandleAssetGet(), userMW...)
 
+	// Notifiers
+	a.server.Get(v1Base("/notifiers"), v1Ctrl.HandleGetUserNotifiers(), userMW...)
+	a.server.Post(v1Base("/notifiers"), v1Ctrl.HandleCreateNotifier(), userMW...)
+	a.server.Put(v1Base("/notifiers/{id}"), v1Ctrl.HandleUpdateNotifier(), userMW...)
+	a.server.Delete(v1Base("/notifiers/{id}"), v1Ctrl.HandleDeleteNotifier(), userMW...)
+	a.server.Post(v1Base("/notifiers/test"), v1Ctrl.HandlerNotifierTest(), userMW...)
+
 	// Asset-Like endpoints
 	a.server.Get(
 		v1Base("/qrcode"),

@@ -39,5 +39,8 @@ type Location func(*sql.Selector)
 // MaintenanceEntry is the predicate function for maintenanceentry builders.
 type MaintenanceEntry func(*sql.Selector)
 
+// Notifier is the predicate function for notifier builders.
+type Notifier func(*sql.Selector)
+
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

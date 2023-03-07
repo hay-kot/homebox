@@ -18,6 +18,7 @@ func (Item) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixins.BaseMixin{},
 		mixins.DetailsMixin{},
+		GroupMixin{ref: "items"},
 	}
 }
 
@@ -98,30 +99,24 @@ func (Item) Fields() []ent.Field {
 
 // Edges of the Item.
 func (Item) Edges() []ent.Edge {
+	owned := func(s string, t any) ent.Edge {
+		return edge.To(s, t).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			})
+	}
+
 	return []ent.Edge{
 		edge.To("children", Item.Type).
 			From("parent").
-			Unique(),
-		edge.From("group", Group.Type).
-			Ref("items").
-			Required().
 			Unique(),
 		edge.From("label", Label.Type).
 			Ref("items"),
 		edge.From("location", Location.Type).
 			Ref("items").
 			Unique(),
-		edge.To("fields", ItemField.Type).
-			Annotations(entsql.Annotation{
-				OnDelete: entsql.Cascade,
-			}),
-		edge.To("maintenance_entries", MaintenanceEntry.Type).
-			Annotations(entsql.Annotation{
-				OnDelete: entsql.Cascade,
-			}),
-		edge.To("attachments", Attachment.Type).
-			Annotations(entsql.Annotation{
-				OnDelete: entsql.Cascade,
-			}),
+		owned("fields", ItemField.Type),
+		owned("maintenance_entries", MaintenanceEntry.Type),
+		owned("attachments", Attachment.Type),
 	}
 }

@@ -433,6 +433,17 @@ func (iu *ItemUpdate) ClearSoldNotes() *ItemUpdate {
 	return iu
 }
 
+// SetGroupID sets the "group" edge to the Group entity by ID.
+func (iu *ItemUpdate) SetGroupID(id uuid.UUID) *ItemUpdate {
+	iu.mutation.SetGroupID(id)
+	return iu
+}
+
+// SetGroup sets the "group" edge to the Group entity.
+func (iu *ItemUpdate) SetGroup(g *Group) *ItemUpdate {
+	return iu.SetGroupID(g.ID)
+}
+
 // SetParentID sets the "parent" edge to the Item entity by ID.
 func (iu *ItemUpdate) SetParentID(id uuid.UUID) *ItemUpdate {
 	iu.mutation.SetParentID(id)
@@ -465,17 +476,6 @@ func (iu *ItemUpdate) AddChildren(i ...*Item) *ItemUpdate {
 		ids[j] = i[j].ID
 	}
 	return iu.AddChildIDs(ids...)
-}
-
-// SetGroupID sets the "group" edge to the Group entity by ID.
-func (iu *ItemUpdate) SetGroupID(id uuid.UUID) *ItemUpdate {
-	iu.mutation.SetGroupID(id)
-	return iu
-}
-
-// SetGroup sets the "group" edge to the Group entity.
-func (iu *ItemUpdate) SetGroup(g *Group) *ItemUpdate {
-	return iu.SetGroupID(g.ID)
 }
 
 // AddLabelIDs adds the "label" edge to the Label entity by IDs.
@@ -562,6 +562,12 @@ func (iu *ItemUpdate) Mutation() *ItemMutation {
 	return iu.mutation
 }
 
+// ClearGroup clears the "group" edge to the Group entity.
+func (iu *ItemUpdate) ClearGroup() *ItemUpdate {
+	iu.mutation.ClearGroup()
+	return iu
+}
+
 // ClearParent clears the "parent" edge to the Item entity.
 func (iu *ItemUpdate) ClearParent() *ItemUpdate {
 	iu.mutation.ClearParent()
@@ -587,12 +593,6 @@ func (iu *ItemUpdate) RemoveChildren(i ...*Item) *ItemUpdate {
 		ids[j] = i[j].ID
 	}
 	return iu.RemoveChildIDs(ids...)
-}
-
-// ClearGroup clears the "group" edge to the Group entity.
-func (iu *ItemUpdate) ClearGroup() *ItemUpdate {
-	iu.mutation.ClearGroup()
-	return iu
 }
 
 // ClearLabel clears all "label" edges to the Label entity.
@@ -903,6 +903,41 @@ func (iu *ItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if iu.mutation.SoldNotesCleared() {
 		_spec.ClearField(item.FieldSoldNotes, field.TypeString)
 	}
+	if iu.mutation.GroupCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   item.GroupTable,
+			Columns: []string{item.GroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: group.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := iu.mutation.GroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   item.GroupTable,
+			Columns: []string{item.GroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: group.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if iu.mutation.ParentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -984,41 +1019,6 @@ func (iu *ItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: item.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if iu.mutation.GroupCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   item.GroupTable,
-			Columns: []string{item.GroupColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: group.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := iu.mutation.GroupIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   item.GroupTable,
-			Columns: []string{item.GroupColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: group.FieldID,
 				},
 			},
 		}
@@ -1696,6 +1696,17 @@ func (iuo *ItemUpdateOne) ClearSoldNotes() *ItemUpdateOne {
 	return iuo
 }
 
+// SetGroupID sets the "group" edge to the Group entity by ID.
+func (iuo *ItemUpdateOne) SetGroupID(id uuid.UUID) *ItemUpdateOne {
+	iuo.mutation.SetGroupID(id)
+	return iuo
+}
+
+// SetGroup sets the "group" edge to the Group entity.
+func (iuo *ItemUpdateOne) SetGroup(g *Group) *ItemUpdateOne {
+	return iuo.SetGroupID(g.ID)
+}
+
 // SetParentID sets the "parent" edge to the Item entity by ID.
 func (iuo *ItemUpdateOne) SetParentID(id uuid.UUID) *ItemUpdateOne {
 	iuo.mutation.SetParentID(id)
@@ -1728,17 +1739,6 @@ func (iuo *ItemUpdateOne) AddChildren(i ...*Item) *ItemUpdateOne {
 		ids[j] = i[j].ID
 	}
 	return iuo.AddChildIDs(ids...)
-}
-
-// SetGroupID sets the "group" edge to the Group entity by ID.
-func (iuo *ItemUpdateOne) SetGroupID(id uuid.UUID) *ItemUpdateOne {
-	iuo.mutation.SetGroupID(id)
-	return iuo
-}
-
-// SetGroup sets the "group" edge to the Group entity.
-func (iuo *ItemUpdateOne) SetGroup(g *Group) *ItemUpdateOne {
-	return iuo.SetGroupID(g.ID)
 }
 
 // AddLabelIDs adds the "label" edge to the Label entity by IDs.
@@ -1825,6 +1825,12 @@ func (iuo *ItemUpdateOne) Mutation() *ItemMutation {
 	return iuo.mutation
 }
 
+// ClearGroup clears the "group" edge to the Group entity.
+func (iuo *ItemUpdateOne) ClearGroup() *ItemUpdateOne {
+	iuo.mutation.ClearGroup()
+	return iuo
+}
+
 // ClearParent clears the "parent" edge to the Item entity.
 func (iuo *ItemUpdateOne) ClearParent() *ItemUpdateOne {
 	iuo.mutation.ClearParent()
@@ -1850,12 +1856,6 @@ func (iuo *ItemUpdateOne) RemoveChildren(i ...*Item) *ItemUpdateOne {
 		ids[j] = i[j].ID
 	}
 	return iuo.RemoveChildIDs(ids...)
-}
-
-// ClearGroup clears the "group" edge to the Group entity.
-func (iuo *ItemUpdateOne) ClearGroup() *ItemUpdateOne {
-	iuo.mutation.ClearGroup()
-	return iuo
 }
 
 // ClearLabel clears all "label" edges to the Label entity.
@@ -2196,6 +2196,41 @@ func (iuo *ItemUpdateOne) sqlSave(ctx context.Context) (_node *Item, err error) 
 	if iuo.mutation.SoldNotesCleared() {
 		_spec.ClearField(item.FieldSoldNotes, field.TypeString)
 	}
+	if iuo.mutation.GroupCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   item.GroupTable,
+			Columns: []string{item.GroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: group.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := iuo.mutation.GroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   item.GroupTable,
+			Columns: []string{item.GroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: group.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if iuo.mutation.ParentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -2277,41 +2312,6 @@ func (iuo *ItemUpdateOne) sqlSave(ctx context.Context) (_node *Item, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: item.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if iuo.mutation.GroupCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   item.GroupTable,
-			Columns: []string{item.GroupColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: group.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := iuo.mutation.GroupIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   item.GroupTable,
-			Columns: []string{item.GroupColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: group.FieldID,
 				},
 			},
 		}

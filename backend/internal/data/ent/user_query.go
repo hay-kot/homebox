@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authtokens"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/notifier"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/predicate"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/user"
 )
@@ -27,6 +28,7 @@ type UserQuery struct {
 	predicates     []predicate.User
 	withGroup      *GroupQuery
 	withAuthTokens *AuthTokensQuery
+	withNotifiers  *NotifierQuery
 	withFKs        bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -101,6 +103,28 @@ func (uq *UserQuery) QueryAuthTokens() *AuthTokensQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(authtokens.Table, authtokens.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.AuthTokensTable, user.AuthTokensColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryNotifiers chains the current query on the "notifiers" edge.
+func (uq *UserQuery) QueryNotifiers() *NotifierQuery {
+	query := (&NotifierClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(notifier.Table, notifier.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.NotifiersTable, user.NotifiersColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -302,6 +326,7 @@ func (uq *UserQuery) Clone() *UserQuery {
 		predicates:     append([]predicate.User{}, uq.predicates...),
 		withGroup:      uq.withGroup.Clone(),
 		withAuthTokens: uq.withAuthTokens.Clone(),
+		withNotifiers:  uq.withNotifiers.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
@@ -327,6 +352,17 @@ func (uq *UserQuery) WithAuthTokens(opts ...func(*AuthTokensQuery)) *UserQuery {
 		opt(query)
 	}
 	uq.withAuthTokens = query
+	return uq
+}
+
+// WithNotifiers tells the query-builder to eager-load the nodes that are connected to
+// the "notifiers" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithNotifiers(opts ...func(*NotifierQuery)) *UserQuery {
+	query := (&NotifierClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withNotifiers = query
 	return uq
 }
 
@@ -409,9 +445,10 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		nodes       = []*User{}
 		withFKs     = uq.withFKs
 		_spec       = uq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			uq.withGroup != nil,
 			uq.withAuthTokens != nil,
+			uq.withNotifiers != nil,
 		}
 	)
 	if uq.withGroup != nil {
@@ -448,6 +485,13 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		if err := uq.loadAuthTokens(ctx, query, nodes,
 			func(n *User) { n.Edges.AuthTokens = []*AuthTokens{} },
 			func(n *User, e *AuthTokens) { n.Edges.AuthTokens = append(n.Edges.AuthTokens, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withNotifiers; query != nil {
+		if err := uq.loadNotifiers(ctx, query, nodes,
+			func(n *User) { n.Edges.Notifiers = []*Notifier{} },
+			func(n *User, e *Notifier) { n.Edges.Notifiers = append(n.Edges.Notifiers, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -512,6 +556,33 @@ func (uq *UserQuery) loadAuthTokens(ctx context.Context, query *AuthTokensQuery,
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "user_auth_tokens" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadNotifiers(ctx context.Context, query *NotifierQuery, nodes []*User, init func(*User), assign func(*User, *Notifier)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.Where(predicate.Notifier(func(s *sql.Selector) {
+		s.Where(sql.InValues(user.NotifiersColumn, fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.UserID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "user_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}

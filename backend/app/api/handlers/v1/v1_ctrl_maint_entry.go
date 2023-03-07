@@ -12,47 +12,51 @@ import (
 )
 
 // HandleMaintenanceGetLog godoc
-// @Summary  Get Maintenance Log
-// @Tags     Maintenance
-// @Produce  json
-// @Success  200       {object} repo.MaintenanceLog
-// @Router   /v1/items/{id}/maintenance [GET]
-// @Security Bearer
+//
+//	@Summary  Get Maintenance Log
+//	@Tags     Maintenance
+//	@Produce  json
+//	@Success  200       {object} repo.MaintenanceLog
+//	@Router   /v1/items/{id}/maintenance [GET]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleMaintenanceLogGet() server.HandlerFunc {
 	return ctrl.handleMaintenanceLog()
 }
 
 // HandleMaintenanceEntryCreate godoc
-// @Summary  Create Maintenance Entry
-// @Tags     Maintenance
-// @Produce  json
-// @Param    payload body     repo.MaintenanceEntryCreate true "Entry Data"
-// @Success  200     {object} repo.MaintenanceEntry
-// @Router   /v1/items/{id}/maintenance [POST]
-// @Security Bearer
+//
+//	@Summary  Create Maintenance Entry
+//	@Tags     Maintenance
+//	@Produce  json
+//	@Param    payload body     repo.MaintenanceEntryCreate true "Entry Data"
+//	@Success  200     {object} repo.MaintenanceEntry
+//	@Router   /v1/items/{id}/maintenance [POST]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleMaintenanceEntryCreate() server.HandlerFunc {
 	return ctrl.handleMaintenanceLog()
 }
 
 // HandleMaintenanceEntryDelete godoc
-// @Summary  Delete Maintenance Entry
-// @Tags     Maintenance
-// @Produce  json
-// @Success  204
-// @Router   /v1/items/{id}/maintenance/{entry_id} [DELETE]
-// @Security Bearer
+//
+//	@Summary  Delete Maintenance Entry
+//	@Tags     Maintenance
+//	@Produce  json
+//	@Success  204
+//	@Router   /v1/items/{id}/maintenance/{entry_id} [DELETE]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleMaintenanceEntryDelete() server.HandlerFunc {
 	return ctrl.handleMaintenanceLog()
 }
 
 // HandleMaintenanceEntryUpdate godoc
-// @Summary  Update Maintenance Entry
-// @Tags     Maintenance
-// @Produce  json
-// @Param    payload body     repo.MaintenanceEntryUpdate true "Entry Data"
-// @Success  200     {object} repo.MaintenanceEntry
-// @Router   /v1/items/{id}/maintenance/{entry_id} [PUT]
-// @Security Bearer
+//
+//	@Summary  Update Maintenance Entry
+//	@Tags     Maintenance
+//	@Produce  json
+//	@Param    payload body     repo.MaintenanceEntryUpdate true "Entry Data"
+//	@Success  200     {object} repo.MaintenanceEntry
+//	@Router   /v1/items/{id}/maintenance/{entry_id} [PUT]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleMaintenanceEntryUpdate() server.HandlerFunc {
 	return ctrl.handleMaintenanceLog()
 }

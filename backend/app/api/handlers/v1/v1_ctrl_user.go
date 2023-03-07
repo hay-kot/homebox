@@ -12,13 +12,14 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// HandleUserSelf godoc
-// @Summary Get the current user
-// @Tags    User
-// @Produce json
-// @Param   payload body services.UserRegistration true "User Data"
-// @Success 204
-// @Router  /v1/users/register [Post]
+// HandleUserRegistration godoc
+//
+//	@Summary Register New User
+//	@Tags    User
+//	@Produce json
+//	@Param   payload body services.UserRegistration true "User Data"
+//	@Success 204
+//	@Router  /v1/users/register [Post]
 func (ctrl *V1Controller) HandleUserRegistration() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		regData := services.UserRegistration{}
@@ -43,12 +44,13 @@ func (ctrl *V1Controller) HandleUserRegistration() server.HandlerFunc {
 }
 
 // HandleUserSelf godoc
-// @Summary  Get the current user
-// @Tags     User
-// @Produce  json
-// @Success  200 {object} server.Result{item=repo.UserOut}
-// @Router   /v1/users/self [GET]
-// @Security Bearer
+//
+//	@Summary  Get User Self
+//	@Tags     User
+//	@Produce  json
+//	@Success  200 {object} server.Result{item=repo.UserOut}
+//	@Router   /v1/users/self [GET]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleUserSelf() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		token := services.UseTokenCtx(r.Context())
@@ -63,13 +65,14 @@ func (ctrl *V1Controller) HandleUserSelf() server.HandlerFunc {
 }
 
 // HandleUserSelfUpdate godoc
-// @Summary  Update the current user
-// @Tags     User
-// @Produce  json
-// @Param    payload body     repo.UserUpdate true "User Data"
-// @Success  200     {object} server.Result{item=repo.UserUpdate}
-// @Router   /v1/users/self [PUT]
-// @Security Bearer
+//
+//	@Summary  Update Account
+//	@Tags     User
+//	@Produce  json
+//	@Param    payload body     repo.UserUpdate true "User Data"
+//	@Success  200     {object} server.Result{item=repo.UserUpdate}
+//	@Router   /v1/users/self [PUT]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleUserSelfUpdate() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		updateData := repo.UserUpdate{}
@@ -89,12 +92,13 @@ func (ctrl *V1Controller) HandleUserSelfUpdate() server.HandlerFunc {
 }
 
 // HandleUserSelfDelete godoc
-// @Summary  Deletes the user account
-// @Tags     User
-// @Produce  json
-// @Success  204
-// @Router   /v1/users/self [DELETE]
-// @Security Bearer
+//
+//	@Summary  Delete Account
+//	@Tags     User
+//	@Produce  json
+//	@Success  204
+//	@Router   /v1/users/self [DELETE]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleUserSelfDelete() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		if ctrl.isDemo {
@@ -118,12 +122,13 @@ type (
 )
 
 // HandleUserSelfChangePassword godoc
-// @Summary  Updates the users password
-// @Tags     User
-// @Success  204
-// @Param    payload body ChangePassword true "Password Payload"
-// @Router   /v1/users/change-password [PUT]
-// @Security Bearer
+//
+//	@Summary  Change Password
+//	@Tags     User
+//	@Success  204
+//	@Param    payload body ChangePassword true "Password Payload"
+//	@Router   /v1/users/change-password [PUT]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleUserSelfChangePassword() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		if ctrl.isDemo {

@@ -12,13 +12,14 @@ import (
 )
 
 // HandleLocationTreeQuery godoc
-// @Summary  Get All Locations
-// @Tags     Locations
-// @Produce  json
-// @Param    withItems         query    bool   false "include items in response tree"
-// @Success  200 {object} server.Results{items=[]repo.TreeItem}
-// @Router   /v1/locations/tree [GET]
-// @Security Bearer
+//
+//	@Summary  Get Locations Tree
+//	@Tags     Locations
+//	@Produce  json
+//	@Param    withItems         query    bool   false "include items in response tree"
+//	@Success  200 {object} server.Results{items=[]repo.TreeItem}
+//	@Router   /v1/locations/tree [GET]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleLocationTreeQuery() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		user := services.UseUserCtx(r.Context())
@@ -44,13 +45,14 @@ func (ctrl *V1Controller) HandleLocationTreeQuery() server.HandlerFunc {
 }
 
 // HandleLocationGetAll godoc
-// @Summary  Get All Locations
-// @Tags     Locations
-// @Produce  json
-// @Param    filterChildren query bool false "Filter locations with parents"
-// @Success  200 {object} server.Results{items=[]repo.LocationOutCount}
-// @Router   /v1/locations [GET]
-// @Security Bearer
+//
+//	@Summary  Get All Locations
+//	@Tags     Locations
+//	@Produce  json
+//	@Param    filterChildren query bool false "Filter locations with parents"
+//	@Success  200 {object} server.Results{items=[]repo.LocationOutCount}
+//	@Router   /v1/locations [GET]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleLocationGetAll() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		user := services.UseUserCtx(r.Context())
@@ -72,13 +74,14 @@ func (ctrl *V1Controller) HandleLocationGetAll() server.HandlerFunc {
 }
 
 // HandleLocationCreate godoc
-// @Summary  Create a new location
-// @Tags     Locations
-// @Produce  json
-// @Param    payload body     repo.LocationCreate true "Location Data"
-// @Success  200     {object} repo.LocationSummary
-// @Router   /v1/locations [POST]
-// @Security Bearer
+//
+//	@Summary  Create Location
+//	@Tags     Locations
+//	@Produce  json
+//	@Param    payload body     repo.LocationCreate true "Location Data"
+//	@Success  200     {object} repo.LocationSummary
+//	@Router   /v1/locations [POST]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleLocationCreate() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		createData := repo.LocationCreate{}
@@ -99,38 +102,41 @@ func (ctrl *V1Controller) HandleLocationCreate() server.HandlerFunc {
 }
 
 // HandleLocationDelete godocs
-// @Summary  deletes a location
-// @Tags     Locations
-// @Produce  json
-// @Param    id path string true "Location ID"
-// @Success  204
-// @Router   /v1/locations/{id} [DELETE]
-// @Security Bearer
+//
+//	@Summary  Delete Location
+//	@Tags     Locations
+//	@Produce  json
+//	@Param    id path string true "Location ID"
+//	@Success  204
+//	@Router   /v1/locations/{id} [DELETE]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleLocationDelete() server.HandlerFunc {
 	return ctrl.handleLocationGeneral()
 }
 
 // HandleLocationGet godocs
-// @Summary  Gets a location and fields
-// @Tags     Locations
-// @Produce  json
-// @Param    id  path     string true "Location ID"
-// @Success  200 {object} repo.LocationOut
-// @Router   /v1/locations/{id} [GET]
-// @Security Bearer
+//
+//	@Summary  Get Location
+//	@Tags     Locations
+//	@Produce  json
+//	@Param    id  path     string true "Location ID"
+//	@Success  200 {object} repo.LocationOut
+//	@Router   /v1/locations/{id} [GET]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleLocationGet() server.HandlerFunc {
 	return ctrl.handleLocationGeneral()
 }
 
 // HandleLocationUpdate godocs
-// @Summary  updates a location
-// @Tags     Locations
-// @Produce  json
-// @Param    id      path     string              true "Location ID"
-// @Param    payload body     repo.LocationUpdate true "Location Data"
-// @Success  200     {object} repo.LocationOut
-// @Router   /v1/locations/{id} [PUT]
-// @Security Bearer
+//
+//	@Summary  Update Location
+//	@Tags     Locations
+//	@Produce  json
+//	@Param    id      path     string              true "Location ID"
+//	@Param    payload body     repo.LocationUpdate true "Location Data"
+//	@Success  200     {object} repo.LocationOut
+//	@Router   /v1/locations/{id} [PUT]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleLocationUpdate() server.HandlerFunc {
 	return ctrl.handleLocationGeneral()
 }

@@ -48,6 +48,10 @@ func (me *MaintenanceEntry) GetID() uuid.UUID {
 	return me.ID
 }
 
+func (n *Notifier) GetID() uuid.UUID {
+	return n.ID
+}
+
 func (u *User) GetID() uuid.UUID {
 	return u.ID
 }

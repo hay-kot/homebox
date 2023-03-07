@@ -10,12 +10,13 @@ import (
 )
 
 // HandleGroupGet godoc
-// @Summary  Get the current user's group statistics
-// @Tags     Statistics
-// @Produce  json
-// @Success  200 {object} []repo.TotalsByOrganizer
-// @Router   /v1/groups/statistics/locations [GET]
-// @Security Bearer
+//
+//	@Summary  Get Location Statistics
+//	@Tags     Statistics
+//	@Produce  json
+//	@Success  200 {object} []repo.TotalsByOrganizer
+//	@Router   /v1/groups/statistics/locations [GET]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleGroupStatisticsLocations() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := services.NewContext(r.Context())
@@ -29,13 +30,14 @@ func (ctrl *V1Controller) HandleGroupStatisticsLocations() server.HandlerFunc {
 	}
 }
 
-// HandleGroupGet godoc
-// @Summary  Get the current user's group statistics
-// @Tags     Statistics
-// @Produce  json
-// @Success  200 {object} []repo.TotalsByOrganizer
-// @Router   /v1/groups/statistics/labels [GET]
-// @Security Bearer
+// HandleGroupStatisticsLabels godoc
+//
+//	@Summary  Get Label Statistics
+//	@Tags     Statistics
+//	@Produce  json
+//	@Success  200 {object} []repo.TotalsByOrganizer
+//	@Router   /v1/groups/statistics/labels [GET]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleGroupStatisticsLabels() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := services.NewContext(r.Context())
@@ -49,13 +51,14 @@ func (ctrl *V1Controller) HandleGroupStatisticsLabels() server.HandlerFunc {
 	}
 }
 
-// HandleGroupGet godoc
-// @Summary  Get the current user's group statistics
-// @Tags     Statistics
-// @Produce  json
-// @Success  200 {object} repo.GroupStatistics
-// @Router   /v1/groups/statistics [GET]
-// @Security Bearer
+// HandleGroupStatistics godoc
+//
+//	@Summary  Get Group Statistics
+//	@Tags     Statistics
+//	@Produce  json
+//	@Success  200 {object} repo.GroupStatistics
+//	@Router   /v1/groups/statistics [GET]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleGroupStatistics() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := services.NewContext(r.Context())
@@ -69,15 +72,16 @@ func (ctrl *V1Controller) HandleGroupStatistics() server.HandlerFunc {
 	}
 }
 
-// HandleGroupGet godoc
-// @Summary  Queries the changes overtime of the purchase price over time
-// @Tags     Statistics
-// @Produce  json
-// @Success  200 {object} repo.ValueOverTime
-// @Param 	 start query string false "start date"
-// @Param 	 end query string false "end date"
-// @Router   /v1/groups/statistics/purchase-price [GET]
-// @Security Bearer
+// HandleGroupStatisticsPriceOverTime godoc
+//
+//	@Summary  Get Purchase Price Statistics
+//	@Tags     Statistics
+//	@Produce  json
+//	@Success  200 {object} repo.ValueOverTime
+//	@Param 	 start query string false "start date"
+//	@Param 	 end query string false "end date"
+//	@Router   /v1/groups/statistics/purchase-price [GET]
+//	@Security Bearer
 func (ctrl *V1Controller) HandleGroupStatisticsPriceOverTime() server.HandlerFunc {
 	parseDate := func(datestr string, defaultDate time.Time) (time.Time, error) {
 		if datestr == "" {

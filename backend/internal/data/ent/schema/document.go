@@ -16,6 +16,7 @@ type Document struct {
 func (Document) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixins.BaseMixin{},
+		GroupMixin{ref: "documents"},
 	}
 }
 
@@ -34,10 +35,6 @@ func (Document) Fields() []ent.Field {
 // Edges of the Document.
 func (Document) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("group", Group.Type).
-			Ref("documents").
-			Required().
-			Unique(),
 		edge.To("attachments", Attachment.Type).
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,

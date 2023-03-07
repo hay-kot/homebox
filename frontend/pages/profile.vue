@@ -2,6 +2,7 @@
   import { Detail } from "~~/components/global/DetailsSection/types";
   import { themes } from "~~/lib/data/themes";
   import { currencies, Currency } from "~~/lib/data/currency";
+  import { NotifierCreate, NotifierOut } from "~~/lib/api/types/data-contracts";
 
   definePageMeta({
     middleware: ["auth"],
@@ -167,6 +168,118 @@
     passwordChange.current = "";
     passwordChange.loading = false;
   }
+
+  // ===========================================================
+  // Notifiers
+
+  const notifiers = useAsyncData(async () => {
+    const { data } = await api.notifiers.getAll();
+
+    return data;
+  });
+
+  const targetID = ref("");
+  const notifier = ref<NotifierCreate | null>(null);
+  const notifierDialog = ref(false);
+
+  function openNotifierDialog(v: NotifierOut | null) {
+    if (v) {
+      targetID.value = v.id;
+      notifier.value = {
+        name: v.name,
+        url: "",
+        isActive: v.isActive,
+      };
+    } else {
+      notifier.value = {
+        name: "",
+        url: "",
+        isActive: true,
+      };
+    }
+
+    notifierDialog.value = true;
+  }
+
+  async function createNotifier() {
+    if (!notifier.value) {
+      return;
+    }
+
+    if (targetID.value) {
+      await editNotifier();
+      return;
+    }
+
+    const result = await api.notifiers.create({
+      name: notifier.value.name,
+      url: notifier.value.url || "",
+      isActive: notifier.value.isActive,
+    });
+
+    if (result.error) {
+      notify.error("Failed to create notifier.");
+    }
+
+    notifier.value = null;
+    notifierDialog.value = false;
+
+    await notifiers.refresh();
+  }
+
+  async function editNotifier() {
+    if (!notifier.value) {
+      return;
+    }
+
+    const result = await api.notifiers.update(targetID.value, {
+      name: notifier.value.name,
+      url: notifier.value.url || "",
+      isActive: notifier.value.isActive,
+    });
+
+    if (result.error) {
+      notify.error("Failed to update notifier.");
+    }
+
+    notifier.value = null;
+    notifierDialog.value = false;
+    targetID.value = "";
+
+    await notifiers.refresh();
+  }
+
+  async function deleteNotifier(id: string) {
+    const result = await confirm.open("Are you sure you want to delete this notifier?");
+
+    if (result.isCanceled) {
+      return;
+    }
+
+    const { error } = await api.notifiers.delete(id);
+
+    if (error) {
+      notify.error("Failed to delete notifier.");
+      return;
+    }
+
+    await notifiers.refresh();
+  }
+
+  async function testNotifier() {
+    if (!notifier.value) {
+      return;
+    }
+
+    const { error } = await api.notifiers.test(notifier.value.url);
+
+    if (error) {
+      notify.error("Failed to test notifier.");
+      return;
+    }
+
+    notify.success("Notifier test successful.");
+  }
 </script>
 
 <template>
@@ -188,6 +301,24 @@
           Submit
         </BaseButton>
       </div>
+    </BaseModal>
+
+    <BaseModal v-model="notifierDialog">
+      <template #title> {{ notifier ? "Edit" : "Create" }} Notifier </template>
+
+      <form @submit.prevent="createNotifier">
+        <template v-if="notifier">
+          <FormTextField v-model="notifier.name" label="Name" />
+          <FormTextField v-model="notifier.url" label="URL" />
+          <div class="max-w-[100px]">
+            <FormCheckbox v-model="notifier.isActive" label="Enabled" />
+          </div>
+        </template>
+        <div class="flex gap-2 justify-between mt-4">
+          <BaseButton :disabled="!(notifier && notifier.url)" type="button" @click="testNotifier"> Test </BaseButton>
+          <BaseButton type="submit"> Submit </BaseButton>
+        </div>
+      </form>
     </BaseModal>
 
     <BaseContainer class="flex flex-col gap-4 mb-6">
@@ -220,6 +351,50 @@
 
       <BaseCard>
         <template #title>
+          <BaseSectionHeader>
+            <Icon name="mdi-megaphone" class="mr-2 -mt-1 text-base-600" />
+            <span class="text-base-600"> Notifiers </span>
+            <template #description> Get notifications for up coming maintenance reminders </template>
+          </BaseSectionHeader>
+        </template>
+
+        <div v-if="notifiers.data.value" class="mx-4 divide-y divide-gray-400 rounded-md border border-gray-400">
+          <article v-for="n in notifiers.data.value" :key="n.id" class="p-2">
+            <div class="flex flex-wrap items-center gap-2">
+              <p class="mr-auto text-lg">{{ n.name }}</p>
+              <div class="flex gap-2 justify-end">
+                <div class="tooltip" data-tip="Delete">
+                  <button class="btn btn-sm btn-square" @click="deleteNotifier(n.id)">
+                    <Icon name="mdi-delete" />
+                  </button>
+                </div>
+                <div class="tooltip" data-tip="Edit">
+                  <button class="btn btn-sm btn-square" @click="openNotifierDialog(n)">
+                    <Icon name="mdi-pencil" />
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="flex justify-between py-1 flex-wrap text-sm">
+              <p>
+                <span v-if="n.isActive" class="badge badge-success"> Active </span>
+                <span v-else class="badge badge-error"> Inactive</span>
+              </p>
+              <p>
+                Created
+                <DateTime format="relative" datetime-type="time" :date="n.createdAt" />
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <div class="p-4">
+          <BaseButton size="sm" @click="openNotifierDialog"> Create </BaseButton>
+        </div>
+      </BaseCard>
+
+      <BaseCard>
+        <template #title>
           <BaseSectionHeader class="pb-0">
             <Icon name="mdi-accounts" class="mr-2 -mt-1 text-base-600" />
             <span class="text-base-600"> Group Settings </span>
@@ -233,8 +408,8 @@
           <FormSelect v-model="currency" label="Currency Format" :items="currencies" />
           <p class="m-2 text-sm">Example: {{ currencyExample }}</p>
 
-          <div class="mt-4 flex justify-end">
-            <BaseButton @click="updateGroup"> Update Group </BaseButton>
+          <div class="mt-4">
+            <BaseButton size="sm" @click="updateGroup"> Update Group </BaseButton>
           </div>
         </div>
       </BaseCard>
@@ -299,7 +474,7 @@
           </BaseSectionHeader>
 
           <div class="py-4 border-t-2 border-gray-300">
-            <BaseButton class="btn-error" @click="deleteProfile"> Delete Account </BaseButton>
+            <BaseButton size="sm" class="btn-error" @click="deleteProfile"> Delete Account </BaseButton>
           </div>
         </template>
       </BaseCard>

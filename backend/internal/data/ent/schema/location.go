@@ -16,6 +16,7 @@ func (Location) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixins.BaseMixin{},
 		mixins.DetailsMixin{},
+		GroupMixin{ref: "locations"},
 	}
 }
 
@@ -30,10 +31,6 @@ func (Location) Edges() []ent.Edge {
 		edge.To("children", Location.Type).
 			From("parent").
 			Unique(),
-		edge.From("group", Group.Type).
-			Ref("locations").
-			Unique().
-			Required(),
 		edge.To("items", Item.Type).
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,

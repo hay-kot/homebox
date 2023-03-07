@@ -33,6 +33,8 @@ func Errors(log zerolog.Logger) server.Middleware {
 						Error: err.Error(),
 					}
 				case validate.IsFieldError(err):
+					code = http.StatusUnprocessableEntity
+
 					fieldErrors := err.(validate.FieldErrors)
 					resp.Error = "Validation Error"
 					resp.Fields = map[string]string{}
@@ -43,14 +45,18 @@ func Errors(log zerolog.Logger) server.Middleware {
 				case validate.IsRequestError(err):
 					requestError := err.(*validate.RequestError)
 					resp.Error = requestError.Error()
-					code = requestError.Status
+
+					if requestError.Status == 0 {
+						code = http.StatusBadRequest
+					} else {
+						code = requestError.Status
+					}
 				case ent.IsNotFound(err):
 					resp.Error = "Not Found"
 					code = http.StatusNotFound
 				default:
 					resp.Error = "Unknown Error"
 					code = http.StatusInternalServerError
-
 				}
 
 				if err := server.Respond(w, code, resp); err != nil {

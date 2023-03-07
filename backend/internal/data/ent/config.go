@@ -38,6 +38,7 @@ type (
 		Label                []ent.Hook
 		Location             []ent.Hook
 		MaintenanceEntry     []ent.Hook
+		Notifier             []ent.Hook
 		User                 []ent.Hook
 	}
 	inters struct {
@@ -52,6 +53,7 @@ type (
 		Label                []ent.Interceptor
 		Location             []ent.Interceptor
 		MaintenanceEntry     []ent.Interceptor
+		Notifier             []ent.Interceptor
 		User                 []ent.Interceptor
 	}
 )

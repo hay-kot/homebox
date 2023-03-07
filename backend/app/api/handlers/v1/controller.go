@@ -75,17 +75,18 @@ func NewControllerV1(svc *services.AllServices, repos *repo.AllRepos, options ..
 }
 
 // HandleBase godoc
-// @Summary Retrieves the basic information about the API
-// @Tags    Base
-// @Produce json
-// @Success 200 {object} ApiSummary
-// @Router  /v1/status [GET]
+//
+//	@Summary Application Info
+//	@Tags    Base
+//	@Produce json
+//	@Success 200 {object} ApiSummary
+//	@Router  /v1/status [GET]
 func (ctrl *V1Controller) HandleBase(ready ReadyFunc, build Build) server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		return server.Respond(w, http.StatusOK, ApiSummary{
 			Healthy:           ready(),
-			Title:             "Go API Template",
-			Message:           "Welcome to the Go API Template Application!",
+			Title:             "Homebox",
+			Message:           "Track, Manage, and Organize your shit",
 			Build:             build,
 			Demo:              ctrl.isDemo,
 			AllowRegistration: ctrl.allowRegistration,

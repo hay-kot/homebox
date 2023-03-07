@@ -18,6 +18,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/ent/item"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/label"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/location"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/notifier"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/predicate"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/user"
 )
@@ -151,6 +152,21 @@ func (gu *GroupUpdate) AddInvitationTokens(g ...*GroupInvitationToken) *GroupUpd
 	return gu.AddInvitationTokenIDs(ids...)
 }
 
+// AddNotifierIDs adds the "notifiers" edge to the Notifier entity by IDs.
+func (gu *GroupUpdate) AddNotifierIDs(ids ...uuid.UUID) *GroupUpdate {
+	gu.mutation.AddNotifierIDs(ids...)
+	return gu
+}
+
+// AddNotifiers adds the "notifiers" edges to the Notifier entity.
+func (gu *GroupUpdate) AddNotifiers(n ...*Notifier) *GroupUpdate {
+	ids := make([]uuid.UUID, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return gu.AddNotifierIDs(ids...)
+}
+
 // Mutation returns the GroupMutation object of the builder.
 func (gu *GroupUpdate) Mutation() *GroupMutation {
 	return gu.mutation
@@ -280,6 +296,27 @@ func (gu *GroupUpdate) RemoveInvitationTokens(g ...*GroupInvitationToken) *Group
 		ids[i] = g[i].ID
 	}
 	return gu.RemoveInvitationTokenIDs(ids...)
+}
+
+// ClearNotifiers clears all "notifiers" edges to the Notifier entity.
+func (gu *GroupUpdate) ClearNotifiers() *GroupUpdate {
+	gu.mutation.ClearNotifiers()
+	return gu
+}
+
+// RemoveNotifierIDs removes the "notifiers" edge to Notifier entities by IDs.
+func (gu *GroupUpdate) RemoveNotifierIDs(ids ...uuid.UUID) *GroupUpdate {
+	gu.mutation.RemoveNotifierIDs(ids...)
+	return gu
+}
+
+// RemoveNotifiers removes "notifiers" edges to Notifier entities.
+func (gu *GroupUpdate) RemoveNotifiers(n ...*Notifier) *GroupUpdate {
+	ids := make([]uuid.UUID, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return gu.RemoveNotifierIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -678,6 +715,60 @@ func (gu *GroupUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if gu.mutation.NotifiersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.NotifiersTable,
+			Columns: []string{group.NotifiersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: notifier.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := gu.mutation.RemovedNotifiersIDs(); len(nodes) > 0 && !gu.mutation.NotifiersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.NotifiersTable,
+			Columns: []string{group.NotifiersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: notifier.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := gu.mutation.NotifiersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.NotifiersTable,
+			Columns: []string{group.NotifiersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: notifier.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, gu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{group.Label}
@@ -814,6 +905,21 @@ func (guo *GroupUpdateOne) AddInvitationTokens(g ...*GroupInvitationToken) *Grou
 	return guo.AddInvitationTokenIDs(ids...)
 }
 
+// AddNotifierIDs adds the "notifiers" edge to the Notifier entity by IDs.
+func (guo *GroupUpdateOne) AddNotifierIDs(ids ...uuid.UUID) *GroupUpdateOne {
+	guo.mutation.AddNotifierIDs(ids...)
+	return guo
+}
+
+// AddNotifiers adds the "notifiers" edges to the Notifier entity.
+func (guo *GroupUpdateOne) AddNotifiers(n ...*Notifier) *GroupUpdateOne {
+	ids := make([]uuid.UUID, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return guo.AddNotifierIDs(ids...)
+}
+
 // Mutation returns the GroupMutation object of the builder.
 func (guo *GroupUpdateOne) Mutation() *GroupMutation {
 	return guo.mutation
@@ -943,6 +1049,27 @@ func (guo *GroupUpdateOne) RemoveInvitationTokens(g ...*GroupInvitationToken) *G
 		ids[i] = g[i].ID
 	}
 	return guo.RemoveInvitationTokenIDs(ids...)
+}
+
+// ClearNotifiers clears all "notifiers" edges to the Notifier entity.
+func (guo *GroupUpdateOne) ClearNotifiers() *GroupUpdateOne {
+	guo.mutation.ClearNotifiers()
+	return guo
+}
+
+// RemoveNotifierIDs removes the "notifiers" edge to Notifier entities by IDs.
+func (guo *GroupUpdateOne) RemoveNotifierIDs(ids ...uuid.UUID) *GroupUpdateOne {
+	guo.mutation.RemoveNotifierIDs(ids...)
+	return guo
+}
+
+// RemoveNotifiers removes "notifiers" edges to Notifier entities.
+func (guo *GroupUpdateOne) RemoveNotifiers(n ...*Notifier) *GroupUpdateOne {
+	ids := make([]uuid.UUID, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return guo.RemoveNotifierIDs(ids...)
 }
 
 // Where appends a list predicates to the GroupUpdate builder.
@@ -1363,6 +1490,60 @@ func (guo *GroupUpdateOne) sqlSave(ctx context.Context) (_node *Group, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: groupinvitationtoken.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if guo.mutation.NotifiersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.NotifiersTable,
+			Columns: []string{group.NotifiersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: notifier.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := guo.mutation.RemovedNotifiersIDs(); len(nodes) > 0 && !guo.mutation.NotifiersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.NotifiersTable,
+			Columns: []string{group.NotifiersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: notifier.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := guo.mutation.NotifiersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   group.NotifiersTable,
+			Columns: []string{group.NotifiersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: notifier.FieldID,
 				},
 			},
 		}

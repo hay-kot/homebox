@@ -34,6 +34,8 @@ type Tx struct {
 	Location *LocationClient
 	// MaintenanceEntry is the client for interacting with the MaintenanceEntry builders.
 	MaintenanceEntry *MaintenanceEntryClient
+	// Notifier is the client for interacting with the Notifier builders.
+	Notifier *NotifierClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 
@@ -178,6 +180,7 @@ func (tx *Tx) init() {
 	tx.Label = NewLabelClient(tx.config)
 	tx.Location = NewLocationClient(tx.config)
 	tx.MaintenanceEntry = NewMaintenanceEntryClient(tx.config)
+	tx.Notifier = NewNotifierClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
 

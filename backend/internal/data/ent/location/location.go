@@ -21,16 +21,23 @@ const (
 	FieldName = "name"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
+	// EdgeGroup holds the string denoting the group edge name in mutations.
+	EdgeGroup = "group"
 	// EdgeParent holds the string denoting the parent edge name in mutations.
 	EdgeParent = "parent"
 	// EdgeChildren holds the string denoting the children edge name in mutations.
 	EdgeChildren = "children"
-	// EdgeGroup holds the string denoting the group edge name in mutations.
-	EdgeGroup = "group"
 	// EdgeItems holds the string denoting the items edge name in mutations.
 	EdgeItems = "items"
 	// Table holds the table name of the location in the database.
 	Table = "locations"
+	// GroupTable is the table that holds the group relation/edge.
+	GroupTable = "locations"
+	// GroupInverseTable is the table name for the Group entity.
+	// It exists in this package in order to avoid circular dependency with the "group" package.
+	GroupInverseTable = "groups"
+	// GroupColumn is the table column denoting the group relation/edge.
+	GroupColumn = "group_locations"
 	// ParentTable is the table that holds the parent relation/edge.
 	ParentTable = "locations"
 	// ParentColumn is the table column denoting the parent relation/edge.
@@ -39,13 +46,6 @@ const (
 	ChildrenTable = "locations"
 	// ChildrenColumn is the table column denoting the children relation/edge.
 	ChildrenColumn = "location_children"
-	// GroupTable is the table that holds the group relation/edge.
-	GroupTable = "locations"
-	// GroupInverseTable is the table name for the Group entity.
-	// It exists in this package in order to avoid circular dependency with the "group" package.
-	GroupInverseTable = "groups"
-	// GroupColumn is the table column denoting the group relation/edge.
-	GroupColumn = "group_locations"
 	// ItemsTable is the table that holds the items relation/edge.
 	ItemsTable = "items"
 	// ItemsInverseTable is the table name for the Item entity.
