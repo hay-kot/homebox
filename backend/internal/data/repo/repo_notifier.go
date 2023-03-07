@@ -37,13 +37,13 @@ type (
 	NotifierCreate struct {
 		Name     string `json:"name" validate:"required,min=1,max=255"`
 		IsActive bool   `json:"isActive"`
-		URL      string `json:"url" validate:"required"`
+		URL      string `json:"url" validate:"required,shoutrrr"`
 	}
 
 	NotifierUpdate struct {
 		Name     string  `json:"name" validate:"required,min=1,max=255"`
 		IsActive bool    `json:"isActive"`
-		URL      *string `json:"url" extensions:"x-nullable"`
+		URL      *string `json:"url" extensions:"x-nullable" validate:"omitempty,shoutrrr"`
 	}
 
 	NotifierOut struct {
@@ -60,12 +60,19 @@ type (
 )
 
 func (r *NotifierRepository) GetByUser(ctx context.Context, userID uuid.UUID) ([]NotifierOut, error) {
-	notifier, err := r.db.Notifier.Query().Where(notifier.UserID(userID)).All(ctx)
+	notifier, err := r.db.Notifier.Query().
+		Where(notifier.UserID(userID)).
+		Order(ent.Asc(notifier.FieldName)).
+		All(ctx)
+
 	return r.mapper.MapEachErr(notifier, err)
 }
 
 func (r *NotifierRepository) GetByGroup(ctx context.Context, groupID uuid.UUID) ([]NotifierOut, error) {
-	notifier, err := r.db.Notifier.Query().Where(notifier.GroupID(groupID)).All(ctx)
+	notifier, err := r.db.Notifier.Query().
+		Where(notifier.GroupID(groupID)).
+		Order(ent.Asc(notifier.FieldName)).
+		All(ctx)
 	return r.mapper.MapEachErr(notifier, err)
 }
 
