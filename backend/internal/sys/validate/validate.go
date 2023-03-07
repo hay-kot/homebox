@@ -1,11 +1,50 @@
 package validate
 
-import "github.com/go-playground/validator/v10"
+import (
+	"strings"
+
+	"github.com/go-playground/validator/v10"
+)
 
 var validate *validator.Validate
 
 func init() {
 	validate = validator.New()
+
+	validate.RegisterValidation("shoutrrr", func(fl validator.FieldLevel) bool {
+		prefixes := [...]string{
+			"discord://",
+			"smtp://",
+			"gotify://",
+			"googlechat://",
+			"ifttt://",
+			"join://",
+			"mattermost://",
+			"matrix://",
+			"opsgenie://",
+			"pushbullet://",
+			"pushover://",
+			"rocketchat://",
+			"slack://",
+			"teams://",
+			"telegram://",
+			"zulip://",
+		}
+
+		str := fl.Field().String()
+		if str == "" {
+			return false
+		}
+
+		for _, prefix := range prefixes {
+			if strings.HasPrefix(str, prefix) {
+				return true
+			}
+		}
+
+		return false
+	})
+
 }
 
 // Checks a struct for validation errors and returns any errors the occur. This
