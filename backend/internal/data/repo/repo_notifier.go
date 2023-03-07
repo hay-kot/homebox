@@ -43,7 +43,7 @@ type (
 	NotifierUpdate struct {
 		Name     string  `json:"name" validate:"required,min=1,max=255"`
 		IsActive bool    `json:"isActive"`
-		URL      *string `json:"url" extensions:"x-nullable" validate:"omitempty,shoutrrr"`
+		URL      *string `json:"url" validate:"omitempty,shoutrrr" extensions:"x-nullable" `
 	}
 
 	NotifierOut struct {

@@ -9,7 +9,7 @@ describe("basic notifier workflows", () => {
     // Create Notifier
     const result = await client.notifiers.create({
       name: faker.name.firstName(),
-      url: faker.internet.url(),
+      url: "discord://" + faker.random.alphaNumeric(10),
       isActive: true,
     });
 
@@ -23,7 +23,7 @@ describe("basic notifier workflows", () => {
     {
       const updateData = {
         name: faker.name.firstName(),
-        url: faker.internet.url(),
+        url: "discord://" + faker.random.alphaNumeric(10),
         isActive: true,
       };
 
@@ -38,7 +38,7 @@ describe("basic notifier workflows", () => {
     {
       const updateData = {
         name: faker.name.firstName(),
-        url: "",
+        url: null,
         isActive: true,
       };
 

@@ -11,7 +11,7 @@ var validate *validator.Validate
 func init() {
 	validate = validator.New()
 
-	validate.RegisterValidation("shoutrrr", func(fl validator.FieldLevel) bool {
+	err := validate.RegisterValidation("shoutrrr", func(fl validator.FieldLevel) bool {
 		prefixes := [...]string{
 			"discord://",
 			"smtp://",
@@ -44,6 +44,10 @@ func init() {
 
 		return false
 	})
+
+	if err != nil {
+		panic(err)
+	}
 
 }
 
