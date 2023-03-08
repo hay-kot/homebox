@@ -78,12 +78,22 @@ func SugarLogger(log zerolog.Logger) server.Middleware {
 		return server.HandlerFunc(func(w http.ResponseWriter, r *http.Request) error {
 			record := &statusRecorder{ResponseWriter: w, Status: http.StatusOK}
 
-			err := next.ServeHTTP(record, r) // Blocks until the next handler returns.
-
 			url := fmt.Sprintf("%s %s", r.RequestURI, r.Proto)
 
 			log.Info().
 				Str("trace_id", server.GetTraceID(r.Context())).
+				Str("status", "started").
+				Msgf("%s %s %s",
+					bold(fmtCode(record.Status)),
+					bold(orange(atLeast6(r.Method))),
+					aqua(url),
+				)
+
+			err := next.ServeHTTP(record, r) // Blocks until the next handler returns.
+
+			log.Info().
+				Str("trace_id", server.GetTraceID(r.Context())).
+				Str("status", "completed").
 				Msgf("%s %s %s",
 					bold(fmtCode(record.Status)),
 					bold(orange(atLeast6(r.Method))),
