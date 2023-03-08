@@ -18,6 +18,7 @@ func Errors(log zerolog.Logger) server.Middleware {
 				var code int
 
 				log.Err(err).
+					Stack().
 					Str("trace_id", server.GetTraceID(r.Context())).
 					Msg("ERROR occurred")
 
