@@ -18,7 +18,9 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/web/mid"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/rs/zerolog/pkgerrors"
 )
 
 var (
@@ -38,6 +40,8 @@ var (
 // @name                       Authorization
 // @description                "Type 'Bearer TOKEN' to correctly set the API Key"
 func main() {
+	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
+
 	cfg, err := config.New()
 	if err != nil {
 		panic(err)
@@ -118,7 +122,7 @@ func run(cfg *config.Config) error {
 	)
 
 	// =========================================================================
-	// Start Server\
+	// Start Server
 	logger := log.With().Caller().Logger()
 
 	mwLogger := mid.Logger(logger)
