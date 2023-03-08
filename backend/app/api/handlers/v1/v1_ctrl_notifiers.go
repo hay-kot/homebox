@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/containrrr/shoutrrr"
@@ -21,9 +20,9 @@ import (
 //	@Router   /v1/notifiers [GET]
 //	@Security Bearer
 func (ctrl *V1Controller) HandleGetUserNotifiers() server.HandlerFunc {
-	fn := func(ctx context.Context, _ struct{}) ([]repo.NotifierOut, error) {
-		user := services.UseUserCtx(ctx)
-		return ctrl.repo.Notifiers.GetByUser(ctx, user.ID)
+	fn := func(r *http.Request, _ struct{}) ([]repo.NotifierOut, error) {
+		user := services.UseUserCtx(r.Context())
+		return ctrl.repo.Notifiers.GetByUser(r.Context(), user.ID)
 	}
 
 	return adapters.Query(fn, http.StatusOK)
@@ -39,9 +38,9 @@ func (ctrl *V1Controller) HandleGetUserNotifiers() server.HandlerFunc {
 //	@Router   /v1/notifiers [POST]
 //	@Security Bearer
 func (ctrl *V1Controller) HandleCreateNotifier() server.HandlerFunc {
-	fn := func(ctx context.Context, in repo.NotifierCreate) (repo.NotifierOut, error) {
-		auth := services.NewContext(ctx)
-		return ctrl.repo.Notifiers.Create(ctx, auth.GID, auth.UID, in)
+	fn := func(r *http.Request, in repo.NotifierCreate) (repo.NotifierOut, error) {
+		auth := services.NewContext(r.Context())
+		return ctrl.repo.Notifiers.Create(auth, auth.GID, auth.UID, in)
 	}
 
 	return adapters.Action(fn, http.StatusCreated)
@@ -56,9 +55,9 @@ func (ctrl *V1Controller) HandleCreateNotifier() server.HandlerFunc {
 //	@Router  /v1/notifiers/{id} [DELETE]
 //	@Security Bearer
 func (ctrl *V1Controller) HandleDeleteNotifier() server.HandlerFunc {
-	fn := func(ctx context.Context, ID uuid.UUID) (any, error) {
-		auth := services.NewContext(ctx)
-		return nil, ctrl.repo.Notifiers.Delete(ctx, auth.UID, ID)
+	fn := func(r *http.Request, ID uuid.UUID) (any, error) {
+		auth := services.NewContext(r.Context())
+		return nil, ctrl.repo.Notifiers.Delete(auth, auth.UID, ID)
 	}
 
 	return adapters.CommandID("id", fn, http.StatusNoContent)
@@ -74,9 +73,9 @@ func (ctrl *V1Controller) HandleDeleteNotifier() server.HandlerFunc {
 //	@Router  /v1/notifiers/{id} [PUT]
 //	@Security Bearer
 func (ctrl *V1Controller) HandleUpdateNotifier() server.HandlerFunc {
-	fn := func(ctx context.Context, ID uuid.UUID, in repo.NotifierUpdate) (repo.NotifierOut, error) {
-		auth := services.NewContext(ctx)
-		return ctrl.repo.Notifiers.Update(ctx, auth.UID, ID, in)
+	fn := func(r *http.Request, ID uuid.UUID, in repo.NotifierUpdate) (repo.NotifierOut, error) {
+		auth := services.NewContext(r.Context())
+		return ctrl.repo.Notifiers.Update(auth, auth.UID, ID, in)
 	}
 
 	return adapters.ActionID("id", fn, http.StatusOK)
@@ -97,7 +96,7 @@ func (ctrl *V1Controller) HandlerNotifierTest() server.HandlerFunc {
 		URL string `json:"url" validate:"required"`
 	}
 
-	fn := func(ctx context.Context, q body) (any, error) {
+	fn := func(r *http.Request, q body) (any, error) {
 		err := shoutrrr.Send(q.URL, "Test message from Homebox")
 		return nil, err
 	}

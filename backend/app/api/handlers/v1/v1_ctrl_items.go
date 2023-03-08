@@ -7,9 +7,11 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/sys/validate"
+	"github.com/hay-kot/homebox/backend/internal/web/adapters"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 	"github.com/rs/zerolog/log"
 )
@@ -93,26 +95,15 @@ func (ctrl *V1Controller) HandleItemsGetAll() server.HandlerFunc {
 //	@Tags     Items
 //	@Produce  json
 //	@Param    payload body     repo.ItemCreate true "Item Data"
-//	@Success  200     {object} repo.ItemSummary
+//	@Success  201     {object} repo.ItemSummary
 //	@Router   /v1/items [POST]
 //	@Security Bearer
 func (ctrl *V1Controller) HandleItemsCreate() server.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) error {
-		createData := repo.ItemCreate{}
-		if err := server.Decode(r, &createData); err != nil {
-			log.Err(err).Msg("failed to decode request body")
-			return validate.NewRequestError(err, http.StatusInternalServerError)
-		}
-
-		ctx := services.NewContext(r.Context())
-		item, err := ctrl.svc.Items.Create(ctx, createData)
-		if err != nil {
-			log.Err(err).Msg("failed to create item")
-			return validate.NewRequestError(err, http.StatusInternalServerError)
-		}
-
-		return server.Respond(w, http.StatusCreated, item)
+	fn := func(r *http.Request, body repo.ItemCreate) (repo.ItemOut, error) {
+		return ctrl.svc.Items.Create(services.NewContext(r.Context()), body)
 	}
+
+	return adapters.Action(fn, http.StatusCreated)
 }
 
 // HandleItemGet godocs
@@ -125,7 +116,13 @@ func (ctrl *V1Controller) HandleItemsCreate() server.HandlerFunc {
 //	@Router   /v1/items/{id} [GET]
 //	@Security Bearer
 func (ctrl *V1Controller) HandleItemGet() server.HandlerFunc {
-	return ctrl.handleItemsGeneral()
+	fn := func(r *http.Request, ID uuid.UUID) (repo.ItemOut, error) {
+		auth := services.NewContext(r.Context())
+
+		return ctrl.repo.Items.GetOneByGroup(auth, auth.GID, ID)
+	}
+
+	return adapters.CommandID("id", fn, http.StatusOK)
 }
 
 // HandleItemDelete godocs
@@ -138,7 +135,13 @@ func (ctrl *V1Controller) HandleItemGet() server.HandlerFunc {
 //	@Router   /v1/items/{id} [DELETE]
 //	@Security Bearer
 func (ctrl *V1Controller) HandleItemDelete() server.HandlerFunc {
-	return ctrl.handleItemsGeneral()
+	fn := func(r *http.Request, ID uuid.UUID) (any, error) {
+		auth := services.NewContext(r.Context())
+		err := ctrl.repo.Items.DeleteByGroup(auth, auth.GID, ID)
+		return nil, err
+	}
+
+	return adapters.CommandID("id", fn, http.StatusNoContent)
 }
 
 // HandleItemUpdate godocs
@@ -152,49 +155,14 @@ func (ctrl *V1Controller) HandleItemDelete() server.HandlerFunc {
 //	@Router   /v1/items/{id} [PUT]
 //	@Security Bearer
 func (ctrl *V1Controller) HandleItemUpdate() server.HandlerFunc {
-	return ctrl.handleItemsGeneral()
-}
+	fn := func(r *http.Request, ID uuid.UUID, body repo.ItemUpdate) (repo.ItemOut, error) {
+		auth := services.NewContext(r.Context())
 
-func (ctrl *V1Controller) handleItemsGeneral() server.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) error {
-		ctx := services.NewContext(r.Context())
-		ID, err := ctrl.routeID(r)
-		if err != nil {
-			return err
-		}
-
-		switch r.Method {
-		case http.MethodGet:
-			items, err := ctrl.repo.Items.GetOneByGroup(r.Context(), ctx.GID, ID)
-			if err != nil {
-				log.Err(err).Msg("failed to get item")
-				return validate.NewRequestError(err, http.StatusInternalServerError)
-			}
-			return server.Respond(w, http.StatusOK, items)
-		case http.MethodDelete:
-			err = ctrl.repo.Items.DeleteByGroup(r.Context(), ctx.GID, ID)
-			if err != nil {
-				log.Err(err).Msg("failed to delete item")
-				return validate.NewRequestError(err, http.StatusInternalServerError)
-			}
-			return server.Respond(w, http.StatusNoContent, nil)
-		case http.MethodPut:
-			body := repo.ItemUpdate{}
-			if err := server.Decode(r, &body); err != nil {
-				log.Err(err).Msg("failed to decode request body")
-				return validate.NewRequestError(err, http.StatusInternalServerError)
-			}
-			body.ID = ID
-			result, err := ctrl.repo.Items.UpdateByGroup(r.Context(), ctx.GID, body)
-			if err != nil {
-				log.Err(err).Msg("failed to update item")
-				return validate.NewRequestError(err, http.StatusInternalServerError)
-			}
-			return server.Respond(w, http.StatusOK, result)
-		}
-
-		return nil
+		body.ID = ID
+		return ctrl.repo.Items.UpdateByGroup(auth, auth.GID, body)
 	}
+
+	return adapters.ActionID("id", fn, http.StatusOK)
 }
 
 // HandleGetAllCustomFieldNames godocs
@@ -207,16 +175,12 @@ func (ctrl *V1Controller) handleItemsGeneral() server.HandlerFunc {
 //	@Success  200     {object} []string
 //	@Security Bearer
 func (ctrl *V1Controller) HandleGetAllCustomFieldNames() server.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) error {
-		ctx := services.NewContext(r.Context())
-
-		v, err := ctrl.repo.Items.GetAllCustomFieldNames(r.Context(), ctx.GID)
-		if err != nil {
-			return err
-		}
-
-		return server.Respond(w, http.StatusOK, v)
+	fn := func(r *http.Request) ([]string, error) {
+		auth := services.NewContext(r.Context())
+		return ctrl.repo.Items.GetAllCustomFieldNames(auth, auth.GID)
 	}
+
+	return adapters.Command(fn, http.StatusOK)
 }
 
 // HandleGetAllCustomFieldValues godocs
@@ -229,16 +193,17 @@ func (ctrl *V1Controller) HandleGetAllCustomFieldNames() server.HandlerFunc {
 //	@Success  200     {object} []string
 //	@Security Bearer
 func (ctrl *V1Controller) HandleGetAllCustomFieldValues() server.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) error {
-		ctx := services.NewContext(r.Context())
-
-		v, err := ctrl.repo.Items.GetAllCustomFieldValues(r.Context(), ctx.GID, r.URL.Query().Get("field"))
-		if err != nil {
-			return err
-		}
-
-		return server.Respond(w, http.StatusOK, v)
+	type query struct {
+		Field string `schema:"field" validate:"required"`
 	}
+
+	fn := func(r *http.Request, q query) ([]string, error) {
+		auth := services.NewContext(r.Context())
+		return ctrl.repo.Items.GetAllCustomFieldValues(auth, auth.GID, q.Field)
+	}
+
+	return adapters.Action(fn, http.StatusOK)
+
 }
 
 // HandleItemsImport godocs

@@ -5,7 +5,9 @@ import (
 	"time"
 
 	"github.com/hay-kot/homebox/backend/internal/core/services"
+	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/sys/validate"
+	"github.com/hay-kot/homebox/backend/internal/web/adapters"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 )
 
@@ -18,16 +20,12 @@ import (
 //	@Router   /v1/groups/statistics/locations [GET]
 //	@Security Bearer
 func (ctrl *V1Controller) HandleGroupStatisticsLocations() server.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) error {
-		ctx := services.NewContext(r.Context())
-
-		stats, err := ctrl.repo.Groups.StatsLocationsByPurchasePrice(ctx, ctx.GID)
-		if err != nil {
-			return validate.NewRequestError(err, http.StatusInternalServerError)
-		}
-
-		return server.Respond(w, http.StatusOK, stats)
+	fn := func(r *http.Request) ([]repo.TotalsByOrganizer, error) {
+		auth := services.NewContext(r.Context())
+		return ctrl.repo.Groups.StatsLocationsByPurchasePrice(auth, auth.GID)
 	}
+
+	return adapters.Command(fn, http.StatusOK)
 }
 
 // HandleGroupStatisticsLabels godoc
@@ -39,16 +37,12 @@ func (ctrl *V1Controller) HandleGroupStatisticsLocations() server.HandlerFunc {
 //	@Router   /v1/groups/statistics/labels [GET]
 //	@Security Bearer
 func (ctrl *V1Controller) HandleGroupStatisticsLabels() server.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) error {
-		ctx := services.NewContext(r.Context())
-
-		stats, err := ctrl.repo.Groups.StatsLabelsByPurchasePrice(ctx, ctx.GID)
-		if err != nil {
-			return validate.NewRequestError(err, http.StatusInternalServerError)
-		}
-
-		return server.Respond(w, http.StatusOK, stats)
+	fn := func(r *http.Request) ([]repo.TotalsByOrganizer, error) {
+		auth := services.NewContext(r.Context())
+		return ctrl.repo.Groups.StatsLabelsByPurchasePrice(auth, auth.GID)
 	}
+
+	return adapters.Command(fn, http.StatusOK)
 }
 
 // HandleGroupStatistics godoc
@@ -60,16 +54,12 @@ func (ctrl *V1Controller) HandleGroupStatisticsLabels() server.HandlerFunc {
 //	@Router   /v1/groups/statistics [GET]
 //	@Security Bearer
 func (ctrl *V1Controller) HandleGroupStatistics() server.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) error {
-		ctx := services.NewContext(r.Context())
-
-		stats, err := ctrl.repo.Groups.StatsGroup(ctx, ctx.GID)
-		if err != nil {
-			return validate.NewRequestError(err, http.StatusInternalServerError)
-		}
-
-		return server.Respond(w, http.StatusOK, stats)
+	fn := func(r *http.Request) (repo.GroupStatistics, error) {
+		auth := services.NewContext(r.Context())
+		return ctrl.repo.Groups.StatsGroup(auth, auth.GID)
 	}
+
+	return adapters.Command(fn, http.StatusOK)
 }
 
 // HandleGroupStatisticsPriceOverTime godoc

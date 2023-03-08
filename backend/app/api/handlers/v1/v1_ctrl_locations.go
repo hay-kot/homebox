@@ -3,15 +3,14 @@ package v1
 import (
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/core/services"
-	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
-	"github.com/hay-kot/homebox/backend/internal/sys/validate"
+	"github.com/hay-kot/homebox/backend/internal/web/adapters"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
-	"github.com/rs/zerolog/log"
 )
 
-// HandleLocationTreeQuery godoc
+// HandleLocationTreeQuery
 //
 //	@Summary  Get Locations Tree
 //	@Tags     Locations
@@ -21,30 +20,15 @@ import (
 //	@Router   /v1/locations/tree [GET]
 //	@Security Bearer
 func (ctrl *V1Controller) HandleLocationTreeQuery() server.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) error {
-		user := services.UseUserCtx(r.Context())
-
-		q := r.URL.Query()
-
-		withItems := queryBool(q.Get("withItems"))
-
-		locTree, err := ctrl.repo.Locations.Tree(
-			r.Context(),
-			user.GroupID,
-			repo.TreeQuery{
-				WithItems: withItems,
-			},
-		)
-		if err != nil {
-			log.Err(err).Msg("failed to get locations tree")
-			return validate.NewRequestError(err, http.StatusInternalServerError)
-		}
-
-		return server.Respond(w, http.StatusOK, server.Results{Items: locTree})
+	fn := func(r *http.Request, query repo.TreeQuery) ([]repo.TreeItem, error) {
+		auth := services.NewContext(r.Context())
+		return ctrl.repo.Locations.Tree(auth, auth.GID, query)
 	}
+
+	return adapters.Query(fn, http.StatusOK)
 }
 
-// HandleLocationGetAll godoc
+// HandleLocationGetAll
 //
 //	@Summary  Get All Locations
 //	@Tags     Locations
@@ -54,26 +38,15 @@ func (ctrl *V1Controller) HandleLocationTreeQuery() server.HandlerFunc {
 //	@Router   /v1/locations [GET]
 //	@Security Bearer
 func (ctrl *V1Controller) HandleLocationGetAll() server.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) error {
-		user := services.UseUserCtx(r.Context())
-
-		q := r.URL.Query()
-
-		filter := repo.LocationQuery{
-			FilterChildren: queryBool(q.Get("filterChildren")),
-		}
-
-		locations, err := ctrl.repo.Locations.GetAll(r.Context(), user.GroupID, filter)
-		if err != nil {
-			log.Err(err).Msg("failed to get locations")
-			return validate.NewRequestError(err, http.StatusInternalServerError)
-		}
-
-		return server.Respond(w, http.StatusOK, server.Results{Items: locations})
+	fn := func(r *http.Request, q repo.LocationQuery) ([]repo.LocationOutCount, error) {
+		auth := services.NewContext(r.Context())
+		return ctrl.repo.Locations.GetAll(auth, auth.GID, q)
 	}
+
+	return adapters.Query(fn, http.StatusOK)
 }
 
-// HandleLocationCreate godoc
+// HandleLocationCreate
 //
 //	@Summary  Create Location
 //	@Tags     Locations
@@ -83,25 +56,15 @@ func (ctrl *V1Controller) HandleLocationGetAll() server.HandlerFunc {
 //	@Router   /v1/locations [POST]
 //	@Security Bearer
 func (ctrl *V1Controller) HandleLocationCreate() server.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) error {
-		createData := repo.LocationCreate{}
-		if err := server.Decode(r, &createData); err != nil {
-			log.Err(err).Msg("failed to decode location create data")
-			return validate.NewRequestError(err, http.StatusInternalServerError)
-		}
-
-		user := services.UseUserCtx(r.Context())
-		location, err := ctrl.repo.Locations.Create(r.Context(), user.GroupID, createData)
-		if err != nil {
-			log.Err(err).Msg("failed to create location")
-			return validate.NewRequestError(err, http.StatusInternalServerError)
-		}
-
-		return server.Respond(w, http.StatusCreated, location)
+	fn := func(r *http.Request, createData repo.LocationCreate) (repo.LocationOut, error) {
+		auth := services.NewContext(r.Context())
+		return ctrl.repo.Locations.Create(auth, auth.GID, createData)
 	}
+
+	return adapters.Action(fn, http.StatusCreated)
 }
 
-// HandleLocationDelete godocs
+// HandleLocationDelete
 //
 //	@Summary  Delete Location
 //	@Tags     Locations
@@ -111,10 +74,16 @@ func (ctrl *V1Controller) HandleLocationCreate() server.HandlerFunc {
 //	@Router   /v1/locations/{id} [DELETE]
 //	@Security Bearer
 func (ctrl *V1Controller) HandleLocationDelete() server.HandlerFunc {
-	return ctrl.handleLocationGeneral()
+	fn := func(r *http.Request, ID uuid.UUID) (any, error) {
+		auth := services.NewContext(r.Context())
+		err := ctrl.repo.Locations.DeleteByGroup(auth, auth.GID, ID)
+		return nil, err
+	}
+
+	return adapters.CommandID("id", fn, http.StatusNoContent)
 }
 
-// HandleLocationGet godocs
+// HandleLocationGet
 //
 //	@Summary  Get Location
 //	@Tags     Locations
@@ -124,10 +93,15 @@ func (ctrl *V1Controller) HandleLocationDelete() server.HandlerFunc {
 //	@Router   /v1/locations/{id} [GET]
 //	@Security Bearer
 func (ctrl *V1Controller) HandleLocationGet() server.HandlerFunc {
-	return ctrl.handleLocationGeneral()
+	fn := func(r *http.Request, ID uuid.UUID) (repo.LocationOut, error) {
+		auth := services.NewContext(r.Context())
+		return ctrl.repo.Locations.GetOneByGroup(auth, auth.GID, ID)
+	}
+
+	return adapters.CommandID("id", fn, http.StatusOK)
 }
 
-// HandleLocationUpdate godocs
+// HandleLocationUpdate
 //
 //	@Summary  Update Location
 //	@Tags     Locations
@@ -138,57 +112,11 @@ func (ctrl *V1Controller) HandleLocationGet() server.HandlerFunc {
 //	@Router   /v1/locations/{id} [PUT]
 //	@Security Bearer
 func (ctrl *V1Controller) HandleLocationUpdate() server.HandlerFunc {
-	return ctrl.handleLocationGeneral()
-}
-
-func (ctrl *V1Controller) handleLocationGeneral() server.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) error {
-		ctx := services.NewContext(r.Context())
-		ID, err := ctrl.routeID(r)
-		if err != nil {
-			return err
-		}
-
-		switch r.Method {
-		case http.MethodGet:
-			location, err := ctrl.repo.Locations.GetOneByGroup(r.Context(), ctx.GID, ID)
-			if err != nil {
-				l := log.Err(err).
-					Str("ID", ID.String()).
-					Str("GID", ctx.GID.String())
-
-				if ent.IsNotFound(err) {
-					l.Msg("location not found")
-					return validate.NewRequestError(err, http.StatusNotFound)
-				}
-
-				l.Msg("failed to get location")
-				return validate.NewRequestError(err, http.StatusInternalServerError)
-			}
-			return server.Respond(w, http.StatusOK, location)
-		case http.MethodPut:
-			body := repo.LocationUpdate{}
-			if err := server.Decode(r, &body); err != nil {
-				log.Err(err).Msg("failed to decode location update data")
-				return validate.NewRequestError(err, http.StatusInternalServerError)
-			}
-
-			body.ID = ID
-
-			result, err := ctrl.repo.Locations.UpdateOneByGroup(r.Context(), ctx.GID, ID, body)
-			if err != nil {
-				log.Err(err).Msg("failed to update location")
-				return validate.NewRequestError(err, http.StatusInternalServerError)
-			}
-			return server.Respond(w, http.StatusOK, result)
-		case http.MethodDelete:
-			err = ctrl.repo.Locations.DeleteByGroup(r.Context(), ctx.GID, ID)
-			if err != nil {
-				log.Err(err).Msg("failed to delete location")
-				return validate.NewRequestError(err, http.StatusInternalServerError)
-			}
-			return server.Respond(w, http.StatusNoContent, nil)
-		}
-		return nil
+	fn := func(r *http.Request, ID uuid.UUID, body repo.LocationUpdate) (repo.LocationOut, error) {
+		auth := services.NewContext(r.Context())
+		body.ID = ID
+		return ctrl.repo.Locations.UpdateByGroup(auth, auth.GID, ID, body)
 	}
+
+	return adapters.ActionID("id", fn, http.StatusOK)
 }
