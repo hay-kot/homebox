@@ -67,6 +67,8 @@ definitions:
   repo.ItemCreate:
     properties:
       description:
+        maxLength: 1000
+        minLength: 1
         type: string
       labelIds:
         items:
@@ -76,10 +78,15 @@ definitions:
         description: Edges
         type: string
       name:
+        maxLength: 255
+        minLength: 1
         type: string
       parentId:
         type: string
         x-nullable: true
+    required:
+    - description
+    - name
     type: object
   repo.ItemField:
     properties:
@@ -281,9 +288,14 @@ definitions:
       color:
         type: string
       description:
+        maxLength: 255
         type: string
       name:
+        maxLength: 255
+        minLength: 1
         type: string
+    required:
+    - name
     type: object
   repo.LabelOut:
     properties:
@@ -666,7 +678,11 @@ definitions:
       expiresAt:
         type: string
       uses:
+        maximum: 100
+        minimum: 1
         type: integer
+    required:
+    - uses
     type: object
   v1.ItemAttachmentToken:
     properties:
@@ -932,8 +948,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
             $ref: '#/definitions/repo.ItemSummary'
       security:
@@ -1140,8 +1156,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
             $ref: '#/definitions/repo.MaintenanceEntry'
       security:

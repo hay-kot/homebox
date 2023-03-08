@@ -425,8 +425,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/repo.ItemSummary"
                         }
@@ -864,8 +864,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/repo.MaintenanceEntry"
                         }
@@ -1902,9 +1902,15 @@ const docTemplate = `{
         },
         "repo.ItemCreate": {
             "type": "object",
+            "required": [
+                "description",
+                "name"
+            ],
             "properties": {
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 1000,
+                    "minLength": 1
                 },
                 "labelIds": {
                     "type": "array",
@@ -1917,7 +1923,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 1
                 },
                 "parentId": {
                     "type": "string",
@@ -2208,15 +2216,21 @@ const docTemplate = `{
         },
         "repo.LabelCreate": {
             "type": "object",
+            "required": [
+                "name"
+            ],
             "properties": {
                 "color": {
                     "type": "string"
                 },
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 1
                 }
             }
         },
@@ -2791,12 +2805,17 @@ const docTemplate = `{
         },
         "v1.GroupInvitationCreate": {
             "type": "object",
+            "required": [
+                "uses"
+            ],
             "properties": {
                 "expiresAt": {
                     "type": "string"
                 },
                 "uses": {
-                    "type": "integer"
+                    "type": "integer",
+                    "maximum": 100,
+                    "minimum": 1
                 }
             }
         },

@@ -52,10 +52,18 @@ export interface ItemAttachmentUpdate {
 }
 
 export interface ItemCreate {
+  /**
+   * @minLength 1
+   * @maxLength 1000
+   */
   description: string;
   labelIds: string[];
   /** Edges */
   locationId: string;
+  /**
+   * @minLength 1
+   * @maxLength 255
+   */
   name: string;
   parentId: string | null;
 }
@@ -164,7 +172,12 @@ export interface ItemUpdate {
 
 export interface LabelCreate {
   color: string;
+  /** @maxLength 255 */
   description: string;
+  /**
+   * @minLength 1
+   * @maxLength 255
+   */
   name: string;
 }
 
@@ -402,6 +415,10 @@ export interface GroupInvitation {
 
 export interface GroupInvitationCreate {
   expiresAt: Date | string;
+  /**
+   * @min 1
+   * @max 100
+   */
   uses: number;
 }
 
