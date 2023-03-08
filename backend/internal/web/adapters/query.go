@@ -14,7 +14,7 @@ import (
 //	    Foo string `schema:"foo"`
 //	}
 //
-//	fn := func(ctx context.Context, q Query) (any, error) {
+//	fn := func(r *http.Request, q Query) (any, error) {
 //	    // do something with q
 //		return nil, nil
 //	}
@@ -22,12 +22,12 @@ import (
 //	r.Get("/foo", adapters.Query(fn, http.StatusOK))
 func Query[T any, Y any](f AdapterFunc[T, Y], ok int) server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
-		q, err := decodeQuery[T](r)
+		q, err := DecodeQuery[T](r)
 		if err != nil {
 			return err
 		}
 
-		res, err := f(r.Context(), q)
+		res, err := f(r, q)
 		if err != nil {
 			return err
 		}
@@ -44,7 +44,7 @@ func Query[T any, Y any](f AdapterFunc[T, Y], ok int) server.HandlerFunc {
 //	    Foo string `schema:"foo"`
 //	}
 //
-//	fn := func(ctx context.Context, ID uuid.UUID, q Query) (any, error) {
+//	fn := func(r *http.Request, ID uuid.UUID, q Query) (any, error) {
 //	    // do something with ID and q
 //		return nil, nil
 //	}
@@ -52,17 +52,17 @@ func Query[T any, Y any](f AdapterFunc[T, Y], ok int) server.HandlerFunc {
 //	r.Get("/foo/{id}", adapters.QueryID(fn, http.StatusOK))
 func QueryID[T any, Y any](param string, f IDFunc[T, Y], ok int) server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
-		ID, err := routeUUID(r, param)
+		ID, err := RouteUUID(r, param)
 		if err != nil {
 			return err
 		}
 
-		q, err := decodeQuery[T](r)
+		q, err := DecodeQuery[T](r)
 		if err != nil {
 			return err
 		}
 
-		res, err := f(r.Context(), ID, q)
+		res, err := f(r, ID, q)
 		if err != nil {
 			return err
 		}

@@ -16,7 +16,7 @@ import (
 //	    Foo string `json:"foo"`
 //	}
 //
-//	fn := func(ctx context.Context, b Body) (any, error) {
+//	fn := func(r *http.Request, b Body) (any, error) {
 //	    // do something with b
 //	    return nil, nil
 //	}
@@ -24,12 +24,12 @@ import (
 // r.Post("/foo", adapters.Action(fn, http.StatusCreated))
 func Action[T any, Y any](f AdapterFunc[T, Y], ok int) server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
-		v, err := decode[T](r)
+		v, err := DecodeBody[T](r)
 		if err != nil {
 			return err
 		}
 
-		res, err := f(r.Context(), v)
+		res, err := f(r, v)
 		if err != nil {
 			return err
 		}
@@ -46,7 +46,7 @@ func Action[T any, Y any](f AdapterFunc[T, Y], ok int) server.HandlerFunc {
 //	    Foo string `json:"foo"`
 //	}
 //
-//	fn := func(ctx context.Context, ID uuid.UUID, b Body) (any, error) {
+//	fn := func(r *http.Request, ID uuid.UUID, b Body) (any, error) {
 //	    // do something with ID and b
 //	    return nil, nil
 //	}
@@ -54,17 +54,17 @@ func Action[T any, Y any](f AdapterFunc[T, Y], ok int) server.HandlerFunc {
 //	r.Post("/foo/{id}", adapters.ActionID(fn, http.StatusCreated))
 func ActionID[T any, Y any](param string, f IDFunc[T, Y], ok int) server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
-		ID, err := routeUUID(r, param)
+		ID, err := RouteUUID(r, param)
 		if err != nil {
 			return err
 		}
 
-		v, err := decode[T](r)
+		v, err := DecodeBody[T](r)
 		if err != nil {
 			return err
 		}
 
-		res, err := f(r.Context(), ID, v)
+		res, err := f(r, ID, v)
 		if err != nil {
 			return err
 		}

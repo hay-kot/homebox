@@ -1,15 +1,14 @@
 package adapters
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/pkgs/server"
 )
 
-type CommandFunc[T any] func(context.Context) (T, error)
-type CommandIDFunc[T any] func(context.Context, uuid.UUID) (T, error)
+type CommandFunc[T any] func(*http.Request) (T, error)
+type CommandIDFunc[T any] func(*http.Request, uuid.UUID) (T, error)
 
 // Command is an HandlerAdapter that returns a server.HandlerFunc that
 // The command adapters are used to handle commands that do not accept a body
@@ -17,15 +16,15 @@ type CommandIDFunc[T any] func(context.Context, uuid.UUID) (T, error)
 //
 // Example:
 //
-//	fn := func(ctx context.Context) (interface{}, error) {
-//		// do something
-//		return nil, nil
-//	}
+//		fn := func(r *http.Request) (interface{}, error) {
+//			// do something
+//			return nil, nil
+//		}
 //
-//  r.Get("/foo", adapters.Command(fn, http.NoContent))
+//	 r.Get("/foo", adapters.Command(fn, http.NoContent))
 func Command[T any](f CommandFunc[T], ok int) server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
-		res, err := f(r.Context())
+		res, err := f(r)
 		if err != nil {
 			return err
 		}
@@ -39,7 +38,7 @@ func Command[T any](f CommandFunc[T], ok int) server.HandlerFunc {
 //
 // Example:
 //
-//	fn := func(ctx context.Context, id uuid.UUID) (interface{}, error) {
+//	fn := func(r *http.Request, id uuid.UUID) (interface{}, error) {
 //		// do something
 //		return nil, nil
 //	}
@@ -47,12 +46,12 @@ func Command[T any](f CommandFunc[T], ok int) server.HandlerFunc {
 //	r.Get("/foo/{id}", adapters.CommandID("id", fn, http.NoContent))
 func CommandID[T any](param string, f CommandIDFunc[T], ok int) server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
-		ID, err := routeUUID(r, param)
+		ID, err := RouteUUID(r, param)
 		if err != nil {
 			return err
 		}
 
-		res, err := f(r.Context(), ID)
+		res, err := f(r, ID)
 		if err != nil {
 			return err
 		}
