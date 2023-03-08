@@ -59,7 +59,7 @@ func TestMaintenanceEntryRepository_GetLog(t *testing.T) {
 	}
 
 	// Get the log for the item
-	log, err := tRepos.MaintEntry.GetLog(context.Background(), item.ID, MaintenanceLogQuery{
+	log, err := tRepos.MaintEntry.GetLog(context.Background(), tGroup.ID, item.ID, MaintenanceLogQuery{
 		Completed: true,
 	})
 	if err != nil {

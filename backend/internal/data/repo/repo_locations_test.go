@@ -124,7 +124,7 @@ func TestItemRepository_TreeQuery(t *testing.T) {
 	locs := useLocations(t, 3)
 
 	// Set relations
-	_, err := tRepos.Locations.UpdateOneByGroup(context.Background(), tGroup.ID, locs[0].ID, LocationUpdate{
+	_, err := tRepos.Locations.UpdateByGroup(context.Background(), tGroup.ID, locs[0].ID, LocationUpdate{
 		ID:          locs[0].ID,
 		ParentID:    locs[1].ID,
 		Name:        locs[0].Name,
