@@ -204,6 +204,8 @@ github.com/apparentlymart/go-textseg/v13 v13.0.0 h1:Y+KvPE1NYz0xl601PVImeQfFyEy6
 github.com/apparentlymart/go-textseg/v13 v13.0.0/go.mod h1:ZK2fH7c4NqDTLtiYLvIkEghdlcqw7yxLeM89kiTRPUo=
 github.com/ardanlabs/conf/v3 v3.1.4 h1:c0jJYbqHJcrR/uYImbGC1q7quH3DYxH49zGCT7WLJH4=
 github.com/ardanlabs/conf/v3 v3.1.4/go.mod h1:bIacyuGeZjkTdtszdbvOcuq49VhHpV3+IPZ2ewOAK4I=
+github.com/ardanlabs/conf/v3 v3.1.5 h1:G6df2AxKnGHAK+ur2p50Ys8Vo1HnKcsvqSj9lxVeczk=
+github.com/ardanlabs/conf/v3 v3.1.5/go.mod h1:zclexWKe0NVj6LHQ8NgDDZ7bQ1spE0KeKPFficdtAjU=
 github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hCbHZ8TKRvWD2dDTCfh9M9ya+I9JpbB7O8o=
 github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da/go.mod h1:Q73ZrmVTwzkszR9V5SSuryQ31EELlFMUz1kKyl939pY=
 github.com/armon/go-metrics v0.3.10/go.mod h1:4O98XIr/9W0sxpJ8UaYkvjk10Iff7SnFrb4QAOwNTFc=
