@@ -64,6 +64,7 @@ func (a *app) mountRoutes(r *chi.Mux, chain *errchain.ErrChain, repos *repo.AllR
 
 	r.Post(v1Base("/users/register"), chain.ToHandlerFunc(v1Ctrl.HandleUserRegistration()))
 	r.Post(v1Base("/users/login"), chain.ToHandlerFunc(v1Ctrl.HandleAuthLogin()))
+	r.server.Post(v1Base("/users/login-sso-header"), v1Ctrl.HandleSsoHeaderLogin())
 
 	userMW := []errchain.Middleware{
 		a.mwAuthToken,

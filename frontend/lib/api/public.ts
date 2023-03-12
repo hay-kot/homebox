@@ -24,6 +24,14 @@ export class PublicApi extends BaseAPI {
     });
   }
 
+  public login_sso_header() {
+    return this.http.post<string, TokenResponse>({
+      url: route("/users/login-sso-header"),
+      /** TODO: remove header here. Only for testing. Usually the SSO servie will add this */
+      headers: { "Remote-Email": "demo@example.com" },
+    });
+  }
+
   public register(body: UserRegistration) {
     return this.http.post<UserRegistration, TokenResponse>({ url: route("/users/register"), body });
   }

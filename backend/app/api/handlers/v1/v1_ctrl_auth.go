@@ -89,6 +89,28 @@ func (ctrl *V1Controller) HandleAuthLogin() errchain.HandlerFunc {
 	}
 }
 
+func (ctrl *V1Controller) HandleSsoHeaderLogin() server.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) error {
+		var username = r.Header.Get("Remote-Email")
+
+		if username == "" {
+			return validate.NewRequestError(errors.New("authentication failed. not SSO header found"), http.StatusInternalServerError)
+		}
+
+		newToken, err := ctrl.svc.User.LoginWithoutPassword(r.Context(), strings.ToLower(username))
+
+		if err != nil {
+			return validate.NewRequestError(errors.New("authentication failed"), http.StatusInternalServerError)
+		}
+
+		return server.Respond(w, http.StatusOK, TokenResponse{
+			Token:           "Bearer " + newToken.Raw,
+			ExpiresAt:       newToken.ExpiresAt,
+			AttachmentToken: newToken.AttachmentToken,
+		})
+	}
+}
+
 // HandleAuthLogout godoc
 //
 //	@Summary  User Logout
