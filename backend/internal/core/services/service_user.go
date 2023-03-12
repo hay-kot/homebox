@@ -204,6 +204,18 @@ func (svc *UserService) LoginWithoutPassword(ctx context.Context, username strin
 	return svc.createSessionToken(ctx, usr.ID, extendedSession)
 }
 
+func (svc *UserService) LoginWithoutPassword(ctx context.Context, username string) (UserAuthTokenDetail, error) {
+	usr, err := svc.repos.Users.GetOneEmail(ctx, username)
+
+	if err != nil {
+		// SECURITY: Perform hash to ensure response times are the same
+		hasher.CheckPasswordHash("not-a-real-password", "not-a-real-password")
+		return UserAuthTokenDetail{}, ErrorInvalidLogin
+	}
+
+	return svc.createSessionToken(ctx, usr.ID)
+}
+
 func (svc *UserService) Logout(ctx context.Context, token string) error {
 	hash := hasher.HashToken(token)
 	err := svc.repos.AuthTokens.DeleteToken(ctx, hash)
