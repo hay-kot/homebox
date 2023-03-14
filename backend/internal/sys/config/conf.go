@@ -28,6 +28,8 @@ type Config struct {
 type Options struct {
 	AllowRegistration    bool `yaml:"disable_registration" conf:"default:true"`
 	AutoIncrementAssetID bool `yaml:"auto_increment_asset_id" conf:"default:true"`
+	HeaderSSOEnabled     bool `yaml:"header_sso_enabled" conf:"default:false"`
+	HeaderSSOAllowedIP   string `yaml:"header_sso_allowed_ip" conf:"default:0.0.0.0"`
 }
 
 type DebugConf struct {

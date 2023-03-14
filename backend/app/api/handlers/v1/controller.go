@@ -43,12 +43,26 @@ func WithRegistration(allowRegistration bool) func(*V1Controller) {
 	}
 }
 
+func WithHeaderSSO(headerSSOEnabled bool) func(*V1Controller) {
+	return func(ctrl *V1Controller) {
+		ctrl.headerSSOEnabled = headerSSOEnabled
+	}
+}
+
+func WithHeaderSSOAllowedIP(headerSSOAllowedIP string) func(*V1Controller) {
+	return func(ctrl *V1Controller) {
+		ctrl.headerSSOAllowedIP = headerSSOAllowedIP
+	}
+}
+
 type V1Controller struct {
-	repo              *repo.AllRepos
-	svc               *services.AllServices
-	maxUploadSize     int64
-	isDemo            bool
-	allowRegistration bool
+	repo               *repo.AllRepos
+	svc                *services.AllServices
+	maxUploadSize      int64
+	isDemo             bool
+	allowRegistration  bool
+	headerSSOEnabled   bool
+	headerSSOAllowedIP string
 }
 
 type (

@@ -47,6 +47,8 @@ volumes:
 | HBOX_WEB_HOST                        |                        | host to run the web server on, if you're using docker do not change this           |
 | HBOX_OPTIONS_ALLOW_REGISTRATION      | true                   | allow users to register themselves                                                 |
 | HBOX_OPTIONS_AUTO_INCREMENT_ASSET_ID | true                   | auto increments the asset_id field for new items                                   |
+| HBOX_OPTIONS_HEADER_SSO_ENABLED      | false                  | allow login via trusted SSO HTTP headers                                           |
+| HBOX_OPTIONS_HEADER_SSO_ALLOWED_IP   |                        | request IP being allowed to send trusted SSO HTTP headers                          |
 | HBOX_WEB_MAX_UPLOAD_SIZE             | 10                     | maximum file upload size supported in MB                                           |
 | HBOX_STORAGE_DATA                    | /data/                 | path to the data directory, do not change this if you're using docker              |
 | HBOX_STORAGE_SQLITE_URL              | /data/homebox.db?_fk=1 | sqlite database url, in you're using docker do not change this                     |
@@ -87,6 +89,8 @@ volumes:
         --debug-port/$HBOX_DEBUG_PORT                                            <string>  (default: 4000)
         --options-allow-registration/$HBOX_OPTIONS_ALLOW_REGISTRATION            <bool>    (default: true)
         --options-auto-increment-asset-id/$HBOX_OPTIONS_AUTO_INCREMENT_ASSET_ID  <bool>    (default: true)
+        --options-header-sso-enabled/$HBOX_OPTIONS_HEADER_SSO_ENABLED            <bool>    (default: false)
+        --options-header-sso-allowed_ip/$HBOX_OPTIONS_HEADER_SSO_ALLOWED_IP      <string>
         --help/-h
         display this help message
       ```

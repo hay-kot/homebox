@@ -91,13 +91,25 @@ func (ctrl *V1Controller) HandleAuthLogin() errchain.HandlerFunc {
 
 func (ctrl *V1Controller) HandleSsoHeaderLogin() server.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
-		var username = r.Header.Get("Remote-Email")
-
-		if username == "" {
-			return validate.NewRequestError(errors.New("authentication failed. not SSO header found"), http.StatusInternalServerError)
+		log.Info().Msg("Header SSO Login Attempt")
+		if !ctrl.headerSSOEnabled {
+			return validate.NewRequestError(errors.New("authentication failed. Header SSO is disaled"), http.StatusInternalServerError)			
+		}
+		{
+			t := strings.Split(r.RemoteAddr, ":")
+			if t[0] != ctrl.headerSSOAllowedIP {
+				return validate.NewRequestError(errors.New("authentication failed. Header SSO not allowed for this remote IP"), http.StatusInternalServerError)			
+			}
+			log.Info().Msgf("Header SSO Login Attempt allowed from IP '%s'", t[0])
 		}
 
-		newToken, err := ctrl.svc.User.LoginWithoutPassword(r.Context(), strings.ToLower(username))
+		email := r.Header.Get("Remote-Email")
+
+		if email == "" {
+			return validate.NewRequestError(errors.New("authentication failed. not SSO header found or empty"), http.StatusInternalServerError)
+		}
+
+		newToken, err := ctrl.svc.User.LoginWithoutPassword(r.Context(), strings.ToLower(email))
 
 		if err != nil {
 			return validate.NewRequestError(errors.New("authentication failed"), http.StatusInternalServerError)
