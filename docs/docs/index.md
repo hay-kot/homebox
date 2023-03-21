@@ -35,7 +35,7 @@ Homebox is currently in early-active development and is currently in **beta** st
     - Item Identifications (Serial, Model, etc)
     - Categorized Attachments (Images, Manuals, General)
     - Arbitrary/Custom Fields
-- Csv Import for quickly creating and managing items
+- CSV Import/Export for quickly creating and managing items
 - Custom Reporting
   - Bill of Materials Export
   - QR Code Label Generator

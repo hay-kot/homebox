@@ -33,6 +33,8 @@ func (MaintenanceEntry) Fields() []ent.Field {
 			Optional(),
 		field.Float("cost").
 			Default(0.0),
+		field.Bool("reminders_enabled").
+			Default(false),
 	}
 }
 
