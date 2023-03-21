@@ -16,7 +16,7 @@ import (
 //	@Summary  Get Notifiers
 //	@Tags     Notifiers
 //	@Produce  json
-//	@Success  200 {object} Wrapped{items=[]repo.NotifierOut}
+//	@Success  200 {object} []repo.NotifierOut
 //	@Router   /v1/notifiers [GET]
 //	@Security Bearer
 func (ctrl *V1Controller) HandleGetUserNotifiers() errchain.HandlerFunc {

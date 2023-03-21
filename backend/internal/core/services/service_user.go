@@ -61,6 +61,7 @@ func (svc *UserService) RegisterUser(ctx context.Context, data UserRegistration)
 
 	switch data.GroupToken {
 	case "":
+		log.Debug().Msg("creating new group")
 		creatingGroup = true
 		group, err = svc.repos.Groups.GroupCreate(ctx, "Home")
 		if err != nil {
@@ -68,6 +69,7 @@ func (svc *UserService) RegisterUser(ctx context.Context, data UserRegistration)
 			return repo.UserOut{}, err
 		}
 	default:
+		log.Debug().Msg("joining existing group")
 		token, err = svc.repos.Groups.InvitationGet(ctx, hasher.HashToken(data.GroupToken))
 		if err != nil {
 			log.Err(err).Msg("Failed to get invitation token")
@@ -94,14 +96,14 @@ func (svc *UserService) RegisterUser(ctx context.Context, data UserRegistration)
 	// Create the default labels and locations for the group.
 	if creatingGroup {
 		for _, label := range defaultLabels() {
-			_, err := svc.repos.Labels.Create(ctx, group.ID, label)
+			_, err := svc.repos.Labels.Create(ctx, usr.GroupID, label)
 			if err != nil {
 				return repo.UserOut{}, err
 			}
 		}
 
 		for _, location := range defaultLocations() {
-			_, err := svc.repos.Locations.Create(ctx, group.ID, location)
+			_, err := svc.repos.Locations.Create(ctx, usr.GroupID, location)
 			if err != nil {
 				return repo.UserOut{}, err
 			}

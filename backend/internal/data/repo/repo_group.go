@@ -234,10 +234,16 @@ func (r *GroupRepository) StatsGroup(ctx context.Context, GID uuid.UUID) (GroupS
 	var stats GroupStatistics
 	row := r.db.Sql().QueryRowContext(ctx, q, GID, GID, GID, GID, GID, GID)
 
-	err := row.Scan(&stats.TotalUsers, &stats.TotalItems, &stats.TotalLocations, &stats.TotalLabels, &stats.TotalItemPrice, &stats.TotalWithWarranty)
+	var maybeTotalItemPrice *float64
+	var maybeTotalWithWarranty *int
+
+	err := row.Scan(&stats.TotalUsers, &stats.TotalItems, &stats.TotalLocations, &stats.TotalLabels, &maybeTotalItemPrice, &maybeTotalWithWarranty)
 	if err != nil {
 		return GroupStatistics{}, err
 	}
+
+	stats.TotalItemPrice = orDefault(maybeTotalItemPrice, 0)
+	stats.TotalWithWarranty = orDefault(maybeTotalWithWarranty, 0)
 
 	return stats, nil
 }

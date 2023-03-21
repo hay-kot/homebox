@@ -14,6 +14,10 @@ export function flatTree(tree: TreeItem[]): Ref<FlatTreeItem[]> {
   // the display is a string of the tree hierarchy separated by breadcrumbs
 
   function flatten(items: TreeItem[], display: string) {
+    if (!items) {
+      return;
+    }
+
     for (const item of items) {
       v.value.push({
         id: item.id,
@@ -40,5 +44,5 @@ export async function useFlatLocations(): Promise<Ref<FlatTreeItem[]>> {
     return ref([]);
   }
 
-  return flatTree(locations.data.items);
+  return flatTree(locations.data);
 }

@@ -16,7 +16,7 @@ import (
 //	@Tags     Locations
 //	@Produce  json
 //	@Param    withItems         query    bool   false "include items in response tree"
-//	@Success  200 {object} Wrapped{items=[]repo.TreeItem}
+//	@Success  200 {object} []repo.TreeItem
 //	@Router   /v1/locations/tree [GET]
 //	@Security Bearer
 func (ctrl *V1Controller) HandleLocationTreeQuery() errchain.HandlerFunc {
@@ -34,7 +34,7 @@ func (ctrl *V1Controller) HandleLocationTreeQuery() errchain.HandlerFunc {
 //	@Tags     Locations
 //	@Produce  json
 //	@Param    filterChildren query bool false "Filter locations with parents"
-//	@Success  200 {object} Wrapped{items=[]repo.LocationOutCount}
+//	@Success  200 {object} []repo.LocationOutCount
 //	@Router   /v1/locations [GET]
 //	@Security Bearer
 func (ctrl *V1Controller) HandleLocationGetAll() errchain.HandlerFunc {

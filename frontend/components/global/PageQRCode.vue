@@ -15,12 +15,10 @@
 </template>
 
 <script setup lang="ts">
-  const api = useUserApi();
-
   function getQRCodeUrl(): string {
     const currentURL = window.location.href;
 
-    return `/api/v1/qrcode?data=${encodeURIComponent(currentURL)}&access_token=${api.items.attachmentToken}`;
+    return `/api/v1/qrcode?data=${encodeURIComponent(currentURL)}`;
   }
 </script>
 

@@ -22,7 +22,7 @@ export const useLocationStore = defineStore("locations", {
             return;
           }
 
-          this.parents = result.data.items;
+          this.parents = result.data;
         });
       }
       return state.parents ?? [];
@@ -35,7 +35,7 @@ export const useLocationStore = defineStore("locations", {
             return;
           }
 
-          this.Locations = result.data.items;
+          this.Locations = result.data;
         });
       }
       return state.Locations ?? [];
@@ -48,7 +48,7 @@ export const useLocationStore = defineStore("locations", {
         return result;
       }
 
-      this.parents = result.data.items;
+      this.parents = result.data;
       return result;
     },
     async refreshChildren(): ReturnType<LocationsApi["getAll"]> {
@@ -57,7 +57,7 @@ export const useLocationStore = defineStore("locations", {
         return result;
       }
 
-      this.Locations = result.data.items;
+      this.Locations = result.data;
       return result;
     },
   },

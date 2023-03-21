@@ -945,22 +945,10 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/v1.Wrapped"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "items": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/repo.LabelOut"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/repo.LabelOut"
+                            }
                         }
                     }
                 }
@@ -1117,22 +1105,10 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/v1.Wrapped"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "items": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/repo.LocationOutCount"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/repo.LocationOutCount"
+                            }
                         }
                     }
                 }
@@ -1197,22 +1173,10 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/v1.Wrapped"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "items": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/repo.TreeItem"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/repo.TreeItem"
+                            }
                         }
                     }
                 }
@@ -1337,22 +1301,10 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/v1.Wrapped"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "items": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/repo.NotifierOut"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/repo.NotifierOut"
+                            }
                         }
                     }
                 }
@@ -1917,14 +1869,12 @@ const docTemplate = `{
         "repo.ItemCreate": {
             "type": "object",
             "required": [
-                "description",
                 "name"
             ],
             "properties": {
                 "description": {
                     "type": "string",
-                    "maxLength": 1000,
-                    "minLength": 1
+                    "maxLength": 1000
                 },
                 "labelIds": {
                     "type": "array",
@@ -2433,6 +2383,9 @@ const docTemplate = `{
         },
         "repo.MaintenanceEntryCreate": {
             "type": "object",
+            "required": [
+                "name"
+            ],
             "properties": {
                 "completedDate": {
                     "description": "Sold",

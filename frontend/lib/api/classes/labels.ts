@@ -1,10 +1,9 @@
 import { BaseAPI, route } from "../base";
 import { LabelCreate, LabelOut } from "../types/data-contracts";
-import { Results } from "../types/non-generated";
 
 export class LabelsApi extends BaseAPI {
   getAll() {
-    return this.http.get<Results<LabelOut>>({ url: route("/labels") });
+    return this.http.get<LabelOut[]>({ url: route("/labels") });
   }
 
   create(body: LabelCreate) {

@@ -57,10 +57,7 @@ export interface ItemAttachmentUpdate {
 }
 
 export interface ItemCreate {
-  /**
-   * @minLength 1
-   * @maxLength 1000
-   */
+  /** @maxLength 1000 */
   description: string;
   labelIds: string[];
   /** Edges */
