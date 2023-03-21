@@ -33,8 +33,6 @@ plugins:
 
 extra_css:
   - assets/stylesheets/extras.css
-extra_javascript:
-  - assets/js/redoc.js
 
 markdown_extensions:
   - pymdownx.emoji:
