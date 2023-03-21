@@ -12,7 +12,9 @@ require (
 	github.com/gocarina/gocsv v0.0.0-20230226133904-70c27cb2918a
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/schema v1.2.0
+	github.com/hay-kot/safeserve v0.0.1
 	github.com/mattn/go-sqlite3 v1.14.16
+	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.29.0
 	github.com/stretchr/testify v1.8.2
 	github.com/swaggo/http-swagger v1.3.4
@@ -45,7 +47,6 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/swaggo/files v1.0.0 // indirect
 	github.com/yeqown/reedsolomon v1.0.0 // indirect

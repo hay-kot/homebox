@@ -3,7 +3,8 @@ package adapters
 import (
 	"net/http"
 
-	"github.com/hay-kot/homebox/backend/pkgs/server"
+	"github.com/hay-kot/safeserve/errchain"
+	"github.com/hay-kot/safeserve/server"
 )
 
 // Action is a function that adapts a function to the server.Handler interface.
@@ -16,25 +17,25 @@ import (
 //	    Foo string `json:"foo"`
 //	}
 //
-//	fn := func(ctx context.Context, b Body) (any, error) {
+//	fn := func(r *http.Request, b Body) (any, error) {
 //	    // do something with b
 //	    return nil, nil
 //	}
 //
 // r.Post("/foo", adapters.Action(fn, http.StatusCreated))
-func Action[T any, Y any](f AdapterFunc[T, Y], ok int) server.HandlerFunc {
+func Action[T any, Y any](f AdapterFunc[T, Y], ok int) errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
-		v, err := decode[T](r)
+		v, err := DecodeBody[T](r)
 		if err != nil {
 			return err
 		}
 
-		res, err := f(r.Context(), v)
+		res, err := f(r, v)
 		if err != nil {
 			return err
 		}
 
-		return server.Respond(w, ok, res)
+		return server.JSON(w, ok, res)
 	}
 }
 
@@ -46,29 +47,29 @@ func Action[T any, Y any](f AdapterFunc[T, Y], ok int) server.HandlerFunc {
 //	    Foo string `json:"foo"`
 //	}
 //
-//	fn := func(ctx context.Context, ID uuid.UUID, b Body) (any, error) {
+//	fn := func(r *http.Request, ID uuid.UUID, b Body) (any, error) {
 //	    // do something with ID and b
 //	    return nil, nil
 //	}
 //
 //	r.Post("/foo/{id}", adapters.ActionID(fn, http.StatusCreated))
-func ActionID[T any, Y any](param string, f IDFunc[T, Y], ok int) server.HandlerFunc {
+func ActionID[T any, Y any](param string, f IDFunc[T, Y], ok int) errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
-		ID, err := routeUUID(r, param)
+		ID, err := RouteUUID(r, param)
 		if err != nil {
 			return err
 		}
 
-		v, err := decode[T](r)
+		v, err := DecodeBody[T](r)
 		if err != nil {
 			return err
 		}
 
-		res, err := f(r.Context(), ID, v)
+		res, err := f(r, ID, v)
 		if err != nil {
 			return err
 		}
 
-		return server.Respond(w, ok, res)
+		return server.JSON(w, ok, res)
 	}
 }

@@ -8,7 +8,8 @@ import (
 
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/sys/validate"
-	"github.com/hay-kot/homebox/backend/pkgs/server"
+	"github.com/hay-kot/safeserve/errchain"
+	"github.com/hay-kot/safeserve/server"
 	"github.com/rs/zerolog/log"
 )
 
@@ -36,26 +37,27 @@ type (
 //	@Produce json
 //	@Success 200 {object} TokenResponse
 //	@Router  /v1/users/login [POST]
-func (ctrl *V1Controller) HandleAuthLogin() server.HandlerFunc {
+func (ctrl *V1Controller) HandleAuthLogin() errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		loginForm := &LoginForm{}
 
 		switch r.Header.Get("Content-Type") {
-		case server.ContentFormUrlEncoded:
+		case "application/x-www-form-urlencoded":
 			err := r.ParseForm()
 			if err != nil {
-				return server.Respond(w, http.StatusBadRequest, server.Wrap(err))
+				return errors.New("failed to parse form")
 			}
 
 			loginForm.Username = r.PostFormValue("username")
 			loginForm.Password = r.PostFormValue("password")
-		case server.ContentJSON:
+		case "application/json":
 			err := server.Decode(r, loginForm)
 			if err != nil {
 				log.Err(err).Msg("failed to decode login form")
+				return errors.New("failed to decode login form")
 			}
 		default:
-			return server.Respond(w, http.StatusBadRequest, errors.New("invalid content type"))
+			return server.JSON(w, http.StatusBadRequest, errors.New("invalid content type"))
 		}
 
 		if loginForm.Username == "" || loginForm.Password == "" {
@@ -76,7 +78,7 @@ func (ctrl *V1Controller) HandleAuthLogin() server.HandlerFunc {
 			return validate.NewRequestError(errors.New("authentication failed"), http.StatusInternalServerError)
 		}
 
-		return server.Respond(w, http.StatusOK, TokenResponse{
+		return server.JSON(w, http.StatusOK, TokenResponse{
 			Token:           "Bearer " + newToken.Raw,
 			ExpiresAt:       newToken.ExpiresAt,
 			AttachmentToken: newToken.AttachmentToken,
@@ -91,7 +93,7 @@ func (ctrl *V1Controller) HandleAuthLogin() server.HandlerFunc {
 //	@Success  204
 //	@Router   /v1/users/logout [POST]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleAuthLogout() server.HandlerFunc {
+func (ctrl *V1Controller) HandleAuthLogout() errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		token := services.UseTokenCtx(r.Context())
 		if token == "" {
@@ -103,7 +105,7 @@ func (ctrl *V1Controller) HandleAuthLogout() server.HandlerFunc {
 			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		return server.Respond(w, http.StatusNoContent, nil)
+		return server.JSON(w, http.StatusNoContent, nil)
 	}
 }
 
@@ -116,7 +118,7 @@ func (ctrl *V1Controller) HandleAuthLogout() server.HandlerFunc {
 //	@Success     200
 //	@Router      /v1/users/refresh [GET]
 //	@Security    Bearer
-func (ctrl *V1Controller) HandleAuthRefresh() server.HandlerFunc {
+func (ctrl *V1Controller) HandleAuthRefresh() errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		requestToken := services.UseTokenCtx(r.Context())
 		if requestToken == "" {
@@ -128,6 +130,6 @@ func (ctrl *V1Controller) HandleAuthRefresh() server.HandlerFunc {
 			return validate.NewUnauthorizedError()
 		}
 
-		return server.Respond(w, http.StatusOK, newToken)
+		return server.JSON(w, http.StatusOK, newToken)
 	}
 }

@@ -10,12 +10,13 @@ import (
 	"path"
 	"path/filepath"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/hay-kot/homebox/backend/app/api/handlers/debughandlers"
 	v1 "github.com/hay-kot/homebox/backend/app/api/handlers/v1"
 	_ "github.com/hay-kot/homebox/backend/app/api/static/docs"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authroles"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
-	"github.com/hay-kot/homebox/backend/pkgs/server"
+	"github.com/hay-kot/safeserve/errchain"
 	httpSwagger "github.com/swaggo/http-swagger" // http-swagger middleware
 )
 
@@ -36,12 +37,12 @@ func (a *app) debugRouter() *http.ServeMux {
 }
 
 // registerRoutes registers all the routes for the API
-func (a *app) mountRoutes(repos *repo.AllRepos) {
+func (a *app) mountRoutes(r *chi.Mux, chain *errchain.ErrChain, repos *repo.AllRepos) {
 	registerMimes()
 
-	a.server.Get("/swagger/*", server.ToHandler(httpSwagger.Handler(
+	r.Get("/swagger/*", httpSwagger.Handler(
 		httpSwagger.URL(fmt.Sprintf("%s://%s/swagger/doc.json", a.conf.Swagger.Scheme, a.conf.Swagger.Host)),
-	)))
+	))
 
 	// =========================================================================
 	// API Version 1
@@ -56,99 +57,103 @@ func (a *app) mountRoutes(repos *repo.AllRepos) {
 		v1.WithDemoStatus(a.conf.Demo), // Disable Password Change in Demo Mode
 	)
 
-	a.server.Get(v1Base("/status"), v1Ctrl.HandleBase(func() bool { return true }, v1.Build{
+	r.Get(v1Base("/status"), chain.ToHandlerFunc(v1Ctrl.HandleBase(func() bool { return true }, v1.Build{
 		Version:   version,
 		Commit:    commit,
 		BuildTime: buildTime,
-	}))
+	})))
 
-	a.server.Post(v1Base("/users/register"), v1Ctrl.HandleUserRegistration())
-	a.server.Post(v1Base("/users/login"), v1Ctrl.HandleAuthLogin())
+	r.Post(v1Base("/users/register"), chain.ToHandlerFunc(v1Ctrl.HandleUserRegistration()))
+	r.Post(v1Base("/users/login"), chain.ToHandlerFunc(v1Ctrl.HandleAuthLogin()))
 
-	userMW := []server.Middleware{
+	userMW := []errchain.Middleware{
 		a.mwAuthToken,
 		a.mwRoles(RoleModeOr, authroles.RoleUser.String()),
 	}
 
-	a.server.Get(v1Base("/users/self"), v1Ctrl.HandleUserSelf(), userMW...)
-	a.server.Put(v1Base("/users/self"), v1Ctrl.HandleUserSelfUpdate(), userMW...)
-	a.server.Delete(v1Base("/users/self"), v1Ctrl.HandleUserSelfDelete(), userMW...)
-	a.server.Post(v1Base("/users/logout"), v1Ctrl.HandleAuthLogout(), userMW...)
-	a.server.Get(v1Base("/users/refresh"), v1Ctrl.HandleAuthRefresh(), userMW...)
-	a.server.Put(v1Base("/users/self/change-password"), v1Ctrl.HandleUserSelfChangePassword(), userMW...)
+	r.Get(v1Base("/users/self"), chain.ToHandlerFunc(v1Ctrl.HandleUserSelf(), userMW...))
+	r.Put(v1Base("/users/self"), chain.ToHandlerFunc(v1Ctrl.HandleUserSelfUpdate(), userMW...))
+	r.Delete(v1Base("/users/self"), chain.ToHandlerFunc(v1Ctrl.HandleUserSelfDelete(), userMW...))
+	r.Post(v1Base("/users/logout"), chain.ToHandlerFunc(v1Ctrl.HandleAuthLogout(), userMW...))
+	r.Get(v1Base("/users/refresh"), chain.ToHandlerFunc(v1Ctrl.HandleAuthRefresh(), userMW...))
+	r.Put(v1Base("/users/self/change-password"), chain.ToHandlerFunc(v1Ctrl.HandleUserSelfChangePassword(), userMW...))
 
-	a.server.Post(v1Base("/groups/invitations"), v1Ctrl.HandleGroupInvitationsCreate(), userMW...)
-	a.server.Get(v1Base("/groups/statistics"), v1Ctrl.HandleGroupStatistics(), userMW...)
-	a.server.Get(v1Base("/groups/statistics/purchase-price"), v1Ctrl.HandleGroupStatisticsPriceOverTime(), userMW...)
-	a.server.Get(v1Base("/groups/statistics/locations"), v1Ctrl.HandleGroupStatisticsLocations(), userMW...)
-	a.server.Get(v1Base("/groups/statistics/labels"), v1Ctrl.HandleGroupStatisticsLabels(), userMW...)
+	r.Post(v1Base("/groups/invitations"), chain.ToHandlerFunc(v1Ctrl.HandleGroupInvitationsCreate(), userMW...))
+	r.Get(v1Base("/groups/statistics"), chain.ToHandlerFunc(v1Ctrl.HandleGroupStatistics(), userMW...))
+	r.Get(v1Base("/groups/statistics/purchase-price"), chain.ToHandlerFunc(v1Ctrl.HandleGroupStatisticsPriceOverTime(), userMW...))
+	r.Get(v1Base("/groups/statistics/locations"), chain.ToHandlerFunc(v1Ctrl.HandleGroupStatisticsLocations(), userMW...))
+	r.Get(v1Base("/groups/statistics/labels"), chain.ToHandlerFunc(v1Ctrl.HandleGroupStatisticsLabels(), userMW...))
 
 	// TODO: I don't like /groups being the URL for users
-	a.server.Get(v1Base("/groups"), v1Ctrl.HandleGroupGet(), userMW...)
-	a.server.Put(v1Base("/groups"), v1Ctrl.HandleGroupUpdate(), userMW...)
+	r.Get(v1Base("/groups"), chain.ToHandlerFunc(v1Ctrl.HandleGroupGet(), userMW...))
+	r.Put(v1Base("/groups"), chain.ToHandlerFunc(v1Ctrl.HandleGroupUpdate(), userMW...))
 
-	a.server.Post(v1Base("/actions/ensure-asset-ids"), v1Ctrl.HandleEnsureAssetID(), userMW...)
-	a.server.Post(v1Base("/actions/zero-item-time-fields"), v1Ctrl.HandleItemDateZeroOut(), userMW...)
-	a.server.Post(v1Base("/actions/ensure-import-refs"), v1Ctrl.HandleEnsureImportRefs(), userMW...)
+	r.Post(v1Base("/actions/ensure-asset-ids"), chain.ToHandlerFunc(v1Ctrl.HandleEnsureAssetID(), userMW...))
+	r.Post(v1Base("/actions/zero-item-time-fields"), chain.ToHandlerFunc(v1Ctrl.HandleItemDateZeroOut(), userMW...))
+	r.Post(v1Base("/actions/ensure-import-refs"), chain.ToHandlerFunc(v1Ctrl.HandleEnsureImportRefs(), userMW...))
 
-	a.server.Get(v1Base("/locations"), v1Ctrl.HandleLocationGetAll(), userMW...)
-	a.server.Post(v1Base("/locations"), v1Ctrl.HandleLocationCreate(), userMW...)
-	a.server.Get(v1Base("/locations/tree"), v1Ctrl.HandleLocationTreeQuery(), userMW...)
-	a.server.Get(v1Base("/locations/{id}"), v1Ctrl.HandleLocationGet(), userMW...)
-	a.server.Put(v1Base("/locations/{id}"), v1Ctrl.HandleLocationUpdate(), userMW...)
-	a.server.Delete(v1Base("/locations/{id}"), v1Ctrl.HandleLocationDelete(), userMW...)
+	r.Get(v1Base("/locations"), chain.ToHandlerFunc(v1Ctrl.HandleLocationGetAll(), userMW...))
+	r.Post(v1Base("/locations"), chain.ToHandlerFunc(v1Ctrl.HandleLocationCreate(), userMW...))
+	r.Get(v1Base("/locations/tree"), chain.ToHandlerFunc(v1Ctrl.HandleLocationTreeQuery(), userMW...))
+	r.Get(v1Base("/locations/{id}"), chain.ToHandlerFunc(v1Ctrl.HandleLocationGet(), userMW...))
+	r.Put(v1Base("/locations/{id}"), chain.ToHandlerFunc(v1Ctrl.HandleLocationUpdate(), userMW...))
+	r.Delete(v1Base("/locations/{id}"), chain.ToHandlerFunc(v1Ctrl.HandleLocationDelete(), userMW...))
 
-	a.server.Get(v1Base("/labels"), v1Ctrl.HandleLabelsGetAll(), userMW...)
-	a.server.Post(v1Base("/labels"), v1Ctrl.HandleLabelsCreate(), userMW...)
-	a.server.Get(v1Base("/labels/{id}"), v1Ctrl.HandleLabelGet(), userMW...)
-	a.server.Put(v1Base("/labels/{id}"), v1Ctrl.HandleLabelUpdate(), userMW...)
-	a.server.Delete(v1Base("/labels/{id}"), v1Ctrl.HandleLabelDelete(), userMW...)
+	r.Get(v1Base("/labels"), chain.ToHandlerFunc(v1Ctrl.HandleLabelsGetAll(), userMW...))
+	r.Post(v1Base("/labels"), chain.ToHandlerFunc(v1Ctrl.HandleLabelsCreate(), userMW...))
+	r.Get(v1Base("/labels/{id}"), chain.ToHandlerFunc(v1Ctrl.HandleLabelGet(), userMW...))
+	r.Put(v1Base("/labels/{id}"), chain.ToHandlerFunc(v1Ctrl.HandleLabelUpdate(), userMW...))
+	r.Delete(v1Base("/labels/{id}"), chain.ToHandlerFunc(v1Ctrl.HandleLabelDelete(), userMW...))
 
-	a.server.Get(v1Base("/items"), v1Ctrl.HandleItemsGetAll(), userMW...)
-	a.server.Post(v1Base("/items"), v1Ctrl.HandleItemsCreate(), userMW...)
-	a.server.Post(v1Base("/items/import"), v1Ctrl.HandleItemsImport(), userMW...)
-	a.server.Get(v1Base("/items/export"), v1Ctrl.HandleItemsExport(), userMW...)
-	a.server.Get(v1Base("/items/fields"), v1Ctrl.HandleGetAllCustomFieldNames(), userMW...)
-	a.server.Get(v1Base("/items/fields/values"), v1Ctrl.HandleGetAllCustomFieldValues(), userMW...)
+	r.Get(v1Base("/items"), chain.ToHandlerFunc(v1Ctrl.HandleItemsGetAll(), userMW...))
+	r.Post(v1Base("/items"), chain.ToHandlerFunc(v1Ctrl.HandleItemsCreate(), userMW...))
+	r.Post(v1Base("/items/import"), chain.ToHandlerFunc(v1Ctrl.HandleItemsImport(), userMW...))
+	r.Get(v1Base("/items/export"), chain.ToHandlerFunc(v1Ctrl.HandleItemsExport(), userMW...))
+	r.Get(v1Base("/items/fields"), chain.ToHandlerFunc(v1Ctrl.HandleGetAllCustomFieldNames(), userMW...))
+	r.Get(v1Base("/items/fields/values"), chain.ToHandlerFunc(v1Ctrl.HandleGetAllCustomFieldValues(), userMW...))
 
-	a.server.Get(v1Base("/items/{id}"), v1Ctrl.HandleItemGet(), userMW...)
-	a.server.Put(v1Base("/items/{id}"), v1Ctrl.HandleItemUpdate(), userMW...)
-	a.server.Delete(v1Base("/items/{id}"), v1Ctrl.HandleItemDelete(), userMW...)
+	r.Get(v1Base("/items/{id}"), chain.ToHandlerFunc(v1Ctrl.HandleItemGet(), userMW...))
+	r.Put(v1Base("/items/{id}"), chain.ToHandlerFunc(v1Ctrl.HandleItemUpdate(), userMW...))
+	r.Delete(v1Base("/items/{id}"), chain.ToHandlerFunc(v1Ctrl.HandleItemDelete(), userMW...))
 
-	a.server.Post(v1Base("/items/{id}/attachments"), v1Ctrl.HandleItemAttachmentCreate(), userMW...)
-	a.server.Put(v1Base("/items/{id}/attachments/{attachment_id}"), v1Ctrl.HandleItemAttachmentUpdate(), userMW...)
-	a.server.Delete(v1Base("/items/{id}/attachments/{attachment_id}"), v1Ctrl.HandleItemAttachmentDelete(), userMW...)
+	r.Post(v1Base("/items/{id}/attachments"), chain.ToHandlerFunc(v1Ctrl.HandleItemAttachmentCreate(), userMW...))
+	r.Put(v1Base("/items/{id}/attachments/{attachment_id}"), chain.ToHandlerFunc(v1Ctrl.HandleItemAttachmentUpdate(), userMW...))
+	r.Delete(v1Base("/items/{id}/attachments/{attachment_id}"), chain.ToHandlerFunc(v1Ctrl.HandleItemAttachmentDelete(), userMW...))
 
-	a.server.Get(v1Base("/items/{id}/maintenance"), v1Ctrl.HandleMaintenanceEntryCreate(), userMW...)
-	a.server.Post(v1Base("/items/{id}/maintenance"), v1Ctrl.HandleMaintenanceEntryCreate(), userMW...)
-	a.server.Put(v1Base("/items/{id}/maintenance/{entry_id}"), v1Ctrl.HandleMaintenanceEntryUpdate(), userMW...)
-	a.server.Delete(v1Base("/items/{id}/maintenance/{entry_id}"), v1Ctrl.HandleMaintenanceEntryDelete(), userMW...)
+	r.Get(v1Base("/items/{id}/maintenance"), chain.ToHandlerFunc(v1Ctrl.HandleMaintenanceLogGet(), userMW...))
+	r.Post(v1Base("/items/{id}/maintenance"), chain.ToHandlerFunc(v1Ctrl.HandleMaintenanceEntryCreate(), userMW...))
+	r.Put(v1Base("/items/{id}/maintenance/{entry_id}"), chain.ToHandlerFunc(v1Ctrl.HandleMaintenanceEntryUpdate(), userMW...))
+	r.Delete(v1Base("/items/{id}/maintenance/{entry_id}"), chain.ToHandlerFunc(v1Ctrl.HandleMaintenanceEntryDelete(), userMW...))
 
-	a.server.Get(v1Base("/asset/{id}"), v1Ctrl.HandleAssetGet(), userMW...)
+	r.Get(v1Base("/asset/{id}"), chain.ToHandlerFunc(v1Ctrl.HandleAssetGet(), userMW...))
 
 	// Notifiers
-	a.server.Get(v1Base("/notifiers"), v1Ctrl.HandleGetUserNotifiers(), userMW...)
-	a.server.Post(v1Base("/notifiers"), v1Ctrl.HandleCreateNotifier(), userMW...)
-	a.server.Put(v1Base("/notifiers/{id}"), v1Ctrl.HandleUpdateNotifier(), userMW...)
-	a.server.Delete(v1Base("/notifiers/{id}"), v1Ctrl.HandleDeleteNotifier(), userMW...)
-	a.server.Post(v1Base("/notifiers/test"), v1Ctrl.HandlerNotifierTest(), userMW...)
+	r.Get(v1Base("/notifiers"), chain.ToHandlerFunc(v1Ctrl.HandleGetUserNotifiers(), userMW...))
+	r.Post(v1Base("/notifiers"), chain.ToHandlerFunc(v1Ctrl.HandleCreateNotifier(), userMW...))
+	r.Put(v1Base("/notifiers/{id}"), chain.ToHandlerFunc(v1Ctrl.HandleUpdateNotifier(), userMW...))
+	r.Delete(v1Base("/notifiers/{id}"), chain.ToHandlerFunc(v1Ctrl.HandleDeleteNotifier(), userMW...))
+	r.Post(v1Base("/notifiers/test"), chain.ToHandlerFunc(v1Ctrl.HandlerNotifierTest(), userMW...))
 
 	// Asset-Like endpoints
-	a.server.Get(
+	assetMW := []errchain.Middleware{
+		a.mwAuthToken,
+		a.mwRoles(RoleModeOr, authroles.RoleUser.String(), authroles.RoleAttachments.String()),
+	}
+
+	r.Get(
 		v1Base("/qrcode"),
-		v1Ctrl.HandleGenerateQRCode(),
-		a.mwAuthToken, a.mwRoles(RoleModeOr, authroles.RoleUser.String(), authroles.RoleAttachments.String()),
+		chain.ToHandlerFunc(v1Ctrl.HandleGenerateQRCode(), assetMW...),
 	)
-	a.server.Get(
+	r.Get(
 		v1Base("/items/{id}/attachments/{attachment_id}"),
-		v1Ctrl.HandleItemAttachmentGet(),
-		a.mwAuthToken, a.mwRoles(RoleModeOr, authroles.RoleUser.String(), authroles.RoleAttachments.String()),
+		chain.ToHandlerFunc(v1Ctrl.HandleItemAttachmentGet(), assetMW...),
 	)
 
 	// Reporting Services
-	a.server.Get(v1Base("/reporting/bill-of-materials"), v1Ctrl.HandleBillOfMaterialsExport(), userMW...)
+	r.Get(v1Base("/reporting/bill-of-materials"), chain.ToHandlerFunc(v1Ctrl.HandleBillOfMaterialsExport(), userMW...))
 
-	a.server.NotFound(notFoundHandler())
+	r.NotFound(chain.ToHandlerFunc(notFoundHandler()))
+
 }
 
 func registerMimes() {
@@ -165,7 +170,7 @@ func registerMimes() {
 
 // notFoundHandler perform the main logic around handling the internal SPA embed and ensuring that
 // the client side routing is handled correctly.
-func notFoundHandler() server.HandlerFunc {
+func notFoundHandler() errchain.HandlerFunc {
 	tryRead := func(fs embed.FS, prefix, requestedPath string, w http.ResponseWriter) error {
 		f, err := fs.Open(path.Join(prefix, requestedPath))
 		if err != nil {

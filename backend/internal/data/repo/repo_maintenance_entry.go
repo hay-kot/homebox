@@ -6,6 +6,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/item"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/maintenanceentry"
 	"github.com/hay-kot/homebox/backend/internal/data/types"
 )
@@ -92,16 +94,21 @@ func (r *MaintenanceEntryRepository) Update(ctx context.Context, ID uuid.UUID, i
 }
 
 type MaintenanceLogQuery struct {
-	Completed bool
-	Scheduled bool
+	Completed bool `json:"completed" schema:"completed"`
+	Scheduled bool `json:"scheduled" schema:"scheduled"`
 }
 
-func (r *MaintenanceEntryRepository) GetLog(ctx context.Context, itemID uuid.UUID, query MaintenanceLogQuery) (MaintenanceLog, error) {
+func (r *MaintenanceEntryRepository) GetLog(ctx context.Context, groupID, itemID uuid.UUID, query MaintenanceLogQuery) (MaintenanceLog, error) {
 	log := MaintenanceLog{
 		ItemID: itemID,
 	}
 
-	q := r.db.MaintenanceEntry.Query().Where(maintenanceentry.ItemID(itemID))
+	q := r.db.MaintenanceEntry.Query().Where(
+		maintenanceentry.ItemID(itemID),
+		maintenanceentry.HasItemWith(
+			item.HasGroupWith(group.IDEQ(groupID)),
+		),
+	)
 
 	if query.Completed {
 		q = q.Where(maintenanceentry.And(

@@ -425,8 +425,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/repo.ItemSummary"
                         }
@@ -694,7 +694,7 @@ const docTemplate = `{
                     "422": {
                         "description": "Unprocessable Entity",
                         "schema": {
-                            "$ref": "#/definitions/server.ErrorResponse"
+                            "$ref": "#/definitions/mid.ErrorResponse"
                         }
                     }
                 }
@@ -864,8 +864,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/repo.MaintenanceEntry"
                         }
@@ -947,7 +947,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server.Results"
+                                    "$ref": "#/definitions/v1.Wrapped"
                                 },
                                 {
                                     "type": "object",
@@ -1119,7 +1119,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server.Results"
+                                    "$ref": "#/definitions/v1.Wrapped"
                                 },
                                 {
                                     "type": "object",
@@ -1199,7 +1199,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server.Results"
+                                    "$ref": "#/definitions/v1.Wrapped"
                                 },
                                 {
                                     "type": "object",
@@ -1339,7 +1339,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server.Results"
+                                    "$ref": "#/definitions/v1.Wrapped"
                                 },
                                 {
                                     "type": "object",
@@ -1719,7 +1719,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server.Result"
+                                    "$ref": "#/definitions/v1.Wrapped"
                                 },
                                 {
                                     "type": "object",
@@ -1764,7 +1764,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server.Result"
+                                    "$ref": "#/definitions/v1.Wrapped"
                                 },
                                 {
                                     "type": "object",
@@ -1801,6 +1801,20 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "mid.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "fields": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "repo.DocumentOut": {
             "type": "object",
             "properties": {
@@ -1902,9 +1916,15 @@ const docTemplate = `{
         },
         "repo.ItemCreate": {
             "type": "object",
+            "required": [
+                "description",
+                "name"
+            ],
             "properties": {
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 1000,
+                    "minLength": 1
                 },
                 "labelIds": {
                     "type": "array",
@@ -1917,7 +1937,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 1
                 },
                 "parentId": {
                     "type": "string",
@@ -2208,15 +2230,21 @@ const docTemplate = `{
         },
         "repo.LabelCreate": {
             "type": "object",
+            "required": [
+                "name"
+            ],
             "properties": {
                 "color": {
                     "type": "string"
                 },
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 1
                 }
             }
         },
@@ -2663,39 +2691,6 @@ const docTemplate = `{
                 }
             }
         },
-        "server.ErrorResponse": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "type": "string"
-                },
-                "fields": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "server.Result": {
-            "type": "object",
-            "properties": {
-                "details": {},
-                "error": {
-                    "type": "boolean"
-                },
-                "item": {},
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "server.Results": {
-            "type": "object",
-            "properties": {
-                "items": {}
-            }
-        },
         "services.UserRegistration": {
             "type": "object",
             "properties": {
@@ -2791,12 +2786,17 @@ const docTemplate = `{
         },
         "v1.GroupInvitationCreate": {
             "type": "object",
+            "required": [
+                "uses"
+            ],
             "properties": {
                 "expiresAt": {
                     "type": "string"
                 },
                 "uses": {
-                    "type": "integer"
+                    "type": "integer",
+                    "maximum": 100,
+                    "minimum": 1
                 }
             }
         },
@@ -2820,6 +2820,12 @@ const docTemplate = `{
                 "token": {
                     "type": "string"
                 }
+            }
+        },
+        "v1.Wrapped": {
+            "type": "object",
+            "properties": {
+                "item": {}
             }
         }
     },

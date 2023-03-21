@@ -27,47 +27,47 @@ tasks:
           --modular \
           --path ./backend/app/api/static/docs/swagger.json \
           --output ./frontend/lib/api/types
-      - go run ./scripts/process-types/*.go ./frontend/lib/api/types/data-contracts.ts
+      - go run ./backend/app/tools/typegen/main.go ./frontend/lib/api/types/data-contracts.ts
       - cp ./backend/app/api/static/docs/swagger.json docs/docs/api/openapi-2.0.json
     sources:
       - "./backend/app/api/**/*"
       - "./backend/internal/data/**"
-      - "./backend/internal/services/**/*"
-      - "./scripts/process-types.py"
-    generates:
-      - "./frontend/lib/api/types/data-contracts.ts"
-      - "./backend/internal/data/ent/schema"
-      - "./backend/app/api/static/docs/swagger.json"
-      - "./backend/app/api/static/docs/swagger.yaml"
+      - "./backend/internal/core/services/**/*"
+      - "./backend/app/tools/typegen/main.go"
 
   go:run:
     desc: Starts the backend api server (depends on generate task)
+    dir: backend
     deps:
       - generate
     cmds:
-      - cd backend && go run ./app/api/ {{ .CLI_ARGS }}
+      - go run ./app/api/ {{ .CLI_ARGS }}
     silent: false
 
   go:test:
     desc: Runs all go tests using gotestsum - supports passing gotestsum args
+    dir: backend
     cmds:
-      - cd backend && gotestsum {{ .CLI_ARGS }} ./...
+      - gotestsum {{ .CLI_ARGS }} ./...
 
   go:coverage:
     desc: Runs all go tests with -race flag and generates a coverage report
+    dir: backend
     cmds:
-      - cd backend && go test -race -coverprofile=coverage.out -covermode=atomic ./app/... ./internal/... ./pkgs/... -v -cover
+      - go test -race -coverprofile=coverage.out -covermode=atomic ./app/... ./internal/... ./pkgs/... -v -cover
     silent: true
 
   go:tidy:
     desc: Runs go mod tidy on the backend
+    dir: backend
     cmds:
-      - cd backend && go mod tidy
+      - go mod tidy
 
   go:lint:
     desc: Runs golangci-lint
+    dir: backend
     cmds:
-      - cd backend && golangci-lint run ./...
+      - golangci-lint run ./...
 
   go:all:
     desc: Runs all go test and lint related tasks
@@ -78,19 +78,19 @@ tasks:
 
   go:build:
     desc: Builds the backend binary
+    dir: backend
     cmds:
-      - cd backend && go build -o ../build/backend ./app/api
+      - go build -o ../build/backend ./app/api
 
   db:generate:
     desc: Run Entgo.io Code Generation
+    dir: backend/internal/
     cmds:
       - |
-        cd backend/internal/ && go generate ./... \
+        go generate ./... \
         --template=./data/ent/schema/templates/has_id.tmpl
     sources:
       - "./backend/internal/data/ent/schema/**/*"
-    generates:
-      - "./backend/internal/ent/"
 
   db:migration:
     desc: Runs the database diff engine to generate a SQL migration files
@@ -101,23 +101,27 @@ tasks:
 
   ui:watch:
     desc: Starts the vitest test runner in watch mode
+    dir: frontend
     cmds:
-      - cd frontend && pnpm run test:watch
+      - pnpm run test:watch
 
   ui:dev:
     desc: Run frontend development server
+    dir: frontend
     cmds:
-      - cd frontend && pnpm dev
+      - pnpm dev
 
   ui:fix:
     desc: Runs prettier and eslint on the frontend
+    dir: frontend
     cmds:
-      - cd frontend && pnpm run lint:fix
+      - pnpm run lint:fix
 
   ui:check:
     desc: Runs type checking
+    dir: frontend
     cmds:
-      - cd frontend && pnpm run typecheck
+      - pnpm run typecheck
 
   test:ci:
     desc: Runs end-to-end test on a live server (only for use in CI)

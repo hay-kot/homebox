@@ -3,33 +3,42 @@ package mid
 import (
 	"net/http"
 
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/internal/sys/validate"
-	"github.com/hay-kot/homebox/backend/pkgs/server"
+	"github.com/hay-kot/safeserve/errchain"
+	"github.com/hay-kot/safeserve/server"
 	"github.com/rs/zerolog"
 )
 
-func Errors(log zerolog.Logger) server.Middleware {
-	return func(h server.Handler) server.Handler {
-		return server.HandlerFunc(func(w http.ResponseWriter, r *http.Request) error {
+type ErrorResponse struct {
+	Error  string            `json:"error"`
+	Fields map[string]string `json:"fields,omitempty"`
+}
+
+func Errors(svr *server.Server, log zerolog.Logger) errchain.ErrorHandler {
+	return func(h errchain.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			err := h.ServeHTTP(w, r)
 			if err != nil {
-				var resp server.ErrorResponse
+				var resp ErrorResponse
 				var code int
 
+				traceID := r.Context().Value(middleware.RequestIDKey).(string)
 				log.Err(err).
-					Str("trace_id", server.GetTraceID(r.Context())).
+					Stack().
+					Str("req_id", traceID).
 					Msg("ERROR occurred")
 
 				switch {
 				case validate.IsUnauthorizedError(err):
 					code = http.StatusUnauthorized
-					resp = server.ErrorResponse{
+					resp = ErrorResponse{
 						Error: "unauthorized",
 					}
 				case validate.IsInvalidRouteKeyError(err):
 					code = http.StatusBadRequest
-					resp = server.ErrorResponse{
+					resp = ErrorResponse{
 						Error: err.Error(),
 					}
 				case validate.IsFieldError(err):
@@ -59,17 +68,18 @@ func Errors(log zerolog.Logger) server.Middleware {
 					code = http.StatusInternalServerError
 				}
 
-				if err := server.Respond(w, code, resp); err != nil {
-					return err
+				if err := server.JSON(w, code, resp); err != nil {
+					log.Err(err).Msg("failed to write response")
 				}
 
 				// If Showdown error, return error
 				if server.IsShutdownError(err) {
-					return err
+					err := svr.Shutdown(err.Error())
+					if err != nil {
+						log.Err(err).Msg("failed to shutdown server")
+					}
 				}
 			}
-
-			return nil
 		})
 	}
 }

@@ -17,15 +17,15 @@ type LabelRepository struct {
 }
 type (
 	LabelCreate struct {
-		Name        string `json:"name"`
-		Description string `json:"description"`
+		Name        string `json:"name" validate:"required,min=1,max=255"`
+		Description string `json:"description" validate:"max=255"`
 		Color       string `json:"color"`
 	}
 
 	LabelUpdate struct {
 		ID          uuid.UUID `json:"id"`
-		Name        string    `json:"name"`
-		Description string    `json:"description"`
+		Name        string    `json:"name" validate:"required,min=1,max=255"`
+		Description string    `json:"description" validate:"max=255"`
 		Color       string    `json:"color"`
 	}
 

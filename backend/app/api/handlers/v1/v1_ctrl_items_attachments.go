@@ -8,7 +8,8 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/ent/attachment"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/sys/validate"
-	"github.com/hay-kot/homebox/backend/pkgs/server"
+	"github.com/hay-kot/safeserve/errchain"
+	"github.com/hay-kot/safeserve/server"
 	"github.com/rs/zerolog/log"
 )
 
@@ -28,10 +29,10 @@ type (
 //	@Param    type formData string true "Type of file"
 //	@Param    name formData string true "name of the file including extension"
 //	@Success  200  {object} repo.ItemOut
-//	@Failure  422  {object} server.ErrorResponse
+//	@Failure  422  {object} mid.ErrorResponse
 //	@Router   /v1/items/{id}/attachments [POST]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleItemAttachmentCreate() server.HandlerFunc {
+func (ctrl *V1Controller) HandleItemAttachmentCreate() errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		err := r.ParseMultipartForm(ctrl.maxUploadSize << 20)
 		if err != nil {
@@ -61,7 +62,7 @@ func (ctrl *V1Controller) HandleItemAttachmentCreate() server.HandlerFunc {
 		}
 
 		if !errs.Nil() {
-			return server.Respond(w, http.StatusUnprocessableEntity, errs)
+			return server.JSON(w, http.StatusUnprocessableEntity, errs)
 		}
 
 		attachmentType := r.FormValue("type")
@@ -88,7 +89,7 @@ func (ctrl *V1Controller) HandleItemAttachmentCreate() server.HandlerFunc {
 			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		return server.Respond(w, http.StatusCreated, item)
+		return server.JSON(w, http.StatusCreated, item)
 	}
 }
 
@@ -102,7 +103,7 @@ func (ctrl *V1Controller) HandleItemAttachmentCreate() server.HandlerFunc {
 //	@Success  200           {object} ItemAttachmentToken
 //	@Router   /v1/items/{id}/attachments/{attachment_id} [GET]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleItemAttachmentGet() server.HandlerFunc {
+func (ctrl *V1Controller) HandleItemAttachmentGet() errchain.HandlerFunc {
 	return ctrl.handleItemAttachmentsHandler
 }
 
@@ -115,7 +116,7 @@ func (ctrl *V1Controller) HandleItemAttachmentGet() server.HandlerFunc {
 //	@Success  204
 //	@Router   /v1/items/{id}/attachments/{attachment_id} [DELETE]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleItemAttachmentDelete() server.HandlerFunc {
+func (ctrl *V1Controller) HandleItemAttachmentDelete() errchain.HandlerFunc {
 	return ctrl.handleItemAttachmentsHandler
 }
 
@@ -129,7 +130,7 @@ func (ctrl *V1Controller) HandleItemAttachmentDelete() server.HandlerFunc {
 //	@Success  200           {object} repo.ItemOut
 //	@Router   /v1/items/{id}/attachments/{attachment_id} [PUT]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleItemAttachmentUpdate() server.HandlerFunc {
+func (ctrl *V1Controller) HandleItemAttachmentUpdate() errchain.HandlerFunc {
 	return ctrl.handleItemAttachmentsHandler
 }
 
@@ -164,7 +165,7 @@ func (ctrl *V1Controller) handleItemAttachmentsHandler(w http.ResponseWriter, r 
 			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		return server.Respond(w, http.StatusNoContent, nil)
+		return server.JSON(w, http.StatusNoContent, nil)
 
 	// Update Attachment Handler
 	case http.MethodPut:
@@ -182,7 +183,7 @@ func (ctrl *V1Controller) handleItemAttachmentsHandler(w http.ResponseWriter, r 
 			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		return server.Respond(w, http.StatusOK, val)
+		return server.JSON(w, http.StatusOK, val)
 	}
 
 	return nil

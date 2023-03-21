@@ -2,13 +2,12 @@ package v1
 
 import (
 	"net/http"
-	"strconv"
 
+	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
-	"github.com/hay-kot/homebox/backend/internal/sys/validate"
-	"github.com/hay-kot/homebox/backend/pkgs/server"
-	"github.com/rs/zerolog/log"
+	"github.com/hay-kot/homebox/backend/internal/web/adapters"
+	"github.com/hay-kot/safeserve/errchain"
 )
 
 // HandleMaintenanceGetLog godoc
@@ -19,8 +18,13 @@ import (
 //	@Success  200       {object} repo.MaintenanceLog
 //	@Router   /v1/items/{id}/maintenance [GET]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleMaintenanceLogGet() server.HandlerFunc {
-	return ctrl.handleMaintenanceLog()
+func (ctrl *V1Controller) HandleMaintenanceLogGet() errchain.HandlerFunc {
+	fn := func(r *http.Request, ID uuid.UUID, q repo.MaintenanceLogQuery) (repo.MaintenanceLog, error) {
+		auth := services.NewContext(r.Context())
+		return ctrl.repo.MaintEntry.GetLog(auth, auth.GID, ID, q)
+	}
+
+	return adapters.QueryID("id", fn, http.StatusOK)
 }
 
 // HandleMaintenanceEntryCreate godoc
@@ -29,11 +33,16 @@ func (ctrl *V1Controller) HandleMaintenanceLogGet() server.HandlerFunc {
 //	@Tags     Maintenance
 //	@Produce  json
 //	@Param    payload body     repo.MaintenanceEntryCreate true "Entry Data"
-//	@Success  200     {object} repo.MaintenanceEntry
+//	@Success  201     {object} repo.MaintenanceEntry
 //	@Router   /v1/items/{id}/maintenance [POST]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleMaintenanceEntryCreate() server.HandlerFunc {
-	return ctrl.handleMaintenanceLog()
+func (ctrl *V1Controller) HandleMaintenanceEntryCreate() errchain.HandlerFunc {
+	fn := func(r *http.Request, itemID uuid.UUID, body repo.MaintenanceEntryCreate) (repo.MaintenanceEntry, error) {
+		auth := services.NewContext(r.Context())
+		return ctrl.repo.MaintEntry.Create(auth, itemID, body)
+	}
+
+	return adapters.ActionID("id", fn, http.StatusCreated)
 }
 
 // HandleMaintenanceEntryDelete godoc
@@ -44,8 +53,14 @@ func (ctrl *V1Controller) HandleMaintenanceEntryCreate() server.HandlerFunc {
 //	@Success  204
 //	@Router   /v1/items/{id}/maintenance/{entry_id} [DELETE]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleMaintenanceEntryDelete() server.HandlerFunc {
-	return ctrl.handleMaintenanceLog()
+func (ctrl *V1Controller) HandleMaintenanceEntryDelete() errchain.HandlerFunc {
+	fn := func(r *http.Request, entryID uuid.UUID) (any, error) {
+		auth := services.NewContext(r.Context())
+		err := ctrl.repo.MaintEntry.Delete(auth, entryID)
+		return nil, err
+	}
+
+	return adapters.CommandID("entry_id", fn, http.StatusNoContent)
 }
 
 // HandleMaintenanceEntryUpdate godoc
@@ -57,81 +72,11 @@ func (ctrl *V1Controller) HandleMaintenanceEntryDelete() server.HandlerFunc {
 //	@Success  200     {object} repo.MaintenanceEntry
 //	@Router   /v1/items/{id}/maintenance/{entry_id} [PUT]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleMaintenanceEntryUpdate() server.HandlerFunc {
-	return ctrl.handleMaintenanceLog()
-}
-
-func (ctrl *V1Controller) handleMaintenanceLog() server.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) error {
-		ctx := services.NewContext(r.Context())
-		itemID, err := ctrl.routeID(r)
-		if err != nil {
-			return err
-		}
-
-		switch r.Method {
-		case http.MethodGet:
-			completed, _ := strconv.ParseBool(r.URL.Query().Get("completed"))
-			scheduled, _ := strconv.ParseBool(r.URL.Query().Get("scheduled"))
-			query := repo.MaintenanceLogQuery{
-				Completed: completed,
-				Scheduled: scheduled,
-			}
-
-			mlog, err := ctrl.repo.MaintEntry.GetLog(ctx, itemID, query)
-			if err != nil {
-				log.Err(err).Msg("failed to get items")
-				return validate.NewRequestError(err, http.StatusInternalServerError)
-			}
-			return server.Respond(w, http.StatusOK, mlog)
-		case http.MethodPost:
-			var create repo.MaintenanceEntryCreate
-			err := server.Decode(r, &create)
-			if err != nil {
-				return validate.NewRequestError(err, http.StatusBadRequest)
-			}
-
-			entry, err := ctrl.repo.MaintEntry.Create(ctx, itemID, create)
-			if err != nil {
-				log.Err(err).Msg("failed to create item")
-				return validate.NewRequestError(err, http.StatusInternalServerError)
-			}
-
-			return server.Respond(w, http.StatusCreated, entry)
-		case http.MethodPut:
-			entryID, err := ctrl.routeUUID(r, "entry_id")
-			if err != nil {
-				return err
-			}
-
-			var update repo.MaintenanceEntryUpdate
-			err = server.Decode(r, &update)
-			if err != nil {
-				return validate.NewRequestError(err, http.StatusBadRequest)
-			}
-
-			entry, err := ctrl.repo.MaintEntry.Update(ctx, entryID, update)
-			if err != nil {
-				log.Err(err).Msg("failed to update item")
-				return validate.NewRequestError(err, http.StatusInternalServerError)
-			}
-
-			return server.Respond(w, http.StatusOK, entry)
-		case http.MethodDelete:
-			entryID, err := ctrl.routeUUID(r, "entry_id")
-			if err != nil {
-				return err
-			}
-
-			err = ctrl.repo.MaintEntry.Delete(ctx, entryID)
-			if err != nil {
-				log.Err(err).Msg("failed to delete item")
-				return validate.NewRequestError(err, http.StatusInternalServerError)
-			}
-
-			return server.Respond(w, http.StatusNoContent, nil)
-		}
-
-		return nil
+func (ctrl *V1Controller) HandleMaintenanceEntryUpdate() errchain.HandlerFunc {
+	fn := func(r *http.Request, entryID uuid.UUID, body repo.MaintenanceEntryUpdate) (repo.MaintenanceEntry, error) {
+		auth := services.NewContext(r.Context())
+		return ctrl.repo.MaintEntry.Update(auth, entryID, body)
 	}
+
+	return adapters.ActionID("entry_id", fn, http.StatusOK)
 }

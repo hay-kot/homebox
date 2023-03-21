@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/hay-kot/homebox/backend/internal/core/services"
-	"github.com/hay-kot/homebox/backend/pkgs/server"
+	"github.com/hay-kot/safeserve/errchain"
 )
 
 // HandleBillOfMaterialsExport godoc
@@ -15,7 +15,7 @@ import (
 //	@Success 200 {string} string "text/csv"
 //	@Router   /v1/reporting/bill-of-materials [GET]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleBillOfMaterialsExport() server.HandlerFunc {
+func (ctrl *V1Controller) HandleBillOfMaterialsExport() errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		actor := services.UseUserCtx(r.Context())
 

@@ -91,7 +91,7 @@ func mapLocationOut(location *ent.Location) LocationOut {
 }
 
 type LocationQuery struct {
-	FilterChildren bool `json:"filterChildren"`
+	FilterChildren bool `json:"filterChildren" schema:"filterChildren"`
 }
 
 // GetALlWithCount returns all locations with item count field populated
@@ -217,7 +217,7 @@ func (r *LocationRepository) Update(ctx context.Context, data LocationUpdate) (L
 	return r.update(ctx, data, location.ID(data.ID))
 }
 
-func (r *LocationRepository) UpdateOneByGroup(ctx context.Context, GID, ID uuid.UUID, data LocationUpdate) (LocationOut, error) {
+func (r *LocationRepository) UpdateByGroup(ctx context.Context, GID, ID uuid.UUID, data LocationUpdate) (LocationOut, error) {
 	return r.update(ctx, data, location.ID(ID), location.HasGroupWith(group.ID(GID)))
 }
 
@@ -246,7 +246,7 @@ type FlatTreeItem struct {
 }
 
 type TreeQuery struct {
-	WithItems bool `json:"withItems"`
+	WithItems bool `json:"withItems" schema:"withItems"`
 }
 
 func (lr *LocationRepository) Tree(ctx context.Context, GID uuid.UUID, tq TreeQuery) ([]TreeItem, error) {

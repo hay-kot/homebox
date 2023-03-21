@@ -5,8 +5,17 @@ import (
 
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
-	"github.com/hay-kot/homebox/backend/pkgs/server"
+	"github.com/hay-kot/safeserve/errchain"
+	"github.com/hay-kot/safeserve/server"
 )
+
+type Wrapped struct {
+	Item interface{} `json:"item"`
+}
+
+func Wrap(v any) Wrapped {
+	return Wrapped{Item: v}
+}
 
 func WithMaxUploadSize(maxUploadSize int64) func(*V1Controller) {
 	return func(ctrl *V1Controller) {
@@ -81,9 +90,9 @@ func NewControllerV1(svc *services.AllServices, repos *repo.AllRepos, options ..
 //	@Produce json
 //	@Success 200 {object} ApiSummary
 //	@Router  /v1/status [GET]
-func (ctrl *V1Controller) HandleBase(ready ReadyFunc, build Build) server.HandlerFunc {
+func (ctrl *V1Controller) HandleBase(ready ReadyFunc, build Build) errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
-		return server.Respond(w, http.StatusOK, ApiSummary{
+		return server.JSON(w, http.StatusOK, ApiSummary{
 			Healthy:           ready(),
 			Title:             "Homebox",
 			Message:           "Track, Manage, and Organize your shit",

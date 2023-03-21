@@ -51,8 +51,8 @@ type (
 	ItemCreate struct {
 		ImportRef   string    `json:"-"`
 		ParentID    uuid.UUID `json:"parentId" extensions:"x-nullable"`
-		Name        string    `json:"name"`
-		Description string    `json:"description"`
+		Name        string    `json:"name" validate:"required,min=1,max=255"`
+		Description string    `json:"description" validate:"required,min=1,max=1000"`
 		AssetID     AssetID   `json:"-"`
 
 		// Edges
