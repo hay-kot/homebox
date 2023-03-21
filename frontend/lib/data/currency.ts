@@ -9,6 +9,7 @@ export type Codes =
   | "INR"
   | "JPY"
   | "NOK"
+  | "NZD"
   | "PLN"
   | "RMB"
   | "RON"
@@ -72,6 +73,12 @@ export const currencies: Currency[] = [
     local: "nb-NO",
     symbol: "kr",
     name: "Norwegian Krone",
+  },
+  {
+    code: "NVD",
+    local: "en-NZ",
+    symbol: "NZ$",
+    name: "New Zealand Dollar",
   },
   {
     code: "PLN",
