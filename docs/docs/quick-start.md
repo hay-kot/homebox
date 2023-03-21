@@ -5,10 +5,13 @@
 Great for testing out the application, but not recommended for stable use. Checkout the docker-compose for the recommended deployment.
 
 ```sh
-docker run --name=homebox \
-    --restart=always \
-    --publish=3100:7745 \
-    ghcr.io/hay-kot/homebox:latest
+docker run -d \
+  --name homebox \
+  --restart unless-stopped \
+  --publish 3100:7745 \
+  --env TZ=Europe/Bucharest \
+  --volume /path/to/data/folder/:/data \
+  ghcr.io/hay-kot/homebox:latest
 ```
 
 ## Docker-Compose
