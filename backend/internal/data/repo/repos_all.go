@@ -20,7 +20,7 @@ func New(db *ent.Client, root string) *AllRepos {
 	return &AllRepos{
 		Users:       &UserRepository{db},
 		AuthTokens:  &TokenRepository{db},
-		Groups:      &GroupRepository{db},
+		Groups:      NewGroupRepository(db),
 		Locations:   &LocationRepository{db},
 		Labels:      &LabelRepository{db},
 		Items:       &ItemsRepository{db},

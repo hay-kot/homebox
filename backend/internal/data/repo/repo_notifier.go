@@ -73,6 +73,16 @@ func (r *NotifierRepository) GetByGroup(ctx context.Context, groupID uuid.UUID) 
 		Where(notifier.GroupID(groupID)).
 		Order(ent.Asc(notifier.FieldName)).
 		All(ctx)
+
+	return r.mapper.MapEachErr(notifier, err)
+}
+
+func (r *NotifierRepository) GetActiveByGroup(ctx context.Context, groupID uuid.UUID) ([]NotifierOut, error) {
+	notifier, err := r.db.Notifier.Query().
+		Where(notifier.GroupID(groupID), notifier.IsActive(true)).
+		Order(ent.Asc(notifier.FieldName)).
+		All(ctx)
+
 	return r.mapper.MapEachErr(notifier, err)
 }
 

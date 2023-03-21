@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -166,6 +167,19 @@ func run(cfg *config.Config) error {
 			log.Error().
 				Err(err).
 				Msg("failed to purge expired invitations")
+		}
+	})
+	go app.startBgTask(time.Duration(1)*time.Hour, func() {
+		now := time.Now()
+
+		if now.Hour() == 8 {
+			fmt.Println("run notifiers")
+			err := app.services.BackgroundService.SendNotifiersToday(context.Background())
+			if err != nil {
+				log.Error().
+					Err(err).
+					Msg("failed to send notifiers")
+			}
 		}
 	})
 

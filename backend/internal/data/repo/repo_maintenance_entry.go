@@ -84,6 +84,27 @@ func mapMaintenanceEntry(entry *ent.MaintenanceEntry) MaintenanceEntry {
 	}
 }
 
+func (r *MaintenanceEntryRepository) GetScheduled(ctx context.Context, GID uuid.UUID, dt types.Date) ([]MaintenanceEntry, error) {
+	entries, err := r.db.MaintenanceEntry.Query().
+		Where(
+			maintenanceentry.HasItemWith(
+				item.HasGroupWith(group.ID(GID)),
+			),
+			maintenanceentry.ScheduledDate(dt.Time()),
+			maintenanceentry.Or(
+				maintenanceentry.DateIsNil(),
+				maintenanceentry.DateEQ(time.Time{}),
+			),
+		).
+		All(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return mapEachMaintenanceEntry(entries), nil
+}
+
 func (r *MaintenanceEntryRepository) Create(ctx context.Context, itemID uuid.UUID, input MaintenanceEntryCreate) (MaintenanceEntry, error) {
 	item, err := r.db.MaintenanceEntry.Create().
 		SetItemID(itemID).

@@ -5,9 +5,10 @@ import (
 )
 
 type AllServices struct {
-	User  *UserService
-	Group *GroupService
-	Items *ItemService
+	User              *UserService
+	Group             *GroupService
+	Items             *ItemService
+	BackgroundService *BackgroundService
 }
 
 type OptionsFunc func(*options)
@@ -42,5 +43,6 @@ func New(repos *repo.AllRepos, opts ...OptionsFunc) *AllServices {
 			repo:                 repos,
 			autoIncrementAssetID: options.autoIncrementAssetID,
 		},
+		BackgroundService: &BackgroundService{repos},
 	}
 }
