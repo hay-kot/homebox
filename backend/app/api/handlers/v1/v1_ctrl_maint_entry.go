@@ -7,7 +7,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/web/adapters"
-	"github.com/hay-kot/homebox/backend/pkgs/server"
+	"github.com/hay-kot/safeserve/errchain"
 )
 
 // HandleMaintenanceGetLog godoc
@@ -18,7 +18,7 @@ import (
 //	@Success  200       {object} repo.MaintenanceLog
 //	@Router   /v1/items/{id}/maintenance [GET]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleMaintenanceLogGet() server.HandlerFunc {
+func (ctrl *V1Controller) HandleMaintenanceLogGet() errchain.HandlerFunc {
 	fn := func(r *http.Request, ID uuid.UUID, q repo.MaintenanceLogQuery) (repo.MaintenanceLog, error) {
 		auth := services.NewContext(r.Context())
 		return ctrl.repo.MaintEntry.GetLog(auth, auth.GID, ID, q)
@@ -36,7 +36,7 @@ func (ctrl *V1Controller) HandleMaintenanceLogGet() server.HandlerFunc {
 //	@Success  201     {object} repo.MaintenanceEntry
 //	@Router   /v1/items/{id}/maintenance [POST]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleMaintenanceEntryCreate() server.HandlerFunc {
+func (ctrl *V1Controller) HandleMaintenanceEntryCreate() errchain.HandlerFunc {
 	fn := func(r *http.Request, itemID uuid.UUID, body repo.MaintenanceEntryCreate) (repo.MaintenanceEntry, error) {
 		auth := services.NewContext(r.Context())
 		return ctrl.repo.MaintEntry.Create(auth, itemID, body)
@@ -53,7 +53,7 @@ func (ctrl *V1Controller) HandleMaintenanceEntryCreate() server.HandlerFunc {
 //	@Success  204
 //	@Router   /v1/items/{id}/maintenance/{entry_id} [DELETE]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleMaintenanceEntryDelete() server.HandlerFunc {
+func (ctrl *V1Controller) HandleMaintenanceEntryDelete() errchain.HandlerFunc {
 	fn := func(r *http.Request, entryID uuid.UUID) (any, error) {
 		auth := services.NewContext(r.Context())
 		err := ctrl.repo.MaintEntry.Delete(auth, entryID)
@@ -72,7 +72,7 @@ func (ctrl *V1Controller) HandleMaintenanceEntryDelete() server.HandlerFunc {
 //	@Success  200     {object} repo.MaintenanceEntry
 //	@Router   /v1/items/{id}/maintenance/{entry_id} [PUT]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleMaintenanceEntryUpdate() server.HandlerFunc {
+func (ctrl *V1Controller) HandleMaintenanceEntryUpdate() errchain.HandlerFunc {
 	fn := func(r *http.Request, entryID uuid.UUID, body repo.MaintenanceEntryUpdate) (repo.MaintenanceEntry, error) {
 		auth := services.NewContext(r.Context())
 		return ctrl.repo.MaintEntry.Update(auth, entryID, body)

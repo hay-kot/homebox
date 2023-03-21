@@ -7,7 +7,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/sys/validate"
-	"github.com/hay-kot/homebox/backend/pkgs/server"
+	"github.com/hay-kot/safeserve/errchain"
+	"github.com/hay-kot/safeserve/server"
 	"github.com/rs/zerolog/log"
 )
 
@@ -15,7 +16,7 @@ type ActionAmountResult struct {
 	Completed int `json:"completed"`
 }
 
-func actionHandlerFactory(ref string, fn func(context.Context, uuid.UUID) (int, error)) server.HandlerFunc {
+func actionHandlerFactory(ref string, fn func(context.Context, uuid.UUID) (int, error)) errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := services.NewContext(r.Context())
 
@@ -25,7 +26,7 @@ func actionHandlerFactory(ref string, fn func(context.Context, uuid.UUID) (int, 
 			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		return server.Respond(w, http.StatusOK, ActionAmountResult{Completed: totalCompleted})
+		return server.JSON(w, http.StatusOK, ActionAmountResult{Completed: totalCompleted})
 	}
 }
 
@@ -38,7 +39,7 @@ func actionHandlerFactory(ref string, fn func(context.Context, uuid.UUID) (int, 
 //	@Success     200     {object} ActionAmountResult
 //	@Router      /v1/actions/ensure-asset-ids [Post]
 //	@Security    Bearer
-func (ctrl *V1Controller) HandleEnsureAssetID() server.HandlerFunc {
+func (ctrl *V1Controller) HandleEnsureAssetID() errchain.HandlerFunc {
 	return actionHandlerFactory("ensure asset IDs", ctrl.svc.Items.EnsureAssetID)
 }
 
@@ -51,7 +52,7 @@ func (ctrl *V1Controller) HandleEnsureAssetID() server.HandlerFunc {
 //	@Success  200     {object} ActionAmountResult
 //	@Router   /v1/actions/ensure-import-refs [Post]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleEnsureImportRefs() server.HandlerFunc {
+func (ctrl *V1Controller) HandleEnsureImportRefs() errchain.HandlerFunc {
 	return actionHandlerFactory("ensure import refs", ctrl.svc.Items.EnsureImportRef)
 }
 
@@ -64,6 +65,6 @@ func (ctrl *V1Controller) HandleEnsureImportRefs() server.HandlerFunc {
 //	@Success      200     {object} ActionAmountResult
 //	@Router       /v1/actions/zero-item-time-fields [Post]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleItemDateZeroOut() server.HandlerFunc {
+func (ctrl *V1Controller) HandleItemDateZeroOut() errchain.HandlerFunc {
 	return actionHandlerFactory("zero out date time", ctrl.repo.Items.ZeroOutTimeFields)
 }

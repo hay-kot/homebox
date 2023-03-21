@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/hay-kot/homebox/backend/internal/web/adapters"
-	"github.com/hay-kot/homebox/backend/pkgs/server"
+	"github.com/hay-kot/safeserve/errchain"
 	"github.com/yeqown/go-qrcode/v2"
 	"github.com/yeqown/go-qrcode/writer/standard"
 
@@ -26,7 +26,7 @@ var qrcodeLogo []byte
 //	@Success 200 {string} string "image/jpeg"
 //	@Router   /v1/qrcode [GET]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleGenerateQRCode() server.HandlerFunc {
+func (ctrl *V1Controller) HandleGenerateQRCode() errchain.HandlerFunc {
 	type query struct {
 		// 4,296 characters is the maximum length of a QR code
 		Data string `schema:"data" validate:"required,max=4296"`

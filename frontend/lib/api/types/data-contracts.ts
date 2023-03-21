@@ -10,6 +10,11 @@
  * ---------------------------------------------------------------
  */
 
+export interface MidErrorResponse {
+  error: string;
+  fields: Record<string, string>;
+}
+
 export interface DocumentOut {
   id: string;
   path: string;
@@ -359,22 +364,6 @@ export interface ValueOverTimeEntry {
   value: number;
 }
 
-export interface ServerErrorResponse {
-  error: string;
-  fields: Record<string, string>;
-}
-
-export interface ServerResult {
-  details: any;
-  error: boolean;
-  item: any;
-  message: string;
-}
-
-export interface ServerResults {
-  items: any;
-}
-
 export interface UserRegistration {
   email: string;
   name: string;
@@ -430,4 +419,8 @@ export interface TokenResponse {
   attachmentToken: string;
   expiresAt: Date | string;
   token: string;
+}
+
+export interface Wrapped {
+  item: any;
 }

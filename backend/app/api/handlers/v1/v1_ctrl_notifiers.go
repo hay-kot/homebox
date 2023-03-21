@@ -8,7 +8,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/web/adapters"
-	"github.com/hay-kot/homebox/backend/pkgs/server"
+	"github.com/hay-kot/safeserve/errchain"
 )
 
 // HandleGetUserNotifiers godoc
@@ -16,10 +16,10 @@ import (
 //	@Summary  Get Notifiers
 //	@Tags     Notifiers
 //	@Produce  json
-//	@Success  200 {object} server.Results{items=[]repo.NotifierOut}
+//	@Success  200 {object} Wrapped{items=[]repo.NotifierOut}
 //	@Router   /v1/notifiers [GET]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleGetUserNotifiers() server.HandlerFunc {
+func (ctrl *V1Controller) HandleGetUserNotifiers() errchain.HandlerFunc {
 	fn := func(r *http.Request, _ struct{}) ([]repo.NotifierOut, error) {
 		user := services.UseUserCtx(r.Context())
 		return ctrl.repo.Notifiers.GetByUser(r.Context(), user.ID)
@@ -37,7 +37,7 @@ func (ctrl *V1Controller) HandleGetUserNotifiers() server.HandlerFunc {
 //	@Success  200     {object} repo.NotifierOut
 //	@Router   /v1/notifiers [POST]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleCreateNotifier() server.HandlerFunc {
+func (ctrl *V1Controller) HandleCreateNotifier() errchain.HandlerFunc {
 	fn := func(r *http.Request, in repo.NotifierCreate) (repo.NotifierOut, error) {
 		auth := services.NewContext(r.Context())
 		return ctrl.repo.Notifiers.Create(auth, auth.GID, auth.UID, in)
@@ -54,7 +54,7 @@ func (ctrl *V1Controller) HandleCreateNotifier() server.HandlerFunc {
 //	@Success 204
 //	@Router  /v1/notifiers/{id} [DELETE]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleDeleteNotifier() server.HandlerFunc {
+func (ctrl *V1Controller) HandleDeleteNotifier() errchain.HandlerFunc {
 	fn := func(r *http.Request, ID uuid.UUID) (any, error) {
 		auth := services.NewContext(r.Context())
 		return nil, ctrl.repo.Notifiers.Delete(auth, auth.UID, ID)
@@ -72,7 +72,7 @@ func (ctrl *V1Controller) HandleDeleteNotifier() server.HandlerFunc {
 //	@Success 200 {object} repo.NotifierOut
 //	@Router  /v1/notifiers/{id} [PUT]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleUpdateNotifier() server.HandlerFunc {
+func (ctrl *V1Controller) HandleUpdateNotifier() errchain.HandlerFunc {
 	fn := func(r *http.Request, ID uuid.UUID, in repo.NotifierUpdate) (repo.NotifierOut, error) {
 		auth := services.NewContext(r.Context())
 		return ctrl.repo.Notifiers.Update(auth, auth.UID, ID, in)
@@ -91,7 +91,7 @@ func (ctrl *V1Controller) HandleUpdateNotifier() server.HandlerFunc {
 //	@Success  204
 //	@Router   /v1/notifiers/test [POST]
 //	@Security Bearer
-func (ctrl *V1Controller) HandlerNotifierTest() server.HandlerFunc {
+func (ctrl *V1Controller) HandlerNotifierTest() errchain.HandlerFunc {
 	type body struct {
 		URL string `json:"url" validate:"required"`
 	}

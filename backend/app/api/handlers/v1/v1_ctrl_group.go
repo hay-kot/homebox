@@ -7,7 +7,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/web/adapters"
-	"github.com/hay-kot/homebox/backend/pkgs/server"
+	"github.com/hay-kot/safeserve/errchain"
 )
 
 type (
@@ -31,7 +31,7 @@ type (
 //	@Success  200 {object} repo.Group
 //	@Router   /v1/groups [Get]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleGroupGet() server.HandlerFunc {
+func (ctrl *V1Controller) HandleGroupGet() errchain.HandlerFunc {
 	fn := func(r *http.Request) (repo.Group, error) {
 		auth := services.NewContext(r.Context())
 		return ctrl.repo.Groups.GroupByID(auth, auth.GID)
@@ -49,7 +49,7 @@ func (ctrl *V1Controller) HandleGroupGet() server.HandlerFunc {
 //	@Success  200     {object} repo.Group
 //	@Router   /v1/groups [Put]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleGroupUpdate() server.HandlerFunc {
+func (ctrl *V1Controller) HandleGroupUpdate() errchain.HandlerFunc {
 	fn := func(r *http.Request, body repo.GroupUpdate) (repo.Group, error) {
 		auth := services.NewContext(r.Context())
 		return ctrl.svc.Group.UpdateGroup(auth, body)
@@ -67,7 +67,7 @@ func (ctrl *V1Controller) HandleGroupUpdate() server.HandlerFunc {
 //	@Success  200     {object} GroupInvitation
 //	@Router   /v1/groups/invitations [Post]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleGroupInvitationsCreate() server.HandlerFunc {
+func (ctrl *V1Controller) HandleGroupInvitationsCreate() errchain.HandlerFunc {
 	fn := func(r *http.Request, body GroupInvitationCreate) (GroupInvitation, error) {
 		if body.ExpiresAt.IsZero() {
 			body.ExpiresAt = time.Now().Add(time.Hour * 24)

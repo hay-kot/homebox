@@ -8,7 +8,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/sys/config"
 	"github.com/hay-kot/homebox/backend/pkgs/mailer"
-	"github.com/hay-kot/homebox/backend/pkgs/server"
+	"github.com/hay-kot/safeserve/server"
 )
 
 type app struct {

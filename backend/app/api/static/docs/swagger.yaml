@@ -1,5 +1,14 @@
 basePath: /api
 definitions:
+  mid.ErrorResponse:
+    properties:
+      error:
+        type: string
+      fields:
+        additionalProperties:
+          type: string
+        type: object
+    type: object
   repo.DocumentOut:
     properties:
       id:
@@ -591,28 +600,6 @@ definitions:
       value:
         type: number
     type: object
-  server.ErrorResponse:
-    properties:
-      error:
-        type: string
-      fields:
-        additionalProperties:
-          type: string
-        type: object
-    type: object
-  server.Result:
-    properties:
-      details: {}
-      error:
-        type: boolean
-      item: {}
-      message:
-        type: string
-    type: object
-  server.Results:
-    properties:
-      items: {}
-    type: object
   services.UserRegistration:
     properties:
       email:
@@ -697,6 +684,10 @@ definitions:
         type: string
       token:
         type: string
+    type: object
+  v1.Wrapped:
+    properties:
+      item: {}
     type: object
 info:
   contact:
@@ -1052,7 +1043,7 @@ paths:
         "422":
           description: Unprocessable Entity
           schema:
-            $ref: '#/definitions/server.ErrorResponse'
+            $ref: '#/definitions/mid.ErrorResponse'
       security:
       - Bearer: []
       summary: Create Item Attachment
@@ -1268,7 +1259,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/server.Results'
+            - $ref: '#/definitions/v1.Wrapped'
             - properties:
                 items:
                   items:
@@ -1370,7 +1361,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/server.Results'
+            - $ref: '#/definitions/v1.Wrapped'
             - properties:
                 items:
                   items:
@@ -1478,7 +1469,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/server.Results'
+            - $ref: '#/definitions/v1.Wrapped'
             - properties:
                 items:
                   items:
@@ -1499,7 +1490,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/server.Results'
+            - $ref: '#/definitions/v1.Wrapped'
             - properties:
                 items:
                   items:
@@ -1741,7 +1732,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/server.Result'
+            - $ref: '#/definitions/v1.Wrapped'
             - properties:
                 item:
                   $ref: '#/definitions/repo.UserOut'
@@ -1766,7 +1757,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/server.Result'
+            - $ref: '#/definitions/v1.Wrapped'
             - properties:
                 item:
                   $ref: '#/definitions/repo.UserUpdate'

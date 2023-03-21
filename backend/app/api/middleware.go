@@ -9,7 +9,7 @@ import (
 
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/sys/validate"
-	"github.com/hay-kot/homebox/backend/pkgs/server"
+	"github.com/hay-kot/safeserve/errchain"
 )
 
 type tokenHasKey struct {
@@ -30,9 +30,9 @@ const (
 // the required roles, a 403 Forbidden will be returned.
 //
 // WARNING: This middleware _MUST_ be called after mwAuthToken or else it will panic
-func (a *app) mwRoles(rm RoleMode, required ...string) server.Middleware {
-	return func(next server.Handler) server.Handler {
-		return server.HandlerFunc(func(w http.ResponseWriter, r *http.Request) error {
+func (a *app) mwRoles(rm RoleMode, required ...string) errchain.Middleware {
+	return func(next errchain.Handler) errchain.Handler {
+		return errchain.HandlerFunc(func(w http.ResponseWriter, r *http.Request) error {
 			ctx := r.Context()
 
 			maybeToken := ctx.Value(hashedToken)
@@ -116,8 +116,8 @@ func getCookie(r *http.Request) (string, error) {
 //   - header = "Bearer 1234567890"
 //   - query = "?access_token=1234567890"
 //   - cookie = hb.auth.token = 1234567890
-func (a *app) mwAuthToken(next server.Handler) server.Handler {
-	return server.HandlerFunc(func(w http.ResponseWriter, r *http.Request) error {
+func (a *app) mwAuthToken(next errchain.Handler) errchain.Handler {
+	return errchain.HandlerFunc(func(w http.ResponseWriter, r *http.Request) error {
 		keyFuncs := [...]KeyFunc{
 			getBearer,
 			getCookie,

@@ -3,7 +3,8 @@ package adapters
 import (
 	"net/http"
 
-	"github.com/hay-kot/homebox/backend/pkgs/server"
+	"github.com/hay-kot/safeserve/errchain"
+	"github.com/hay-kot/safeserve/server"
 )
 
 // Action is a function that adapts a function to the server.Handler interface.
@@ -22,7 +23,7 @@ import (
 //	}
 //
 // r.Post("/foo", adapters.Action(fn, http.StatusCreated))
-func Action[T any, Y any](f AdapterFunc[T, Y], ok int) server.HandlerFunc {
+func Action[T any, Y any](f AdapterFunc[T, Y], ok int) errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		v, err := DecodeBody[T](r)
 		if err != nil {
@@ -34,7 +35,7 @@ func Action[T any, Y any](f AdapterFunc[T, Y], ok int) server.HandlerFunc {
 			return err
 		}
 
-		return server.Respond(w, ok, res)
+		return server.JSON(w, ok, res)
 	}
 }
 
@@ -52,7 +53,7 @@ func Action[T any, Y any](f AdapterFunc[T, Y], ok int) server.HandlerFunc {
 //	}
 //
 //	r.Post("/foo/{id}", adapters.ActionID(fn, http.StatusCreated))
-func ActionID[T any, Y any](param string, f IDFunc[T, Y], ok int) server.HandlerFunc {
+func ActionID[T any, Y any](param string, f IDFunc[T, Y], ok int) errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ID, err := RouteUUID(r, param)
 		if err != nil {
@@ -69,6 +70,6 @@ func ActionID[T any, Y any](param string, f IDFunc[T, Y], ok int) server.Handler
 			return err
 		}
 
-		return server.Respond(w, ok, res)
+		return server.JSON(w, ok, res)
 	}
 }

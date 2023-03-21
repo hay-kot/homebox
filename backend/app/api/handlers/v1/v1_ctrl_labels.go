@@ -7,7 +7,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/web/adapters"
-	"github.com/hay-kot/homebox/backend/pkgs/server"
+	"github.com/hay-kot/safeserve/errchain"
 )
 
 // HandleLabelsGetAll godoc
@@ -15,10 +15,10 @@ import (
 //	@Summary  Get All Labels
 //	@Tags     Labels
 //	@Produce  json
-//	@Success  200 {object} server.Results{items=[]repo.LabelOut}
+//	@Success  200 {object} Wrapped{items=[]repo.LabelOut}
 //	@Router   /v1/labels [GET]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleLabelsGetAll() server.HandlerFunc {
+func (ctrl *V1Controller) HandleLabelsGetAll() errchain.HandlerFunc {
 	fn := func(r *http.Request) ([]repo.LabelSummary, error) {
 		auth := services.NewContext(r.Context())
 		return ctrl.repo.Labels.GetAll(auth, auth.GID)
@@ -36,7 +36,7 @@ func (ctrl *V1Controller) HandleLabelsGetAll() server.HandlerFunc {
 //	@Success  200     {object} repo.LabelSummary
 //	@Router   /v1/labels [POST]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleLabelsCreate() server.HandlerFunc {
+func (ctrl *V1Controller) HandleLabelsCreate() errchain.HandlerFunc {
 	fn := func(r *http.Request, data repo.LabelCreate) (repo.LabelOut, error) {
 		auth := services.NewContext(r.Context())
 		return ctrl.repo.Labels.Create(auth, auth.GID, data)
@@ -54,7 +54,7 @@ func (ctrl *V1Controller) HandleLabelsCreate() server.HandlerFunc {
 //	@Success  204
 //	@Router   /v1/labels/{id} [DELETE]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleLabelDelete() server.HandlerFunc {
+func (ctrl *V1Controller) HandleLabelDelete() errchain.HandlerFunc {
 	fn := func(r *http.Request, ID uuid.UUID) (any, error) {
 		auth := services.NewContext(r.Context())
 		err := ctrl.repo.Labels.DeleteByGroup(auth, auth.GID, ID)
@@ -73,7 +73,7 @@ func (ctrl *V1Controller) HandleLabelDelete() server.HandlerFunc {
 //	@Success  200 {object} repo.LabelOut
 //	@Router   /v1/labels/{id} [GET]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleLabelGet() server.HandlerFunc {
+func (ctrl *V1Controller) HandleLabelGet() errchain.HandlerFunc {
 	fn := func(r *http.Request, ID uuid.UUID) (repo.LabelOut, error) {
 		auth := services.NewContext(r.Context())
 		return ctrl.repo.Labels.GetOneByGroup(auth, auth.GID, ID)
@@ -91,7 +91,7 @@ func (ctrl *V1Controller) HandleLabelGet() server.HandlerFunc {
 //	@Success  200 {object} repo.LabelOut
 //	@Router   /v1/labels/{id} [PUT]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleLabelUpdate() server.HandlerFunc {
+func (ctrl *V1Controller) HandleLabelUpdate() errchain.HandlerFunc {
 	fn := func(r *http.Request, ID uuid.UUID, data repo.LabelUpdate) (repo.LabelOut, error) {
 		auth := services.NewContext(r.Context())
 		data.ID = ID

@@ -12,7 +12,8 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/sys/validate"
 	"github.com/hay-kot/homebox/backend/internal/web/adapters"
-	"github.com/hay-kot/homebox/backend/pkgs/server"
+	"github.com/hay-kot/safeserve/errchain"
+	"github.com/hay-kot/safeserve/server"
 	"github.com/rs/zerolog/log"
 )
 
@@ -29,7 +30,7 @@ import (
 //	@Success  200       {object} repo.PaginationResult[repo.ItemSummary]{}
 //	@Router   /v1/items [GET]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleItemsGetAll() server.HandlerFunc {
+func (ctrl *V1Controller) HandleItemsGetAll() errchain.HandlerFunc {
 	extractQuery := func(r *http.Request) repo.ItemQuery {
 		params := r.URL.Query()
 
@@ -78,14 +79,14 @@ func (ctrl *V1Controller) HandleItemsGetAll() server.HandlerFunc {
 		items, err := ctrl.repo.Items.QueryByGroup(ctx, ctx.GID, extractQuery(r))
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
-				return server.Respond(w, http.StatusOK, repo.PaginationResult[repo.ItemSummary]{
+				return server.JSON(w, http.StatusOK, repo.PaginationResult[repo.ItemSummary]{
 					Items: []repo.ItemSummary{},
 				})
 			}
 			log.Err(err).Msg("failed to get items")
 			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
-		return server.Respond(w, http.StatusOK, items)
+		return server.JSON(w, http.StatusOK, items)
 	}
 }
 
@@ -98,7 +99,7 @@ func (ctrl *V1Controller) HandleItemsGetAll() server.HandlerFunc {
 //	@Success  201     {object} repo.ItemSummary
 //	@Router   /v1/items [POST]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleItemsCreate() server.HandlerFunc {
+func (ctrl *V1Controller) HandleItemsCreate() errchain.HandlerFunc {
 	fn := func(r *http.Request, body repo.ItemCreate) (repo.ItemOut, error) {
 		return ctrl.svc.Items.Create(services.NewContext(r.Context()), body)
 	}
@@ -115,7 +116,7 @@ func (ctrl *V1Controller) HandleItemsCreate() server.HandlerFunc {
 //	@Success  200 {object} repo.ItemOut
 //	@Router   /v1/items/{id} [GET]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleItemGet() server.HandlerFunc {
+func (ctrl *V1Controller) HandleItemGet() errchain.HandlerFunc {
 	fn := func(r *http.Request, ID uuid.UUID) (repo.ItemOut, error) {
 		auth := services.NewContext(r.Context())
 
@@ -134,7 +135,7 @@ func (ctrl *V1Controller) HandleItemGet() server.HandlerFunc {
 //	@Success  204
 //	@Router   /v1/items/{id} [DELETE]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleItemDelete() server.HandlerFunc {
+func (ctrl *V1Controller) HandleItemDelete() errchain.HandlerFunc {
 	fn := func(r *http.Request, ID uuid.UUID) (any, error) {
 		auth := services.NewContext(r.Context())
 		err := ctrl.repo.Items.DeleteByGroup(auth, auth.GID, ID)
@@ -154,7 +155,7 @@ func (ctrl *V1Controller) HandleItemDelete() server.HandlerFunc {
 //	@Success  200     {object} repo.ItemOut
 //	@Router   /v1/items/{id} [PUT]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleItemUpdate() server.HandlerFunc {
+func (ctrl *V1Controller) HandleItemUpdate() errchain.HandlerFunc {
 	fn := func(r *http.Request, ID uuid.UUID, body repo.ItemUpdate) (repo.ItemOut, error) {
 		auth := services.NewContext(r.Context())
 
@@ -174,7 +175,7 @@ func (ctrl *V1Controller) HandleItemUpdate() server.HandlerFunc {
 //	@Router   /v1/items/fields [GET]
 //	@Success  200     {object} []string
 //	@Security Bearer
-func (ctrl *V1Controller) HandleGetAllCustomFieldNames() server.HandlerFunc {
+func (ctrl *V1Controller) HandleGetAllCustomFieldNames() errchain.HandlerFunc {
 	fn := func(r *http.Request) ([]string, error) {
 		auth := services.NewContext(r.Context())
 		return ctrl.repo.Items.GetAllCustomFieldNames(auth, auth.GID)
@@ -192,7 +193,7 @@ func (ctrl *V1Controller) HandleGetAllCustomFieldNames() server.HandlerFunc {
 //	@Router   /v1/items/fields/values [GET]
 //	@Success  200     {object} []string
 //	@Security Bearer
-func (ctrl *V1Controller) HandleGetAllCustomFieldValues() server.HandlerFunc {
+func (ctrl *V1Controller) HandleGetAllCustomFieldValues() errchain.HandlerFunc {
 	type query struct {
 		Field string `schema:"field" validate:"required"`
 	}
@@ -215,7 +216,7 @@ func (ctrl *V1Controller) HandleGetAllCustomFieldValues() server.HandlerFunc {
 //	@Param    csv formData file true "Image to upload"
 //	@Router   /v1/items/import [Post]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleItemsImport() server.HandlerFunc {
+func (ctrl *V1Controller) HandleItemsImport() errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		err := r.ParseMultipartForm(ctrl.maxUploadSize << 20)
 		if err != nil {
@@ -237,7 +238,7 @@ func (ctrl *V1Controller) HandleItemsImport() server.HandlerFunc {
 			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		return server.Respond(w, http.StatusNoContent, nil)
+		return server.JSON(w, http.StatusNoContent, nil)
 	}
 }
 
@@ -248,7 +249,7 @@ func (ctrl *V1Controller) HandleItemsImport() server.HandlerFunc {
 //	@Success 200 {string} string "text/csv"
 //	@Router   /v1/items/export [GET]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleItemsExport() server.HandlerFunc {
+func (ctrl *V1Controller) HandleItemsExport() errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := services.NewContext(r.Context())
 

@@ -694,7 +694,7 @@ const docTemplate = `{
                     "422": {
                         "description": "Unprocessable Entity",
                         "schema": {
-                            "$ref": "#/definitions/server.ErrorResponse"
+                            "$ref": "#/definitions/mid.ErrorResponse"
                         }
                     }
                 }
@@ -947,7 +947,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server.Results"
+                                    "$ref": "#/definitions/v1.Wrapped"
                                 },
                                 {
                                     "type": "object",
@@ -1119,7 +1119,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server.Results"
+                                    "$ref": "#/definitions/v1.Wrapped"
                                 },
                                 {
                                     "type": "object",
@@ -1199,7 +1199,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server.Results"
+                                    "$ref": "#/definitions/v1.Wrapped"
                                 },
                                 {
                                     "type": "object",
@@ -1339,7 +1339,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server.Results"
+                                    "$ref": "#/definitions/v1.Wrapped"
                                 },
                                 {
                                     "type": "object",
@@ -1719,7 +1719,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server.Result"
+                                    "$ref": "#/definitions/v1.Wrapped"
                                 },
                                 {
                                     "type": "object",
@@ -1764,7 +1764,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/server.Result"
+                                    "$ref": "#/definitions/v1.Wrapped"
                                 },
                                 {
                                     "type": "object",
@@ -1801,6 +1801,20 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "mid.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "fields": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "repo.DocumentOut": {
             "type": "object",
             "properties": {
@@ -2677,39 +2691,6 @@ const docTemplate = `{
                 }
             }
         },
-        "server.ErrorResponse": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "type": "string"
-                },
-                "fields": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "server.Result": {
-            "type": "object",
-            "properties": {
-                "details": {},
-                "error": {
-                    "type": "boolean"
-                },
-                "item": {},
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "server.Results": {
-            "type": "object",
-            "properties": {
-                "items": {}
-            }
-        },
         "services.UserRegistration": {
             "type": "object",
             "properties": {
@@ -2839,6 +2820,12 @@ const docTemplate = `{
                 "token": {
                     "type": "string"
                 }
+            }
+        },
+        "v1.Wrapped": {
+            "type": "object",
+            "properties": {
+                "item": {}
             }
         }
     },

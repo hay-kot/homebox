@@ -8,7 +8,8 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/sys/validate"
 	"github.com/hay-kot/homebox/backend/internal/web/adapters"
-	"github.com/hay-kot/homebox/backend/pkgs/server"
+	"github.com/hay-kot/safeserve/errchain"
+	"github.com/hay-kot/safeserve/server"
 )
 
 // HandleGroupGet godoc
@@ -19,7 +20,7 @@ import (
 //	@Success  200 {object} []repo.TotalsByOrganizer
 //	@Router   /v1/groups/statistics/locations [GET]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleGroupStatisticsLocations() server.HandlerFunc {
+func (ctrl *V1Controller) HandleGroupStatisticsLocations() errchain.HandlerFunc {
 	fn := func(r *http.Request) ([]repo.TotalsByOrganizer, error) {
 		auth := services.NewContext(r.Context())
 		return ctrl.repo.Groups.StatsLocationsByPurchasePrice(auth, auth.GID)
@@ -36,7 +37,7 @@ func (ctrl *V1Controller) HandleGroupStatisticsLocations() server.HandlerFunc {
 //	@Success  200 {object} []repo.TotalsByOrganizer
 //	@Router   /v1/groups/statistics/labels [GET]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleGroupStatisticsLabels() server.HandlerFunc {
+func (ctrl *V1Controller) HandleGroupStatisticsLabels() errchain.HandlerFunc {
 	fn := func(r *http.Request) ([]repo.TotalsByOrganizer, error) {
 		auth := services.NewContext(r.Context())
 		return ctrl.repo.Groups.StatsLabelsByPurchasePrice(auth, auth.GID)
@@ -53,7 +54,7 @@ func (ctrl *V1Controller) HandleGroupStatisticsLabels() server.HandlerFunc {
 //	@Success  200 {object} repo.GroupStatistics
 //	@Router   /v1/groups/statistics [GET]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleGroupStatistics() server.HandlerFunc {
+func (ctrl *V1Controller) HandleGroupStatistics() errchain.HandlerFunc {
 	fn := func(r *http.Request) (repo.GroupStatistics, error) {
 		auth := services.NewContext(r.Context())
 		return ctrl.repo.Groups.StatsGroup(auth, auth.GID)
@@ -72,7 +73,7 @@ func (ctrl *V1Controller) HandleGroupStatistics() server.HandlerFunc {
 //	@Param 	 end query string false "end date"
 //	@Router   /v1/groups/statistics/purchase-price [GET]
 //	@Security Bearer
-func (ctrl *V1Controller) HandleGroupStatisticsPriceOverTime() server.HandlerFunc {
+func (ctrl *V1Controller) HandleGroupStatisticsPriceOverTime() errchain.HandlerFunc {
 	parseDate := func(datestr string, defaultDate time.Time) (time.Time, error) {
 		if datestr == "" {
 			return defaultDate, nil
@@ -98,6 +99,6 @@ func (ctrl *V1Controller) HandleGroupStatisticsPriceOverTime() server.HandlerFun
 			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		return server.Respond(w, http.StatusOK, stats)
+		return server.JSON(w, http.StatusOK, stats)
 	}
 }

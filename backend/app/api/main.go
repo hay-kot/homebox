@@ -9,6 +9,9 @@ import (
 
 	atlas "ariga.io/atlas/sql/migrate"
 	"entgo.io/ent/dialect/sql/schema"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+
 	"github.com/hay-kot/homebox/backend/app/api/static/docs"
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
@@ -16,7 +19,8 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/sys/config"
 	"github.com/hay-kot/homebox/backend/internal/web/mid"
-	"github.com/hay-kot/homebox/backend/pkgs/server"
+	"github.com/hay-kot/safeserve/errchain"
+	"github.com/hay-kot/safeserve/server"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -123,25 +127,26 @@ func run(cfg *config.Config) error {
 
 	// =========================================================================
 	// Start Server
+
 	logger := log.With().Caller().Logger()
 
-	mwLogger := mid.Logger(logger)
-	if app.conf.Mode == config.ModeDevelopment {
-		mwLogger = mid.SugarLogger(logger)
-	}
+	router := chi.NewMux()
+	router.Use(
+		middleware.RequestID,
+		middleware.RealIP,
+		mid.Logger(logger),
+		middleware.Recoverer,
+		middleware.StripSlashes,
+	)
+
+	chain := errchain.New(mid.Errors(app.server, logger))
+
+	app.mountRoutes(router, chain, app.repos)
 
 	app.server = server.NewServer(
 		server.WithHost(app.conf.Web.Host),
 		server.WithPort(app.conf.Web.Port),
-		server.WithMiddleware(
-			mwLogger,
-			mid.Errors(logger),
-			mid.Panic(app.conf.Mode == config.ModeDevelopment),
-		),
 	)
-
-	app.mountRoutes(app.repos)
-
 	log.Info().Msgf("Starting HTTP Server on %s:%s", app.server.Host, app.server.Port)
 
 	// =========================================================================
@@ -179,5 +184,5 @@ func run(cfg *config.Config) error {
 		}()
 	}
 
-	return app.server.Start()
+	return app.server.Start(router)
 }

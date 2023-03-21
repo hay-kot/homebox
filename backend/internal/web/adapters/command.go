@@ -4,13 +4,14 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/hay-kot/homebox/backend/pkgs/server"
+	"github.com/hay-kot/safeserve/errchain"
+	"github.com/hay-kot/safeserve/server"
 )
 
 type CommandFunc[T any] func(*http.Request) (T, error)
 type CommandIDFunc[T any] func(*http.Request, uuid.UUID) (T, error)
 
-// Command is an HandlerAdapter that returns a server.HandlerFunc that
+// Command is an HandlerAdapter that returns a errchain.HandlerFunc that
 // The command adapters are used to handle commands that do not accept a body
 // or a query. You can think of them as a way to handle RPC style Rest Endpoints.
 //
@@ -22,14 +23,14 @@ type CommandIDFunc[T any] func(*http.Request, uuid.UUID) (T, error)
 //		}
 //
 //	 r.Get("/foo", adapters.Command(fn, http.NoContent))
-func Command[T any](f CommandFunc[T], ok int) server.HandlerFunc {
+func Command[T any](f CommandFunc[T], ok int) errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		res, err := f(r)
 		if err != nil {
 			return err
 		}
 
-		return server.Respond(w, ok, res)
+		return server.JSON(w, ok, res)
 	}
 }
 
@@ -44,7 +45,7 @@ func Command[T any](f CommandFunc[T], ok int) server.HandlerFunc {
 //	}
 //
 //	r.Get("/foo/{id}", adapters.CommandID("id", fn, http.NoContent))
-func CommandID[T any](param string, f CommandIDFunc[T], ok int) server.HandlerFunc {
+func CommandID[T any](param string, f CommandIDFunc[T], ok int) errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ID, err := RouteUUID(r, param)
 		if err != nil {
@@ -56,6 +57,6 @@ func CommandID[T any](param string, f CommandIDFunc[T], ok int) server.HandlerFu
 			return err
 		}
 
-		return server.Respond(w, ok, res)
+		return server.JSON(w, ok, res)
 	}
 }

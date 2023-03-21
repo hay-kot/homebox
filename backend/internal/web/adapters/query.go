@@ -3,7 +3,8 @@ package adapters
 import (
 	"net/http"
 
-	"github.com/hay-kot/homebox/backend/pkgs/server"
+	"github.com/hay-kot/safeserve/errchain"
+	"github.com/hay-kot/safeserve/server"
 )
 
 // Query is a server.Handler that decodes a query from the request and calls the provided function.
@@ -20,7 +21,7 @@ import (
 //	}
 //
 //	r.Get("/foo", adapters.Query(fn, http.StatusOK))
-func Query[T any, Y any](f AdapterFunc[T, Y], ok int) server.HandlerFunc {
+func Query[T any, Y any](f AdapterFunc[T, Y], ok int) errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		q, err := DecodeQuery[T](r)
 		if err != nil {
@@ -32,7 +33,7 @@ func Query[T any, Y any](f AdapterFunc[T, Y], ok int) server.HandlerFunc {
 			return err
 		}
 
-		return server.Respond(w, ok, res)
+		return server.JSON(w, ok, res)
 	}
 }
 
@@ -50,7 +51,7 @@ func Query[T any, Y any](f AdapterFunc[T, Y], ok int) server.HandlerFunc {
 //	}
 //
 //	r.Get("/foo/{id}", adapters.QueryID(fn, http.StatusOK))
-func QueryID[T any, Y any](param string, f IDFunc[T, Y], ok int) server.HandlerFunc {
+func QueryID[T any, Y any](param string, f IDFunc[T, Y], ok int) errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ID, err := RouteUUID(r, param)
 		if err != nil {
@@ -67,6 +68,6 @@ func QueryID[T any, Y any](param string, f IDFunc[T, Y], ok int) server.HandlerF
 			return err
 		}
 
-		return server.Respond(w, ok, res)
+		return server.JSON(w, ok, res)
 	}
 }

@@ -1,106 +1,33 @@
 package mid
 
 import (
-	"fmt"
 	"net/http"
 
-	"github.com/hay-kot/homebox/backend/pkgs/server"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/rs/zerolog"
 )
 
-type statusRecorder struct {
+type spy struct {
 	http.ResponseWriter
-	Status int
+	status int
 }
 
-func (r *statusRecorder) WriteHeader(status int) {
-	r.Status = status
-	r.ResponseWriter.WriteHeader(status)
+func (s *spy) WriteHeader(status int) {
+	s.status = status
+	s.ResponseWriter.WriteHeader(status)
 }
 
-func Logger(log zerolog.Logger) server.Middleware {
-	return func(next server.Handler) server.Handler {
-		return server.HandlerFunc(func(w http.ResponseWriter, r *http.Request) error {
-			traceId := server.GetTraceID(r.Context())
+func Logger(l zerolog.Logger) func(http.Handler) http.Handler {
+	return func(h http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			reqID := r.Context().Value(middleware.RequestIDKey).(string)
 
-			log.Info().
-				Str("trace_id", traceId).
-				Str("method", r.Method).
-				Str("path", r.URL.Path).
-				Str("remove_address", r.RemoteAddr).
-				Msg("request started")
+			l.Info().Str("method", r.Method).Str("path", r.URL.Path).Str("rid", reqID).Msg("request received")
 
-			record := &statusRecorder{ResponseWriter: w, Status: http.StatusOK}
+			s := &spy{ResponseWriter: w}
+			h.ServeHTTP(s, r)
 
-			err := next.ServeHTTP(record, r)
-
-			log.Info().
-				Str("trace_id", traceId).
-				Str("method", r.Method).
-				Str("url", r.URL.Path).
-				Str("remote_address", r.RemoteAddr).
-				Int("status_code", record.Status).
-				Msg("request completed")
-
-			return err
-		})
-	}
-}
-
-func SugarLogger(log zerolog.Logger) server.Middleware {
-	orange := func(s string) string { return "\033[33m" + s + "\033[0m" }
-	aqua := func(s string) string { return "\033[36m" + s + "\033[0m" }
-	red := func(s string) string { return "\033[31m" + s + "\033[0m" }
-	green := func(s string) string { return "\033[32m" + s + "\033[0m" }
-
-	fmtCode := func(code int) string {
-		switch {
-		case code >= 500:
-			return red(fmt.Sprintf("%d", code))
-		case code >= 400:
-			return orange(fmt.Sprintf("%d", code))
-		case code >= 300:
-			return aqua(fmt.Sprintf("%d", code))
-		default:
-			return green(fmt.Sprintf("%d", code))
-		}
-	}
-	bold := func(s string) string { return "\033[1m" + s + "\033[0m" }
-
-	atLeast6 := func(s string) string {
-		for len(s) <= 6 {
-			s += " "
-		}
-		return s
-	}
-
-	return func(next server.Handler) server.Handler {
-		return server.HandlerFunc(func(w http.ResponseWriter, r *http.Request) error {
-			record := &statusRecorder{ResponseWriter: w, Status: http.StatusOK}
-
-			url := fmt.Sprintf("%s %s", r.RequestURI, r.Proto)
-
-			log.Info().
-				Str("trace_id", server.GetTraceID(r.Context())).
-				Str("status", "started").
-				Msgf("%s %s %s",
-					bold(fmtCode(record.Status)),
-					bold(orange(atLeast6(r.Method))),
-					aqua(url),
-				)
-
-			err := next.ServeHTTP(record, r) // Blocks until the next handler returns.
-
-			log.Info().
-				Str("trace_id", server.GetTraceID(r.Context())).
-				Str("status", "completed").
-				Msgf("%s %s %s",
-					bold(fmtCode(record.Status)),
-					bold(orange(atLeast6(r.Method))),
-					aqua(url),
-				)
-
-			return err
+			l.Info().Str("method", r.Method).Str("path", r.URL.Path).Int("status", s.status).Str("rid", reqID).Msg("request finished")
 		})
 	}
 }
