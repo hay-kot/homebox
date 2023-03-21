@@ -29,20 +29,31 @@ func DecodeQuery[T any](r *http.Request) (T, error) {
 	return v, nil
 }
 
+type Validator interface {
+	Validate() error
+}
+
 func DecodeBody[T any](r *http.Request) (T, error) {
-	var v T
+	var val T
 
-	err := server.Decode(r, &v)
+	err := server.Decode(r, &val)
 	if err != nil {
-		return v, errors.Wrap(err, "body decoding error")
+		return val, errors.Wrap(err, "body decoding error")
 	}
 
-	err = validate.Check(v)
+	err = validate.Check(val)
 	if err != nil {
-		return v, errors.Wrap(err, "validation error")
+		return val, err
 	}
 
-	return v, nil
+	if v, ok := any(val).(Validator); ok {
+		err = v.Validate()
+		if err != nil {
+			return val, errors.Wrap(err, "validation error")
+		}
+	}
+
+	return val, nil
 }
 
 func RouteUUID(r *http.Request, key string) (uuid.UUID, error) {

@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -18,25 +19,40 @@ import (
 type MaintenanceEntryRepository struct {
 	db *ent.Client
 }
-type (
-	MaintenanceEntryCreate struct {
-		CompletedDate types.Date `json:"completedDate"`
-		ScheduledDate types.Date `json:"scheduledDate"`
-		Name          string     `json:"name"`
-		Description   string     `json:"description"`
-		Cost          float64    `json:"cost,string"`
-	}
 
+type MaintenanceEntryCreate struct {
+	CompletedDate types.Date `json:"completedDate"`
+	ScheduledDate types.Date `json:"scheduledDate"`
+	Name          string     `json:"name" validate:"required"`
+	Description   string     `json:"description"`
+	Cost          float64    `json:"cost,string"`
+}
+
+func (mc MaintenanceEntryCreate) Validate() error {
+	if mc.CompletedDate.Time().IsZero() && mc.ScheduledDate.Time().IsZero() {
+		return errors.New("either completedDate or scheduledDate must be set")
+	}
+	return nil
+}
+
+type MaintenanceEntryUpdate struct {
+	CompletedDate types.Date `json:"completedDate"`
+	ScheduledDate types.Date `json:"scheduledDate"`
+	Name          string     `json:"name"`
+	Description   string     `json:"description"`
+	Cost          float64    `json:"cost,string"`
+}
+
+func (mu MaintenanceEntryUpdate) Validate() error {
+	if mu.CompletedDate.Time().IsZero() && mu.ScheduledDate.Time().IsZero() {
+		return errors.New("either completedDate or scheduledDate must be set")
+	}
+	return nil
+}
+
+type (
 	MaintenanceEntry struct {
 		ID            uuid.UUID  `json:"id"`
-		CompletedDate types.Date `json:"completedDate"`
-		ScheduledDate types.Date `json:"scheduledDate"`
-		Name          string     `json:"name"`
-		Description   string     `json:"description"`
-		Cost          float64    `json:"cost,string"`
-	}
-
-	MaintenanceEntryUpdate struct {
 		CompletedDate types.Date `json:"completedDate"`
 		ScheduledDate types.Date `json:"scheduledDate"`
 		Name          string     `json:"name"`
