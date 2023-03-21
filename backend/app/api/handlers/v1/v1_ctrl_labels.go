@@ -15,7 +15,7 @@ import (
 //	@Summary  Get All Labels
 //	@Tags     Labels
 //	@Produce  json
-//	@Success  200 {object} Wrapped{items=[]repo.LabelOut}
+//	@Success  200 {object} []repo.LabelOut
 //	@Router   /v1/labels [GET]
 //	@Security Bearer
 func (ctrl *V1Controller) HandleLabelsGetAll() errchain.HandlerFunc {

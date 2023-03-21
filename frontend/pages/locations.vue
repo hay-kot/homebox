@@ -20,7 +20,7 @@
       return [];
     }
 
-    return data.items;
+    return data;
   });
 
   const locationTreeId = "locationTree";

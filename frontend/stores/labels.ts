@@ -19,7 +19,7 @@ export const useLabelStore = defineStore("labels", {
             console.error(result.error);
           }
 
-          this.allLabels = result.data.items;
+          this.allLabels = result.data;
         });
       }
       return state.allLabels ?? [];
@@ -32,7 +32,7 @@ export const useLabelStore = defineStore("labels", {
         return result;
       }
 
-      this.allLabels = result.data.items;
+      this.allLabels = result.data;
       return result;
     },
   },
