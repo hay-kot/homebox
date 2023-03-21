@@ -3,7 +3,7 @@ module github.com/hay-kot/homebox/backend
 go 1.19
 
 require (
-	ariga.io/atlas v0.9.1-0.20230119145809-92243f7c55cb
+	ariga.io/atlas v0.10.0
 	entgo.io/ent v0.11.8
 	github.com/ardanlabs/conf/v3 v3.1.4
 	github.com/containrrr/shoutrrr v0.7.1
