@@ -2,6 +2,7 @@ export type Codes =
   | "AUD"
   | "BGN"
   | "CHF"
+  | "CZK"
   | "DKK"
   | "EUR"
   | "GBP"
@@ -119,5 +120,11 @@ export const currencies: Currency[] = [
     local: "de-CH",
     symbol: "chf",
     name: "Swiss Francs",
+  },
+  {
+    code: "CZK",
+    local: "cs-CZ",
+    symbol: "Kč",
+    name: "Czech Koruna",
   },
 ];
