@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	ariga.io/atlas v0.10.0
-	entgo.io/ent v0.11.8
+	entgo.io/ent v0.11.10
 	github.com/ardanlabs/conf/v3 v3.1.5
 	github.com/containrrr/shoutrrr v0.7.1
 	github.com/go-chi/chi/v5 v5.0.8
@@ -55,6 +55,6 @@ require (
 	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/text v0.8.0 // indirect
-	golang.org/x/tools v0.6.0 // indirect
+	golang.org/x/tools v0.6.1-0.20230222164832-25d2519c8696 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
