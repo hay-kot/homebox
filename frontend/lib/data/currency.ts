@@ -75,7 +75,7 @@ export const currencies: Currency[] = [
     name: "Norwegian Krone",
   },
   {
-    code: "NVD",
+    code: "NZD",
     local: "en-NZ",
     symbol: "NZ$",
     name: "New Zealand Dollar",
