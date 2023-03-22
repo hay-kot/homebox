@@ -12,7 +12,7 @@ before:
 builds:
   - id: homebox-darwin-amd64
     binary: homebox
-    main: ./app/api/main.go
+    main: ./app/api/
     goarch:
       - amd64
     goos:
@@ -25,7 +25,7 @@ builds:
 
   - id: homebox-darwin-arm64
     binary: homebox
-    main: ./app/api/main.go
+    main: ./app/api/
     goarch:
       - arm64
     goos:
@@ -38,7 +38,7 @@ builds:
 
   - id: homebox-linux-amd64
     binary: homebox
-    main: ./app/api/main.go
+    main: ./app/api/
     env:
       - CC=x86_64-linux-gnu-gcc
       - CXX=x86_64-linux-gnu-g++
@@ -53,7 +53,7 @@ builds:
 
   - id: homebox-linux-arm64
     binary: homebox
-    main: ./app/api/main.go
+    main: ./app/api/
     goarch:
       - arm64
     goos:
@@ -68,7 +68,7 @@ builds:
 
   - id: homebox-windows-amd64
     binary: homebox
-    main: ./app/api/main.go
+    main: ./app/api/
     goarch:
       - amd64
     goos:
