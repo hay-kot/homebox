@@ -18,7 +18,7 @@ jobs:
     name: "Cross Compile and Release"
     runs-on: ubuntu-latest
     container:
-      image: goreleaser/goreleaser:v1.20
+      image: ghcr.io/goreleaser/goreleaser-cross:v1.20.2
 
     steps:
       - name: Checkout
