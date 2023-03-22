@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { AnyDetail, Detail, Details } from "~~/components/global/DetailsSection/types";
+  import { AnyDetail, Detail, Details, filterZeroValues } from "~~/components/global/DetailsSection/types";
   import { ItemAttachment } from "~~/lib/api/types/data-contracts";
 
   definePageMeta({
@@ -121,7 +121,7 @@
       return [];
     }
 
-    return [
+    const ret: Details = [
       {
         name: "Description",
         type: "markdown",
@@ -176,6 +176,12 @@
         };
       }),
     ];
+
+    if (!preferences.value.showEmpty) {
+      return filterZeroValues(ret);
+    }
+
+    return ret;
   });
 
   const showAttachments = computed(() => {
@@ -256,6 +262,10 @@
       text: item.value?.warrantyDetails || "",
     });
 
+    if (!preferences.value.showEmpty) {
+      return filterZeroValues(details);
+    }
+
     return details;
   });
 
@@ -267,7 +277,7 @@
   });
 
   const purchaseDetails = computed<Details>(() => {
-    return [
+    const v: Details = [
       {
         name: "Purchased From",
         text: item.value?.purchaseFrom || "",
@@ -284,6 +294,12 @@
         date: true,
       },
     ];
+
+    if (!preferences.value.showEmpty) {
+      return filterZeroValues(v);
+    }
+
+    return v;
   });
 
   const showSold = computed(() => {
@@ -294,7 +310,7 @@
   });
 
   const soldDetails = computed<Details>(() => {
-    return [
+    const v: Details = [
       {
         name: "Sold To",
         text: item.value?.soldTo || "",
@@ -311,6 +327,12 @@
         date: true,
       },
     ];
+
+    if (!preferences.value.showEmpty) {
+      return filterZeroValues(v);
+    }
+
+    return v;
   });
 
   const confirm = useConfirm();
@@ -442,7 +464,7 @@
 
     <section>
       <div class="space-y-6">
-        <BaseCard v-if="!hasNested">
+        <BaseCard v-if="!hasNested" collapsable>
           <template #title> Details </template>
           <template #title-actions>
             <div class="flex flex-wrap justify-between items-center mt-2 gap-4">
@@ -469,9 +491,9 @@
             </div>
           </BaseCard>
 
-          <BaseCard v-if="showAttachments">
+          <BaseCard v-if="showAttachments" collapsable>
             <template #title> Attachments </template>
-            <DetailsSection :details="attachmentDetails">
+            <DetailsSection v-if="attachmentDetails.length > 0" :details="attachmentDetails">
               <template #manuals>
                 <ItemAttachmentsList
                   v-if="attachments.manuals.length > 0"
@@ -501,19 +523,22 @@
                 />
               </template>
             </DetailsSection>
+            <div v-else>
+              <p class="text-base-content/70 px-6 pb-4">No attachments found</p>
+            </div>
           </BaseCard>
 
-          <BaseCard v-if="showPurchase">
+          <BaseCard v-if="showPurchase" collapsable>
             <template #title> Purchase Details </template>
             <DetailsSection :details="purchaseDetails" />
           </BaseCard>
 
-          <BaseCard v-if="showWarranty">
+          <BaseCard v-if="showWarranty" collapsable>
             <template #title> Warranty Details </template>
             <DetailsSection :details="warrantyDetails" />
           </BaseCard>
 
-          <BaseCard v-if="showSold">
+          <BaseCard v-if="showSold" collapsable>
             <template #title> Sold Details </template>
             <DetailsSection :details="soldDetails" />
           </BaseCard>
