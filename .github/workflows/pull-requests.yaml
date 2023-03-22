@@ -27,4 +27,5 @@ jobs:
           fetch-depth: 0
 
       - name: "Cross Compile and Release"
+        working-directory: backend
         run: goreleaser release --snapshot --clean --skip-publish
