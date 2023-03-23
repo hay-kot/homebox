@@ -118,6 +118,20 @@ func (mec *MaintenanceEntryCreate) SetNillableCost(f *float64) *MaintenanceEntry
 	return mec
 }
 
+// SetRemindersEnabled sets the "reminders_enabled" field.
+func (mec *MaintenanceEntryCreate) SetRemindersEnabled(b bool) *MaintenanceEntryCreate {
+	mec.mutation.SetRemindersEnabled(b)
+	return mec
+}
+
+// SetNillableRemindersEnabled sets the "reminders_enabled" field if the given value is not nil.
+func (mec *MaintenanceEntryCreate) SetNillableRemindersEnabled(b *bool) *MaintenanceEntryCreate {
+	if b != nil {
+		mec.SetRemindersEnabled(*b)
+	}
+	return mec
+}
+
 // SetID sets the "id" field.
 func (mec *MaintenanceEntryCreate) SetID(u uuid.UUID) *MaintenanceEntryCreate {
 	mec.mutation.SetID(u)
@@ -184,6 +198,10 @@ func (mec *MaintenanceEntryCreate) defaults() {
 		v := maintenanceentry.DefaultCost
 		mec.mutation.SetCost(v)
 	}
+	if _, ok := mec.mutation.RemindersEnabled(); !ok {
+		v := maintenanceentry.DefaultRemindersEnabled
+		mec.mutation.SetRemindersEnabled(v)
+	}
 	if _, ok := mec.mutation.ID(); !ok {
 		v := maintenanceentry.DefaultID()
 		mec.mutation.SetID(v)
@@ -216,6 +234,9 @@ func (mec *MaintenanceEntryCreate) check() error {
 	}
 	if _, ok := mec.mutation.Cost(); !ok {
 		return &ValidationError{Name: "cost", err: errors.New(`ent: missing required field "MaintenanceEntry.cost"`)}
+	}
+	if _, ok := mec.mutation.RemindersEnabled(); !ok {
+		return &ValidationError{Name: "reminders_enabled", err: errors.New(`ent: missing required field "MaintenanceEntry.reminders_enabled"`)}
 	}
 	if _, ok := mec.mutation.ItemID(); !ok {
 		return &ValidationError{Name: "item", err: errors.New(`ent: missing required edge "MaintenanceEntry.item"`)}
@@ -283,6 +304,10 @@ func (mec *MaintenanceEntryCreate) createSpec() (*MaintenanceEntry, *sqlgraph.Cr
 		_spec.SetField(maintenanceentry.FieldCost, field.TypeFloat64, value)
 		_node.Cost = value
 	}
+	if value, ok := mec.mutation.RemindersEnabled(); ok {
+		_spec.SetField(maintenanceentry.FieldRemindersEnabled, field.TypeBool, value)
+		_node.RemindersEnabled = value
+	}
 	if nodes := mec.mutation.ItemIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -291,10 +316,7 @@ func (mec *MaintenanceEntryCreate) createSpec() (*MaintenanceEntry, *sqlgraph.Cr
 			Columns: []string{maintenanceentry.ItemColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: item.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(item.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

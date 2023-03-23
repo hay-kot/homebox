@@ -96,6 +96,11 @@ func Cost(v float64) predicate.MaintenanceEntry {
 	return predicate.MaintenanceEntry(sql.FieldEQ(FieldCost, v))
 }
 
+// RemindersEnabled applies equality check predicate on the "reminders_enabled" field. It's identical to RemindersEnabledEQ.
+func RemindersEnabled(v bool) predicate.MaintenanceEntry {
+	return predicate.MaintenanceEntry(sql.FieldEQ(FieldRemindersEnabled, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.MaintenanceEntry {
 	return predicate.MaintenanceEntry(sql.FieldEQ(FieldCreatedAt, v))
@@ -474,6 +479,16 @@ func CostLT(v float64) predicate.MaintenanceEntry {
 // CostLTE applies the LTE predicate on the "cost" field.
 func CostLTE(v float64) predicate.MaintenanceEntry {
 	return predicate.MaintenanceEntry(sql.FieldLTE(FieldCost, v))
+}
+
+// RemindersEnabledEQ applies the EQ predicate on the "reminders_enabled" field.
+func RemindersEnabledEQ(v bool) predicate.MaintenanceEntry {
+	return predicate.MaintenanceEntry(sql.FieldEQ(FieldRemindersEnabled, v))
+}
+
+// RemindersEnabledNEQ applies the NEQ predicate on the "reminders_enabled" field.
+func RemindersEnabledNEQ(v bool) predicate.MaintenanceEntry {
+	return predicate.MaintenanceEntry(sql.FieldNEQ(FieldRemindersEnabled, v))
 }
 
 // HasItem applies the HasEdge predicate on the "item" edge.

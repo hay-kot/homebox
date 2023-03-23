@@ -133,10 +133,7 @@ func (aru *AuthRolesUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{authroles.TokenColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: authtokens.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(authtokens.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -149,10 +146,7 @@ func (aru *AuthRolesUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{authroles.TokenColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: authtokens.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(authtokens.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -314,10 +308,7 @@ func (aruo *AuthRolesUpdateOne) sqlSave(ctx context.Context) (_node *AuthRoles, 
 			Columns: []string{authroles.TokenColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: authtokens.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(authtokens.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -330,10 +321,7 @@ func (aruo *AuthRolesUpdateOne) sqlSave(ctx context.Context) (_node *AuthRoles, 
 			Columns: []string{authroles.TokenColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: authtokens.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(authtokens.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

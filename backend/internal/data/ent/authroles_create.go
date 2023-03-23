@@ -143,10 +143,7 @@ func (arc *AuthRolesCreate) createSpec() (*AuthRoles, *sqlgraph.CreateSpec) {
 			Columns: []string{authroles.TokenColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: authtokens.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(authtokens.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

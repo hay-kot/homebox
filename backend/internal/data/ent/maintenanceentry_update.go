@@ -129,6 +129,20 @@ func (meu *MaintenanceEntryUpdate) AddCost(f float64) *MaintenanceEntryUpdate {
 	return meu
 }
 
+// SetRemindersEnabled sets the "reminders_enabled" field.
+func (meu *MaintenanceEntryUpdate) SetRemindersEnabled(b bool) *MaintenanceEntryUpdate {
+	meu.mutation.SetRemindersEnabled(b)
+	return meu
+}
+
+// SetNillableRemindersEnabled sets the "reminders_enabled" field if the given value is not nil.
+func (meu *MaintenanceEntryUpdate) SetNillableRemindersEnabled(b *bool) *MaintenanceEntryUpdate {
+	if b != nil {
+		meu.SetRemindersEnabled(*b)
+	}
+	return meu
+}
+
 // SetItem sets the "item" edge to the Item entity.
 func (meu *MaintenanceEntryUpdate) SetItem(i *Item) *MaintenanceEntryUpdate {
 	return meu.SetItemID(i.ID)
@@ -241,6 +255,9 @@ func (meu *MaintenanceEntryUpdate) sqlSave(ctx context.Context) (n int, err erro
 	if value, ok := meu.mutation.AddedCost(); ok {
 		_spec.AddField(maintenanceentry.FieldCost, field.TypeFloat64, value)
 	}
+	if value, ok := meu.mutation.RemindersEnabled(); ok {
+		_spec.SetField(maintenanceentry.FieldRemindersEnabled, field.TypeBool, value)
+	}
 	if meu.mutation.ItemCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -249,10 +266,7 @@ func (meu *MaintenanceEntryUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Columns: []string{maintenanceentry.ItemColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: item.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(item.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -265,10 +279,7 @@ func (meu *MaintenanceEntryUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Columns: []string{maintenanceentry.ItemColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: item.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(item.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -392,6 +403,20 @@ func (meuo *MaintenanceEntryUpdateOne) SetNillableCost(f *float64) *MaintenanceE
 // AddCost adds f to the "cost" field.
 func (meuo *MaintenanceEntryUpdateOne) AddCost(f float64) *MaintenanceEntryUpdateOne {
 	meuo.mutation.AddCost(f)
+	return meuo
+}
+
+// SetRemindersEnabled sets the "reminders_enabled" field.
+func (meuo *MaintenanceEntryUpdateOne) SetRemindersEnabled(b bool) *MaintenanceEntryUpdateOne {
+	meuo.mutation.SetRemindersEnabled(b)
+	return meuo
+}
+
+// SetNillableRemindersEnabled sets the "reminders_enabled" field if the given value is not nil.
+func (meuo *MaintenanceEntryUpdateOne) SetNillableRemindersEnabled(b *bool) *MaintenanceEntryUpdateOne {
+	if b != nil {
+		meuo.SetRemindersEnabled(*b)
+	}
 	return meuo
 }
 
@@ -537,6 +562,9 @@ func (meuo *MaintenanceEntryUpdateOne) sqlSave(ctx context.Context) (_node *Main
 	if value, ok := meuo.mutation.AddedCost(); ok {
 		_spec.AddField(maintenanceentry.FieldCost, field.TypeFloat64, value)
 	}
+	if value, ok := meuo.mutation.RemindersEnabled(); ok {
+		_spec.SetField(maintenanceentry.FieldRemindersEnabled, field.TypeBool, value)
+	}
 	if meuo.mutation.ItemCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -545,10 +573,7 @@ func (meuo *MaintenanceEntryUpdateOne) sqlSave(ctx context.Context) (_node *Main
 			Columns: []string{maintenanceentry.ItemColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: item.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(item.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -561,10 +586,7 @@ func (meuo *MaintenanceEntryUpdateOne) sqlSave(ctx context.Context) (_node *Main
 			Columns: []string{maintenanceentry.ItemColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: item.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(item.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
