@@ -29,6 +29,17 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v3
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7.30.1
+
+      - name: Build Frontend and Copy to Backend
+        working-directory: frontend
+        run: |
+          pnpm install --shamefully-hoist
+          pnpm run build
+          cp -r ./.output/public ../backend/app/api/static/
+
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v4
         with:
