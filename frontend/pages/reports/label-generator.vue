@@ -178,7 +178,7 @@
 
     const data = `${origin}/a/${assetID}`;
 
-    return `/api/v1/qrcode?data=${encodeURIComponent(data)}&access_token=${api.items.attachmentToken}`;
+    return `/api/v1/qrcode?data=${encodeURIComponent(data)}`;
   }
 
   function getItem(n: number): LabelData {

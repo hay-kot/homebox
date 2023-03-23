@@ -70,16 +70,6 @@ export class BaseAPI {
     this.attachmentToken = attachmentToken;
   }
 
-  // if a attachmentToken is present it will be added to URL as a query param
-  // this is done with a simple appending of the query param to the URL. If your
-  // URL already has a query param, this will not work.
-  authURL(url: string): string {
-    if (this.attachmentToken) {
-      return `/api/v1${url}?access_token=${this.attachmentToken}`;
-    }
-    return url;
-  }
-
   /**
    * dropFields will remove any fields that are specified in the fields array
    * additionally, it will remove the `createdAt` and `updatedAt` fields if they
