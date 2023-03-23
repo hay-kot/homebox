@@ -158,8 +158,6 @@
     location: string;
   };
 
-  const api = useUserApi();
-
   function fmtAssetID(aid: number | string) {
     aid = aid.toString();
 
