@@ -94,7 +94,7 @@
   import { useLabelStore } from "~~/stores/labels";
   import { useLocationStore } from "~~/stores/locations";
 
-  const username = computed(() => authCtx.self?.name || "User");
+  const username = computed(() => authCtx.user?.name || "User");
 
   // Preload currency format
   useFormatCurrency();
