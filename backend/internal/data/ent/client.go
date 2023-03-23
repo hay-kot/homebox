@@ -11,6 +11,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/migrate"
 
+	"entgo.io/ent"
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/attachment"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authroles"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authtokens"
@@ -24,10 +28,6 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/ent/maintenanceentry"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/notifier"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/user"
-
-	"entgo.io/ent/dialect"
-	"entgo.io/ent/dialect/sql"
-	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 // Client is the client that holds all ent builders.
@@ -87,6 +87,55 @@ func (c *Client) init() {
 	c.MaintenanceEntry = NewMaintenanceEntryClient(c.config)
 	c.Notifier = NewNotifierClient(c.config)
 	c.User = NewUserClient(c.config)
+}
+
+type (
+	// config is the configuration for the client and its builder.
+	config struct {
+		// driver used for executing database requests.
+		driver dialect.Driver
+		// debug enable a debug logging.
+		debug bool
+		// log used for logging on debug mode.
+		log func(...any)
+		// hooks to execute on mutations.
+		hooks *hooks
+		// interceptors to execute on queries.
+		inters *inters
+	}
+	// Option function to configure the client.
+	Option func(*config)
+)
+
+// options applies the options on the config object.
+func (c *config) options(opts ...Option) {
+	for _, opt := range opts {
+		opt(c)
+	}
+	if c.debug {
+		c.driver = dialect.Debug(c.driver, c.log)
+	}
+}
+
+// Debug enables debug logging on the ent.Driver.
+func Debug() Option {
+	return func(c *config) {
+		c.debug = true
+	}
+}
+
+// Log sets the logging function for debug mode.
+func Log(fn func(...any)) Option {
+	return func(c *config) {
+		c.log = fn
+	}
+}
+
+// Driver configures the client driver.
+func Driver(driver dialect.Driver) Option {
+	return func(c *config) {
+		c.driver = driver
+	}
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -193,37 +242,25 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Attachment.Use(hooks...)
-	c.AuthRoles.Use(hooks...)
-	c.AuthTokens.Use(hooks...)
-	c.Document.Use(hooks...)
-	c.Group.Use(hooks...)
-	c.GroupInvitationToken.Use(hooks...)
-	c.Item.Use(hooks...)
-	c.ItemField.Use(hooks...)
-	c.Label.Use(hooks...)
-	c.Location.Use(hooks...)
-	c.MaintenanceEntry.Use(hooks...)
-	c.Notifier.Use(hooks...)
-	c.User.Use(hooks...)
+	for _, n := range []interface{ Use(...Hook) }{
+		c.Attachment, c.AuthRoles, c.AuthTokens, c.Document, c.Group,
+		c.GroupInvitationToken, c.Item, c.ItemField, c.Label, c.Location,
+		c.MaintenanceEntry, c.Notifier, c.User,
+	} {
+		n.Use(hooks...)
+	}
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	c.Attachment.Intercept(interceptors...)
-	c.AuthRoles.Intercept(interceptors...)
-	c.AuthTokens.Intercept(interceptors...)
-	c.Document.Intercept(interceptors...)
-	c.Group.Intercept(interceptors...)
-	c.GroupInvitationToken.Intercept(interceptors...)
-	c.Item.Intercept(interceptors...)
-	c.ItemField.Intercept(interceptors...)
-	c.Label.Intercept(interceptors...)
-	c.Location.Intercept(interceptors...)
-	c.MaintenanceEntry.Intercept(interceptors...)
-	c.Notifier.Intercept(interceptors...)
-	c.User.Intercept(interceptors...)
+	for _, n := range []interface{ Intercept(...Interceptor) }{
+		c.Attachment, c.AuthRoles, c.AuthTokens, c.Document, c.Group,
+		c.GroupInvitationToken, c.Item, c.ItemField, c.Label, c.Location,
+		c.MaintenanceEntry, c.Notifier, c.User,
+	} {
+		n.Intercept(interceptors...)
+	}
 }
 
 // Mutate implements the ent.Mutator interface.
@@ -2369,3 +2406,15 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 		return nil, fmt.Errorf("ent: unknown User mutation op: %q", m.Op())
 	}
 }
+
+// hooks and interceptors per client, for fast access.
+type (
+	hooks struct {
+		Attachment, AuthRoles, AuthTokens, Document, Group, GroupInvitationToken, Item,
+		ItemField, Label, Location, MaintenanceEntry, Notifier, User []ent.Hook
+	}
+	inters struct {
+		Attachment, AuthRoles, AuthTokens, Document, Group, GroupInvitationToken, Item,
+		ItemField, Label, Location, MaintenanceEntry, Notifier, User []ent.Interceptor
+	}
+)

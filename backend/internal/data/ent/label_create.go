@@ -266,10 +266,7 @@ func (lc *LabelCreate) createSpec() (*Label, *sqlgraph.CreateSpec) {
 			Columns: []string{label.GroupColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: group.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(group.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -286,10 +283,7 @@ func (lc *LabelCreate) createSpec() (*Label, *sqlgraph.CreateSpec) {
 			Columns: label.ItemsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: item.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(item.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

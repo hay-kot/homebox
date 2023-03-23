@@ -277,10 +277,7 @@ func (lc *LocationCreate) createSpec() (*Location, *sqlgraph.CreateSpec) {
 			Columns: []string{location.GroupColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: group.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(group.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -297,10 +294,7 @@ func (lc *LocationCreate) createSpec() (*Location, *sqlgraph.CreateSpec) {
 			Columns: []string{location.ParentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: location.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(location.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -317,10 +311,7 @@ func (lc *LocationCreate) createSpec() (*Location, *sqlgraph.CreateSpec) {
 			Columns: []string{location.ChildrenColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: location.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(location.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -336,10 +327,7 @@ func (lc *LocationCreate) createSpec() (*Location, *sqlgraph.CreateSpec) {
 			Columns: []string{location.ItemsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: item.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(item.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

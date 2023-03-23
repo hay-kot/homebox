@@ -231,10 +231,7 @@ func (ac *AttachmentCreate) createSpec() (*Attachment, *sqlgraph.CreateSpec) {
 			Columns: []string{attachment.ItemColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: item.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(item.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -251,10 +248,7 @@ func (ac *AttachmentCreate) createSpec() (*Attachment, *sqlgraph.CreateSpec) {
 			Columns: []string{attachment.DocumentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: document.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(document.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

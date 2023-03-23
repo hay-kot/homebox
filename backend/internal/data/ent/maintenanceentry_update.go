@@ -249,10 +249,7 @@ func (meu *MaintenanceEntryUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Columns: []string{maintenanceentry.ItemColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: item.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(item.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -265,10 +262,7 @@ func (meu *MaintenanceEntryUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Columns: []string{maintenanceentry.ItemColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: item.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(item.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -545,10 +539,7 @@ func (meuo *MaintenanceEntryUpdateOne) sqlSave(ctx context.Context) (_node *Main
 			Columns: []string{maintenanceentry.ItemColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: item.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(item.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -561,10 +552,7 @@ func (meuo *MaintenanceEntryUpdateOne) sqlSave(ctx context.Context) (_node *Main
 			Columns: []string{maintenanceentry.ItemColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: item.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(item.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

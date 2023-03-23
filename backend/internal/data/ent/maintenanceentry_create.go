@@ -291,10 +291,7 @@ func (mec *MaintenanceEntryCreate) createSpec() (*MaintenanceEntry, *sqlgraph.Cr
 			Columns: []string{maintenanceentry.ItemColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: item.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(item.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

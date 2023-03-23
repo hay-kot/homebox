@@ -9,6 +9,8 @@ import (
 	"sync"
 	"time"
 
+	"entgo.io/ent"
+	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/attachment"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authroles"
@@ -24,9 +26,6 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/ent/notifier"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/predicate"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/user"
-
-	"entgo.io/ent"
-	"entgo.io/ent/dialect/sql"
 )
 
 const (

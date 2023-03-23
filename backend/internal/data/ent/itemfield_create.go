@@ -341,10 +341,7 @@ func (ifc *ItemFieldCreate) createSpec() (*ItemField, *sqlgraph.CreateSpec) {
 			Columns: []string{itemfield.ItemColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: item.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(item.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

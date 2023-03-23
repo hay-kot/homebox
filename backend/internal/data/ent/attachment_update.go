@@ -168,10 +168,7 @@ func (au *AttachmentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{attachment.ItemColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: item.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(item.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -184,10 +181,7 @@ func (au *AttachmentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{attachment.ItemColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: item.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(item.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -203,10 +197,7 @@ func (au *AttachmentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{attachment.DocumentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: document.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(document.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -219,10 +210,7 @@ func (au *AttachmentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{attachment.DocumentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: document.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(document.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -417,10 +405,7 @@ func (auo *AttachmentUpdateOne) sqlSave(ctx context.Context) (_node *Attachment,
 			Columns: []string{attachment.ItemColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: item.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(item.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -433,10 +418,7 @@ func (auo *AttachmentUpdateOne) sqlSave(ctx context.Context) (_node *Attachment,
 			Columns: []string{attachment.ItemColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: item.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(item.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -452,10 +434,7 @@ func (auo *AttachmentUpdateOne) sqlSave(ctx context.Context) (_node *Attachment,
 			Columns: []string{attachment.DocumentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: document.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(document.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -468,10 +447,7 @@ func (auo *AttachmentUpdateOne) sqlSave(ctx context.Context) (_node *Attachment,
 			Columns: []string{attachment.DocumentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: document.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(document.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

@@ -370,10 +370,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Columns: []string{user.GroupColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: group.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(group.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -390,10 +387,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Columns: []string{user.AuthTokensColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: authtokens.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(authtokens.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -409,10 +403,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Columns: []string{user.NotifiersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: notifier.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(notifier.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

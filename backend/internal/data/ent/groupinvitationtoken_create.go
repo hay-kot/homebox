@@ -254,10 +254,7 @@ func (gitc *GroupInvitationTokenCreate) createSpec() (*GroupInvitationToken, *sq
 			Columns: []string{groupinvitationtoken.GroupColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: group.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(group.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
