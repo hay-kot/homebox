@@ -21,8 +21,9 @@ type (
 	}
 
 	LoginForm struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
+		Username     string `json:"username"`
+		Password     string `json:"password"`
+		StayLoggedIn bool   `json:"stayLoggedIn"`
 	}
 )
 
@@ -34,6 +35,7 @@ type (
 //	@Accept  application/json
 //	@Param   username formData string false "string" example(admin@admin.com)
 //	@Param   password formData string false "string" example(admin)
+//	@Param    payload body     LoginForm true "Login Data"
 //	@Produce json
 //	@Success 200 {object} TokenResponse
 //	@Router  /v1/users/login [POST]
@@ -50,6 +52,7 @@ func (ctrl *V1Controller) HandleAuthLogin() errchain.HandlerFunc {
 
 			loginForm.Username = r.PostFormValue("username")
 			loginForm.Password = r.PostFormValue("password")
+			loginForm.StayLoggedIn = r.PostFormValue("stayLoggedIn") == "true"
 		case "application/json":
 			err := server.Decode(r, loginForm)
 			if err != nil {
@@ -73,7 +76,7 @@ func (ctrl *V1Controller) HandleAuthLogin() errchain.HandlerFunc {
 			)
 		}
 
-		newToken, err := ctrl.svc.User.Login(r.Context(), strings.ToLower(loginForm.Username), loginForm.Password)
+		newToken, err := ctrl.svc.User.Login(r.Context(), strings.ToLower(loginForm.Username), loginForm.Password, loginForm.StayLoggedIn)
 		if err != nil {
 			return validate.NewRequestError(errors.New("authentication failed"), http.StatusInternalServerError)
 		}

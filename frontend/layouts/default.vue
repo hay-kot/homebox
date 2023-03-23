@@ -226,11 +226,6 @@
   const api = useUserApi();
 
   async function logout() {
-    const { error } = await authCtx.logout(api);
-    if (error) {
-      return;
-    }
-
-    navigateTo("/");
+    await authCtx.logout(api);
   }
 </script>

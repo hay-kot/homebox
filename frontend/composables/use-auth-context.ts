@@ -36,12 +36,16 @@ export interface IAuthContext {
   /**
    * Logs in the user and sets the authorization context via cookies
    */
-  login(api: PublicApi, email: string, password: string): ReturnType<PublicApi["login"]>;
+  login(api: PublicApi, email: string, password: string, stayLoggedIn: boolean): ReturnType<PublicApi["login"]>;
 }
 
 class AuthContext implements IAuthContext {
   // eslint-disable-next-line no-use-before-define
   private static _instance?: AuthContext;
+
+  private static readonly cookieTokenKey = "hb.auth.token";
+  private static readonly cookieExpiresAtKey = "hb.auth.expires_at";
+  private static readonly cookieAttachmentTokenKey = "hb.auth.attachment_token";
 
   user?: UserOut;
   private _token: CookieRef<string | null>;
@@ -68,7 +72,11 @@ class AuthContext implements IAuthContext {
 
   static get instance() {
     if (!this._instance) {
-      this._instance = new AuthContext("hb.auth.token", "hb.auth.expires_at", "hb.auth.attachment_token");
+      this._instance = new AuthContext(
+        AuthContext.cookieTokenKey,
+        AuthContext.cookieExpiresAtKey,
+        AuthContext.cookieAttachmentTokenKey
+      );
     }
 
     return this._instance;
@@ -94,29 +102,21 @@ class AuthContext implements IAuthContext {
     this.user = undefined;
 
     // Delete the cookies
-    // @ts-expect-error
-    this._token.value = undefined;
-    // @ts-expect-error
-    this._expiresAt.value = undefined;
-    // @ts-expect-error
-    this._attachmentToken.value = undefined;
+    this._token.value = null;
+    this._expiresAt.value = null;
+    this._attachmentToken.value = null;
 
+    navigateTo("/");
     console.log("Session invalidated");
   }
 
-  async login(api: PublicApi, email: string, password: string) {
-    const r = await api.login(email, password);
+  async login(api: PublicApi, email: string, password: string, stayLoggedIn: boolean) {
+    const r = await api.login(email, password, stayLoggedIn);
 
     if (!r.error) {
       this._token.value = r.data.token;
       this._expiresAt.value = r.data.expiresAt as string;
       this._attachmentToken.value = r.data.attachmentToken;
-
-      console.log({
-        token: this._token.value,
-        expiresAt: this._expiresAt.value,
-        attachmentToken: this._attachmentToken.value,
-      });
     }
 
     return r;

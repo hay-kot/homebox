@@ -25,7 +25,7 @@ func (a *app) SetupDemo() {
 	}
 
 	// First check if we've already setup a demo user and skip if so
-	_, err := a.services.User.Login(context.Background(), registration.Email, registration.Password)
+	_, err := a.services.User.Login(context.Background(), registration.Email, registration.Password, false)
 	if err == nil {
 		return
 	}
@@ -36,7 +36,7 @@ func (a *app) SetupDemo() {
 		log.Fatal().Msg("Failed to setup demo")
 	}
 
-	token, _ := a.services.User.Login(context.Background(), registration.Email, registration.Password)
+	token, _ := a.services.User.Login(context.Background(), registration.Email, registration.Password, false)
 	self, _ := a.services.User.GetSelf(context.Background(), token.Raw)
 
 	_, err = a.services.Items.CsvImport(context.Background(), self.GroupID, strings.NewReader(csvText))
