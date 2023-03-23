@@ -22,10 +22,11 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/web/mid"
 	"github.com/hay-kot/safeserve/errchain"
 	"github.com/hay-kot/safeserve/server"
-	_ "github.com/mattn/go-sqlite3"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/rs/zerolog/pkgerrors"
+
+	_ "github.com/hay-kot/homebox/backend/pkgs/cgofreesqlite"
 )
 
 var (

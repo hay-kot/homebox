@@ -1,84 +1,30 @@
 # This is an example .goreleaser.yml file with some sensible defaults.
 # Make sure to check the documentation at https://goreleaser.com
-env:
-  - CGO_ENABLED=1
 before:
   hooks:
     # You may remove this if you don't use go modules.
     - go mod tidy
     # you may remove this if you don't need go generate
     - go generate ./...
-
 builds:
-  - id: homebox-darwin-amd64
-    binary: homebox
-    main: ./app/api/
-    goarch:
-      - amd64
-    goos:
-      - darwin
+  - main: ./app/api
     env:
-      - CC=o64-clang
-      - CXX=o64-clang++
-    flags:
-      - -trimpath
-
-  - id: homebox-darwin-arm64
-    binary: homebox
-    main: ./app/api/
-    goarch:
-      - arm64
-    goos:
-      - darwin
-    env:
-      - CC=oa64-clang
-      - CXX=oa64-clang++
-    flags:
-      - -trimpath
-
-  - id: homebox-linux-amd64
-    binary: homebox
-    main: ./app/api/
-    env:
-      - CC=x86_64-linux-gnu-gcc
-      - CXX=x86_64-linux-gnu-g++
-    goarch:
-      - amd64
+      - CGO_ENABLED=0
     goos:
       - linux
-    flags:
-      - -trimpath
-    ldflags:
-      - -extldflags "-lc -lrt -lpthread --static"
-
-  - id: homebox-linux-arm64
-    binary: homebox
-    main: ./app/api/
-    goarch:
-      - arm64
-    goos:
-      - linux
-    env:
-      - CC=aarch64-linux-gnu-gcc
-      - CXX=aarch64-linux-gnu-g++
-    flags:
-      - -trimpath
-    ldflags:
-      - -extldflags "-lc -lrt -lpthread --static"
-
-  - id: homebox-windows-amd64
-    binary: homebox
-    main: ./app/api/
-    goarch:
-      - amd64
-    goos:
       - windows
-    env:
-      - CC=x86_64-w64-mingw32-gcc
-      - CXX=x86_64-w64-mingw32-g++
-    flags:
-      - -trimpath
-      - -buildmode=exe
+      - darwin
+    goarch:
+      - amd64
+      - "386"
+      - arm
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm
+      - goos: windows
+        goarch: "386"
+
 
 archives:
   - format: tar.gz
