@@ -46,8 +46,13 @@ export function filterZeroValues(details: Details): Details {
         return !!detail.text;
       case "link":
         return !!detail.text && !!detail.href;
-      default:
+      case undefined:
+      case "text":
+      case "markdown":
         return detail.text !== null && detail.text !== "" && detail.text !== undefined;
+      default:
+        console.warn("Unknown detail type (this should never happen)", detail);
+        return false;
     }
   });
 }
