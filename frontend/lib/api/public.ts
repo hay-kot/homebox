@@ -13,7 +13,7 @@ export class PublicApi extends BaseAPI {
     return this.http.get<ApiSummary>({ url: route("/status") });
   }
 
-  public login(username: string, password: string, stayLoggedIn: boolean) {
+  public login(username: string, password: string, stayLoggedIn = false) {
     return this.http.post<LoginForm, TokenResponse>({
       url: route("/users/login"),
       body: {
