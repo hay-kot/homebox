@@ -34,8 +34,6 @@ type MaintenanceEntry struct {
 	Description string `json:"description,omitempty"`
 	// Cost holds the value of the "cost" field.
 	Cost float64 `json:"cost,omitempty"`
-	// RemindersEnabled holds the value of the "reminders_enabled" field.
-	RemindersEnabled bool `json:"reminders_enabled,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the MaintenanceEntryQuery when eager-loading is set.
 	Edges MaintenanceEntryEdges `json:"edges"`
@@ -68,8 +66,6 @@ func (*MaintenanceEntry) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case maintenanceentry.FieldRemindersEnabled:
-			values[i] = new(sql.NullBool)
 		case maintenanceentry.FieldCost:
 			values[i] = new(sql.NullFloat64)
 		case maintenanceentry.FieldName, maintenanceentry.FieldDescription:
@@ -147,12 +143,6 @@ func (me *MaintenanceEntry) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				me.Cost = value.Float64
 			}
-		case maintenanceentry.FieldRemindersEnabled:
-			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field reminders_enabled", values[i])
-			} else if value.Valid {
-				me.RemindersEnabled = value.Bool
-			}
 		}
 	}
 	return nil
@@ -209,9 +199,6 @@ func (me *MaintenanceEntry) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("cost=")
 	builder.WriteString(fmt.Sprintf("%v", me.Cost))
-	builder.WriteString(", ")
-	builder.WriteString("reminders_enabled=")
-	builder.WriteString(fmt.Sprintf("%v", me.RemindersEnabled))
 	builder.WriteByte(')')
 	return builder.String()
 }

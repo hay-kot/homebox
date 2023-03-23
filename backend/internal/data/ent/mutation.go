@@ -9002,24 +9002,23 @@ func (m *LocationMutation) ResetEdge(name string) error {
 // MaintenanceEntryMutation represents an operation that mutates the MaintenanceEntry nodes in the graph.
 type MaintenanceEntryMutation struct {
 	config
-	op                Op
-	typ               string
-	id                *uuid.UUID
-	created_at        *time.Time
-	updated_at        *time.Time
-	date              *time.Time
-	scheduled_date    *time.Time
-	name              *string
-	description       *string
-	cost              *float64
-	addcost           *float64
-	reminders_enabled *bool
-	clearedFields     map[string]struct{}
-	item              *uuid.UUID
-	cleareditem       bool
-	done              bool
-	oldValue          func(context.Context) (*MaintenanceEntry, error)
-	predicates        []predicate.MaintenanceEntry
+	op             Op
+	typ            string
+	id             *uuid.UUID
+	created_at     *time.Time
+	updated_at     *time.Time
+	date           *time.Time
+	scheduled_date *time.Time
+	name           *string
+	description    *string
+	cost           *float64
+	addcost        *float64
+	clearedFields  map[string]struct{}
+	item           *uuid.UUID
+	cleareditem    bool
+	done           bool
+	oldValue       func(context.Context) (*MaintenanceEntry, error)
+	predicates     []predicate.MaintenanceEntry
 }
 
 var _ ent.Mutation = (*MaintenanceEntryMutation)(nil)
@@ -9473,42 +9472,6 @@ func (m *MaintenanceEntryMutation) ResetCost() {
 	m.addcost = nil
 }
 
-// SetRemindersEnabled sets the "reminders_enabled" field.
-func (m *MaintenanceEntryMutation) SetRemindersEnabled(b bool) {
-	m.reminders_enabled = &b
-}
-
-// RemindersEnabled returns the value of the "reminders_enabled" field in the mutation.
-func (m *MaintenanceEntryMutation) RemindersEnabled() (r bool, exists bool) {
-	v := m.reminders_enabled
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRemindersEnabled returns the old "reminders_enabled" field's value of the MaintenanceEntry entity.
-// If the MaintenanceEntry object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MaintenanceEntryMutation) OldRemindersEnabled(ctx context.Context) (v bool, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRemindersEnabled is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRemindersEnabled requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRemindersEnabled: %w", err)
-	}
-	return oldValue.RemindersEnabled, nil
-}
-
-// ResetRemindersEnabled resets all changes to the "reminders_enabled" field.
-func (m *MaintenanceEntryMutation) ResetRemindersEnabled() {
-	m.reminders_enabled = nil
-}
-
 // ClearItem clears the "item" edge to the Item entity.
 func (m *MaintenanceEntryMutation) ClearItem() {
 	m.cleareditem = true
@@ -9569,7 +9532,7 @@ func (m *MaintenanceEntryMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *MaintenanceEntryMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 8)
 	if m.created_at != nil {
 		fields = append(fields, maintenanceentry.FieldCreatedAt)
 	}
@@ -9593,9 +9556,6 @@ func (m *MaintenanceEntryMutation) Fields() []string {
 	}
 	if m.cost != nil {
 		fields = append(fields, maintenanceentry.FieldCost)
-	}
-	if m.reminders_enabled != nil {
-		fields = append(fields, maintenanceentry.FieldRemindersEnabled)
 	}
 	return fields
 }
@@ -9621,8 +9581,6 @@ func (m *MaintenanceEntryMutation) Field(name string) (ent.Value, bool) {
 		return m.Description()
 	case maintenanceentry.FieldCost:
 		return m.Cost()
-	case maintenanceentry.FieldRemindersEnabled:
-		return m.RemindersEnabled()
 	}
 	return nil, false
 }
@@ -9648,8 +9606,6 @@ func (m *MaintenanceEntryMutation) OldField(ctx context.Context, name string) (e
 		return m.OldDescription(ctx)
 	case maintenanceentry.FieldCost:
 		return m.OldCost(ctx)
-	case maintenanceentry.FieldRemindersEnabled:
-		return m.OldRemindersEnabled(ctx)
 	}
 	return nil, fmt.Errorf("unknown MaintenanceEntry field %s", name)
 }
@@ -9714,13 +9670,6 @@ func (m *MaintenanceEntryMutation) SetField(name string, value ent.Value) error 
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCost(v)
-		return nil
-	case maintenanceentry.FieldRemindersEnabled:
-		v, ok := value.(bool)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRemindersEnabled(v)
 		return nil
 	}
 	return fmt.Errorf("unknown MaintenanceEntry field %s", name)
@@ -9830,9 +9779,6 @@ func (m *MaintenanceEntryMutation) ResetField(name string) error {
 		return nil
 	case maintenanceentry.FieldCost:
 		m.ResetCost()
-		return nil
-	case maintenanceentry.FieldRemindersEnabled:
-		m.ResetRemindersEnabled()
 		return nil
 	}
 	return fmt.Errorf("unknown MaintenanceEntry field %s", name)

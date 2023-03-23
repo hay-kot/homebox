@@ -473,10 +473,6 @@ func init() {
 	maintenanceentryDescCost := maintenanceentryFields[5].Descriptor()
 	// maintenanceentry.DefaultCost holds the default value on creation for the cost field.
 	maintenanceentry.DefaultCost = maintenanceentryDescCost.Default.(float64)
-	// maintenanceentryDescRemindersEnabled is the schema descriptor for reminders_enabled field.
-	maintenanceentryDescRemindersEnabled := maintenanceentryFields[6].Descriptor()
-	// maintenanceentry.DefaultRemindersEnabled holds the default value on creation for the reminders_enabled field.
-	maintenanceentry.DefaultRemindersEnabled = maintenanceentryDescRemindersEnabled.Default.(bool)
 	// maintenanceentryDescID is the schema descriptor for id field.
 	maintenanceentryDescID := maintenanceentryMixinFields0[0].Descriptor()
 	// maintenanceentry.DefaultID holds the default value on creation for the id field.

@@ -29,8 +29,6 @@ const (
 	FieldDescription = "description"
 	// FieldCost holds the string denoting the cost field in the database.
 	FieldCost = "cost"
-	// FieldRemindersEnabled holds the string denoting the reminders_enabled field in the database.
-	FieldRemindersEnabled = "reminders_enabled"
 	// EdgeItem holds the string denoting the item edge name in mutations.
 	EdgeItem = "item"
 	// Table holds the table name of the maintenanceentry in the database.
@@ -55,7 +53,6 @@ var Columns = []string{
 	FieldName,
 	FieldDescription,
 	FieldCost,
-	FieldRemindersEnabled,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -81,8 +78,6 @@ var (
 	DescriptionValidator func(string) error
 	// DefaultCost holds the default value on creation for the "cost" field.
 	DefaultCost float64
-	// DefaultRemindersEnabled holds the default value on creation for the "reminders_enabled" field.
-	DefaultRemindersEnabled bool
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )

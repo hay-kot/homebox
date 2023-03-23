@@ -129,20 +129,6 @@ func (meu *MaintenanceEntryUpdate) AddCost(f float64) *MaintenanceEntryUpdate {
 	return meu
 }
 
-// SetRemindersEnabled sets the "reminders_enabled" field.
-func (meu *MaintenanceEntryUpdate) SetRemindersEnabled(b bool) *MaintenanceEntryUpdate {
-	meu.mutation.SetRemindersEnabled(b)
-	return meu
-}
-
-// SetNillableRemindersEnabled sets the "reminders_enabled" field if the given value is not nil.
-func (meu *MaintenanceEntryUpdate) SetNillableRemindersEnabled(b *bool) *MaintenanceEntryUpdate {
-	if b != nil {
-		meu.SetRemindersEnabled(*b)
-	}
-	return meu
-}
-
 // SetItem sets the "item" edge to the Item entity.
 func (meu *MaintenanceEntryUpdate) SetItem(i *Item) *MaintenanceEntryUpdate {
 	return meu.SetItemID(i.ID)
@@ -254,9 +240,6 @@ func (meu *MaintenanceEntryUpdate) sqlSave(ctx context.Context) (n int, err erro
 	}
 	if value, ok := meu.mutation.AddedCost(); ok {
 		_spec.AddField(maintenanceentry.FieldCost, field.TypeFloat64, value)
-	}
-	if value, ok := meu.mutation.RemindersEnabled(); ok {
-		_spec.SetField(maintenanceentry.FieldRemindersEnabled, field.TypeBool, value)
 	}
 	if meu.mutation.ItemCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -406,20 +389,6 @@ func (meuo *MaintenanceEntryUpdateOne) AddCost(f float64) *MaintenanceEntryUpdat
 	return meuo
 }
 
-// SetRemindersEnabled sets the "reminders_enabled" field.
-func (meuo *MaintenanceEntryUpdateOne) SetRemindersEnabled(b bool) *MaintenanceEntryUpdateOne {
-	meuo.mutation.SetRemindersEnabled(b)
-	return meuo
-}
-
-// SetNillableRemindersEnabled sets the "reminders_enabled" field if the given value is not nil.
-func (meuo *MaintenanceEntryUpdateOne) SetNillableRemindersEnabled(b *bool) *MaintenanceEntryUpdateOne {
-	if b != nil {
-		meuo.SetRemindersEnabled(*b)
-	}
-	return meuo
-}
-
 // SetItem sets the "item" edge to the Item entity.
 func (meuo *MaintenanceEntryUpdateOne) SetItem(i *Item) *MaintenanceEntryUpdateOne {
 	return meuo.SetItemID(i.ID)
@@ -561,9 +530,6 @@ func (meuo *MaintenanceEntryUpdateOne) sqlSave(ctx context.Context) (_node *Main
 	}
 	if value, ok := meuo.mutation.AddedCost(); ok {
 		_spec.AddField(maintenanceentry.FieldCost, field.TypeFloat64, value)
-	}
-	if value, ok := meuo.mutation.RemindersEnabled(); ok {
-		_spec.SetField(maintenanceentry.FieldRemindersEnabled, field.TypeBool, value)
 	}
 	if meuo.mutation.ItemCleared() {
 		edge := &sqlgraph.EdgeSpec{

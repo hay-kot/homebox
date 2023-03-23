@@ -328,7 +328,6 @@ var (
 		{Name: "name", Type: field.TypeString, Size: 255},
 		{Name: "description", Type: field.TypeString, Nullable: true, Size: 2500},
 		{Name: "cost", Type: field.TypeFloat64, Default: 0},
-		{Name: "reminders_enabled", Type: field.TypeBool, Default: false},
 		{Name: "item_id", Type: field.TypeUUID},
 	}
 	// MaintenanceEntriesTable holds the schema information for the "maintenance_entries" table.
@@ -339,7 +338,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "maintenance_entries_items_maintenance_entries",
-				Columns:    []*schema.Column{MaintenanceEntriesColumns[9]},
+				Columns:    []*schema.Column{MaintenanceEntriesColumns[8]},
 				RefColumns: []*schema.Column{ItemsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
