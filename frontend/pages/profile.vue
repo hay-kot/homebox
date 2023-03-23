@@ -82,14 +82,15 @@
   const auth = useAuthContext();
 
   const details = computed(() => {
+    console.log(auth.user);
     return [
       {
         name: "Name",
-        text: auth.self?.name || "Unknown",
+        text: auth.user?.name || "Unknown",
       },
       {
         name: "Email",
-        text: auth.self?.email || "Unknown",
+        text: auth.user?.email || "Unknown",
       },
     ] as Detail[];
   });

@@ -94,7 +94,7 @@
   import { useLabelStore } from "~~/stores/labels";
   import { useLocationStore } from "~~/stores/locations";
 
-  const username = computed(() => authCtx.self?.name || "User");
+  const username = computed(() => authCtx.user?.name || "User");
 
   // Preload currency format
   useFormatCurrency();
@@ -226,11 +226,6 @@
   const api = useUserApi();
 
   async function logout() {
-    const { error } = await authCtx.logout(api);
-    if (error) {
-      return;
-    }
-
-    navigateTo("/");
+    await authCtx.logout(api);
   }
 </script>

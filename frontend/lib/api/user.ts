@@ -39,19 +39,4 @@ export class UserClient extends BaseAPI {
 
     Object.freeze(this);
   }
-
-  /** @deprecated use this.user.self() */
-  public self() {
-    return this.user.self();
-  }
-
-  /** @deprecated use this.user.logout() */
-  public logout() {
-    return this.user.logout();
-  }
-
-  /** @deprecated use this.user.delete() */
-  public deleteAccount() {
-    return this.user.delete();
-  }
 }

@@ -34,6 +34,7 @@ export function useUserApi(): UserClient {
   requests.addResponseInterceptor(logger);
   requests.addResponseInterceptor(r => {
     if (r.status === 401) {
+      console.error("unauthorized request, invalidating session");
       authCtx.invalidateSession();
     }
   });

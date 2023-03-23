@@ -412,6 +412,12 @@ export interface ItemAttachmentToken {
   token: string;
 }
 
+export interface LoginForm {
+  password: string;
+  stayLoggedIn: boolean;
+  username: string;
+}
+
 export interface TokenResponse {
   attachmentToken: string;
   expiresAt: Date | string;

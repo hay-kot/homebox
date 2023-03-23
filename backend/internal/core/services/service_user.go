@@ -140,12 +140,18 @@ func (svc *UserService) UpdateSelf(ctx context.Context, ID uuid.UUID, data repo.
 // ============================================================================
 // User Authentication
 
-func (svc *UserService) createSessionToken(ctx context.Context, userId uuid.UUID) (UserAuthTokenDetail, error) {
+func (svc *UserService) createSessionToken(ctx context.Context, userId uuid.UUID, extendedSession bool) (UserAuthTokenDetail, error) {
 	attachmentToken := hasher.GenerateToken()
+
+	expiresAt := time.Now().Add(oneWeek)
+	if extendedSession {
+		expiresAt = time.Now().Add(oneWeek * 4)
+	}
+
 	attachmentData := repo.UserAuthTokenCreate{
 		UserID:    userId,
 		TokenHash: attachmentToken.Hash,
-		ExpiresAt: time.Now().Add(oneWeek),
+		ExpiresAt: expiresAt,
 	}
 
 	_, err := svc.repos.AuthTokens.CreateToken(ctx, attachmentData, authroles.RoleAttachments)
@@ -157,7 +163,7 @@ func (svc *UserService) createSessionToken(ctx context.Context, userId uuid.UUID
 	data := repo.UserAuthTokenCreate{
 		UserID:    userId,
 		TokenHash: userToken.Hash,
-		ExpiresAt: time.Now().Add(oneWeek),
+		ExpiresAt: expiresAt,
 	}
 
 	created, err := svc.repos.AuthTokens.CreateToken(ctx, data, authroles.RoleUser)
@@ -172,7 +178,7 @@ func (svc *UserService) createSessionToken(ctx context.Context, userId uuid.UUID
 	}, nil
 }
 
-func (svc *UserService) Login(ctx context.Context, username, password string) (UserAuthTokenDetail, error) {
+func (svc *UserService) Login(ctx context.Context, username, password string, extendedSession bool) (UserAuthTokenDetail, error) {
 	usr, err := svc.repos.Users.GetOneEmail(ctx, username)
 	if err != nil {
 		// SECURITY: Perform hash to ensure response times are the same
@@ -184,7 +190,7 @@ func (svc *UserService) Login(ctx context.Context, username, password string) (U
 		return UserAuthTokenDetail{}, ErrorInvalidLogin
 	}
 
-	return svc.createSessionToken(ctx, usr.ID)
+	return svc.createSessionToken(ctx, usr.ID, extendedSession)
 }
 
 func (svc *UserService) Logout(ctx context.Context, token string) error {
@@ -201,7 +207,7 @@ func (svc *UserService) RenewToken(ctx context.Context, token string) (UserAuthT
 		return UserAuthTokenDetail{}, ErrorInvalidToken
 	}
 
-	return svc.createSessionToken(ctx, dbToken.ID)
+	return svc.createSessionToken(ctx, dbToken.ID, false)
 }
 
 // DeleteSelf deletes the user that is currently logged based of the provided UUID

@@ -676,6 +676,15 @@ definitions:
       token:
         type: string
     type: object
+  v1.LoginForm:
+    properties:
+      password:
+        type: string
+      stayLoggedIn:
+        type: boolean
+      username:
+        type: string
+    type: object
   v1.TokenResponse:
     properties:
       attachmentToken:
@@ -1642,6 +1651,12 @@ paths:
         in: formData
         name: password
         type: string
+      - description: Login Data
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/v1.LoginForm'
       produces:
       - application/json
       responses:

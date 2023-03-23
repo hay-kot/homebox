@@ -10,7 +10,6 @@ var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 type Faker struct{}
 
 func NewFaker() *Faker {
-	rand.Seed(time.Now().UnixNano())
 	return &Faker{}
 }
 

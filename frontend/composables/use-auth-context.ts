@@ -4,7 +4,6 @@ import { UserOut } from "~~/lib/api/types/data-contracts";
 import { UserClient } from "~~/lib/api/user";
 
 export interface IAuthContext {
-  self?: UserOut;
   get token(): string | null;
   get expiresAt(): string | null;
   get attachmentToken(): string | null;
@@ -37,10 +36,17 @@ export interface IAuthContext {
   /**
    * Logs in the user and sets the authorization context via cookies
    */
-  login(api: PublicApi, email: string, password: string): ReturnType<PublicApi["login"]>;
+  login(api: PublicApi, email: string, password: string, stayLoggedIn: boolean): ReturnType<PublicApi["login"]>;
 }
 
 class AuthContext implements IAuthContext {
+  // eslint-disable-next-line no-use-before-define
+  private static _instance?: AuthContext;
+
+  private static readonly cookieTokenKey = "hb.auth.token";
+  private static readonly cookieExpiresAtKey = "hb.auth.expires_at";
+  private static readonly cookieAttachmentTokenKey = "hb.auth.attachment_token";
+
   user?: UserOut;
   private _token: CookieRef<string | null>;
   private _expiresAt: CookieRef<string | null>;
@@ -58,14 +64,22 @@ class AuthContext implements IAuthContext {
     return this._attachmentToken.value;
   }
 
-  constructor(
-    token: CookieRef<string | null>,
-    expiresAt: CookieRef<string | null>,
-    attachmentToken: CookieRef<string | null>
-  ) {
-    this._token = token;
-    this._expiresAt = expiresAt;
-    this._attachmentToken = attachmentToken;
+  private constructor(token: string, expiresAt: string, attachmentToken: string) {
+    this._token = useCookie(token);
+    this._expiresAt = useCookie(expiresAt);
+    this._attachmentToken = useCookie(attachmentToken);
+  }
+
+  static get instance() {
+    if (!this._instance) {
+      this._instance = new AuthContext(
+        AuthContext.cookieTokenKey,
+        AuthContext.cookieExpiresAtKey,
+        AuthContext.cookieAttachmentTokenKey
+      );
+    }
+
+    return this._instance;
   }
 
   isExpired() {
@@ -81,29 +95,28 @@ class AuthContext implements IAuthContext {
   }
 
   isAuthorized() {
-    return this._token.value !== null && !this.isExpired();
+    return !!this._token.value && !this.isExpired();
   }
 
   invalidateSession() {
     this.user = undefined;
+
+    // Delete the cookies
     this._token.value = null;
     this._expiresAt.value = null;
     this._attachmentToken.value = null;
+
+    navigateTo("/");
+    console.log("Session invalidated");
   }
 
-  async login(api: PublicApi, email: string, password: string) {
-    const r = await api.login(email, password);
+  async login(api: PublicApi, email: string, password: string, stayLoggedIn: boolean) {
+    const r = await api.login(email, password, stayLoggedIn);
 
     if (!r.error) {
       this._token.value = r.data.token;
       this._expiresAt.value = r.data.expiresAt as string;
       this._attachmentToken.value = r.data.attachmentToken;
-
-      console.log({
-        token: this._token.value,
-        expiresAt: this._expiresAt.value,
-        attachmentToken: this._attachmentToken.value,
-      });
     }
 
     return r;
@@ -121,9 +134,5 @@ class AuthContext implements IAuthContext {
 }
 
 export function useAuthContext(): IAuthContext {
-  const tokenCookie = useCookie("hb.auth.token");
-  const expiresAtCookie = useCookie("hb.auth.expires_at");
-  const attachmentTokenCookie = useCookie("hb.auth.attachment_token");
-
-  return new AuthContext(tokenCookie, expiresAtCookie, attachmentTokenCookie);
+  return AuthContext.instance;
 }
