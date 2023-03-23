@@ -1,7 +1,7 @@
 <template>
   <div class="card bg-base-100 shadow-xl sm:rounded-lg">
     <div v-if="$slots.title" class="px-4 py-5 sm:px-6">
-      <component :is="collapsable ? 'button' : 'div'" @click="collapsed = !collapsed">
+      <component :is="collapsable ? 'button' : 'div'" v-on="collapsable ? { click: toggle } : {}">
         <h3 class="text-lg font-medium leading-6 flex items-center">
           <slot name="title"></slot>
           <template v-if="collapsable">
@@ -26,7 +26,7 @@
         'max-h-screen': !collapsed,
         'max-h-0': collapsed,
       }"
-      class="transition-[max-height] duration-150 overflow-hidden"
+      class="transition-[max-height] duration-200 overflow-hidden"
     >
       <slot />
     </div>
@@ -37,6 +37,10 @@
   defineProps<{
     collapsable?: boolean;
   }>();
+
+  function toggle() {
+    collapsed.value = !collapsed.value;
+  }
 
   const collapsed = ref(false);
 </script>
