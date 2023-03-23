@@ -13,19 +13,3 @@ jobs:
   frontend-tests:
     name: "Frontend and End-to-End Tests"
     uses: ./.github/workflows/partial-frontend.yaml
-
-  releaser:
-    name: "Cross Compile and Release"
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/goreleaser/goreleaser-cross:v1.20.2
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: "Cross Compile and Release"
-        working-directory: backend
-        run: goreleaser release --snapshot --clean --skip-publish
