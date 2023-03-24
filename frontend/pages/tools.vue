@@ -14,7 +14,7 @@
           <DetailAction @action="navigateTo('/reports/label-generator')">
             <template #title>Asset ID Labels</template>
             Generates a printable PDF of labels for a range of Asset ID. These are not specific to your inventory so
-            your are able to print labels ahead of time and apply them to your inventory when you receive them.
+            you are able to print labels ahead of time and apply them to your inventory when you receive them.
             <template #button>
               Label Generator
               <Icon name="mdi-arrow-right" class="ml-2" />
