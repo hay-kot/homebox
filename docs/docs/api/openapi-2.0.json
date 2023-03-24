@@ -1,7 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "Track, Manage, and Organize your Shit.",
+        "description": "Track, Manage, and Organize your Things.",
         "title": "Homebox API",
         "contact": {
             "name": "Don't"

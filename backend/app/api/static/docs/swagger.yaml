@@ -701,7 +701,7 @@ definitions:
 info:
   contact:
     name: Don't
-  description: Track, Manage, and Organize your Shit.
+  description: Track, Manage, and Organize your Things.
   license:
     name: MIT
   title: Homebox API
