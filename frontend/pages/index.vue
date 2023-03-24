@@ -133,7 +133,7 @@
             <AppLogo class="w-12 -mb-4" />
             x
           </h2>
-          <p class="ml-1 text-lg text-base-content/50">Track, Organize, and Manage your Shit.</p>
+          <p class="ml-1 text-lg text-base-content/50">Track, Organize, and Manage your Things.</p>
         </div>
         <div class="flex mt-6 sm:mt-0 gap-4 ml-auto text-neutral-content">
           <a class="tooltip" data-tip="Project Github" href="https://github.com/hay-kot/homebox" target="_blank">
