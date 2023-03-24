@@ -109,11 +109,32 @@ func (ctrl *V1Controller) HandleSsoHeaderLogin() errchain.HandlerFunc {
 			return validate.NewRequestError(errors.New("authentication failed. not SSO header found or empty"), http.StatusInternalServerError)
 		}
 
+		usr, err := ctrl.repo.Users.GetOneEmail(r.Context(), email)
+
+		if err != nil {
+			
+		}
+
 		newToken, err := ctrl.svc.User.LoginWithoutPassword(r.Context(), strings.ToLower(email), false)
 
 		if err != nil {
+			var username = r.Header.Get("Remote-Name")
+
+			regData := services.UserRegistration {
+				GroupToken: "adf",
+				Name : username,
+				Email : email,
+				Password : "",
+			}
+
+			_, err := ctrl.svc.User.RegisterUser(r.Context(), regData)
+			if err != nil {
+				log.Err(err).Msg("failed to register user from SSO HTTP headers")
+				return validate.NewRequestError(err, http.StatusInternalServerError)
+			}
+
 			return validate.NewRequestError(errors.New("authentication failed"), http.StatusInternalServerError)
-		}
+		
 
 		return server.JSON(w, http.StatusOK, TokenResponse{
 			Token:           "Bearer " + newToken.Raw,
