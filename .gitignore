@@ -50,3 +50,7 @@ dist
 backend/app/api/app
 backend/app/api/__debug_bin
 dist/
+
+# Nuxt Publish Dir
+backend/app/api/static/public/*
+!backend/app/api/static/public/.gitkeep
