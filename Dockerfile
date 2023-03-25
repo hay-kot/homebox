@@ -25,20 +25,31 @@ COPY --from=frontend-builder /app/.output/public ./app/api/static/public
 RUN CGO_ENABLED=0 GOOS=linux go build \
     -ldflags "-s -w -X main.commit=$COMMIT -X main.buildTime=$BUILD_TIME -X main.version=$VERSION"  \
     -o /go/bin/api \
-    -v ./app/api/*.go
+    -v ./app/api/*.go && \
+    chmod +x /go/bin/api && \
+    mkdir /data
 
 # Production Stage
-FROM alpine:latest
+FROM gcr.io/distroless/static
 
 ENV HBOX_MODE=production
 ENV HBOX_STORAGE_DATA=/data/
 ENV HBOX_STORAGE_SQLITE_URL=/data/homebox.db?_fk=1
+<<<<<<< HEAD
 
 RUN apk --no-cache add ca-certificates
 RUN mkdir /app
 COPY --from=builder /go/bin/api /app
 
 RUN chmod +x /app/api
+=======
+ENV USER=appuser
+ENV UID=1001
+ENV GID=1001
+
+COPY --from=builder --chown=nonroot /go/bin/api /app/api
+COPY --from=builder --chown=nonroot /data /data
+>>>>>>> bc9d021... feat: use distroless image and non-root user
 
 LABEL Name=homebox Version=0.0.1
 LABEL org.opencontainers.image.source="https://github.com/hay-kot/homebox"
@@ -46,5 +57,9 @@ EXPOSE 7745
 WORKDIR /app
 VOLUME [ "/data" ]
 
+<<<<<<< HEAD
+=======
+USER nonroot
+>>>>>>> bc9d021... feat: use distroless image and non-root user
 ENTRYPOINT [ "/app/api" ]
 CMD [ "/data/config.yml" ]
