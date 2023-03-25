@@ -5,7 +5,10 @@
 Great for testing out the application, but not recommended for stable use. Checkout the docker-compose for the recommended deployment.
 
 ```sh
-docker run -d \
+# Ensure data folder has correct permissions
+$ mkdir -p /path/to/data/folder
+$ chown 65532:65532 -R /path/to/data/folder
+$ docker run -d \
   --name homebox \
   --restart unless-stopped \
   --publish 3100:7745 \
@@ -37,6 +40,9 @@ volumes:
    homebox-data:
      driver: local
 ```
+
+!!! note
+    If instead of using named volumes you would prefer using a hostMount directly (e.g., `volumes: [ /path/to/data/folder:/data ]`) you need to `chown` the chosen directory in advance to the `65532` user (as shown in the Docker example above).
 
 ## Env Variables & Configuration
 
