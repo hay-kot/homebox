@@ -27,6 +27,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build \
     -o /go/bin/api \
     -v ./app/api/*.go && \
     chmod +x /go/bin/api && \
+    # create a directory so that we can copy it in the next stage
     mkdir /data
 
 # Production Stage
@@ -36,6 +37,8 @@ ENV HBOX_MODE=production
 ENV HBOX_STORAGE_DATA=/data/
 ENV HBOX_STORAGE_SQLITE_URL=/data/homebox.db?_fk=1
 
+# Copy the binary and the (empty) /data dir and
+# change the ownership to the low-privileged user
 COPY --from=builder --chown=nonroot /go/bin/api /app/api
 COPY --from=builder --chown=nonroot /data /data
 
@@ -45,6 +48,7 @@ EXPOSE 7745
 WORKDIR /app
 VOLUME [ "/data" ]
 
+# Drop root and run as low-privileged user
 USER nonroot
 ENTRYPOINT [ "/app/api" ]
 CMD [ "/data/config.yml" ]
