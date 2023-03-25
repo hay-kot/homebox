@@ -8,6 +8,9 @@
   });
 
   const ctx = useAuthContext();
+  if (ctx.isAuthorized()) {
+    navigateTo("/home");
+  }
 
   const api = usePublicApi();
   const toast = useNotifier();
@@ -28,10 +31,6 @@
       loginPassword.value = "demo";
     }
   });
-
-  if (!ctx.isAuthorized()) {
-    navigateTo("/home");
-  }
 
   const route = useRoute();
   const router = useRouter();
