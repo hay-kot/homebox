@@ -20,7 +20,7 @@ export default defineNuxtConfig({
     },
     devOptions: {
       // Enable to troubleshoot during development
-      enabled: true,
+      enabled: false,
     },
     manifest: {
       name: "Homebox",

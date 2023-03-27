@@ -106,8 +106,8 @@ class AuthContext implements IAuthContext {
     this._expiresAt.value = null;
     this._attachmentToken.value = null;
 
-    navigateTo("/");
     console.log("Session invalidated");
+    window.location.href = "/";
   }
 
   async login(api: PublicApi, email: string, password: string, stayLoggedIn: boolean) {

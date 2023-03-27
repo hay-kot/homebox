@@ -103,7 +103,7 @@ func (ctrl *V1Controller) HandleBase(ready ReadyFunc, build Build) errchain.Hand
 		return server.JSON(w, http.StatusOK, ApiSummary{
 			Healthy:           ready(),
 			Title:             "Homebox",
-			Message:           "Track, Manage, and Organize your shit",
+			Message:           "Track, Manage, and Organize your Things",
 			Build:             build,
 			Demo:              ctrl.isDemo,
 			AllowRegistration: ctrl.allowRegistration,
