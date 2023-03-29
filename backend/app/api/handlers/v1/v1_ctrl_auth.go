@@ -109,19 +109,23 @@ func (ctrl *V1Controller) HandleSsoHeaderLogin() errchain.HandlerFunc {
 			return validate.NewRequestError(errors.New("authentication failed. not SSO header found or empty"), http.StatusInternalServerError)
 		}
 
-		usr, err := ctrl.repo.Users.GetOneEmail(r.Context(), email)
+		// check if a user matching provided email is existing already
+		_, err := ctrl.repo.Users.GetOneEmail(r.Context(), email)
 
 		if err != nil {
-			
-		}
-
-		newToken, err := ctrl.svc.User.LoginWithoutPassword(r.Context(), strings.ToLower(email), false)
-
-		if err != nil {
+			// user not found -> create it
 			var username = r.Header.Get("Remote-Name")
+			var groups = r.Header.Get("Remote-Groups")
 
+		var groupArr = strings.Split(groups, ",")
+
+			groupTok := ""
+			if len(groupArr) > 0 {
+				groupTok = groupArr[0]
+			}
+			
 			regData := services.UserRegistration {
-				GroupToken: "adf",
+				GroupToken: groupTok,
 				Name : username,
 				Email : email,
 				Password : "",
@@ -132,10 +136,15 @@ func (ctrl *V1Controller) HandleSsoHeaderLogin() errchain.HandlerFunc {
 				log.Err(err).Msg("failed to register user from SSO HTTP headers")
 				return validate.NewRequestError(err, http.StatusInternalServerError)
 			}
+		}
 
+		// login as user with provided password
+		newToken, err := ctrl.svc.User.LoginWithoutPassword(r.Context(), strings.ToLower(email))
+
+		if err != nil {
 			return validate.NewRequestError(errors.New("authentication failed"), http.StatusInternalServerError)
+		}
 		
-
 		return server.JSON(w, http.StatusOK, TokenResponse{
 			Token:           "Bearer " + newToken.Raw,
 			ExpiresAt:       newToken.ExpiresAt,
