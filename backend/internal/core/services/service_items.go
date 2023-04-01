@@ -337,7 +337,10 @@ func (svc *ItemService) ExportTSV(ctx context.Context, GID uuid.UUID) ([][]strin
 
 	sheet := reporting.IOSheet{}
 
-	sheet.ReadItems(items)
+	err = sheet.ReadItems(ctx, items, GID, svc.repo)
+	if err != nil {
+		return nil, err
+	}
 
 	return sheet.TSV()
 }

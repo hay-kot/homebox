@@ -146,6 +146,34 @@ func TestItemRepository_TreeQuery(t *testing.T) {
 	}
 }
 
+func TestLocationRepository_PathForLoc(t *testing.T) {
+	locs := useLocations(t, 3)
+
+	// Set relations 3 -> 2 -> 1
+	for i := 0; i < 2; i++ {
+		_, err := tRepos.Locations.UpdateByGroup(context.Background(), tGroup.ID, locs[i].ID, LocationUpdate{
+			ID:          locs[i].ID,
+			ParentID:    locs[i+1].ID,
+			Name:        locs[i].Name,
+			Description: locs[i].Description,
+		})
+		assert.NoError(t, err)
+	}
+
+	last := locs[0]
+
+	path, err := tRepos.Locations.PathForLoc(context.Background(), tGroup.ID, last.ID)
+
+	assert.NoError(t, err)
+	assert.Equal(t, 3, len(path))
+
+	// Check path and order
+	for i, loc := range path {
+		assert.Equal(t, locs[2-i].ID, loc.ID)
+		assert.Equal(t, locs[2-i].Name, loc.Name)
+	}
+}
+
 func TestConvertLocationsToTree(t *testing.T) {
 	uuid1, uuid2, uuid3, uuid4 := uuid.New(), uuid.New(), uuid.New(), uuid.New()
 
