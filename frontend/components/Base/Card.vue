@@ -23,7 +23,7 @@
     </div>
     <div
       :class="{
-        'max-h-screen': !collapsed,
+        'max-h-[99999px]': !collapsed,
         'max-h-0': collapsed,
       }"
       class="transition-[max-height] duration-200 overflow-hidden"

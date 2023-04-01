@@ -261,7 +261,9 @@ func (ctrl *V1Controller) HandleItemsExport() errchain.HandlerFunc {
 
 		w.Header().Set("Content-Type", "text/tsv")
 		w.Header().Set("Content-Disposition", "attachment;filename=homebox-items.tsv")
+
 		writer := csv.NewWriter(w)
+		writer.Comma = '\t'
 		return writer.WriteAll(csvData)
 	}
 }
