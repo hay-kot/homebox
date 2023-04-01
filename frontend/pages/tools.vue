@@ -73,7 +73,7 @@
             Ensures that all items in your inventory have a valid import_ref field. This is done by randomly generating
             a 8 character string for each item that has an unset import_ref field.
           </DetailAction>
-          <DetailAction @click="resetItemDateTimes">
+          <DetailAction @action="resetItemDateTimes">
             <template #title> Zero Item Date Times</template>
             Resets the time value for all date time fields in your inventory to the beginning of the date. This is to
             fix a bug that was introduced early on in the development of the site that caused the time value to be
