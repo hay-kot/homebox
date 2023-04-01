@@ -41,6 +41,7 @@ func DateFromString(s string) Date {
 	try := [...]string{
 		"2006-01-02",
 		"01/02/2006",
+		"2006/01/02",
 		time.RFC3339,
 	}
 
