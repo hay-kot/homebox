@@ -64,12 +64,12 @@ Below are the supported columns. They are case sensitive, can be in any ordered 
 | HB.notes             | String (1000) | General notes about the product               |
 | HB.purchase_from     | String        | Name of the place the item was purchased from |
 | HB.purchase_price    | Float64       |                                               |
-| HB.purchase_at       | Date          | Date the item was purchased                   |
+| HB.purchase_time     | Date          | Date the item was purchased                   |
 | HB.lifetime_warranty | Boolean       | true or false - case insensitive              |
 | HB.warranty_expires  | Date          | Date in the format                            |
 | HB.warranty_details  | String        | Details about the warranty                    |
 | HB.sold_to           | String        | Name of the person the item was sold to       |
-| HB.sold_at           | Date          | Date the item was sold                        |
+| HB.sold_time         | Date          | Date the item was sold                        |
 | HB.sold_price        | Float64       |                                               |
 | HB.sold_notes        | String (1000) |                                               |
 
