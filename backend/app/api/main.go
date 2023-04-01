@@ -13,7 +13,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
-	"github.com/hay-kot/homebox/backend/app/api/static/docs"
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/internal/data/migrations"
@@ -52,8 +51,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	docs.SwaggerInfo.Host = cfg.Swagger.Host
 
 	if err := run(cfg); err != nil {
 		panic(err)
