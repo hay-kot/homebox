@@ -3,7 +3,6 @@ package main
 import (
 	"embed"
 	"errors"
-	"fmt"
 	"io"
 	"mime"
 	"net/http"
@@ -41,7 +40,7 @@ func (a *app) mountRoutes(r *chi.Mux, chain *errchain.ErrChain, repos *repo.AllR
 	registerMimes()
 
 	r.Get("/swagger/*", httpSwagger.Handler(
-		httpSwagger.URL(fmt.Sprintf("/swagger/doc.json")),
+		httpSwagger.URL("/swagger/doc.json"),
 	))
 
 	// =========================================================================
