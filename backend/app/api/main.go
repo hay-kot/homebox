@@ -38,7 +38,6 @@ var (
 // @version                    1.0
 // @description                Track, Manage, and Organize your Things.
 // @contact.name               Don't
-// @license.name               MIT
 // @BasePath                   /api
 // @securityDefinitions.apikey Bearer
 // @in                         header

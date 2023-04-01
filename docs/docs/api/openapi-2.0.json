@@ -6,9 +6,6 @@
         "contact": {
             "name": "Don't"
         },
-        "license": {
-            "name": "MIT"
-        },
         "version": "1.0"
     },
     "basePath": "/api",
