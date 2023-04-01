@@ -1,6 +1,7 @@
 package reporting
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"reflect"
@@ -8,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/data/types"
 	"github.com/rs/zerolog/log"
@@ -151,7 +153,7 @@ func (s *IOSheet) Read(data io.Reader) error {
 }
 
 // Write writes the sheet to a writer.
-func (s *IOSheet) ReadItems(items []repo.ItemOut) {
+func (s *IOSheet) ReadItems(ctx context.Context, items []repo.ItemOut, GID uuid.UUID, repos *repo.AllRepos) error {
 	s.Rows = make([]ExportTSVRow, len(items))
 
 	extraHeaders := map[string]struct{}{}
@@ -160,7 +162,15 @@ func (s *IOSheet) ReadItems(items []repo.ItemOut) {
 		item := items[i]
 
 		// TODO: Support fetching nested locations
-		locString := LocationString{item.Location.Name}
+		locId := item.Location.ID
+
+		locPaths, err := repos.Locations.PathForLoc(context.Background(), GID, locId)
+		if err != nil {
+			log.Error().Err(err).Msg("could not get location path")
+			return err
+		}
+
+		locString := fromPathSlice(locPaths)
 
 		labelString := make([]string, len(item.Labels))
 
@@ -238,6 +248,8 @@ func (s *IOSheet) ReadItems(items []repo.ItemOut) {
 	for _, h := range customHeaders {
 		s.headers = append(s.headers, "HB.field."+h)
 	}
+
+	return nil
 }
 
 // Writes the current sheet to a writer in TSV format.
