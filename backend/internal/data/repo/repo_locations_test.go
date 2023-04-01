@@ -169,8 +169,8 @@ func TestLocationRepository_PathForLoc(t *testing.T) {
 
 	// Check path and order
 	for i, loc := range path {
-		assert.Equal(t, locs[i].ID, loc.ID)
-		assert.Equal(t, locs[i].Name, loc.Name)
+		assert.Equal(t, locs[2-i].ID, loc.ID)
+		assert.Equal(t, locs[2-i].Name, loc.Name)
 	}
 }
 
