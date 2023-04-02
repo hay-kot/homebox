@@ -473,11 +473,10 @@
             <span class="text-base-600"> Delete Account</span>
             <template #description> Delete your account and all it's associated data </template>
           </BaseSectionHeader>
-
-          <div class="py-4 border-t-2 border-gray-300">
-            <BaseButton size="sm" class="btn-error" @click="deleteProfile"> Delete Account </BaseButton>
-          </div>
         </template>
+        <div class="p-4 px-6 border-t-2 border-gray-300">
+          <BaseButton size="sm" class="btn-error" @click="deleteProfile"> Delete Account </BaseButton>
+        </div>
       </BaseCard>
     </BaseContainer>
     <footer v-if="status" class="text-center w-full bottom-0 pb-4">
