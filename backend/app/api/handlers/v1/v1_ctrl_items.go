@@ -58,6 +58,7 @@ func (ctrl *V1Controller) HandleItemsGetAll() errchain.HandlerFunc {
 			LabelIDs:        queryUUIDList(params, "labels"),
 			IncludeArchived: queryBool(params.Get("includeArchived")),
 			Fields:          filterFieldItems(params["fields"]),
+			OrderBy:         params.Get("orderBy"),
 		}
 
 		if strings.HasPrefix(v.Search, "#") {
