@@ -23,10 +23,10 @@
     </div>
     <div
       :class="{
-        'max-h-[99999px]': !collapsed,
-        'max-h-0': collapsed,
+        'max-h-[9000px]': collapsable && !collapsed,
+        'max-h-0 overflow-hidden': collapsed,
       }"
-      class="transition-[max-height] duration-200 overflow-hidden"
+      class="transition-[max-height] duration-200"
     >
       <slot />
     </div>

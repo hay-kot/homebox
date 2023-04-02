@@ -29,13 +29,14 @@ type (
 	ItemQuery struct {
 		Page            int
 		PageSize        int
-		Search          string      `json:"search"`
-		AssetID         AssetID     `json:"assetId"`
-		LocationIDs     []uuid.UUID `json:"locationIds"`
-		LabelIDs        []uuid.UUID `json:"labelIds"`
-		SortBy          string      `json:"sortBy"`
-		IncludeArchived bool        `json:"includeArchived"`
-		Fields          []FieldQuery
+		Search          string       `json:"search"`
+		AssetID         AssetID      `json:"assetId"`
+		LocationIDs     []uuid.UUID  `json:"locationIds"`
+		LabelIDs        []uuid.UUID  `json:"labelIds"`
+		SortBy          string       `json:"sortBy"`
+		IncludeArchived bool         `json:"includeArchived"`
+		Fields          []FieldQuery `json:"fields"`
+		OrderBy         string       `json:"orderBy"`
 	}
 
 	ItemField struct {
@@ -326,6 +327,7 @@ func (e *ItemsRepository) QueryByGroup(ctx context.Context, gid uuid.UUID, q Ite
 				item.NameContainsFold(q.Search),
 				item.DescriptionContainsFold(q.Search),
 				item.NotesContainsFold(q.Search),
+				item.ManufacturerContainsFold(q.Search),
 			),
 		)
 	}
@@ -385,7 +387,17 @@ func (e *ItemsRepository) QueryByGroup(ctx context.Context, gid uuid.UUID, q Ite
 		return PaginationResult[ItemSummary]{}, err
 	}
 
-	qb = qb.Order(ent.Asc(item.FieldName)).
+	// Order
+	switch q.OrderBy {
+	case "createdAt":
+		qb = qb.Order(ent.Desc(item.FieldCreatedAt))
+	case "updatedAt":
+		qb = qb.Order(ent.Desc(item.FieldUpdatedAt))
+	default: // "name"
+		qb = qb.Order(ent.Asc(item.FieldName))
+	}
+
+	qb = qb.
 		WithLabel().
 		WithLocation()
 

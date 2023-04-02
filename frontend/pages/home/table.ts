@@ -5,6 +5,7 @@ export function itemsTable(api: UserClient) {
     const { data } = await api.items.getAll({
       page: 1,
       pageSize: 5,
+      orderBy: "createdAt",
     });
     return data.items;
   });

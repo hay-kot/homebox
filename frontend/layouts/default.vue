@@ -16,16 +16,16 @@
         <AppHeaderDecor class="-mt-10 hidden lg:block" />
         <!-- Button -->
         <div class="navbar z-[99] lg:hidden top-0 fixed bg-primary shadow-md drawer-button">
+          <label for="my-drawer-2" class="btn btn-square btn-ghost text-base-100 drawer-button lg:hidden">
+            <Icon name="mdi-menu" class="h-6 w-6" />
+          </label>
           <NuxtLink to="/home">
-            <h2 class="mt-1 ml-1 text-3xl font-bold tracking-tight text-base-100 flex">
+            <h2 class="text-3xl font-bold tracking-tight text-base-100 flex">
               HomeB
               <AppLogo class="w-8 -mb-3" />
               x
             </h2>
           </NuxtLink>
-          <label for="my-drawer-2" class="btn btn-square btn-ghost ml-auto text-base-100 drawer-button lg:hidden">
-            <Icon name="mdi-menu" class="h-6 w-6" />
-          </label>
         </div>
 
         <slot></slot>
