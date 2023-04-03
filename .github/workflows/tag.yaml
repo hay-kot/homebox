@@ -55,7 +55,7 @@ jobs:
     uses: hay-kot/homebox/.github/workflows/partial-publish.yaml@main
     with:
       release: true
-      tag: ${{ github.ref }}
+      tag: ${{ github.ref_name }}
     secrets:
       GH_TOKEN: ${{ secrets.CR_PAT }}
 
