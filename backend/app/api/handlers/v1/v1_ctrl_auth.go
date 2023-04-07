@@ -89,7 +89,7 @@ func (ctrl *V1Controller) HandleAuthLogin() errchain.HandlerFunc {
 	}
 }
 
-func (ctrl *V1Controller) HandleSsoHeaderLogin() server.HandlerFunc {
+func (ctrl *V1Controller) HandleSsoHeaderLogin() errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		log.Info().Msg("Header SSO Login Attempt")
 		if !ctrl.headerSSOEnabled {
@@ -109,13 +109,13 @@ func (ctrl *V1Controller) HandleSsoHeaderLogin() server.HandlerFunc {
 			return validate.NewRequestError(errors.New("authentication failed. not SSO header found or empty"), http.StatusInternalServerError)
 		}
 
-		newToken, err := ctrl.svc.User.LoginWithoutPassword(r.Context(), strings.ToLower(email))
+		newToken, err := ctrl.svc.User.LoginWithoutPassword(r.Context(), strings.ToLower(email), false)
 
 		if err != nil {
 			return validate.NewRequestError(errors.New("authentication failed"), http.StatusInternalServerError)
 		}
 
-		return server.Respond(w, http.StatusOK, TokenResponse{
+		return server.JSON(w, http.StatusOK, TokenResponse{
 			Token:           "Bearer " + newToken.Raw,
 			ExpiresAt:       newToken.ExpiresAt,
 			AttachmentToken: newToken.AttachmentToken,
