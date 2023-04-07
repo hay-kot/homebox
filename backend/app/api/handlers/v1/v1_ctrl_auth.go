@@ -95,6 +95,7 @@ func (ctrl *V1Controller) HandleSsoHeaderLogin() errchain.HandlerFunc {
 		if !ctrl.headerSSOEnabled {
 			return validate.NewRequestError(errors.New("authentication failed. Header SSO is disaled"), http.StatusInternalServerError)			
 		}
+
 		{
 			t := strings.Split(r.RemoteAddr, ":")
 			if t[0] != ctrl.headerSSOAllowedIP {
@@ -115,15 +116,15 @@ func (ctrl *V1Controller) HandleSsoHeaderLogin() errchain.HandlerFunc {
 		if err != nil {
 			// user not found -> create it
 			var username = r.Header.Get("Remote-Name")
+
+			// if groups are provided, they will be comma-separated. take only the first group
 			var groups = r.Header.Get("Remote-Groups")
-
 		var groupArr = strings.Split(groups, ",")
-
 			groupTok := ""
 			if len(groupArr) > 0 {
 				groupTok = groupArr[0]
 			}
-			
+
 			regData := services.UserRegistration {
 				GroupToken: groupTok,
 				Name : username,
