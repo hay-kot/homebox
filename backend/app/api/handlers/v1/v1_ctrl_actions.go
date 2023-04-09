@@ -7,8 +7,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/sys/validate"
-	"github.com/hay-kot/safeserve/errchain"
-	"github.com/hay-kot/safeserve/server"
+	"github.com/hay-kot/httpkit/errchain"
+	"github.com/hay-kot/httpkit/server"
 	"github.com/rs/zerolog/log"
 )
 

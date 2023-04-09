@@ -15,7 +15,7 @@ import (
 	_ "github.com/hay-kot/homebox/backend/app/api/static/docs"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authroles"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
-	"github.com/hay-kot/safeserve/errchain"
+	"github.com/hay-kot/httpkit/errchain"
 	httpSwagger "github.com/swaggo/http-swagger" // http-swagger middleware
 )
 
