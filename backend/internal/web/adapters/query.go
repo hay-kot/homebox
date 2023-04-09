@@ -3,8 +3,8 @@ package adapters
 import (
 	"net/http"
 
-	"github.com/hay-kot/safeserve/errchain"
-	"github.com/hay-kot/safeserve/server"
+	"github.com/hay-kot/httpkit/errchain"
+	"github.com/hay-kot/httpkit/server"
 )
 
 // Query is a server.Handler that decodes a query from the request and calls the provided function.
