@@ -30,7 +30,7 @@
     "prettier": "^2.7.1",
     "typescript": "^5.0.0",
     "vite-plugin-eslint": "^1.8.1",
-    "vitest": "^0.29.0"
+    "vitest": "^0.30.0"
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.9",
