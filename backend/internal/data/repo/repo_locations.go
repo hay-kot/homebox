@@ -249,6 +249,56 @@ type TreeQuery struct {
 	WithItems bool `json:"withItems" schema:"withItems"`
 }
 
+type LocationPath struct {
+	ID   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
+}
+
+func (lr *LocationRepository) PathForLoc(ctx context.Context, GID, locID uuid.UUID) ([]LocationPath, error) {
+	query := `WITH RECURSIVE location_path AS (
+		SELECT id, name, location_children
+		FROM locations
+		WHERE id = ? -- Replace ? with the ID of the item's location
+		AND group_locations = ? -- Replace ? with the ID of the group
+
+		UNION ALL
+
+		SELECT loc.id, loc.name, loc.location_children
+		FROM locations loc
+		JOIN location_path lp ON loc.id = lp.location_children
+	  )
+
+	  SELECT id, name
+	  FROM location_path`
+
+	rows, err := lr.db.Sql().QueryContext(ctx, query, locID, GID)
+	if err != nil {
+		return nil, err
+	}
+
+	var locations []LocationPath
+
+	for rows.Next() {
+		var location LocationPath
+		if err := rows.Scan(&location.ID, &location.Name); err != nil {
+			return nil, err
+		}
+		locations = append(locations, location)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	// Reverse the order of the locations so that the root is last
+	for i := len(locations)/2 - 1; i >= 0; i-- {
+		opp := len(locations) - 1 - i
+		locations[i], locations[opp] = locations[opp], locations[i]
+	}
+
+	return locations, nil
+}
+
 func (lr *LocationRepository) Tree(ctx context.Context, GID uuid.UUID, tq TreeQuery) ([]TreeItem, error) {
 	query := `
 		WITH recursive location_tree(id, NAME, parent_id, level, node_type) AS

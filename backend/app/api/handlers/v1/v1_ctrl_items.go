@@ -12,8 +12,8 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/sys/validate"
 	"github.com/hay-kot/homebox/backend/internal/web/adapters"
-	"github.com/hay-kot/safeserve/errchain"
-	"github.com/hay-kot/safeserve/server"
+	"github.com/hay-kot/httpkit/errchain"
+	"github.com/hay-kot/httpkit/server"
 	"github.com/rs/zerolog/log"
 )
 
@@ -58,6 +58,7 @@ func (ctrl *V1Controller) HandleItemsGetAll() errchain.HandlerFunc {
 			LabelIDs:        queryUUIDList(params, "labels"),
 			IncludeArchived: queryBool(params.Get("includeArchived")),
 			Fields:          filterFieldItems(params["fields"]),
+			OrderBy:         params.Get("orderBy"),
 		}
 
 		if strings.HasPrefix(v.Search, "#") {
@@ -261,7 +262,9 @@ func (ctrl *V1Controller) HandleItemsExport() errchain.HandlerFunc {
 
 		w.Header().Set("Content-Type", "text/tsv")
 		w.Header().Set("Content-Disposition", "attachment;filename=homebox-items.tsv")
+
 		writer := csv.NewWriter(w)
+		writer.Comma = '\t'
 		return writer.WriteAll(csvData)
 	}
 }

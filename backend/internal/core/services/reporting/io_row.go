@@ -83,3 +83,13 @@ func parseLocationString(s string) LocationString {
 func (csf LocationString) String() string {
 	return strings.Join(csf, " / ")
 }
+
+func fromPathSlice(s []repo.LocationPath) LocationString {
+	v := make(LocationString, len(s))
+
+	for i := range s {
+		v[i] = s[i].Name
+	}
+
+	return v
+}

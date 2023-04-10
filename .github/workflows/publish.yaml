@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-  release:
-    types:
-      - published
 
 env:
   FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
@@ -29,28 +26,4 @@ jobs:
     secrets:
       GH_TOKEN: ${{ secrets.CR_PAT }}
 
-  publish-tag:
-    name: "Publish Tag"
-    if: github.event_name == 'release'
-    uses: hay-kot/homebox/.github/workflows/partial-publish.yaml@main
-    with:
-      release: true
-      tag: ${{ github.event.release.tag_name }}
-    secrets:
-      GH_TOKEN: ${{ secrets.CR_PAT }}
 
-  deploy-docs:
-    name: Deploy docs
-    needs:
-      - publish-tag
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout main
-        uses: actions/checkout@v3
-
-      - name: Deploy docs
-        uses: mhausenblas/mkdocs-deploy-gh-pages@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CONFIG_FILE: docs/mkdocs.yml
-          EXTRA_PACKAGES: build-base

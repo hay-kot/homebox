@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/hay-kot/homebox/backend/internal/core/services"
-	"github.com/hay-kot/safeserve/errchain"
+	"github.com/hay-kot/httpkit/errchain"
 )
 
 // HandleBillOfMaterialsExport godoc

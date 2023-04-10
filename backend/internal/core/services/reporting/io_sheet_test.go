@@ -20,12 +20,6 @@ var (
 
 	//go:embed .testdata/import/types.csv
 	customTypesImportCSV []byte
-
-	//go:embed .testdata/import.csv
-	CSVData_Comma []byte
-
-	//go:embed .testdata/import.tsv
-	CSVData_Tab []byte
 )
 
 func TestSheet_Read(t *testing.T) {
@@ -189,7 +183,7 @@ func Test_determineSeparator(t *testing.T) {
 		{
 			name: "comma",
 			args: args{
-				data: CSVData_Comma,
+				data: []byte("a,b,c"),
 			},
 			want:    ',',
 			wantErr: false,
@@ -197,7 +191,7 @@ func Test_determineSeparator(t *testing.T) {
 		{
 			name: "tab",
 			args: args{
-				data: CSVData_Tab,
+				data: []byte("a\tb\tc"),
 			},
 			want:    '\t',
 			wantErr: false,

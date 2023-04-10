@@ -79,7 +79,7 @@
   };
   const props = defineProps<Props>();
 
-  const sortByProperty = ref<keyof ItemSummary>("name");
+  const sortByProperty = ref<keyof ItemSummary | "">("");
 
   const headers = computed<TableHeader[]>(() => {
     return [
@@ -136,6 +136,10 @@
   }
 
   function itemSort(a: ItemSummary, b: ItemSummary) {
+    if (!sortByProperty.value) {
+      return 0;
+    }
+
     const aLower = extractSortable(a, sortByProperty.value);
     const bLower = extractSortable(b, sortByProperty.value);
 

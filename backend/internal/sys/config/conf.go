@@ -15,15 +15,14 @@ const (
 )
 
 type Config struct {
-	Mode    string      `yaml:"mode" conf:"default:development"` // development or production
-	Web     WebConfig   `yaml:"web"`
-	Storage Storage     `yaml:"storage"`
-	Log     LoggerConf  `yaml:"logger"`
-	Mailer  MailerConf  `yaml:"mailer"`
-	Swagger SwaggerConf `yaml:"swagger"`
-	Demo    bool        `yaml:"demo"`
-	Debug   DebugConf   `yaml:"debug"`
-	Options Options     `yaml:"options"`
+	Mode    string     `yaml:"mode" conf:"default:development"` // development or production
+	Web     WebConfig  `yaml:"web"`
+	Storage Storage    `yaml:"storage"`
+	Log     LoggerConf `yaml:"logger"`
+	Mailer  MailerConf `yaml:"mailer"`
+	Demo    bool       `yaml:"demo"`
+	Debug   DebugConf  `yaml:"debug"`
+	Options Options    `yaml:"options"`
 }
 
 type Options struct {
@@ -34,11 +33,6 @@ type Options struct {
 type DebugConf struct {
 	Enabled bool   `yaml:"enabled" conf:"default:false"`
 	Port    string `yaml:"port" conf:"default:4000"`
-}
-
-type SwaggerConf struct {
-	Host   string `yaml:"host" conf:"default:localhost:7745"`
-	Scheme string `yaml:"scheme" conf:"default:http"`
 }
 
 type WebConfig struct {

@@ -3,8 +3,8 @@ package adapters
 import (
 	"net/http"
 
-	"github.com/hay-kot/safeserve/errchain"
-	"github.com/hay-kot/safeserve/server"
+	"github.com/hay-kot/httpkit/errchain"
+	"github.com/hay-kot/httpkit/server"
 )
 
 // Action is a function that adapts a function to the server.Handler interface.

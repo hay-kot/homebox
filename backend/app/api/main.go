@@ -13,15 +13,14 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
-	"github.com/hay-kot/homebox/backend/app/api/static/docs"
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/internal/data/migrations"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/sys/config"
 	"github.com/hay-kot/homebox/backend/internal/web/mid"
-	"github.com/hay-kot/safeserve/errchain"
-	"github.com/hay-kot/safeserve/server"
+	"github.com/hay-kot/httpkit/errchain"
+	"github.com/hay-kot/httpkit/server"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/rs/zerolog/pkgerrors"
@@ -39,7 +38,6 @@ var (
 // @version                    1.0
 // @description                Track, Manage, and Organize your Things.
 // @contact.name               Don't
-// @license.name               MIT
 // @BasePath                   /api
 // @securityDefinitions.apikey Bearer
 // @in                         header
@@ -52,8 +50,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	docs.SwaggerInfo.Host = cfg.Swagger.Host
 
 	if err := run(cfg); err != nil {
 		panic(err)

@@ -7,7 +7,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/web/adapters"
-	"github.com/hay-kot/safeserve/errchain"
+	"github.com/hay-kot/httpkit/errchain"
 )
 
 type (

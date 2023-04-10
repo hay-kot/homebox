@@ -17,8 +17,8 @@ jobs:
     name: "Frontend and End-to-End Tests"
     uses: hay-kot/homebox/.github/workflows/partial-frontend.yaml@main
 
-
   goreleaser:
+    name: goreleaser
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -49,3 +49,29 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-tag:
+    name: "Publish Tag"
+    uses: hay-kot/homebox/.github/workflows/partial-publish.yaml@main
+    with:
+      release: true
+      tag: ${{ github.ref_name }}
+    secrets:
+      GH_TOKEN: ${{ secrets.CR_PAT }}
+
+  deploy-docs:
+    name: Deploy docs
+    needs:
+      - publish-tag
+      - goreleaser
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v3
+
+      - name: Deploy docs
+        uses: mhausenblas/mkdocs-deploy-gh-pages@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONFIG_FILE: docs/mkdocs.yml
+          EXTRA_PACKAGES: build-base
