@@ -21,7 +21,7 @@ type ItemsRepository struct {
 }
 
 type (
-	FieldQuery struct {
+	ItemFieldQuery struct {
 		Name  string
 		Value string
 	}
@@ -29,14 +29,14 @@ type (
 	ItemQuery struct {
 		Page            int
 		PageSize        int
-		Search          string       `json:"search"`
-		AssetID         AssetID      `json:"assetId"`
-		LocationIDs     []uuid.UUID  `json:"locationIds"`
-		LabelIDs        []uuid.UUID  `json:"labelIds"`
-		SortBy          string       `json:"sortBy"`
-		IncludeArchived bool         `json:"includeArchived"`
-		Fields          []FieldQuery `json:"fields"`
-		OrderBy         string       `json:"orderBy"`
+		Search          string           `json:"search"`
+		AssetID         AssetID          `json:"assetId"`
+		LocationIDs     []uuid.UUID      `json:"locationIds"`
+		LabelIDs        []uuid.UUID      `json:"labelIds"`
+		SortBy          string           `json:"sortBy"`
+		IncludeArchived bool             `json:"includeArchived"`
+		Fields          []ItemFieldQuery `json:"fields"`
+		OrderBy         string           `json:"orderBy"`
 	}
 
 	ItemField struct {

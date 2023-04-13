@@ -291,7 +291,6 @@ func TestConvertLocationsToTree(t *testing.T) {
 	}
 }
 
-
 func TestLocationRepository_GetAllCustomFields(t *testing.T) {
 	const FIELDS_COUNT = 5
 
@@ -312,11 +311,10 @@ func TestLocationRepository_GetAllCustomFields(t *testing.T) {
 		values[i] = fields[i].TextValue
 	}
 
-	_, err := tRepos.Locations.UpdateByGroup(context.Background(), tGroup.ID, LocationUpdate{
-		ID:         entity.ID,
-		Name:       entity.Name,
-		LocationID: entity.Location.ID,
-		Fields:     fields,
+	_, err := tRepos.Locations.UpdateByGroup(context.Background(), tGroup.ID, entity.ID, LocationUpdate{
+		ID:     entity.ID,
+		Name:   entity.Name,
+		Fields: fields,
 	})
 
 	require.NoError(t, err)

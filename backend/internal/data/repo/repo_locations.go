@@ -18,6 +18,21 @@ type LocationRepository struct {
 }
 
 type (
+    LocationFieldQuery struct {
+        Name string
+        Value string
+    }
+
+	LocationField struct {
+		ID           uuid.UUID `json:"id,omitempty"`
+		Type         string    `json:"type"`
+		Name         string    `json:"name"`
+		TextValue    string    `json:"textValue"`
+		NumberValue  int       `json:"numberValue"`
+		BooleanValue bool      `json:"booleanValue"`
+		// TimeValue    time.Time `json:"timeValue,omitempty"`
+	}
+
 	LocationCreate struct {
 		Name        string    `json:"name"`
 		ParentID    uuid.UUID `json:"parentId" extensions:"x-nullable"`
@@ -29,12 +44,14 @@ type (
 		ID          uuid.UUID `json:"id"`
 		Name        string    `json:"name"`
 		Description string    `json:"description"`
+		Fields      []LocationFieldQuery `json:"fields"`
 	}
 
 	LocationSummary struct {
 		ID          uuid.UUID `json:"id"`
 		Name        string    `json:"name"`
 		Description string    `json:"description"`
+		Fields      []LocationFieldQuery `json:"fields"`
 		CreatedAt   time.Time `json:"createdAt"`
 		UpdatedAt   time.Time `json:"updatedAt"`
 	}
@@ -150,6 +167,63 @@ func (r *LocationRepository) GetAll(ctx context.Context, GID uuid.UUID, filter L
 	}
 
 	return list, err
+}
+
+func (e *LocationRepository) GetAllCustomFieldValues(ctx context.Context, GID uuid.UUID, name string) ([]string, error) {
+	type st struct {
+		Value string `json:"text_value"`
+	}
+
+	var values []st
+
+	err := e.db.Location.Query().
+		Where(
+			location.HasGroupWith(group.ID(GID)),
+		).
+		QueryFields().
+		Where(
+			locationfield.Name(name),
+		).
+		Unique(true).
+		Select(locationfield.FieldTextValue).
+		Scan(ctx, &values)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get field values: %w", err)
+	}
+
+	valueStrings := make([]string, len(values))
+	for i, f := range values {
+		valueStrings[i] = f.Value
+	}
+
+	return valueStrings, nil
+}
+
+func (e *LocationRepository) GetAllCustomFieldNames(ctx context.Context, GID uuid.UUID) ([]string, error) {
+	type st struct {
+		Name string `json:"name"`
+	}
+
+	var fields []st
+
+	err := e.db.Location.Query().
+		Where(
+			location.HasGroupWith(group.ID(GID)),
+		).
+		QueryFields().
+		Unique(true).
+		Select(locationfield.FieldName).
+		Scan(ctx, &fields)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get custom fields: %w", err)
+	}
+
+	fieldNames := make([]string, len(fields))
+	for i, f := range fields {
+		fieldNames[i] = f.Name
+	}
+
+	return fieldNames, nil
 }
 
 func (r *LocationRepository) getOne(ctx context.Context, where ...predicate.Location) (LocationOut, error) {

@@ -53,6 +53,13 @@ const (
 	ItemsInverseTable = "items"
 	// ItemsColumn is the table column denoting the items relation/edge.
 	ItemsColumn = "location_items"
+	// FieldsTable is the table that holds the fields relation/edge.
+	FieldsTable = "location_fields"
+	// FieldsInverseTable is the table name for the ItemField entity.
+	// It exists in this package in order to avoid circular dependency with the "itemfield" package.
+	FieldsInverseTable = "location_fields"
+	// FieldsColumn is the table column denoting the fields relation/edge.
+	FieldsColumn = "location_fields"
 )
 
 // Columns holds all SQL columns for location fields.

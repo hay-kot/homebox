@@ -43,9 +43,20 @@ type LocationEdges struct {
 	Children []*Location `json:"children,omitempty"`
 	// Items holds the value of the items edge.
 	Items []*Item `json:"items,omitempty"`
+	// Fields holds the value of the fields edge.
+	Fields []*LocationField `json:"fields,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [4]bool
+}
+
+// FieldsOrErr returns the Fields value or an error if the edge
+// was not loaded in eager-loading.
+func (e LocationEdges) FieldsOrErr() ([]*LocationField, error) {
+	if e.loadedTypes[5] {
+		return e.Fields, nil
+	}
+	return nil, &NotLoadedError{edge: "fields"}
 }
 
 // GroupOrErr returns the Group value or an error if the edge
@@ -184,6 +195,11 @@ func (l *Location) QueryParent() *LocationQuery {
 // QueryChildren queries the "children" edge of the Location entity.
 func (l *Location) QueryChildren() *LocationQuery {
 	return NewLocationClient(l.config).QueryChildren(l)
+}
+
+// QueryFields queries the "fields" edge of the Item entity.
+func (i *Location) QueryFields() *LocationFieldQuery {
+	return NewLocationClient(i.config).QueryFields(i)
 }
 
 // QueryItems queries the "items" edge of the Location entity.
