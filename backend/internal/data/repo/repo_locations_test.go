@@ -290,3 +290,49 @@ func TestConvertLocationsToTree(t *testing.T) {
 		})
 	}
 }
+
+
+func TestLocationRepository_GetAllCustomFields(t *testing.T) {
+	const FIELDS_COUNT = 5
+
+	entity := useLocations(t, 1)[0]
+
+	fields := make([]LocationField, FIELDS_COUNT)
+	names := make([]string, FIELDS_COUNT)
+	values := make([]string, FIELDS_COUNT)
+
+	for i := 0; i < FIELDS_COUNT; i++ {
+		name := fk.Str(10)
+		fields[i] = LocationField{
+			Name:      name,
+			Type:      "text",
+			TextValue: fk.Str(10),
+		}
+		names[i] = name
+		values[i] = fields[i].TextValue
+	}
+
+	_, err := tRepos.Locations.UpdateByGroup(context.Background(), tGroup.ID, LocationUpdate{
+		ID:         entity.ID,
+		Name:       entity.Name,
+		LocationID: entity.Location.ID,
+		Fields:     fields,
+	})
+
+	require.NoError(t, err)
+
+	// Test getting all fields
+	{
+		results, err := tRepos.Locations.GetAllCustomFieldNames(context.Background(), tGroup.ID)
+		assert.NoError(t, err)
+		assert.ElementsMatch(t, names, results)
+	}
+
+	// Test getting all values from field
+	{
+		results, err := tRepos.Locations.GetAllCustomFieldValues(context.Background(), tUser.GroupID, names[0])
+
+		assert.NoError(t, err)
+		assert.ElementsMatch(t, values[:1], results)
+	}
+}
