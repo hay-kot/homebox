@@ -13,8 +13,8 @@
         <div class="border-t px-6 pb-3 border-gray-300 divide-gray-300 divide-y">
           <DetailAction @action="navigateTo('/reports/label-generator')">
             <template #title>Asset ID Labels</template>
-            Generates a printable PDF of labels for a range of Asset ID. These are not specific to your inventory so
-            you are able to print labels ahead of time and apply them to your inventory when you receive them.
+            Generates a printable PDF of labels for a range of Asset ID. These are not specific to your inventory so you
+            are able to print labels ahead of time and apply them to your inventory when you receive them.
             <template #button>
               Label Generator
               <Icon name="mdi-arrow-right" class="ml-2" />
