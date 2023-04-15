@@ -40,7 +40,7 @@
     "@tailwindcss/aspect-ratio": "^0.4.0",
     "@tailwindcss/forms": "^0.5.2",
     "@tailwindcss/typography": "^0.5.4",
-    "@vueuse/nuxt": "^9.1.1",
+    "@vueuse/nuxt": "^10.0.0",
     "@vueuse/router": "^9.9.0",
     "autoprefixer": "^10.4.8",
     "chart.js": "^4.0.1",
