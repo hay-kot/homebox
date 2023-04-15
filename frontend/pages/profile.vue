@@ -471,7 +471,7 @@
           <BaseSectionHeader>
             <Icon name="mdi-delete" class="mr-2 -mt-1 text-base-600" />
             <span class="text-base-600"> Delete Account</span>
-            <template #description> Delete your account and all it's associated data </template>
+            <template #description> Delete your account and all its associated data. </template>
           </BaseSectionHeader>
         </template>
         <div class="p-4 px-6 border-t-2 border-gray-300">

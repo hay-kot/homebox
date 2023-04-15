@@ -13,8 +13,8 @@
         <div class="border-t px-6 pb-3 border-gray-300 divide-gray-300 divide-y">
           <DetailAction @action="navigateTo('/reports/label-generator')">
             <template #title>Asset ID Labels</template>
-            Generates a printable PDF of labels for a range of Asset ID. These are not specific to your inventory so
-            your are able to print labels ahead of time and apply them to your inventory when you receive them.
+            Generates a printable PDF of labels for a range of Asset ID. These are not specific to your inventory so you
+            are able to print labels ahead of time and apply them to your inventory when you receive them.
             <template #button>
               Label Generator
               <Icon name="mdi-arrow-right" class="ml-2" />
@@ -23,7 +23,7 @@
           <DetailAction @action="getBillOfMaterials()">
             <template #title>Bill of Materials</template>
             Generates a TSV (Tab Separated Values) file that can be imported into a spreadsheet program. This is a
-            summary of your inventory with basic item and pricing information
+            summary of your inventory with basic item and pricing information.
             <template #button> Generate BOM </template>
           </DetailAction>
         </div>
@@ -57,7 +57,7 @@
             <Icon name="mdi-warning" class="mr-2 -mt-1" />
             <span> Inventory Actions </span>
             <template #description>
-              Apply Actions to your inventory in bulk. These are irreversible actions. <b>Be careful</b>
+              Apply Actions to your inventory in bulk. These are irreversible actions. <b>Be careful.</b>
             </template>
           </BaseSectionHeader>
         </template>
@@ -79,7 +79,7 @@
             fix a bug that was introduced early on in the development of the site that caused the time value to be
             stored with the time which caused issues with date fields displaying accurate values.
             <a class="link" href="https://github.com/hay-kot/homebox/issues/236" target="_blank">
-              See Github Issue #236 for more details
+              See Github Issue #236 for more details.
             </a>
           </DetailAction>
         </div>
