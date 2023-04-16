@@ -29,6 +29,7 @@ func init() {
 			"teams://",
 			"telegram://",
 			"zulip://",
+			"generic://",
 		}
 
 		str := fl.Field().String()
