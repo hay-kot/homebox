@@ -26,8 +26,8 @@ dependencies:
     specifier: ^10.0.0
     version: 10.0.0(nuxt@3.2.3)(rollup@2.79.1)(vue@3.2.47)
   '@vueuse/router':
-    specifier: ^9.9.0
-    version: 9.9.0(vue-router@4.1.6)(vue@3.2.47)
+    specifier: ^10.0.0
+    version: 10.0.0(vue-router@4.1.6)(vue@3.2.47)
   autoprefixer:
     specifier: ^10.4.8
     version: 10.4.13(postcss@8.4.19)
@@ -3030,13 +3030,13 @@ packages:
       - vue
     dev: false
 
-  /@vueuse/router@9.9.0(vue-router@4.1.6)(vue@3.2.47):
-    resolution: {integrity: sha512-C6w3HZrU3aLde8t3cjcMfFVnw722Is9FtBNJH2wwUPUv7Fc0bKsqcOEq1yFM0f6K5QktHxlp2vcuV4/nA3xPQw==}
+  /@vueuse/router@10.0.0(vue-router@4.1.6)(vue@3.2.47):
+    resolution: {integrity: sha512-d8rasUUhJOzh/xpVmjHc3hmc6Nnn5yjtMio2oXVqwFGNCNDqACTCGERLBnwpgyTT+xz9oMoW37dQuseADOTIBA==}
     peerDependencies:
       vue-router: '>=4.0.0-rc.1'
     dependencies:
-      '@vueuse/shared': 9.9.0(vue@3.2.47)
-      vue-demi: 0.13.11(vue@3.2.47)
+      '@vueuse/shared': 10.0.0(vue@3.2.47)
+      vue-demi: 0.14.0(vue@3.2.47)
       vue-router: 4.1.6(vue@3.2.47)
     transitivePeerDependencies:
       - '@vue/composition-api'
@@ -3045,15 +3045,6 @@ packages:
 
   /@vueuse/shared@10.0.0(vue@3.2.47):
     resolution: {integrity: sha512-Zh3LgJqvUBWVY3SiMvXanTcfAneGbt63QPczBRDNgQ6jd/ehodO9a1lCFzaA6SWJJoI+ugVTjHFYJdoR656DVQ==}
-    dependencies:
-      vue-demi: 0.14.0(vue@3.2.47)
-    transitivePeerDependencies:
-      - '@vue/composition-api'
-      - vue
-    dev: false
-
-  /@vueuse/shared@9.9.0(vue@3.2.47):
-    resolution: {integrity: sha512-+D0XFwHG0T+uaIbCSlROBwm1wzs71B7n3KyDOxnvfEMMHDOzl09rYKwaE2AENmYwYPXfHPbSBRDD2gBVHbvTcg==}
     dependencies:
       vue-demi: 0.14.0(vue@3.2.47)
     transitivePeerDependencies:
