@@ -122,6 +122,18 @@ class AuthContext implements IAuthContext {
     return r;
   }
 
+  async login_sso_header(api: PublicApi) {
+    const r = await api.login_sso_header();
+
+    if (!r.error) {
+      this._token.value = r.data.token;
+      this._expiresAt.value = r.data.expiresAt as string;
+      this._attachmentToken.value = r.data.attachmentToken;
+    }
+
+    return r;
+  }
+
   async logout(api: UserClient) {
     const r = await api.user.logout();
 

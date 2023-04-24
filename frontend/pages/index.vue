@@ -32,16 +32,9 @@
     }
   });
 
-  const { data, error } = await api.login_sso_header();
+  const { error } = await ctx.login_sso_header(api);
 
   if (!error) {
-    // @ts-expect-error - expires is either a date or a string, need to figure out store typing
-    authStore.$patch({
-      token: data.token,
-      expires: data.expiresAt,
-      attachmentToken: data.attachmentToken,
-    });
-
     navigateTo("/home");
   }
 
