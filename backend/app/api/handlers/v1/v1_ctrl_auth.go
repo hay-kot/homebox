@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/hay-kot/homebox/backend/internal/core/services"
+	"github.com/hay-kot/homebox/backend/internal/helper"
 	"github.com/hay-kot/homebox/backend/internal/sys/validate"
 	"github.com/hay-kot/safeserve/errchain"
 	"github.com/hay-kot/safeserve/server"
@@ -116,20 +117,23 @@ func (ctrl *V1Controller) HandleSsoHeaderLogin() errchain.HandlerFunc {
 		if err != nil {
 			// user not found -> create it
 			var username = r.Header.Get("Remote-Name")
-
+			
+			/* TODO: decide how to handle group information provided by HTTP header
 			// if groups are provided, they will be comma-separated. take only the first group
 			var groups = r.Header.Get("Remote-Groups")
-		var groupArr = strings.Split(groups, ",")
+			var groupArr = strings.Split(groups, ",")
 			groupTok := ""
 			if len(groupArr) > 0 {
 				groupTok = groupArr[0]
 			}
-
+			*/
+			
+			// Use a randomly generatd password. Not meant to be used as login. Only a dummy.
 			regData := services.UserRegistration {
-				GroupToken: groupTok,
+				GroupToken: "",  // don't set group for now
 				Name : username,
 				Email : email,
-				Password : "",
+				Password : helper.GenerateRandomPassword(64, 12, 5, 5),
 			}
 
 			_, err := ctrl.svc.User.RegisterUser(r.Context(), regData)
@@ -140,35 +144,13 @@ func (ctrl *V1Controller) HandleSsoHeaderLogin() errchain.HandlerFunc {
 		}
 
 		// login as user with provided password
-		newToken, err := ctrl.svc.User.LoginWithoutPassword(r.Context(), strings.ToLower(email))
+		newToken, err := ctrl.svc.User.LoginWithoutPassword(r.Context(), strings.ToLower(email), false)
 
 		if err != nil {
 			return validate.NewRequestError(errors.New("authentication failed"), http.StatusInternalServerError)
 		}
 		
 		return server.JSON(w, http.StatusOK, TokenResponse{
-			Token:           "Bearer " + newToken.Raw,
-			ExpiresAt:       newToken.ExpiresAt,
-			AttachmentToken: newToken.AttachmentToken,
-		})
-	}
-}
-
-func (ctrl *V1Controller) HandleSsoHeaderLogin() server.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) error {
-		var username = r.Header.Get("Remote-Email")
-
-		if username == "" {
-			return validate.NewRequestError(errors.New("authentication failed. not SSO header found"), http.StatusInternalServerError)
-		}
-
-		newToken, err := ctrl.svc.User.LoginWithoutPassword(r.Context(), strings.ToLower(username))
-
-		if err != nil {
-			return validate.NewRequestError(errors.New("authentication failed"), http.StatusInternalServerError)
-		}
-
-		return server.Respond(w, http.StatusOK, TokenResponse{
 			Token:           "Bearer " + newToken.Raw,
 			ExpiresAt:       newToken.ExpiresAt,
 			AttachmentToken: newToken.AttachmentToken,
