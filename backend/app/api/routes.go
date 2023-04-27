@@ -56,6 +56,8 @@ func (a *app) mountRoutes(r *chi.Mux, chain *errchain.ErrChain, repos *repo.AllR
 		v1.WithDemoStatus(a.conf.Demo), // Disable Password Change in Demo Mode
 		v1.WithHeaderSSO(a.conf.Options.HeaderSSOEnabled),
 		v1.WithHeaderSSOAllowedIP(a.conf.Options.HeaderSSOAllowedIP),
+		v1.WithHeaderSSOHeaderEmail(a.conf.Options.HeaderSSOHeaderEmail),
+		v1.WithHeaderSSOHeaderName(a.conf.Options.HeaderSSOHeaderName),
 	)
 
 	r.Get(v1Base("/status"), chain.ToHandlerFunc(v1Ctrl.HandleBase(func() bool { return true }, v1.Build{

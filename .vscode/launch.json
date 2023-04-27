@@ -26,6 +26,7 @@
                 "HBOX_STORAGE_SQLITE_URL": "${workspaceRoot}/backend/.data/homebox.db?_fk=1",
                 "HBOX_OPTIONS_HEADER_SSO_ENABLED": "true",
                 "HBOX_OPTIONS_HEADER_SSO_ALLOWED_IP": "127.0.0.1",
+                "HBOX_OPTIONS_HEADER_SSO_HEADER_EMAIL": "testuser@test.org",
             },
         },
         {

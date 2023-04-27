@@ -105,7 +105,7 @@ func (ctrl *V1Controller) HandleSsoHeaderLogin() errchain.HandlerFunc {
 			log.Info().Msgf("Header SSO Login Attempt allowed from IP '%s'", t[0])
 		}
 
-		email := r.Header.Get("Remote-Email")
+		email := r.Header.Get(ctrl.headerSSOHeaderEmail)
 
 		if email == "" {
 			return validate.NewRequestError(errors.New("authentication failed. not SSO header found or empty"), http.StatusInternalServerError)
@@ -116,8 +116,10 @@ func (ctrl *V1Controller) HandleSsoHeaderLogin() errchain.HandlerFunc {
 
 		if err != nil {
 			// user not found -> create it
-			var username = r.Header.Get("Remote-Name")
+			// if the name header does not exist then the empty string will be used as name
+			var username = r.Header.Get(ctrl.headerSSOHeaderName)
 			
+			//
 			/* TODO: decide how to handle group information provided by HTTP header
 			// if groups are provided, they will be comma-separated. take only the first group
 			var groups = r.Header.Get("Remote-Groups")

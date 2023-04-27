@@ -55,14 +55,28 @@ func WithHeaderSSOAllowedIP(headerSSOAllowedIP string) func(*V1Controller) {
 	}
 }
 
+func WithHeaderSSOHeaderName(headerSSOHeaderName string) func(*V1Controller) {
+	return func(ctrl *V1Controller) {
+		ctrl.headerSSOHeaderName = headerSSOHeaderName
+	}
+}
+
+func WithHeaderSSOHeaderEmail(headerSSOHeaderEmail string) func(*V1Controller) {
+	return func(ctrl *V1Controller) {
+		ctrl.headerSSOHeaderEmail = headerSSOHeaderEmail
+	}
+}
+
 type V1Controller struct {
-	repo               *repo.AllRepos
-	svc                *services.AllServices
-	maxUploadSize      int64
-	isDemo             bool
-	allowRegistration  bool
-	headerSSOEnabled   bool
-	headerSSOAllowedIP string
+	repo                        *repo.AllRepos
+	svc                         *services.AllServices
+	maxUploadSize               int64
+	isDemo                      bool
+	allowRegistration           bool
+	headerSSOEnabled            bool
+	headerSSOAllowedIP          string
+	headerSSOHeaderName			string
+	headerSSOHeaderEmail		string
 }
 
 type (
