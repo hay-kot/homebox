@@ -30,6 +30,7 @@ type Options struct {
 	AutoIncrementAssetID    bool `yaml:"auto_increment_asset_id" conf:"default:true"`
 	HeaderSSOEnabled        bool `yaml:"header_sso_enabled" conf:"default:false"`
 	HeaderSSOAllowedIP      string `yaml:"header_sso_allowed_ip" conf:"default:0.0.0.0"`
+	HeaderSSOAutoRegister   bool `yaml:"header_sso_autoregister" conf:"default:true"`
 	HeaderSSOHeaderName     string `yaml:"header_sso_header_name" conf:"default:Remote-Name"`
 	HeaderSSOHeaderEmail    string `yaml:"header_sso_header_email" conf:"default:Remote-Email"`
 }

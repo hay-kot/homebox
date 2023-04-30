@@ -115,6 +115,10 @@ func (ctrl *V1Controller) HandleSsoHeaderLogin() errchain.HandlerFunc {
 		_, err := ctrl.repo.Users.GetOneEmail(r.Context(), email)
 
 		if err != nil {
+			if !ctrl.headerSSOAutoRegister {
+				return validate.NewRequestError(errors.New("authentication failed. User not found but SSO autoregister is disabled"), http.StatusInternalServerError)
+			}
+			
 			// user not found -> create it
 			// if the name header does not exist then the empty string will be used as name
 			var username = r.Header.Get(ctrl.headerSSOHeaderName)

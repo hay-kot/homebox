@@ -49,6 +49,7 @@ volumes:
 | HBOX_OPTIONS_AUTO_INCREMENT_ASSET_ID | true                   | auto increments the asset_id field for new items                                   |
 | HBOX_OPTIONS_HEADER_SSO_ENABLED      | false                  | allow login via trusted SSO HTTP headers                                           |
 | HBOX_OPTIONS_HEADER_SSO_ALLOWED_IP   |                        | request IP being allowed to send trusted SSO HTTP headers                          |
+| HBOX_OPTIONS_HEADER_SSO_AUTOREGISTER |                        | automatically register unknown users                                               |
 | HBOX_OPTIONS_HEADER_SSO_HEADER_NAME  |                        | name of the HTTP header that contains the name when using SSO HTTP headers         |
 | HBOX_OPTIONS_HEADER_SSO_HEADER_EMAIL |                        | name of the HTTP header that contains the email when using SSO HTTP headers        |
 | HBOX_WEB_MAX_UPLOAD_SIZE             | 10                     | maximum file upload size supported in MB                                           |
@@ -93,6 +94,9 @@ volumes:
         --options-auto-increment-asset-id/$HBOX_OPTIONS_AUTO_INCREMENT_ASSET_ID  <bool>    (default: true)
         --options-header-sso-enabled/$HBOX_OPTIONS_HEADER_SSO_ENABLED            <bool>    (default: false)
         --options-header-sso-allowed_ip/$HBOX_OPTIONS_HEADER_SSO_ALLOWED_IP      <string>
+        --options-header-sso-autoregsiter/$HBOX_OPTIONS_HEADER_SSO_AUTOREGISTER  <bool>    (default: true)
+        --options-header-sso-allowed_ip/$HBOX_OPTIONS_HEADER_SSO_HEADER_EMAIL    <string>  (default: Remote-Email)
+        --options-header-sso-allowed_ip/$HBOX_OPTIONS_HEADER_SSO_HEADER_NAME     <string>  (default: Remote-Name)
         --help/-h
         display this help message
       ```

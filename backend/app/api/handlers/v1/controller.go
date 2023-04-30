@@ -55,6 +55,12 @@ func WithHeaderSSOAllowedIP(headerSSOAllowedIP string) func(*V1Controller) {
 	}
 }
 
+func WithHeaderSSOAutoRegister(headerSSOAutoRegister bool) func(*V1Controller) {
+	return func(ctrl *V1Controller) {
+		ctrl.headerSSOAutoRegister = headerSSOAutoRegister
+	}
+}
+
 func WithHeaderSSOHeaderName(headerSSOHeaderName string) func(*V1Controller) {
 	return func(ctrl *V1Controller) {
 		ctrl.headerSSOHeaderName = headerSSOHeaderName
@@ -75,6 +81,7 @@ type V1Controller struct {
 	allowRegistration           bool
 	headerSSOEnabled            bool
 	headerSSOAllowedIP          string
+	headerSSOAutoRegister       bool
 	headerSSOHeaderName			string
 	headerSSOHeaderEmail		string
 }
