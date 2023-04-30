@@ -49,9 +49,9 @@ volumes:
 | HBOX_OPTIONS_AUTO_INCREMENT_ASSET_ID | true                   | auto increments the asset_id field for new items                                   |
 | HBOX_OPTIONS_HEADER_SSO_ENABLED      | false                  | allow login via trusted SSO HTTP headers                                           |
 | HBOX_OPTIONS_HEADER_SSO_ALLOWED_IP   |                        | request IP being allowed to send trusted SSO HTTP headers                          |
-| HBOX_OPTIONS_HEADER_SSO_AUTOREGISTER |                        | automatically register unknown users                                               |
-| HBOX_OPTIONS_HEADER_SSO_HEADER_NAME  |                        | name of the HTTP header that contains the name when using SSO HTTP headers         |
-| HBOX_OPTIONS_HEADER_SSO_HEADER_EMAIL |                        | name of the HTTP header that contains the email when using SSO HTTP headers        |
+| HBOX_OPTIONS_HEADER_SSO_AUTOREGISTER | true                   | automatically register unknown users                                               |
+| HBOX_OPTIONS_HEADER_SSO_HEADER_NAME  | Remote-Name            | name of the HTTP header that contains the name when using SSO HTTP headers         |
+| HBOX_OPTIONS_HEADER_SSO_HEADER_EMAIL | Remote-Email           | name of the HTTP header that contains the email when using SSO HTTP headers        |
 | HBOX_WEB_MAX_UPLOAD_SIZE             | 10                     | maximum file upload size supported in MB                                           |
 | HBOX_STORAGE_DATA                    | /data/                 | path to the data directory, do not change this if you're using docker              |
 | HBOX_STORAGE_SQLITE_URL              | /data/homebox.db?_fk=1 | sqlite database url, in you're using docker do not change this                     |
