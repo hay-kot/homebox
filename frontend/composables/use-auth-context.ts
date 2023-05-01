@@ -37,6 +37,11 @@ export interface IAuthContext {
    * Logs in the user and sets the authorization context via cookies
    */
   login(api: PublicApi, email: string, password: string, stayLoggedIn: boolean): ReturnType<PublicApi["login"]>;
+
+  /**
+   * Logs in the user via trusted HTTP headers and sets the authorization context via cookies
+   */
+  login_sso_header(api: PublicApi): ReturnType<PublicApi["login"]>;
 }
 
 class AuthContext implements IAuthContext {
