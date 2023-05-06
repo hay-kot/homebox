@@ -24,15 +24,18 @@ export class PublicApi extends BaseAPI {
     });
   }
 
-  public login_sso_header() {
+  // headers parameter only here for unit testing
+  public login_sso_header(headers = {}) {
+    const testHeaders = {
+      /** TODO: remove headers here. Only for testing. Usually the SSO servie will add this */
+      // "Remote-Email": "demo3@example.com",
+      // "Remote-Name": "Fritz3",
+      // "Remote-Groups": "admins,local",
+    };
+    const queryHeaders = { ...headers, ...testHeaders };
     return this.http.post<string, TokenResponse>({
       url: route("/users/login-sso-header"),
-      /** TODO: remove header here. Only for testing. Usually the SSO servie will add this */
-      headers: {
-        "Remote-Email": "demo3@example.com",
-        "Remote-Name": "Fritz3",
-        "Remote-Groups": "admins,local",
-      },
+      headers: queryHeaders,
     });
   }
 

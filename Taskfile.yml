@@ -127,7 +127,7 @@ tasks:
     desc: Runs end-to-end test on a live server (only for use in CI)
     cmds:
       - cd backend && go build ./app/api
-      - backend/api &
+      - HBOX_OPTIONS_HEADER_SSO_ENABLED=1 HBOX_OPTIONS_HEADER_SSO_ALLOWED_IP=127.0.0.1 backend/api &
       - sleep 5
       - cd frontend && pnpm run test:ci
     silent: true
