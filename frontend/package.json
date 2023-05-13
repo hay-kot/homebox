@@ -14,7 +14,7 @@
     "test:watch": " TEST_SHUTDOWN_API_SERVER=false vitest --config ./test/vitest.config.ts"
   },
   "devDependencies": {
-    "@faker-js/faker": "^7.5.0",
+    "@faker-js/faker": "^8.0.0",
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
     "@types/dompurify": "^3.0.0",
     "@types/markdown-it": "^12.2.3",
