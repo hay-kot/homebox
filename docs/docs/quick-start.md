@@ -4,14 +4,24 @@
 
 Great for testing out the application, but not recommended for stable use. Checkout the docker-compose for the recommended deployment.
 
+For each image there are two tags, respectively the regular tag and $TAG-rootless, which uses a non-root image.
+
 ```sh
-docker run -d \
+# If using the rootless image, ensure data 
+# folder has correct permissions
+$ mkdir -p /path/to/data/folder
+$ chown 65532:65532 -R /path/to/data/folder
+# ---------------------------------------
+# Run the image
+$ docker run -d \
   --name homebox \
   --restart unless-stopped \
   --publish 3100:7745 \
   --env TZ=Europe/Bucharest \
   --volume /path/to/data/folder/:/data \
   ghcr.io/hay-kot/homebox:latest
+# ghcr.io/hay-kot/homebox:latest-rootless
+ 
 ```
 
 ## Docker-Compose
@@ -22,6 +32,7 @@ version: "3.4"
 services:
   homebox:
     image: ghcr.io/hay-kot/homebox:latest
+#   image: ghcr.io/hay-kot/homebox:latest-rootless
     container_name: homebox
     restart: always
     environment:
@@ -37,6 +48,9 @@ volumes:
    homebox-data:
      driver: local
 ```
+
+!!! note
+    If you use the `rootless` image, and instead of using named volumes you would prefer using a hostMount directly (e.g., `volumes: [ /path/to/data/folder:/data ]`) you need to `chown` the chosen directory in advance to the `65532` user (as shown in the Docker example above).
 
 ## Env Variables & Configuration
 

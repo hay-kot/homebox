@@ -16,6 +16,10 @@
 [Configuration & Docker Compose](https://hay-kot.github.io/homebox/quick-start)
 
 ```bash
+# If using the rootless image, ensure data 
+# folder has correct permissions
+mkdir -p /path/to/data/folder
+chown 65532:65532 -R /path/to/data/folder
 docker run -d \
   --name homebox \
   --restart unless-stopped \
@@ -23,6 +27,7 @@ docker run -d \
   --env TZ=Europe/Bucharest \
   --volume /path/to/data/folder/:/data \
   ghcr.io/hay-kot/homebox:latest
+# ghcr.io/hay-kot/homebox:latest-rootless
 ```
 
 ## Credits
