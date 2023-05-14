@@ -1,4 +1,6 @@
 <script setup lang="ts">
+  import { route } from "../../lib/api/base";
+
   definePageMeta({
     middleware: ["auth"],
     layout: false,
@@ -176,7 +178,7 @@
 
     const data = `${origin}/a/${assetID}`;
 
-    return `/api/v1/qrcode?data=${encodeURIComponent(data)}`;
+    return route(`/qrcode`, { 'data': encodeURIComponent(data) });
   }
 
   function getItem(n: number): LabelData {

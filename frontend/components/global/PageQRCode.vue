@@ -15,10 +15,12 @@
 </template>
 
 <script setup lang="ts">
+  import { route } from "../../lib/api/base";
+
   function getQRCodeUrl(): string {
     const currentURL = window.location.href;
 
-    return `/api/v1/qrcode?data=${encodeURIComponent(currentURL)}`;
+    return route(`/qrcode`, { 'data': encodeURIComponent(currentURL) });
   }
 </script>
 
