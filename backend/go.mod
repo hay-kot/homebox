@@ -8,7 +8,7 @@ require (
 	github.com/ardanlabs/conf/v3 v3.1.5
 	github.com/containrrr/shoutrrr v0.7.1
 	github.com/go-chi/chi/v5 v5.0.8
-	github.com/go-playground/validator/v10 v10.13.0
+	github.com/go-playground/validator/v10 v10.14.0
 	github.com/gocarina/gocsv v0.0.0-20230510095315-7f30c79fd20c
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/schema v1.2.0
@@ -33,6 +33,7 @@ require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/fogleman/gg v1.3.0 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/jsonreference v0.20.0 // indirect
@@ -45,7 +46,7 @@ require (
 	github.com/hashicorp/hcl/v2 v2.15.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
-	github.com/leodido/go-urn v1.2.3 // indirect
+	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
