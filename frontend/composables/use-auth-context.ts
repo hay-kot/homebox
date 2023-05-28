@@ -1,4 +1,4 @@
-import { CookieRef } from "nuxt/dist/app/composables";
+import { CookieRef } from "nuxt/app";
 import { PublicApi } from "~~/lib/api/public";
 import { UserOut } from "~~/lib/api/types/data-contracts";
 import { UserClient } from "~~/lib/api/user";
