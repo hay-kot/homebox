@@ -20,7 +20,7 @@
     "@types/markdown-it": "^12.2.3",
     "@typescript-eslint/eslint-plugin": "^5.36.2",
     "@typescript-eslint/parser": "^5.36.2",
-    "@vite-pwa/nuxt": "^0.0.7",
+    "@vite-pwa/nuxt": "^0.0.9",
     "eslint": "^8.23.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",

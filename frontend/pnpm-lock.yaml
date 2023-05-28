@@ -1,4 +1,8 @@
-lockfileVersion: '6.0'
+lockfileVersion: '6.1'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
 
 dependencies:
   '@headlessui/vue':
@@ -82,8 +86,8 @@ devDependencies:
     specifier: ^5.36.2
     version: 5.46.0(eslint@8.29.0)(typescript@5.0.2)
   '@vite-pwa/nuxt':
-    specifier: ^0.0.7
-    version: 0.0.7(@nuxt/kit@3.5.1)(vite-plugin-pwa@0.14.6)
+    specifier: ^0.0.9
+    version: 0.0.9(@nuxt/kit@3.5.1)(vite-plugin-pwa@0.14.6)
   eslint:
     specifier: ^8.23.0
     version: 8.29.0
@@ -2827,10 +2831,10 @@ packages:
       - encoding
       - supports-color
 
-  /@vite-pwa/nuxt@0.0.7(@nuxt/kit@3.5.1)(vite-plugin-pwa@0.14.6):
-    resolution: {integrity: sha512-7bUTHbameF4GMLQjuyICB761YTC2/Zp6s+rd3hz63Q8lUHP/WUkvOhkoqAoA7CrRPrM85QDeOJKBEvailDb5+w==}
+  /@vite-pwa/nuxt@0.0.9(@nuxt/kit@3.5.1)(vite-plugin-pwa@0.14.6):
+    resolution: {integrity: sha512-MM8av1LiN7Rq5qJ1rjOl9BCjWxO9/3V6D3R7UfIbSL/7f4AnwjwUjM0GHWRcU7dj4t8VhCu7Pq5BrMVnhBGDgw==}
     peerDependencies:
-      '@nuxt/kit': ^3.0.0 || ^3.1.0
+      '@nuxt/kit': ^3.0.0
       vite-plugin-pwa: ^0.14.0
     dependencies:
       '@nuxt/kit': 3.5.1(rollup@2.79.1)
