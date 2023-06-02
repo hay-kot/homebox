@@ -39,6 +39,29 @@
     lastRoute.value = route.fullPath;
   });
 
+  async function adjustQuantity(amount: number) {
+    if (!item.value) {
+      return;
+    }
+
+    const newQuantity = item.value.quantity + amount;
+    if (newQuantity < 0) {
+      toast.error("Quantity cannot be negative");
+      return;
+    }
+
+    const resp = await api.items.patch(item.value.id, {
+      quantity: newQuantity,
+    });
+
+    if (resp.error) {
+      toast.error("Failed to adjust quantity");
+      return;
+    }
+
+    item.value.quantity = newQuantity;
+  }
+
   type FilteredAttachments = {
     attachments: ItemAttachment[];
     warranty: ItemAttachment[];
@@ -130,6 +153,7 @@
       {
         name: "Quantity",
         text: item.value?.quantity,
+        slot: "quantity",
       },
       {
         name: "Serial Number",
@@ -475,7 +499,21 @@
               <PageQRCode />
             </div>
           </template>
-          <DetailsSection :details="itemDetails" />
+          <DetailsSection :details="itemDetails">
+            <template #quantity="{ detail }">
+              {{ detail.text }}
+              <span
+                class="opacity-0 group-hover:opacity-100 ml-4 my-0 duration-75 transition-opacity inline-flex gap-2"
+              >
+                <button class="btn btn-circle btn-xs" @click="adjustQuantity(-1)">
+                  <Icon name="mdi-minus" class="h-3 w-3" />
+                </button>
+                <button class="btn btn-circle btn-xs" @click="adjustQuantity(1)">
+                  <Icon name="mdi-plus" class="h-3 w-3" />
+                </button>
+              </span>
+            </template>
+          </DetailsSection>
         </BaseCard>
 
         <NuxtPage :item="item" :page-key="itemId" />
