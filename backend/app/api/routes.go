@@ -113,6 +113,7 @@ func (a *app) mountRoutes(r *chi.Mux, chain *errchain.ErrChain, repos *repo.AllR
 
 	r.Get(v1Base("/items/{id}"), chain.ToHandlerFunc(v1Ctrl.HandleItemGet(), userMW...))
 	r.Put(v1Base("/items/{id}"), chain.ToHandlerFunc(v1Ctrl.HandleItemUpdate(), userMW...))
+	r.Patch(v1Base("/items/{id}"), chain.ToHandlerFunc(v1Ctrl.HandleItemPatch(), userMW...))
 	r.Delete(v1Base("/items/{id}"), chain.ToHandlerFunc(v1Ctrl.HandleItemDelete(), userMW...))
 
 	r.Post(v1Base("/items/{id}/attachments"), chain.ToHandlerFunc(v1Ctrl.HandleItemAttachmentCreate(), userMW...))

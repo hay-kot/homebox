@@ -167,6 +167,33 @@ func (ctrl *V1Controller) HandleItemUpdate() errchain.HandlerFunc {
 	return adapters.ActionID("id", fn, http.StatusOK)
 }
 
+
+// HandleItemPatch godocs
+//
+//	@Summary  Update Item
+//	@Tags     Items
+//	@Produce  json
+//	@Param    id      path     string          true "Item ID"
+//	@Param    payload body     repo.ItemPatch true "Item Data"
+//	@Success  200     {object} repo.ItemOut
+//	@Router   /v1/items/{id} [Patch]
+//	@Security Bearer
+func (ctrl *V1Controller) HandleItemPatch() errchain.HandlerFunc {
+	fn := func(r *http.Request, ID uuid.UUID, body repo.ItemPatch) (repo.ItemOut, error) {
+		auth := services.NewContext(r.Context())
+
+		body.ID = ID
+    err :=  ctrl.repo.Items.Patch(auth, auth.GID, ID, body)
+    if err != nil {
+      return repo.ItemOut{}, err
+    }
+
+    return ctrl.repo.Items.GetOneByGroup(auth, auth.GID, ID)
+	}
+
+	return adapters.ActionID("id", fn, http.StatusOK)
+}
+
 // HandleGetAllCustomFieldNames godocs
 //
 //	@Summary  Get All Custom Field Names

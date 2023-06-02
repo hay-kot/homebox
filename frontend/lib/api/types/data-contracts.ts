@@ -67,7 +67,7 @@ export interface ItemCreate {
    * @maxLength 255
    */
   name: string;
-  parentId: string | null;
+  parentId?: string | null;
 }
 
 export interface ItemField {
@@ -94,13 +94,13 @@ export interface ItemOut {
   /** Warranty */
   lifetimeWarranty: boolean;
   /** Edges */
-  location: LocationSummary | null;
+  location?: LocationSummary | null;
   manufacturer: string;
   modelNumber: string;
   name: string;
   /** Extras */
   notes: string;
-  parent: ItemSummary | null;
+  parent?: ItemSummary | null;
   purchaseFrom: string;
   /** @example "0" */
   purchasePrice: string;
@@ -119,6 +119,11 @@ export interface ItemOut {
   warrantyExpires: Date | string;
 }
 
+export interface ItemPatch {
+  id: string;
+  quantity?: number | null;
+}
+
 export interface ItemSummary {
   archived: boolean;
   createdAt: Date | string;
@@ -127,7 +132,7 @@ export interface ItemSummary {
   insured: boolean;
   labels: LabelSummary[];
   /** Edges */
-  location: LocationSummary | null;
+  location?: LocationSummary | null;
   name: string;
   /** @example "0" */
   purchasePrice: string;
@@ -152,7 +157,7 @@ export interface ItemUpdate {
   name: string;
   /** Extras */
   notes: string;
-  parentId: string | null;
+  parentId?: string | null;
   purchaseFrom: string;
   /** @example "0" */
   purchasePrice: string;
@@ -203,7 +208,7 @@ export interface LabelSummary {
 export interface LocationCreate {
   description: string;
   name: string;
-  parentId: string | null;
+  parentId?: string | null;
 }
 
 export interface LocationOut {
@@ -238,7 +243,7 @@ export interface LocationUpdate {
   description: string;
   id: string;
   name: string;
-  parentId: string | null;
+  parentId?: string | null;
 }
 
 export interface MaintenanceEntry {
@@ -309,7 +314,7 @@ export interface NotifierUpdate {
    * @maxLength 255
    */
   name: string;
-  url: string | null;
+  url?: string | null;
 }
 
 export interface PaginationResultItemSummary {

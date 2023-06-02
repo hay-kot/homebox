@@ -191,6 +191,15 @@ definitions:
       warrantyExpires:
         type: string
     type: object
+  repo.ItemPatch:
+    properties:
+      id:
+        type: string
+      quantity:
+        type: integer
+        x-nullable: true
+        x-omitempty: true
+    type: object
   repo.ItemSummary:
     properties:
       archived:
@@ -990,6 +999,31 @@ paths:
       security:
       - Bearer: []
       summary: Get Item
+      tags:
+      - Items
+    patch:
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Item Data
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/repo.ItemPatch'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/repo.ItemOut'
+      security:
+      - Bearer: []
+      summary: Update Item
       tags:
       - Items
     put:

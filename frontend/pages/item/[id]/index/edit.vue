@@ -75,6 +75,7 @@
     toast.success("Item saved");
     navigateTo("/item/" + itemId.value);
   }
+  type NoUndefinedField<T> = { [P in keyof T]-?: NoUndefinedField<NonNullable<T[P]>> };
 
   type StringKeys<T> = { [k in keyof T]: T[k] extends string ? k : never }[keyof T];
   type OnlyString<T> = { [k in StringKeys<T>]: string };
@@ -86,13 +87,13 @@
     type: "text" | "textarea";
     label: string;
     // key of ItemOut where the value is a string
-    ref: keyof OnlyString<ItemOut>;
+    ref: keyof OnlyString<NoUndefinedField<ItemOut>>;
   };
 
   type NumberFormField = {
     type: "number";
     label: string;
-    ref: keyof OnlyNumber<ItemOut> | keyof OnlyString<ItemOut>;
+    ref: keyof OnlyNumber<NoUndefinedField<ItemOut>> | keyof OnlyString<NoUndefinedField<ItemOut>>;
   };
 
   // https://stackoverflow.com/questions/50851263/how-do-i-require-a-keyof-to-be-for-a-property-of-a-specific-type
@@ -103,7 +104,7 @@
   interface BoolFormField {
     type: "checkbox";
     label: string;
-    ref: keyof OnlyBoolean<ItemOut>;
+    ref: keyof OnlyBoolean<NoUndefinedField<ItemOut>>;
   }
 
   type DateKeys<T> = { [k in keyof T]: T[k] extends Date | string ? k : never }[keyof T];
@@ -112,7 +113,7 @@
   type DateFormField = {
     type: "date";
     label: string;
-    ref: keyof OnlyDate<ItemOut>;
+    ref: keyof OnlyDate<NoUndefinedField<ItemOut>>;
   };
 
   type FormField = TextFormField | BoolFormField | DateFormField | NumberFormField;
@@ -184,6 +185,7 @@
     {
       type: "date",
       label: "Purchase Date",
+      // @ts-expect-error - we know this is a date
       ref: "purchaseTime",
     },
   ];
@@ -197,6 +199,7 @@
     {
       type: "date",
       label: "Warranty Expires",
+      // @ts-expect-error - we know this is a date
       ref: "warrantyExpires",
     },
     {
@@ -220,6 +223,7 @@
     {
       type: "date",
       label: "Sold At",
+      // @ts-expect-error - we know this is a date
       ref: "soldTime",
     },
   ];
