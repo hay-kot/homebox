@@ -54,6 +54,7 @@ func main() {
 		NewReReplace(` Services`, " "),
 		NewReReplace(` V1`, " "),
 		NewReReplace(`\?:`, ":"),
+		NewReReplace(`(\w+):\s(.*null.*)`, "$1?: $2"), // make null union types optional
 		NewReDate("createdAt"),
 		NewReDate("updatedAt"),
 		NewReDate("soldTime"),

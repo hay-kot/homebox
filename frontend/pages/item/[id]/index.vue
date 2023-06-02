@@ -51,6 +51,7 @@
     }
 
     const resp = await api.items.patch(item.value.id, {
+      id: item.value.id,
       quantity: newQuantity,
     });
 
