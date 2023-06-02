@@ -104,7 +104,7 @@ type (
 	ItemPatch struct {
 		ID        uuid.UUID `json:"id"`
 		Quantity  *int      `json:"quantity,omitempty" extensions:"x-nullable,x-omitempty"`
-		ImportRef *string   `json:"importRef,omitempty" extensions:"x-nullable,x-omitempty"`
+		ImportRef *string   `json:"-,omitempty" extensions:"x-nullable,x-omitempty"`
 	}
 
 	ItemSummary struct {
