@@ -3,6 +3,7 @@ export enum Method {
   POST = "POST",
   PUT = "PUT",
   DELETE = "DELETE",
+  PATCH = "PATCH",
 }
 
 export type ResponseInterceptor = (r: Response, rq?: RequestInit) => void;
@@ -57,12 +58,16 @@ export class Requests {
     return this.do<U>(Method.PUT, args);
   }
 
+  public patch<T, U>(args: RequestArgs<T>): Promise<TResponse<U>> {
+    return this.do<U>(Method.PATCH, args);
+  }
+
   public delete<T>(args: RequestArgs<T>): Promise<TResponse<T>> {
     return this.do<T>(Method.DELETE, args);
   }
 
   private methodSupportsBody(method: Method): boolean {
-    return method === Method.POST || method === Method.PUT;
+    return method === Method.POST || method === Method.PUT || method === Method.PATCH;
   }
 
   private async do<T>(method: Method, rargs: RequestArgs<unknown>): Promise<TResponse<T>> {

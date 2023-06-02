@@ -119,6 +119,11 @@ export interface ItemOut {
   warrantyExpires: Date | string;
 }
 
+export interface ItemPatch {
+  id: string;
+  quantity: number | null;
+}
+
 export interface ItemSummary {
   archived: boolean;
   createdAt: Date | string;

@@ -4,6 +4,7 @@ import {
   ItemAttachmentUpdate,
   ItemCreate,
   ItemOut,
+  ItemPatch,
   ItemSummary,
   ItemUpdate,
   MaintenanceEntry,
@@ -136,6 +137,20 @@ export class ItemsApi extends BaseAPI {
 
     payload.data = parseDate(payload.data, ["purchaseTime", "soldTime", "warrantyExpires"]);
     return payload;
+  }
+
+  async patch(id: string, item: ItemPatch) {
+    const resp = await this.http.patch<ItemPatch, ItemOut>({
+      url: route(`/items/${id}`),
+      body: this.dropFields(item),
+    });
+
+    if (!resp.data) {
+      return resp;
+    }
+
+    resp.data = parseDate(resp.data, ["purchaseTime", "soldTime", "warrantyExpires"]);
+    return resp;
   }
 
   import(file: File | Blob) {
