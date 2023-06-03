@@ -1,5 +1,4 @@
 <script setup lang="ts">
-  import { AnyDetail, Details } from "~~/components/global/DetailsSection/types";
   import { LocationSummary, LocationUpdate } from "~~/lib/api/types/data-contracts";
   import { useLocationStore } from "~~/stores/locations";
 
@@ -10,8 +9,6 @@
   const route = useRoute();
   const api = useUserApi();
   const toast = useNotifier();
-
-  const preferences = useViewPreferences();
 
   const locationId = computed<string>(() => route.params.id as string);
 
@@ -28,42 +25,6 @@
     }
 
     return data;
-  });
-
-  const details = computed<Details>(() => {
-    const details = [
-      {
-        name: "Name",
-        text: location.value?.name ?? "",
-      },
-      {
-        name: "Description",
-        type: "markdown",
-        text: location.value?.description ?? "",
-      } as AnyDetail,
-    ];
-
-    if (preferences.value.showDetails) {
-      return [
-        ...details,
-        {
-          name: "Created",
-          text: location.value?.createdAt,
-          type: "date",
-        } as AnyDetail,
-        {
-          name: "Updated",
-          text: location.value?.updatedAt,
-          type: "date",
-        } as AnyDetail,
-        {
-          name: "Database ID",
-          text: location.value?.id,
-        } as AnyDetail,
-      ];
-    }
-
-    return details;
   });
 
   const confirm = useConfirm();

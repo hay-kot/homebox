@@ -56,6 +56,7 @@
     <template v-else>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         <ItemCard v-for="item in items" :key="item.id" :item="item" />
+        <div class="first:block hidden text-lg">No Items to Display</div>
       </div>
     </template>
   </section>
