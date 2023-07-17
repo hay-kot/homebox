@@ -29,7 +29,7 @@ type (
 //	@Param    type formData string true "Type of file"
 //	@Param    name formData string true "name of the file including extension"
 //	@Success  200  {object} repo.ItemOut
-//	@Failure  422  {object} mid.ErrorResponse
+//	@Failure  422  {object} validate.ErrorResponse
 //	@Router   /v1/items/{id}/attachments [POST]
 //	@Security Bearer
 func (ctrl *V1Controller) HandleItemAttachmentCreate() errchain.HandlerFunc {
