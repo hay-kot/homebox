@@ -2124,7 +2124,7 @@ packages:
       clear-module: 4.1.2
       consola: 2.15.3
       defu: 6.1.1
-      h3: 0.8.6
+      h3: 1.7.1
       postcss: 8.4.19
       postcss-custom-properties: 12.1.11(postcss@8.4.19)
       postcss-nesting: 10.2.0(postcss@8.4.19)
@@ -5230,14 +5230,6 @@ packages:
     dependencies:
       duplexer: 0.1.2
 
-  /h3@0.8.6:
-    resolution: {integrity: sha512-CSWNOKa3QGo67rFU2PhbFTp0uPJtilNji2Z0pMiSRQt3+OkIW0u3E1WMJqIycLqaTgb9JyFqH/S4mcTyyGtvyQ==}
-    dependencies:
-      cookie-es: 0.5.0
-      destr: 1.2.2
-      radix3: 0.2.1
-      ufo: 0.8.6
-    dev: false
 
   /h3@1.7.1:
     resolution: {integrity: sha512-A9V2NEDNHet7v1gCg7CMwerSigLi0SRbhTy7C3lGb0N4YKIpPmLDjedTUopqp4dnn7COHfqUjjaz3zbtz4QduA==}
