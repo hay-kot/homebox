@@ -20,7 +20,7 @@
   function getQRCodeUrl(): string {
     const currentURL = window.location.href;
 
-    return route(`/qrcode`, { 'data': encodeURIComponent(currentURL) });
+    return route(`/qrcode`, { data: encodeURIComponent(currentURL) });
   }
 </script>
 
