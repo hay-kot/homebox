@@ -22,7 +22,7 @@ import (
 type AuthTokensQuery struct {
 	config
 	ctx        *QueryContext
-	order      []OrderFunc
+	order      []authtokens.OrderOption
 	inters     []Interceptor
 	predicates []predicate.AuthTokens
 	withUser   *UserQuery
@@ -59,7 +59,7 @@ func (atq *AuthTokensQuery) Unique(unique bool) *AuthTokensQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (atq *AuthTokensQuery) Order(o ...OrderFunc) *AuthTokensQuery {
+func (atq *AuthTokensQuery) Order(o ...authtokens.OrderOption) *AuthTokensQuery {
 	atq.order = append(atq.order, o...)
 	return atq
 }
@@ -297,7 +297,7 @@ func (atq *AuthTokensQuery) Clone() *AuthTokensQuery {
 	return &AuthTokensQuery{
 		config:     atq.config,
 		ctx:        atq.ctx.Clone(),
-		order:      append([]OrderFunc{}, atq.order...),
+		order:      append([]authtokens.OrderOption{}, atq.order...),
 		inters:     append([]Interceptor{}, atq.inters...),
 		predicates: append([]predicate.AuthTokens{}, atq.predicates...),
 		withUser:   atq.withUser.Clone(),
@@ -494,7 +494,7 @@ func (atq *AuthTokensQuery) loadRoles(ctx context.Context, query *AuthRolesQuery
 	}
 	query.withFKs = true
 	query.Where(predicate.AuthRoles(func(s *sql.Selector) {
-		s.Where(sql.InValues(authtokens.RolesColumn, fks...))
+		s.Where(sql.InValues(s.C(authtokens.RolesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -507,7 +507,7 @@ func (atq *AuthTokensQuery) loadRoles(ctx context.Context, query *AuthRolesQuery
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "auth_tokens_roles" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "auth_tokens_roles" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

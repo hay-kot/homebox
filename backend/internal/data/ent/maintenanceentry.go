@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/item"
@@ -36,7 +37,8 @@ type MaintenanceEntry struct {
 	Cost float64 `json:"cost,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the MaintenanceEntryQuery when eager-loading is set.
-	Edges MaintenanceEntryEdges `json:"edges"`
+	Edges        MaintenanceEntryEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // MaintenanceEntryEdges holds the relations/edges for other nodes in the graph.
@@ -75,7 +77,7 @@ func (*MaintenanceEntry) scanValues(columns []string) ([]any, error) {
 		case maintenanceentry.FieldID, maintenanceentry.FieldItemID:
 			values[i] = new(uuid.UUID)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type MaintenanceEntry", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -143,9 +145,17 @@ func (me *MaintenanceEntry) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				me.Cost = value.Float64
 			}
+		default:
+			me.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the MaintenanceEntry.
+// This includes values selected through modifiers, order, etc.
+func (me *MaintenanceEntry) Value(name string) (ent.Value, error) {
+	return me.selectValues.Get(name)
 }
 
 // QueryItem queries the "item" edge of the MaintenanceEntry entity.

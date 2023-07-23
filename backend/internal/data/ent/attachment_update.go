@@ -93,7 +93,7 @@ func (au *AttachmentUpdate) ClearDocument() *AttachmentUpdate {
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (au *AttachmentUpdate) Save(ctx context.Context) (int, error) {
 	au.defaults()
-	return withHooks[int, AttachmentMutation](ctx, au.sqlSave, au.mutation, au.hooks)
+	return withHooks(ctx, au.sqlSave, au.mutation, au.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -313,7 +313,7 @@ func (auo *AttachmentUpdateOne) Select(field string, fields ...string) *Attachme
 // Save executes the query and returns the updated Attachment entity.
 func (auo *AttachmentUpdateOne) Save(ctx context.Context) (*Attachment, error) {
 	auo.defaults()
-	return withHooks[*Attachment, AttachmentMutation](ctx, auo.sqlSave, auo.mutation, auo.hooks)
+	return withHooks(ctx, auo.sqlSave, auo.mutation, auo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

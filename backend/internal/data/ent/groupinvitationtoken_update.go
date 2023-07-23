@@ -110,7 +110,7 @@ func (gitu *GroupInvitationTokenUpdate) ClearGroup() *GroupInvitationTokenUpdate
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (gitu *GroupInvitationTokenUpdate) Save(ctx context.Context) (int, error) {
 	gitu.defaults()
-	return withHooks[int, GroupInvitationTokenMutation](ctx, gitu.sqlSave, gitu.mutation, gitu.hooks)
+	return withHooks(ctx, gitu.sqlSave, gitu.mutation, gitu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -309,7 +309,7 @@ func (gituo *GroupInvitationTokenUpdateOne) Select(field string, fields ...strin
 // Save executes the query and returns the updated GroupInvitationToken entity.
 func (gituo *GroupInvitationTokenUpdateOne) Save(ctx context.Context) (*GroupInvitationToken, error) {
 	gituo.defaults()
-	return withHooks[*GroupInvitationToken, GroupInvitationTokenMutation](ctx, gituo.sqlSave, gituo.mutation, gituo.hooks)
+	return withHooks(ctx, gituo.sqlSave, gituo.mutation, gituo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

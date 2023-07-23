@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/document"
@@ -30,6 +31,7 @@ type Document struct {
 	// The values are being populated by the DocumentQuery when eager-loading is set.
 	Edges           DocumentEdges `json:"edges"`
 	group_documents *uuid.UUID
+	selectValues    sql.SelectValues
 }
 
 // DocumentEdges holds the relations/edges for other nodes in the graph.
@@ -79,7 +81,7 @@ func (*Document) scanValues(columns []string) ([]any, error) {
 		case document.ForeignKeys[0]: // group_documents
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Document", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -130,9 +132,17 @@ func (d *Document) assignValues(columns []string, values []any) error {
 				d.group_documents = new(uuid.UUID)
 				*d.group_documents = *value.S.(*uuid.UUID)
 			}
+		default:
+			d.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Document.
+// This includes values selected through modifiers, order, etc.
+func (d *Document) Value(name string) (ent.Value, error) {
+	return d.selectValues.Get(name)
 }
 
 // QueryGroup queries the "group" edge of the Document entity.

@@ -525,11 +525,7 @@ func HasItem() predicate.ItemField {
 // HasItemWith applies the HasEdge predicate on the "item" edge with a given conditions (other predicates).
 func HasItemWith(preds ...predicate.Item) predicate.ItemField {
 	return predicate.ItemField(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ItemInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ItemTable, ItemColumn),
-		)
+		step := newItemStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

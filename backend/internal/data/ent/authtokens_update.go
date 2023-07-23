@@ -115,7 +115,7 @@ func (atu *AuthTokensUpdate) ClearRoles() *AuthTokensUpdate {
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (atu *AuthTokensUpdate) Save(ctx context.Context) (int, error) {
 	atu.defaults()
-	return withHooks[int, AuthTokensMutation](ctx, atu.sqlSave, atu.mutation, atu.hooks)
+	return withHooks(ctx, atu.sqlSave, atu.mutation, atu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -341,7 +341,7 @@ func (atuo *AuthTokensUpdateOne) Select(field string, fields ...string) *AuthTok
 // Save executes the query and returns the updated AuthTokens entity.
 func (atuo *AuthTokensUpdateOne) Save(ctx context.Context) (*AuthTokens, error) {
 	atuo.defaults()
-	return withHooks[*AuthTokens, AuthTokensMutation](ctx, atuo.sqlSave, atuo.mutation, atuo.hooks)
+	return withHooks(ctx, atuo.sqlSave, atuo.mutation, atuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

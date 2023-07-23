@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"time"
 
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/google/uuid"
 )
 
@@ -124,4 +126,71 @@ func TypeValidator(_type Type) error {
 	default:
 		return fmt.Errorf("itemfield: invalid enum value for type field: %q", _type)
 	}
+}
+
+// OrderOption defines the ordering options for the ItemField queries.
+type OrderOption func(*sql.Selector)
+
+// ByID orders the results by the id field.
+func ByID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByCreatedAt orders the results by the created_at field.
+func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByUpdatedAt orders the results by the updated_at field.
+func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
+}
+
+// ByName orders the results by the name field.
+func ByName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByDescription orders the results by the description field.
+func ByDescription(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDescription, opts...).ToFunc()
+}
+
+// ByType orders the results by the type field.
+func ByType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldType, opts...).ToFunc()
+}
+
+// ByTextValue orders the results by the text_value field.
+func ByTextValue(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTextValue, opts...).ToFunc()
+}
+
+// ByNumberValue orders the results by the number_value field.
+func ByNumberValue(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldNumberValue, opts...).ToFunc()
+}
+
+// ByBooleanValue orders the results by the boolean_value field.
+func ByBooleanValue(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBooleanValue, opts...).ToFunc()
+}
+
+// ByTimeValue orders the results by the time_value field.
+func ByTimeValue(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTimeValue, opts...).ToFunc()
+}
+
+// ByItemField orders the results by item field.
+func ByItemField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newItemStep(), sql.OrderByField(field, opts...))
+	}
+}
+func newItemStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ItemInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, ItemTable, ItemColumn),
+	)
 }

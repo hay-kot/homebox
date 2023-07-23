@@ -173,7 +173,7 @@ func (ifc *ItemFieldCreate) Mutation() *ItemFieldMutation {
 // Save creates the ItemField in the database.
 func (ifc *ItemFieldCreate) Save(ctx context.Context) (*ItemField, error) {
 	ifc.defaults()
-	return withHooks[*ItemField, ItemFieldMutation](ctx, ifc.sqlSave, ifc.mutation, ifc.hooks)
+	return withHooks(ctx, ifc.sqlSave, ifc.mutation, ifc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -377,8 +377,8 @@ func (ifcb *ItemFieldCreateBulk) Save(ctx context.Context) ([]*ItemField, error)
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, ifcb.builders[i+1].mutation)
 				} else {

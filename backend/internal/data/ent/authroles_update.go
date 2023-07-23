@@ -75,7 +75,7 @@ func (aru *AuthRolesUpdate) ClearToken() *AuthRolesUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (aru *AuthRolesUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks[int, AuthRolesMutation](ctx, aru.sqlSave, aru.mutation, aru.hooks)
+	return withHooks(ctx, aru.sqlSave, aru.mutation, aru.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -233,7 +233,7 @@ func (aruo *AuthRolesUpdateOne) Select(field string, fields ...string) *AuthRole
 
 // Save executes the query and returns the updated AuthRoles entity.
 func (aruo *AuthRolesUpdateOne) Save(ctx context.Context) (*AuthRoles, error) {
-	return withHooks[*AuthRoles, AuthRolesMutation](ctx, aruo.sqlSave, aruo.mutation, aruo.hooks)
+	return withHooks(ctx, aruo.sqlSave, aruo.mutation, aruo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

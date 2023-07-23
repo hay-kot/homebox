@@ -27,7 +27,7 @@ func (ld *LabelDelete) Where(ps ...predicate.Label) *LabelDelete {
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (ld *LabelDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, LabelMutation](ctx, ld.sqlExec, ld.mutation, ld.hooks)
+	return withHooks(ctx, ld.sqlExec, ld.mutation, ld.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

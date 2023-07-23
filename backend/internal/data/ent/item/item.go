@@ -5,6 +5,8 @@ package item
 import (
 	"time"
 
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/google/uuid"
 )
 
@@ -226,3 +228,273 @@ var (
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )
+
+// OrderOption defines the ordering options for the Item queries.
+type OrderOption func(*sql.Selector)
+
+// ByID orders the results by the id field.
+func ByID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByCreatedAt orders the results by the created_at field.
+func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByUpdatedAt orders the results by the updated_at field.
+func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
+}
+
+// ByName orders the results by the name field.
+func ByName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByDescription orders the results by the description field.
+func ByDescription(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDescription, opts...).ToFunc()
+}
+
+// ByImportRef orders the results by the import_ref field.
+func ByImportRef(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldImportRef, opts...).ToFunc()
+}
+
+// ByNotes orders the results by the notes field.
+func ByNotes(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldNotes, opts...).ToFunc()
+}
+
+// ByQuantity orders the results by the quantity field.
+func ByQuantity(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldQuantity, opts...).ToFunc()
+}
+
+// ByInsured orders the results by the insured field.
+func ByInsured(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldInsured, opts...).ToFunc()
+}
+
+// ByArchived orders the results by the archived field.
+func ByArchived(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldArchived, opts...).ToFunc()
+}
+
+// ByAssetID orders the results by the asset_id field.
+func ByAssetID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAssetID, opts...).ToFunc()
+}
+
+// BySerialNumber orders the results by the serial_number field.
+func BySerialNumber(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSerialNumber, opts...).ToFunc()
+}
+
+// ByModelNumber orders the results by the model_number field.
+func ByModelNumber(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldModelNumber, opts...).ToFunc()
+}
+
+// ByManufacturer orders the results by the manufacturer field.
+func ByManufacturer(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldManufacturer, opts...).ToFunc()
+}
+
+// ByLifetimeWarranty orders the results by the lifetime_warranty field.
+func ByLifetimeWarranty(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLifetimeWarranty, opts...).ToFunc()
+}
+
+// ByWarrantyExpires orders the results by the warranty_expires field.
+func ByWarrantyExpires(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldWarrantyExpires, opts...).ToFunc()
+}
+
+// ByWarrantyDetails orders the results by the warranty_details field.
+func ByWarrantyDetails(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldWarrantyDetails, opts...).ToFunc()
+}
+
+// ByPurchaseTime orders the results by the purchase_time field.
+func ByPurchaseTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPurchaseTime, opts...).ToFunc()
+}
+
+// ByPurchaseFrom orders the results by the purchase_from field.
+func ByPurchaseFrom(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPurchaseFrom, opts...).ToFunc()
+}
+
+// ByPurchasePrice orders the results by the purchase_price field.
+func ByPurchasePrice(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPurchasePrice, opts...).ToFunc()
+}
+
+// BySoldTime orders the results by the sold_time field.
+func BySoldTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSoldTime, opts...).ToFunc()
+}
+
+// BySoldTo orders the results by the sold_to field.
+func BySoldTo(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSoldTo, opts...).ToFunc()
+}
+
+// BySoldPrice orders the results by the sold_price field.
+func BySoldPrice(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSoldPrice, opts...).ToFunc()
+}
+
+// BySoldNotes orders the results by the sold_notes field.
+func BySoldNotes(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSoldNotes, opts...).ToFunc()
+}
+
+// ByGroupField orders the results by group field.
+func ByGroupField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newGroupStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByParentField orders the results by parent field.
+func ByParentField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newParentStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByChildrenCount orders the results by children count.
+func ByChildrenCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newChildrenStep(), opts...)
+	}
+}
+
+// ByChildren orders the results by children terms.
+func ByChildren(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newChildrenStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByLabelCount orders the results by label count.
+func ByLabelCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newLabelStep(), opts...)
+	}
+}
+
+// ByLabel orders the results by label terms.
+func ByLabel(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newLabelStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByLocationField orders the results by location field.
+func ByLocationField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newLocationStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByFieldsCount orders the results by fields count.
+func ByFieldsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newFieldsStep(), opts...)
+	}
+}
+
+// ByFields orders the results by fields terms.
+func ByFields(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newFieldsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByMaintenanceEntriesCount orders the results by maintenance_entries count.
+func ByMaintenanceEntriesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newMaintenanceEntriesStep(), opts...)
+	}
+}
+
+// ByMaintenanceEntries orders the results by maintenance_entries terms.
+func ByMaintenanceEntries(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newMaintenanceEntriesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByAttachmentsCount orders the results by attachments count.
+func ByAttachmentsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newAttachmentsStep(), opts...)
+	}
+}
+
+// ByAttachments orders the results by attachments terms.
+func ByAttachments(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAttachmentsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newGroupStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(GroupInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, GroupTable, GroupColumn),
+	)
+}
+func newParentStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(Table, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, ParentTable, ParentColumn),
+	)
+}
+func newChildrenStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(Table, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ChildrenTable, ChildrenColumn),
+	)
+}
+func newLabelStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(LabelInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, LabelTable, LabelPrimaryKey...),
+	)
+}
+func newLocationStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(LocationInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, LocationTable, LocationColumn),
+	)
+}
+func newFieldsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(FieldsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, FieldsTable, FieldsColumn),
+	)
+}
+func newMaintenanceEntriesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(MaintenanceEntriesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, MaintenanceEntriesTable, MaintenanceEntriesColumn),
+	)
+}
+func newAttachmentsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AttachmentsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, AttachmentsTable, AttachmentsColumn),
+	)
+}

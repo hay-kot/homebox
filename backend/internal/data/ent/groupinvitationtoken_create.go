@@ -125,7 +125,7 @@ func (gitc *GroupInvitationTokenCreate) Mutation() *GroupInvitationTokenMutation
 // Save creates the GroupInvitationToken in the database.
 func (gitc *GroupInvitationTokenCreate) Save(ctx context.Context) (*GroupInvitationToken, error) {
 	gitc.defaults()
-	return withHooks[*GroupInvitationToken, GroupInvitationTokenMutation](ctx, gitc.sqlSave, gitc.mutation, gitc.hooks)
+	return withHooks(ctx, gitc.sqlSave, gitc.mutation, gitc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -290,8 +290,8 @@ func (gitcb *GroupInvitationTokenCreateBulk) Save(ctx context.Context) ([]*Group
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, gitcb.builders[i+1].mutation)
 				} else {

@@ -148,7 +148,7 @@ func (meu *MaintenanceEntryUpdate) ClearItem() *MaintenanceEntryUpdate {
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (meu *MaintenanceEntryUpdate) Save(ctx context.Context) (int, error) {
 	meu.defaults()
-	return withHooks[int, MaintenanceEntryMutation](ctx, meu.sqlSave, meu.mutation, meu.hooks)
+	return withHooks(ctx, meu.sqlSave, meu.mutation, meu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -421,7 +421,7 @@ func (meuo *MaintenanceEntryUpdateOne) Select(field string, fields ...string) *M
 // Save executes the query and returns the updated MaintenanceEntry entity.
 func (meuo *MaintenanceEntryUpdateOne) Save(ctx context.Context) (*MaintenanceEntry, error) {
 	meuo.defaults()
-	return withHooks[*MaintenanceEntry, MaintenanceEntryMutation](ctx, meuo.sqlSave, meuo.mutation, meuo.hooks)
+	return withHooks(ctx, meuo.sqlSave, meuo.mutation, meuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

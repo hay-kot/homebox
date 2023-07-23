@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authroles"
@@ -31,6 +32,7 @@ type AuthTokens struct {
 	// The values are being populated by the AuthTokensQuery when eager-loading is set.
 	Edges            AuthTokensEdges `json:"edges"`
 	user_auth_tokens *uuid.UUID
+	selectValues     sql.SelectValues
 }
 
 // AuthTokensEdges holds the relations/edges for other nodes in the graph.
@@ -84,7 +86,7 @@ func (*AuthTokens) scanValues(columns []string) ([]any, error) {
 		case authtokens.ForeignKeys[0]: // user_auth_tokens
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type AuthTokens", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -135,9 +137,17 @@ func (at *AuthTokens) assignValues(columns []string, values []any) error {
 				at.user_auth_tokens = new(uuid.UUID)
 				*at.user_auth_tokens = *value.S.(*uuid.UUID)
 			}
+		default:
+			at.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the AuthTokens.
+// This includes values selected through modifiers, order, etc.
+func (at *AuthTokens) Value(name string) (ent.Value, error) {
+	return at.selectValues.Get(name)
 }
 
 // QueryUser queries the "user" edge of the AuthTokens entity.

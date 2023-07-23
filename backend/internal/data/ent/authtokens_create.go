@@ -131,7 +131,7 @@ func (atc *AuthTokensCreate) Mutation() *AuthTokensMutation {
 // Save creates the AuthTokens in the database.
 func (atc *AuthTokensCreate) Save(ctx context.Context) (*AuthTokens, error) {
 	atc.defaults()
-	return withHooks[*AuthTokens, AuthTokensMutation](ctx, atc.sqlSave, atc.mutation, atc.hooks)
+	return withHooks(ctx, atc.sqlSave, atc.mutation, atc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -301,8 +301,8 @@ func (atcb *AuthTokensCreateBulk) Save(ctx context.Context) ([]*AuthTokens, erro
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, atcb.builders[i+1].mutation)
 				} else {
