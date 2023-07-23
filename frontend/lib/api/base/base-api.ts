@@ -1,4 +1,5 @@
 import { Requests } from "../../requests";
+import { route } from ".";
 
 const ZERO_DATE = "0001-01-01T00:00:00Z";
 
@@ -70,12 +71,12 @@ export class BaseAPI {
     this.attachmentToken = attachmentToken;
   }
 
-  // if a attachmentToken is present it will be added to URL as a query param
+  // if an attachmentToken is present, it will be added to URL as a query param
   // this is done with a simple appending of the query param to the URL. If your
   // URL already has a query param, this will not work.
   authURL(url: string): string {
     if (this.attachmentToken) {
-      return `/api/v1${url}?access_token=${this.attachmentToken}`;
+      return route(url, { access_token: this.attachmentToken });
     }
     return url;
   }
