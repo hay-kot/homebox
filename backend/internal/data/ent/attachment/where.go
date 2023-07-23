@@ -180,11 +180,7 @@ func HasItem() predicate.Attachment {
 // HasItemWith applies the HasEdge predicate on the "item" edge with a given conditions (other predicates).
 func HasItemWith(preds ...predicate.Item) predicate.Attachment {
 	return predicate.Attachment(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ItemInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ItemTable, ItemColumn),
-		)
+		step := newItemStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -207,11 +203,7 @@ func HasDocument() predicate.Attachment {
 // HasDocumentWith applies the HasEdge predicate on the "document" edge with a given conditions (other predicates).
 func HasDocumentWith(preds ...predicate.Document) predicate.Attachment {
 	return predicate.Attachment(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(DocumentInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, DocumentTable, DocumentColumn),
-		)
+		step := newDocumentStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

@@ -105,7 +105,7 @@ func (nu *NotifierUpdate) ClearUser() *NotifierUpdate {
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (nu *NotifierUpdate) Save(ctx context.Context) (int, error) {
 	nu.defaults()
-	return withHooks[int, NotifierMutation](ctx, nu.sqlSave, nu.mutation, nu.hooks)
+	return withHooks(ctx, nu.sqlSave, nu.mutation, nu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -348,7 +348,7 @@ func (nuo *NotifierUpdateOne) Select(field string, fields ...string) *NotifierUp
 // Save executes the query and returns the updated Notifier entity.
 func (nuo *NotifierUpdateOne) Save(ctx context.Context) (*Notifier, error) {
 	nuo.defaults()
-	return withHooks[*Notifier, NotifierMutation](ctx, nuo.sqlSave, nuo.mutation, nuo.hooks)
+	return withHooks(ctx, nuo.sqlSave, nuo.mutation, nuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

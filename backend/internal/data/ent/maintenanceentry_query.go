@@ -20,7 +20,7 @@ import (
 type MaintenanceEntryQuery struct {
 	config
 	ctx        *QueryContext
-	order      []OrderFunc
+	order      []maintenanceentry.OrderOption
 	inters     []Interceptor
 	predicates []predicate.MaintenanceEntry
 	withItem   *ItemQuery
@@ -55,7 +55,7 @@ func (meq *MaintenanceEntryQuery) Unique(unique bool) *MaintenanceEntryQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (meq *MaintenanceEntryQuery) Order(o ...OrderFunc) *MaintenanceEntryQuery {
+func (meq *MaintenanceEntryQuery) Order(o ...maintenanceentry.OrderOption) *MaintenanceEntryQuery {
 	meq.order = append(meq.order, o...)
 	return meq
 }
@@ -271,7 +271,7 @@ func (meq *MaintenanceEntryQuery) Clone() *MaintenanceEntryQuery {
 	return &MaintenanceEntryQuery{
 		config:     meq.config,
 		ctx:        meq.ctx.Clone(),
-		order:      append([]OrderFunc{}, meq.order...),
+		order:      append([]maintenanceentry.OrderOption{}, meq.order...),
 		inters:     append([]Interceptor{}, meq.inters...),
 		predicates: append([]predicate.MaintenanceEntry{}, meq.predicates...),
 		withItem:   meq.withItem.Clone(),
@@ -455,6 +455,9 @@ func (meq *MaintenanceEntryQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != maintenanceentry.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if meq.withItem != nil {
+			_spec.Node.AddColumnOnce(maintenanceentry.FieldItemID)
 		}
 	}
 	if ps := meq.predicates; len(ps) > 0 {

@@ -22,7 +22,7 @@ import (
 type LocationQuery struct {
 	config
 	ctx          *QueryContext
-	order        []OrderFunc
+	order        []location.OrderOption
 	inters       []Interceptor
 	predicates   []predicate.Location
 	withGroup    *GroupQuery
@@ -61,7 +61,7 @@ func (lq *LocationQuery) Unique(unique bool) *LocationQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (lq *LocationQuery) Order(o ...OrderFunc) *LocationQuery {
+func (lq *LocationQuery) Order(o ...location.OrderOption) *LocationQuery {
 	lq.order = append(lq.order, o...)
 	return lq
 }
@@ -343,7 +343,7 @@ func (lq *LocationQuery) Clone() *LocationQuery {
 	return &LocationQuery{
 		config:       lq.config,
 		ctx:          lq.ctx.Clone(),
-		order:        append([]OrderFunc{}, lq.order...),
+		order:        append([]location.OrderOption{}, lq.order...),
 		inters:       append([]Interceptor{}, lq.inters...),
 		predicates:   append([]predicate.Location{}, lq.predicates...),
 		withGroup:    lq.withGroup.Clone(),
@@ -615,7 +615,7 @@ func (lq *LocationQuery) loadChildren(ctx context.Context, query *LocationQuery,
 	}
 	query.withFKs = true
 	query.Where(predicate.Location(func(s *sql.Selector) {
-		s.Where(sql.InValues(location.ChildrenColumn, fks...))
+		s.Where(sql.InValues(s.C(location.ChildrenColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -628,7 +628,7 @@ func (lq *LocationQuery) loadChildren(ctx context.Context, query *LocationQuery,
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "location_children" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "location_children" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -646,7 +646,7 @@ func (lq *LocationQuery) loadItems(ctx context.Context, query *ItemQuery, nodes 
 	}
 	query.withFKs = true
 	query.Where(predicate.Item(func(s *sql.Selector) {
-		s.Where(sql.InValues(location.ItemsColumn, fks...))
+		s.Where(sql.InValues(s.C(location.ItemsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -659,7 +659,7 @@ func (lq *LocationQuery) loadItems(ctx context.Context, query *ItemQuery, nodes 
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "location_items" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "location_items" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

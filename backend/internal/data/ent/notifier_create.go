@@ -121,7 +121,7 @@ func (nc *NotifierCreate) Mutation() *NotifierMutation {
 // Save creates the Notifier in the database.
 func (nc *NotifierCreate) Save(ctx context.Context) (*Notifier, error) {
 	nc.defaults()
-	return withHooks[*Notifier, NotifierMutation](ctx, nc.sqlSave, nc.mutation, nc.hooks)
+	return withHooks(ctx, nc.sqlSave, nc.mutation, nc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -321,8 +321,8 @@ func (ncb *NotifierCreateBulk) Save(ctx context.Context) ([]*Notifier, error) {
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, ncb.builders[i+1].mutation)
 				} else {

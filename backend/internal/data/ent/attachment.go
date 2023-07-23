@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/attachment"
@@ -30,6 +31,7 @@ type Attachment struct {
 	Edges                AttachmentEdges `json:"edges"`
 	document_attachments *uuid.UUID
 	item_attachments     *uuid.UUID
+	selectValues         sql.SelectValues
 }
 
 // AttachmentEdges holds the relations/edges for other nodes in the graph.
@@ -85,7 +87,7 @@ func (*Attachment) scanValues(columns []string) ([]any, error) {
 		case attachment.ForeignKeys[1]: // item_attachments
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Attachment", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -137,9 +139,17 @@ func (a *Attachment) assignValues(columns []string, values []any) error {
 				a.item_attachments = new(uuid.UUID)
 				*a.item_attachments = *value.S.(*uuid.UUID)
 			}
+		default:
+			a.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Attachment.
+// This includes values selected through modifiers, order, etc.
+func (a *Attachment) Value(name string) (ent.Value, error) {
+	return a.selectValues.Get(name)
 }
 
 // QueryItem queries the "item" edge of the Attachment entity.

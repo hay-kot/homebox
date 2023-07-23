@@ -26,7 +26,7 @@ import (
 type ItemQuery struct {
 	config
 	ctx                    *QueryContext
-	order                  []OrderFunc
+	order                  []item.OrderOption
 	inters                 []Interceptor
 	predicates             []predicate.Item
 	withGroup              *GroupQuery
@@ -69,7 +69,7 @@ func (iq *ItemQuery) Unique(unique bool) *ItemQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (iq *ItemQuery) Order(o ...OrderFunc) *ItemQuery {
+func (iq *ItemQuery) Order(o ...item.OrderOption) *ItemQuery {
 	iq.order = append(iq.order, o...)
 	return iq
 }
@@ -439,7 +439,7 @@ func (iq *ItemQuery) Clone() *ItemQuery {
 	return &ItemQuery{
 		config:                 iq.config,
 		ctx:                    iq.ctx.Clone(),
-		order:                  append([]OrderFunc{}, iq.order...),
+		order:                  append([]item.OrderOption{}, iq.order...),
 		inters:                 append([]Interceptor{}, iq.inters...),
 		predicates:             append([]predicate.Item{}, iq.predicates...),
 		withGroup:              iq.withGroup.Clone(),
@@ -790,7 +790,7 @@ func (iq *ItemQuery) loadChildren(ctx context.Context, query *ItemQuery, nodes [
 	}
 	query.withFKs = true
 	query.Where(predicate.Item(func(s *sql.Selector) {
-		s.Where(sql.InValues(item.ChildrenColumn, fks...))
+		s.Where(sql.InValues(s.C(item.ChildrenColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -803,7 +803,7 @@ func (iq *ItemQuery) loadChildren(ctx context.Context, query *ItemQuery, nodes [
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "item_children" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "item_children" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -914,7 +914,7 @@ func (iq *ItemQuery) loadFields(ctx context.Context, query *ItemFieldQuery, node
 	}
 	query.withFKs = true
 	query.Where(predicate.ItemField(func(s *sql.Selector) {
-		s.Where(sql.InValues(item.FieldsColumn, fks...))
+		s.Where(sql.InValues(s.C(item.FieldsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -927,7 +927,7 @@ func (iq *ItemQuery) loadFields(ctx context.Context, query *ItemFieldQuery, node
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "item_fields" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "item_fields" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -943,8 +943,11 @@ func (iq *ItemQuery) loadMaintenanceEntries(ctx context.Context, query *Maintena
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(maintenanceentry.FieldItemID)
+	}
 	query.Where(predicate.MaintenanceEntry(func(s *sql.Selector) {
-		s.Where(sql.InValues(item.MaintenanceEntriesColumn, fks...))
+		s.Where(sql.InValues(s.C(item.MaintenanceEntriesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -954,7 +957,7 @@ func (iq *ItemQuery) loadMaintenanceEntries(ctx context.Context, query *Maintena
 		fk := n.ItemID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "item_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "item_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -972,7 +975,7 @@ func (iq *ItemQuery) loadAttachments(ctx context.Context, query *AttachmentQuery
 	}
 	query.withFKs = true
 	query.Where(predicate.Attachment(func(s *sql.Selector) {
-		s.Where(sql.InValues(item.AttachmentsColumn, fks...))
+		s.Where(sql.InValues(s.C(item.AttachmentsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -985,7 +988,7 @@ func (iq *ItemQuery) loadAttachments(ctx context.Context, query *AttachmentQuery
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "item_attachments" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "item_attachments" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

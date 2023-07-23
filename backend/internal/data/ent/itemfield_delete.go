@@ -27,7 +27,7 @@ func (ifd *ItemFieldDelete) Where(ps ...predicate.ItemField) *ItemFieldDelete {
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (ifd *ItemFieldDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, ItemFieldMutation](ctx, ifd.sqlExec, ifd.mutation, ifd.hooks)
+	return withHooks(ctx, ifd.sqlExec, ifd.mutation, ifd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

@@ -27,7 +27,7 @@ func (dd *DocumentDelete) Where(ps ...predicate.Document) *DocumentDelete {
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (dd *DocumentDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, DocumentMutation](ctx, dd.sqlExec, dd.mutation, dd.hooks)
+	return withHooks(ctx, dd.sqlExec, dd.mutation, dd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

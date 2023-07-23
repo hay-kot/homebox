@@ -185,7 +185,7 @@ func (lu *LocationUpdate) RemoveItems(i ...*Item) *LocationUpdate {
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (lu *LocationUpdate) Save(ctx context.Context) (int, error) {
 	lu.defaults()
-	return withHooks[int, LocationMutation](ctx, lu.sqlSave, lu.mutation, lu.hooks)
+	return withHooks(ctx, lu.sqlSave, lu.mutation, lu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -595,7 +595,7 @@ func (luo *LocationUpdateOne) Select(field string, fields ...string) *LocationUp
 // Save executes the query and returns the updated Location entity.
 func (luo *LocationUpdateOne) Save(ctx context.Context) (*Location, error) {
 	luo.defaults()
-	return withHooks[*Location, LocationMutation](ctx, luo.sqlSave, luo.mutation, luo.hooks)
+	return withHooks(ctx, luo.sqlSave, luo.mutation, luo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

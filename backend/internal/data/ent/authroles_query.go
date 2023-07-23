@@ -20,7 +20,7 @@ import (
 type AuthRolesQuery struct {
 	config
 	ctx        *QueryContext
-	order      []OrderFunc
+	order      []authroles.OrderOption
 	inters     []Interceptor
 	predicates []predicate.AuthRoles
 	withToken  *AuthTokensQuery
@@ -56,7 +56,7 @@ func (arq *AuthRolesQuery) Unique(unique bool) *AuthRolesQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (arq *AuthRolesQuery) Order(o ...OrderFunc) *AuthRolesQuery {
+func (arq *AuthRolesQuery) Order(o ...authroles.OrderOption) *AuthRolesQuery {
 	arq.order = append(arq.order, o...)
 	return arq
 }
@@ -272,7 +272,7 @@ func (arq *AuthRolesQuery) Clone() *AuthRolesQuery {
 	return &AuthRolesQuery{
 		config:     arq.config,
 		ctx:        arq.ctx.Clone(),
-		order:      append([]OrderFunc{}, arq.order...),
+		order:      append([]authroles.OrderOption{}, arq.order...),
 		inters:     append([]Interceptor{}, arq.inters...),
 		predicates: append([]predicate.AuthRoles{}, arq.predicates...),
 		withToken:  arq.withToken.Clone(),

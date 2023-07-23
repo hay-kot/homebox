@@ -22,7 +22,7 @@ import (
 type DocumentQuery struct {
 	config
 	ctx             *QueryContext
-	order           []OrderFunc
+	order           []document.OrderOption
 	inters          []Interceptor
 	predicates      []predicate.Document
 	withGroup       *GroupQuery
@@ -59,7 +59,7 @@ func (dq *DocumentQuery) Unique(unique bool) *DocumentQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (dq *DocumentQuery) Order(o ...OrderFunc) *DocumentQuery {
+func (dq *DocumentQuery) Order(o ...document.OrderOption) *DocumentQuery {
 	dq.order = append(dq.order, o...)
 	return dq
 }
@@ -297,7 +297,7 @@ func (dq *DocumentQuery) Clone() *DocumentQuery {
 	return &DocumentQuery{
 		config:          dq.config,
 		ctx:             dq.ctx.Clone(),
-		order:           append([]OrderFunc{}, dq.order...),
+		order:           append([]document.OrderOption{}, dq.order...),
 		inters:          append([]Interceptor{}, dq.inters...),
 		predicates:      append([]predicate.Document{}, dq.predicates...),
 		withGroup:       dq.withGroup.Clone(),
@@ -498,7 +498,7 @@ func (dq *DocumentQuery) loadAttachments(ctx context.Context, query *AttachmentQ
 	}
 	query.withFKs = true
 	query.Where(predicate.Attachment(func(s *sql.Selector) {
-		s.Where(sql.InValues(document.AttachmentsColumn, fks...))
+		s.Where(sql.InValues(s.C(document.AttachmentsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -511,7 +511,7 @@ func (dq *DocumentQuery) loadAttachments(ctx context.Context, query *AttachmentQ
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "document_attachments" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "document_attachments" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

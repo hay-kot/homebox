@@ -111,7 +111,7 @@ func (dc *DocumentCreate) Mutation() *DocumentMutation {
 // Save creates the Document in the database.
 func (dc *DocumentCreate) Save(ctx context.Context) (*Document, error) {
 	dc.defaults()
-	return withHooks[*Document, DocumentMutation](ctx, dc.sqlSave, dc.mutation, dc.hooks)
+	return withHooks(ctx, dc.sqlSave, dc.mutation, dc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -290,8 +290,8 @@ func (dcb *DocumentCreateBulk) Save(ctx context.Context) ([]*Document, error) {
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, dcb.builders[i+1].mutation)
 				} else {

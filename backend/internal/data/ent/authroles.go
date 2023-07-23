@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authroles"
@@ -23,6 +24,7 @@ type AuthRoles struct {
 	// The values are being populated by the AuthRolesQuery when eager-loading is set.
 	Edges             AuthRolesEdges `json:"edges"`
 	auth_tokens_roles *uuid.UUID
+	selectValues      sql.SelectValues
 }
 
 // AuthRolesEdges holds the relations/edges for other nodes in the graph.
@@ -59,7 +61,7 @@ func (*AuthRoles) scanValues(columns []string) ([]any, error) {
 		case authroles.ForeignKeys[0]: // auth_tokens_roles
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type AuthRoles", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -92,9 +94,17 @@ func (ar *AuthRoles) assignValues(columns []string, values []any) error {
 				ar.auth_tokens_roles = new(uuid.UUID)
 				*ar.auth_tokens_roles = *value.S.(*uuid.UUID)
 			}
+		default:
+			ar.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the AuthRoles.
+// This includes values selected through modifiers, order, etc.
+func (ar *AuthRoles) Value(name string) (ent.Value, error) {
+	return ar.selectValues.Get(name)
 }
 
 // QueryToken queries the "token" edge of the AuthRoles entity.

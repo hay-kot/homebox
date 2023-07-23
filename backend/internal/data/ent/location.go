@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
@@ -31,6 +32,7 @@ type Location struct {
 	Edges             LocationEdges `json:"edges"`
 	group_locations   *uuid.UUID
 	location_children *uuid.UUID
+	selectValues      sql.SelectValues
 }
 
 // LocationEdges holds the relations/edges for other nodes in the graph.
@@ -108,7 +110,7 @@ func (*Location) scanValues(columns []string) ([]any, error) {
 		case location.ForeignKeys[1]: // location_children
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Location", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -166,9 +168,17 @@ func (l *Location) assignValues(columns []string, values []any) error {
 				l.location_children = new(uuid.UUID)
 				*l.location_children = *value.S.(*uuid.UUID)
 			}
+		default:
+			l.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Location.
+// This includes values selected through modifiers, order, etc.
+func (l *Location) Value(name string) (ent.Value, error) {
+	return l.selectValues.Get(name)
 }
 
 // QueryGroup queries the "group" edge of the Location entity.

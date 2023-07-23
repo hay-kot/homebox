@@ -21,7 +21,7 @@ import (
 type NotifierQuery struct {
 	config
 	ctx        *QueryContext
-	order      []OrderFunc
+	order      []notifier.OrderOption
 	inters     []Interceptor
 	predicates []predicate.Notifier
 	withGroup  *GroupQuery
@@ -57,7 +57,7 @@ func (nq *NotifierQuery) Unique(unique bool) *NotifierQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (nq *NotifierQuery) Order(o ...OrderFunc) *NotifierQuery {
+func (nq *NotifierQuery) Order(o ...notifier.OrderOption) *NotifierQuery {
 	nq.order = append(nq.order, o...)
 	return nq
 }
@@ -295,7 +295,7 @@ func (nq *NotifierQuery) Clone() *NotifierQuery {
 	return &NotifierQuery{
 		config:     nq.config,
 		ctx:        nq.ctx.Clone(),
-		order:      append([]OrderFunc{}, nq.order...),
+		order:      append([]notifier.OrderOption{}, nq.order...),
 		inters:     append([]Interceptor{}, nq.inters...),
 		predicates: append([]predicate.Notifier{}, nq.predicates...),
 		withGroup:  nq.withGroup.Clone(),
@@ -527,6 +527,12 @@ func (nq *NotifierQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != notifier.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if nq.withGroup != nil {
+			_spec.Node.AddColumnOnce(notifier.FieldGroupID)
+		}
+		if nq.withUser != nil {
+			_spec.Node.AddColumnOnce(notifier.FieldUserID)
 		}
 	}
 	if ps := nq.predicates; len(ps) > 0 {

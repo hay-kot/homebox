@@ -27,7 +27,7 @@ func (gitd *GroupInvitationTokenDelete) Where(ps ...predicate.GroupInvitationTok
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (gitd *GroupInvitationTokenDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, GroupInvitationTokenMutation](ctx, gitd.sqlExec, gitd.mutation, gitd.hooks)
+	return withHooks(ctx, gitd.sqlExec, gitd.mutation, gitd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

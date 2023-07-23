@@ -110,7 +110,7 @@ func (du *DocumentUpdate) RemoveAttachments(a ...*Attachment) *DocumentUpdate {
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (du *DocumentUpdate) Save(ctx context.Context) (int, error) {
 	du.defaults()
-	return withHooks[int, DocumentMutation](ctx, du.sqlSave, du.mutation, du.hooks)
+	return withHooks(ctx, du.sqlSave, du.mutation, du.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -368,7 +368,7 @@ func (duo *DocumentUpdateOne) Select(field string, fields ...string) *DocumentUp
 // Save executes the query and returns the updated Document entity.
 func (duo *DocumentUpdateOne) Save(ctx context.Context) (*Document, error) {
 	duo.defaults()
-	return withHooks[*Document, DocumentMutation](ctx, duo.sqlSave, duo.mutation, duo.hooks)
+	return withHooks(ctx, duo.sqlSave, duo.mutation, duo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

@@ -87,11 +87,7 @@ func HasToken() predicate.AuthRoles {
 // HasTokenWith applies the HasEdge predicate on the "token" edge with a given conditions (other predicates).
 func HasTokenWith(preds ...predicate.AuthTokens) predicate.AuthRoles {
 	return predicate.AuthRoles(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(TokenInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, TokenTable, TokenColumn),
-		)
+		step := newTokenStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

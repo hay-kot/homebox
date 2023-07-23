@@ -27,7 +27,7 @@ func (med *MaintenanceEntryDelete) Where(ps ...predicate.MaintenanceEntry) *Main
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (med *MaintenanceEntryDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, MaintenanceEntryMutation](ctx, med.sqlExec, med.mutation, med.hooks)
+	return withHooks(ctx, med.sqlExec, med.mutation, med.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

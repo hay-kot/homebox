@@ -62,7 +62,7 @@ func (arc *AuthRolesCreate) Mutation() *AuthRolesMutation {
 // Save creates the AuthRoles in the database.
 func (arc *AuthRolesCreate) Save(ctx context.Context) (*AuthRoles, error) {
 	arc.defaults()
-	return withHooks[*AuthRoles, AuthRolesMutation](ctx, arc.sqlSave, arc.mutation, arc.hooks)
+	return withHooks(ctx, arc.sqlSave, arc.mutation, arc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -179,8 +179,8 @@ func (arcb *AuthRolesCreateBulk) Save(ctx context.Context) ([]*AuthRoles, error)
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, arcb.builders[i+1].mutation)
 				} else {
