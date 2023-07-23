@@ -656,6 +656,8 @@ github.com/vmihailenco/msgpack/v4 v4.3.12/go.mod h1:gborTTJjAo/GWTqqRjrLCn9pgNN+
 github.com/vmihailenco/tagparser v0.1.1/go.mod h1:OeAg3pn3UbLjkWt+rN9oFYB6u/cQgqMEUPoW2WPyhdI=
 github.com/yeqown/go-qrcode/v2 v2.2.1 h1:Jc1Q916fwC05R8C7mpWDbrT9tyLPaLLKDABoC5XBCe8=
 github.com/yeqown/go-qrcode/v2 v2.2.1/go.mod h1:2Qsk2APUCPne0TsRo40DIkI5MYnbzYKCnKGEFWrxd24=
+github.com/yeqown/go-qrcode/v2 v2.2.2 h1:0comk6jEwi0oWNhKEmzx4JI+Q7XIneAApmFSMKWmSVc=
+github.com/yeqown/go-qrcode/v2 v2.2.2/go.mod h1:2Qsk2APUCPne0TsRo40DIkI5MYnbzYKCnKGEFWrxd24=
 github.com/yeqown/go-qrcode/writer/standard v1.2.1 h1:FMRZiur5yApUIe4fqtqmcdl/XQTZAZWt2DhkPx4VIW0=
 github.com/yeqown/go-qrcode/writer/standard v1.2.1/go.mod h1:ZelyDFiVymrauRjUn454iF7bjsabmB1vixkDA5kq2bw=
 github.com/yeqown/reedsolomon v1.0.0 h1:x1h/Ej/uJnNu8jaX7GLHBWmZKCAWjEJTetkqaabr4B0=

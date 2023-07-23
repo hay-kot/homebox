@@ -20,7 +20,7 @@ require (
 	github.com/swaggo/http-swagger v1.3.4
 	github.com/swaggo/http-swagger/v2 v2.0.1
 	github.com/swaggo/swag v1.16.1
-	github.com/yeqown/go-qrcode/v2 v2.2.1
+	github.com/yeqown/go-qrcode/v2 v2.2.2
 	github.com/yeqown/go-qrcode/writer/standard v1.2.1
 	golang.org/x/crypto v0.9.0
 	modernc.org/sqlite v1.24.0
