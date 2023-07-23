@@ -250,11 +250,7 @@ func HasUser() predicate.AuthTokens {
 // HasUserWith applies the HasEdge predicate on the "user" edge with a given conditions (other predicates).
 func HasUserWith(preds ...predicate.User) predicate.AuthTokens {
 	return predicate.AuthTokens(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(UserInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
-		)
+		step := newUserStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -277,11 +273,7 @@ func HasRoles() predicate.AuthTokens {
 // HasRolesWith applies the HasEdge predicate on the "roles" edge with a given conditions (other predicates).
 func HasRolesWith(preds ...predicate.AuthRoles) predicate.AuthTokens {
 	return predicate.AuthTokens(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RolesInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, RolesTable, RolesColumn),
-		)
+		step := newRolesStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

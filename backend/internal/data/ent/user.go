@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
@@ -38,8 +39,9 @@ type User struct {
 	ActivatedOn time.Time `json:"activated_on,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
-	Edges       UserEdges `json:"edges"`
-	group_users *uuid.UUID
+	Edges        UserEdges `json:"edges"`
+	group_users  *uuid.UUID
+	selectValues sql.SelectValues
 }
 
 // UserEdges holds the relations/edges for other nodes in the graph.
@@ -102,7 +104,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 		case user.ForeignKeys[0]: // group_users
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type User", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -183,9 +185,17 @@ func (u *User) assignValues(columns []string, values []any) error {
 				u.group_users = new(uuid.UUID)
 				*u.group_users = *value.S.(*uuid.UUID)
 			}
+		default:
+			u.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the User.
+// This includes values selected through modifiers, order, etc.
+func (u *User) Value(name string) (ent.Value, error) {
+	return u.selectValues.Get(name)
 }
 
 // QueryGroup queries the "group" edge of the User entity.

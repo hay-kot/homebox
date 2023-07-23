@@ -176,7 +176,7 @@ func (ifu *ItemFieldUpdate) ClearItem() *ItemFieldUpdate {
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ifu *ItemFieldUpdate) Save(ctx context.Context) (int, error) {
 	ifu.defaults()
-	return withHooks[int, ItemFieldMutation](ctx, ifu.sqlSave, ifu.mutation, ifu.hooks)
+	return withHooks(ctx, ifu.sqlSave, ifu.mutation, ifu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -490,7 +490,7 @@ func (ifuo *ItemFieldUpdateOne) Select(field string, fields ...string) *ItemFiel
 // Save executes the query and returns the updated ItemField entity.
 func (ifuo *ItemFieldUpdateOne) Save(ctx context.Context) (*ItemField, error) {
 	ifuo.defaults()
-	return withHooks[*ItemField, ItemFieldMutation](ctx, ifuo.sqlSave, ifuo.mutation, ifuo.hooks)
+	return withHooks(ctx, ifuo.sqlSave, ifuo.mutation, ifuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

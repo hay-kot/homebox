@@ -310,11 +310,7 @@ func HasGroup() predicate.Location {
 // HasGroupWith applies the HasEdge predicate on the "group" edge with a given conditions (other predicates).
 func HasGroupWith(preds ...predicate.Group) predicate.Location {
 	return predicate.Location(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(GroupInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, GroupTable, GroupColumn),
-		)
+		step := newGroupStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -337,11 +333,7 @@ func HasParent() predicate.Location {
 // HasParentWith applies the HasEdge predicate on the "parent" edge with a given conditions (other predicates).
 func HasParentWith(preds ...predicate.Location) predicate.Location {
 	return predicate.Location(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ParentTable, ParentColumn),
-		)
+		step := newParentStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -364,11 +356,7 @@ func HasChildren() predicate.Location {
 // HasChildrenWith applies the HasEdge predicate on the "children" edge with a given conditions (other predicates).
 func HasChildrenWith(preds ...predicate.Location) predicate.Location {
 	return predicate.Location(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ChildrenTable, ChildrenColumn),
-		)
+		step := newChildrenStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -391,11 +379,7 @@ func HasItems() predicate.Location {
 // HasItemsWith applies the HasEdge predicate on the "items" edge with a given conditions (other predicates).
 func HasItemsWith(preds ...predicate.Item) predicate.Location {
 	return predicate.Location(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ItemsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ItemsTable, ItemsColumn),
-		)
+		step := newItemsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

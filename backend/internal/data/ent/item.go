@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
@@ -71,6 +72,7 @@ type Item struct {
 	group_items    *uuid.UUID
 	item_children  *uuid.UUID
 	location_items *uuid.UUID
+	selectValues   sql.SelectValues
 }
 
 // ItemEdges holds the relations/edges for other nodes in the graph.
@@ -204,7 +206,7 @@ func (*Item) scanValues(columns []string) ([]any, error) {
 		case item.ForeignKeys[2]: // location_items
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Item", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -383,9 +385,17 @@ func (i *Item) assignValues(columns []string, values []any) error {
 				i.location_items = new(uuid.UUID)
 				*i.location_items = *value.S.(*uuid.UUID)
 			}
+		default:
+			i.selectValues.Set(columns[j], values[j])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Item.
+// This includes values selected through modifiers, order, etc.
+func (i *Item) Value(name string) (ent.Value, error) {
+	return i.selectValues.Get(name)
 }
 
 // QueryGroup queries the "group" edge of the Item entity.

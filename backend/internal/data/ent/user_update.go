@@ -215,7 +215,7 @@ func (uu *UserUpdate) RemoveNotifiers(n ...*Notifier) *UserUpdate {
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (uu *UserUpdate) Save(ctx context.Context) (int, error) {
 	uu.defaults()
-	return withHooks[int, UserMutation](ctx, uu.sqlSave, uu.mutation, uu.hooks)
+	return withHooks(ctx, uu.sqlSave, uu.mutation, uu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -650,7 +650,7 @@ func (uuo *UserUpdateOne) Select(field string, fields ...string) *UserUpdateOne 
 // Save executes the query and returns the updated User entity.
 func (uuo *UserUpdateOne) Save(ctx context.Context) (*User, error) {
 	uuo.defaults()
-	return withHooks[*User, UserMutation](ctx, uuo.sqlSave, uuo.mutation, uuo.hooks)
+	return withHooks(ctx, uuo.sqlSave, uuo.mutation, uuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

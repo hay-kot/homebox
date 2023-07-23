@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
@@ -35,7 +36,8 @@ type Notifier struct {
 	IsActive bool `json:"is_active,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the NotifierQuery when eager-loading is set.
-	Edges NotifierEdges `json:"edges"`
+	Edges        NotifierEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // NotifierEdges holds the relations/edges for other nodes in the graph.
@@ -89,7 +91,7 @@ func (*Notifier) scanValues(columns []string) ([]any, error) {
 		case notifier.FieldID, notifier.FieldGroupID, notifier.FieldUserID:
 			values[i] = new(uuid.UUID)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Notifier", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -151,9 +153,17 @@ func (n *Notifier) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				n.IsActive = value.Bool
 			}
+		default:
+			n.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Notifier.
+// This includes values selected through modifiers, order, etc.
+func (n *Notifier) Value(name string) (ent.Value, error) {
+	return n.selectValues.Get(name)
 }
 
 // QueryGroup queries the "group" edge of the Notifier entity.

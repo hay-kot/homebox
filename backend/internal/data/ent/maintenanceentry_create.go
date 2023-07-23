@@ -145,7 +145,7 @@ func (mec *MaintenanceEntryCreate) Mutation() *MaintenanceEntryMutation {
 // Save creates the MaintenanceEntry in the database.
 func (mec *MaintenanceEntryCreate) Save(ctx context.Context) (*MaintenanceEntry, error) {
 	mec.defaults()
-	return withHooks[*MaintenanceEntry, MaintenanceEntryMutation](ctx, mec.sqlSave, mec.mutation, mec.hooks)
+	return withHooks(ctx, mec.sqlSave, mec.mutation, mec.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -327,8 +327,8 @@ func (mecb *MaintenanceEntryCreateBulk) Save(ctx context.Context) ([]*Maintenanc
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, mecb.builders[i+1].mutation)
 				} else {

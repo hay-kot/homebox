@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
@@ -27,7 +28,8 @@ type Group struct {
 	Currency group.Currency `json:"currency,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the GroupQuery when eager-loading is set.
-	Edges GroupEdges `json:"edges"`
+	Edges        GroupEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // GroupEdges holds the relations/edges for other nodes in the graph.
@@ -126,7 +128,7 @@ func (*Group) scanValues(columns []string) ([]any, error) {
 		case group.FieldID:
 			values[i] = new(uuid.UUID)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Group", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -170,9 +172,17 @@ func (gr *Group) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				gr.Currency = group.Currency(value.String)
 			}
+		default:
+			gr.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Group.
+// This includes values selected through modifiers, order, etc.
+func (gr *Group) Value(name string) (ent.Value, error) {
+	return gr.selectValues.Get(name)
 }
 
 // QueryUsers queries the "users" edge of the Group entity.

@@ -250,11 +250,7 @@ func HasUsers() predicate.Group {
 // HasUsersWith applies the HasEdge predicate on the "users" edge with a given conditions (other predicates).
 func HasUsersWith(preds ...predicate.User) predicate.Group {
 	return predicate.Group(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(UsersInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, UsersTable, UsersColumn),
-		)
+		step := newUsersStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -277,11 +273,7 @@ func HasLocations() predicate.Group {
 // HasLocationsWith applies the HasEdge predicate on the "locations" edge with a given conditions (other predicates).
 func HasLocationsWith(preds ...predicate.Location) predicate.Group {
 	return predicate.Group(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(LocationsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, LocationsTable, LocationsColumn),
-		)
+		step := newLocationsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -304,11 +296,7 @@ func HasItems() predicate.Group {
 // HasItemsWith applies the HasEdge predicate on the "items" edge with a given conditions (other predicates).
 func HasItemsWith(preds ...predicate.Item) predicate.Group {
 	return predicate.Group(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ItemsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ItemsTable, ItemsColumn),
-		)
+		step := newItemsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -331,11 +319,7 @@ func HasLabels() predicate.Group {
 // HasLabelsWith applies the HasEdge predicate on the "labels" edge with a given conditions (other predicates).
 func HasLabelsWith(preds ...predicate.Label) predicate.Group {
 	return predicate.Group(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(LabelsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, LabelsTable, LabelsColumn),
-		)
+		step := newLabelsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -358,11 +342,7 @@ func HasDocuments() predicate.Group {
 // HasDocumentsWith applies the HasEdge predicate on the "documents" edge with a given conditions (other predicates).
 func HasDocumentsWith(preds ...predicate.Document) predicate.Group {
 	return predicate.Group(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(DocumentsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, DocumentsTable, DocumentsColumn),
-		)
+		step := newDocumentsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -385,11 +365,7 @@ func HasInvitationTokens() predicate.Group {
 // HasInvitationTokensWith applies the HasEdge predicate on the "invitation_tokens" edge with a given conditions (other predicates).
 func HasInvitationTokensWith(preds ...predicate.GroupInvitationToken) predicate.Group {
 	return predicate.Group(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(InvitationTokensInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, InvitationTokensTable, InvitationTokensColumn),
-		)
+		step := newInvitationTokensStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -412,11 +388,7 @@ func HasNotifiers() predicate.Group {
 // HasNotifiersWith applies the HasEdge predicate on the "notifiers" edge with a given conditions (other predicates).
 func HasNotifiersWith(preds ...predicate.Notifier) predicate.Group {
 	return predicate.Group(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(NotifiersInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, NotifiersTable, NotifiersColumn),
-		)
+		step := newNotifiersStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

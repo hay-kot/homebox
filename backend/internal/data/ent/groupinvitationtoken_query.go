@@ -20,7 +20,7 @@ import (
 type GroupInvitationTokenQuery struct {
 	config
 	ctx        *QueryContext
-	order      []OrderFunc
+	order      []groupinvitationtoken.OrderOption
 	inters     []Interceptor
 	predicates []predicate.GroupInvitationToken
 	withGroup  *GroupQuery
@@ -56,7 +56,7 @@ func (gitq *GroupInvitationTokenQuery) Unique(unique bool) *GroupInvitationToken
 }
 
 // Order specifies how the records should be ordered.
-func (gitq *GroupInvitationTokenQuery) Order(o ...OrderFunc) *GroupInvitationTokenQuery {
+func (gitq *GroupInvitationTokenQuery) Order(o ...groupinvitationtoken.OrderOption) *GroupInvitationTokenQuery {
 	gitq.order = append(gitq.order, o...)
 	return gitq
 }
@@ -272,7 +272,7 @@ func (gitq *GroupInvitationTokenQuery) Clone() *GroupInvitationTokenQuery {
 	return &GroupInvitationTokenQuery{
 		config:     gitq.config,
 		ctx:        gitq.ctx.Clone(),
-		order:      append([]OrderFunc{}, gitq.order...),
+		order:      append([]groupinvitationtoken.OrderOption{}, gitq.order...),
 		inters:     append([]Interceptor{}, gitq.inters...),
 		predicates: append([]predicate.GroupInvitationToken{}, gitq.predicates...),
 		withGroup:  gitq.withGroup.Clone(),

@@ -4,6 +4,9 @@ package authroles
 
 import (
 	"fmt"
+
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -78,4 +81,31 @@ func RoleValidator(r Role) error {
 	default:
 		return fmt.Errorf("authroles: invalid enum value for role field: %q", r)
 	}
+}
+
+// OrderOption defines the ordering options for the AuthRoles queries.
+type OrderOption func(*sql.Selector)
+
+// ByID orders the results by the id field.
+func ByID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByRole orders the results by the role field.
+func ByRole(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRole, opts...).ToFunc()
+}
+
+// ByTokenField orders the results by token field.
+func ByTokenField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTokenStep(), sql.OrderByField(field, opts...))
+	}
+}
+func newTokenStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TokenInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2O, true, TokenTable, TokenColumn),
+	)
 }

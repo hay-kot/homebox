@@ -20,7 +20,7 @@ import (
 type ItemFieldQuery struct {
 	config
 	ctx        *QueryContext
-	order      []OrderFunc
+	order      []itemfield.OrderOption
 	inters     []Interceptor
 	predicates []predicate.ItemField
 	withItem   *ItemQuery
@@ -56,7 +56,7 @@ func (ifq *ItemFieldQuery) Unique(unique bool) *ItemFieldQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (ifq *ItemFieldQuery) Order(o ...OrderFunc) *ItemFieldQuery {
+func (ifq *ItemFieldQuery) Order(o ...itemfield.OrderOption) *ItemFieldQuery {
 	ifq.order = append(ifq.order, o...)
 	return ifq
 }
@@ -272,7 +272,7 @@ func (ifq *ItemFieldQuery) Clone() *ItemFieldQuery {
 	return &ItemFieldQuery{
 		config:     ifq.config,
 		ctx:        ifq.ctx.Clone(),
-		order:      append([]OrderFunc{}, ifq.order...),
+		order:      append([]itemfield.OrderOption{}, ifq.order...),
 		inters:     append([]Interceptor{}, ifq.inters...),
 		predicates: append([]predicate.ItemField{}, ifq.predicates...),
 		withItem:   ifq.withItem.Clone(),

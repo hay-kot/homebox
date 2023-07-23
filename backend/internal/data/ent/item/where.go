@@ -1420,11 +1420,7 @@ func HasGroup() predicate.Item {
 // HasGroupWith applies the HasEdge predicate on the "group" edge with a given conditions (other predicates).
 func HasGroupWith(preds ...predicate.Group) predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(GroupInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, GroupTable, GroupColumn),
-		)
+		step := newGroupStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1447,11 +1443,7 @@ func HasParent() predicate.Item {
 // HasParentWith applies the HasEdge predicate on the "parent" edge with a given conditions (other predicates).
 func HasParentWith(preds ...predicate.Item) predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ParentTable, ParentColumn),
-		)
+		step := newParentStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1474,11 +1466,7 @@ func HasChildren() predicate.Item {
 // HasChildrenWith applies the HasEdge predicate on the "children" edge with a given conditions (other predicates).
 func HasChildrenWith(preds ...predicate.Item) predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ChildrenTable, ChildrenColumn),
-		)
+		step := newChildrenStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1501,11 +1489,7 @@ func HasLabel() predicate.Item {
 // HasLabelWith applies the HasEdge predicate on the "label" edge with a given conditions (other predicates).
 func HasLabelWith(preds ...predicate.Label) predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(LabelInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, LabelTable, LabelPrimaryKey...),
-		)
+		step := newLabelStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1528,11 +1512,7 @@ func HasLocation() predicate.Item {
 // HasLocationWith applies the HasEdge predicate on the "location" edge with a given conditions (other predicates).
 func HasLocationWith(preds ...predicate.Location) predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(LocationInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, LocationTable, LocationColumn),
-		)
+		step := newLocationStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1555,11 +1535,7 @@ func HasFields() predicate.Item {
 // HasFieldsWith applies the HasEdge predicate on the "fields" edge with a given conditions (other predicates).
 func HasFieldsWith(preds ...predicate.ItemField) predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(FieldsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, FieldsTable, FieldsColumn),
-		)
+		step := newFieldsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1582,11 +1558,7 @@ func HasMaintenanceEntries() predicate.Item {
 // HasMaintenanceEntriesWith applies the HasEdge predicate on the "maintenance_entries" edge with a given conditions (other predicates).
 func HasMaintenanceEntriesWith(preds ...predicate.MaintenanceEntry) predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(MaintenanceEntriesInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, MaintenanceEntriesTable, MaintenanceEntriesColumn),
-		)
+		step := newMaintenanceEntriesStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1609,11 +1581,7 @@ func HasAttachments() predicate.Item {
 // HasAttachmentsWith applies the HasEdge predicate on the "attachments" edge with a given conditions (other predicates).
 func HasAttachmentsWith(preds ...predicate.Attachment) predicate.Item {
 	return predicate.Item(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(AttachmentsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, AttachmentsTable, AttachmentsColumn),
-		)
+		step := newAttachmentsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

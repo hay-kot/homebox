@@ -475,11 +475,7 @@ func HasGroup() predicate.User {
 // HasGroupWith applies the HasEdge predicate on the "group" edge with a given conditions (other predicates).
 func HasGroupWith(preds ...predicate.Group) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(GroupInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, GroupTable, GroupColumn),
-		)
+		step := newGroupStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -502,11 +498,7 @@ func HasAuthTokens() predicate.User {
 // HasAuthTokensWith applies the HasEdge predicate on the "auth_tokens" edge with a given conditions (other predicates).
 func HasAuthTokensWith(preds ...predicate.AuthTokens) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(AuthTokensInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, AuthTokensTable, AuthTokensColumn),
-		)
+		step := newAuthTokensStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -529,11 +521,7 @@ func HasNotifiers() predicate.User {
 // HasNotifiersWith applies the HasEdge predicate on the "notifiers" edge with a given conditions (other predicates).
 func HasNotifiersWith(preds ...predicate.Notifier) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(NotifiersInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, NotifiersTable, NotifiersColumn),
-		)
+		step := newNotifiersStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

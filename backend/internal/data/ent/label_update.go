@@ -144,7 +144,7 @@ func (lu *LabelUpdate) RemoveItems(i ...*Item) *LabelUpdate {
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (lu *LabelUpdate) Save(ctx context.Context) (int, error) {
 	lu.defaults()
-	return withHooks[int, LabelMutation](ctx, lu.sqlSave, lu.mutation, lu.hooks)
+	return withHooks(ctx, lu.sqlSave, lu.mutation, lu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -450,7 +450,7 @@ func (luo *LabelUpdateOne) Select(field string, fields ...string) *LabelUpdateOn
 // Save executes the query and returns the updated Label entity.
 func (luo *LabelUpdateOne) Save(ctx context.Context) (*Label, error) {
 	luo.defaults()
-	return withHooks[*Label, LabelMutation](ctx, luo.sqlSave, luo.mutation, luo.hooks)
+	return withHooks(ctx, luo.sqlSave, luo.mutation, luo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

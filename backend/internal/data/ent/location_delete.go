@@ -27,7 +27,7 @@ func (ld *LocationDelete) Where(ps ...predicate.Location) *LocationDelete {
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (ld *LocationDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, LocationMutation](ctx, ld.sqlExec, ld.mutation, ld.hooks)
+	return withHooks(ctx, ld.sqlExec, ld.mutation, ld.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

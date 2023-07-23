@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/item"
@@ -38,8 +39,9 @@ type ItemField struct {
 	TimeValue time.Time `json:"time_value,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ItemFieldQuery when eager-loading is set.
-	Edges       ItemFieldEdges `json:"edges"`
-	item_fields *uuid.UUID
+	Edges        ItemFieldEdges `json:"edges"`
+	item_fields  *uuid.UUID
+	selectValues sql.SelectValues
 }
 
 // ItemFieldEdges holds the relations/edges for other nodes in the graph.
@@ -82,7 +84,7 @@ func (*ItemField) scanValues(columns []string) ([]any, error) {
 		case itemfield.ForeignKeys[0]: // item_fields
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type ItemField", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -163,9 +165,17 @@ func (_if *ItemField) assignValues(columns []string, values []any) error {
 				_if.item_fields = new(uuid.UUID)
 				*_if.item_fields = *value.S.(*uuid.UUID)
 			}
+		default:
+			_if.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the ItemField.
+// This includes values selected through modifiers, order, etc.
+func (_if *ItemField) Value(name string) (ent.Value, error) {
+	return _if.selectValues.Get(name)
 }
 
 // QueryItem queries the "item" edge of the ItemField entity.
