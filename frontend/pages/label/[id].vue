@@ -1,6 +1,4 @@
 <script setup lang="ts">
-  import type { AnyDetail, Details } from "~~/components/global/DetailsSection/types";
-
   definePageMeta({
     middleware: ["auth"],
   });
@@ -8,8 +6,6 @@
   const route = useRoute();
   const api = useUserApi();
   const toast = useNotifier();
-
-  const preferences = useViewPreferences();
 
   const labelId = computed<string>(() => route.params.id as string);
 
@@ -21,42 +17,6 @@
       return;
     }
     return data;
-  });
-
-  const details = computed<Details>(() => {
-    const details = [
-      {
-        name: "Name",
-        text: label.value?.name,
-      } as AnyDetail,
-      {
-        name: "Description",
-        type: "markdown",
-        text: label.value?.description,
-      } as AnyDetail,
-    ];
-
-    if (preferences.value.showDetails) {
-      return [
-        ...details,
-        {
-          name: "Created",
-          text: label.value?.createdAt,
-          type: "date",
-        } as AnyDetail,
-        {
-          name: "Updated",
-          text: label.value?.updatedAt,
-          type: "date",
-        } as AnyDetail,
-        {
-          name: "Database ID",
-          text: label.value?.id,
-        } as AnyDetail,
-      ];
-    }
-
-    return details;
   });
 
   const confirm = useConfirm();
@@ -123,40 +83,50 @@
       </form>
     </BaseModal>
 
-    <BaseCard class="mb-16">
-      <template #title>
-        <BaseSectionHeader>
-          <Icon name="mdi-tag" class="mr-2 -mt-1 text-base-content" />
+    <BaseContainer v-if="label" class="space-y-6 mb-16">
+      <section>
+        <BaseSectionHeader v-if="label">
+          <Icon name="mdi-package-variant" class="mr-2 -mt-1 text-base-content" />
           <span class="text-base-content">
             {{ label ? label.name : "" }}
           </span>
-        </BaseSectionHeader>
-      </template>
 
-      <template #title-actions>
-        <div class="flex flex-wrap mt-2 gap-2">
-          <div class="form-control max-w-[160px]">
-            <label class="label cursor-pointer">
-              <input v-model="preferences.showDetails" type="checkbox" class="toggle toggle-primary" />
-              <span class="label-text ml-2"> Detailed View </span>
-            </label>
+          <template #description>
+            <Markdown class="text-lg" :source="label.description"> </Markdown>
+          </template>
+        </BaseSectionHeader>
+
+        <div class="flex gap-3 flex-wrap mb-6 text-sm italic">
+          <div>
+            Created
+            <DateTime :date="label?.createdAt" />
           </div>
-          <BaseButton class="ml-auto" size="sm" @click="openUpdate">
-            <Icon class="mr-1" name="mdi-pencil" />
-            Edit
-          </BaseButton>
-          <BaseButton size="sm" @click="confirmDelete">
-            <Icon class="mr-1" name="mdi-delete" />
+          <div>
+            <Icon name="mdi-circle-small" />
+          </div>
+          <div>
+            Last Updated
+            <DateTime :date="label?.updatedAt" />
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between mb-6 mt-3">
+          <div class="btn-group">
+            <PageQRCode class="dropdown-right" />
+            <BaseButton class="ml-auto" size="sm" @click="openUpdate">
+              <Icon class="mr-1" name="mdi-pencil" />
+              Edit
+            </BaseButton>
+          </div>
+          <BaseButton class="btn btn-sm" @click="confirmDelete()">
+            <Icon name="mdi-delete" class="mr-2" />
             Delete
           </BaseButton>
-          <PageQRCode />
         </div>
-      </template>
+      </section>
+    </BaseContainer>
 
-      <DetailsSection :details="details" />
-    </BaseCard>
-
-    <section v-if="label && label.items && label.items.length > 0">
+    <section v-if="label && label.items">
       <ItemViewSelectable :items="label.items" />
     </section>
   </BaseContainer>
