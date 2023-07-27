@@ -1,14 +1,5 @@
 basePath: /api
 definitions:
-  mid.ErrorResponse:
-    properties:
-      error:
-        type: string
-      fields:
-        additionalProperties:
-          type: string
-        type: object
-    type: object
   repo.DocumentOut:
     properties:
       id:
@@ -707,6 +698,13 @@ definitions:
     properties:
       item: {}
     type: object
+  validate.ErrorResponse:
+    properties:
+      error:
+        type: string
+      fields:
+        type: string
+    type: object
 info:
   contact:
     name: Don't
@@ -1084,7 +1082,7 @@ paths:
         "422":
           description: Unprocessable Entity
           schema:
-            $ref: '#/definitions/mid.ErrorResponse'
+            $ref: '#/definitions/validate.ErrorResponse'
       security:
       - Bearer: []
       summary: Create Item Attachment

@@ -731,7 +731,7 @@ const docTemplate = `{
                     "422": {
                         "description": "Unprocessable Entity",
                         "schema": {
-                            "$ref": "#/definitions/mid.ErrorResponse"
+                            "$ref": "#/definitions/validate.ErrorResponse"
                         }
                     }
                 }
@@ -1799,20 +1799,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "mid.ErrorResponse": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "type": "string"
-                },
-                "fields": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
         "repo.DocumentOut": {
             "type": "object",
             "properties": {
@@ -2852,6 +2838,17 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "item": {}
+            }
+        },
+        "validate.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "fields": {
+                    "type": "string"
+                }
             }
         }
     },

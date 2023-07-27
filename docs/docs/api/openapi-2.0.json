@@ -723,7 +723,7 @@
                     "422": {
                         "description": "Unprocessable Entity",
                         "schema": {
-                            "$ref": "#/definitions/mid.ErrorResponse"
+                            "$ref": "#/definitions/validate.ErrorResponse"
                         }
                     }
                 }
@@ -1791,20 +1791,6 @@
         }
     },
     "definitions": {
-        "mid.ErrorResponse": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "type": "string"
-                },
-                "fields": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
         "repo.DocumentOut": {
             "type": "object",
             "properties": {
@@ -2844,6 +2830,17 @@
             "type": "object",
             "properties": {
                 "item": {}
+            }
+        },
+        "validate.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "fields": {
+                    "type": "string"
+                }
             }
         }
     },
