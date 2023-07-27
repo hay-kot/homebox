@@ -20,7 +20,7 @@ tasks:
       - db:generate
     cmds:
       - cd backend/app/api/static && swag fmt --dir=../
-      - cd backend/app/api/static && swag init --dir=../,../../../internal,../../../pkgs --parseDependency
+      - cd backend/app/api/static && swag init --dir=../,../../../internal,../../../pkgs
       - |
         npx swagger-typescript-api \
           --no-client \

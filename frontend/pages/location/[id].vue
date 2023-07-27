@@ -1,5 +1,4 @@
 <script setup lang="ts">
-  import { AnyDetail, Details } from "~~/components/global/DetailsSection/types";
   import { LocationSummary, LocationUpdate } from "~~/lib/api/types/data-contracts";
   import { useLocationStore } from "~~/stores/locations";
 
@@ -10,8 +9,6 @@
   const route = useRoute();
   const api = useUserApi();
   const toast = useNotifier();
-
-  const preferences = useViewPreferences();
 
   const locationId = computed<string>(() => route.params.id as string);
 
@@ -28,42 +25,6 @@
     }
 
     return data;
-  });
-
-  const details = computed<Details>(() => {
-    const details = [
-      {
-        name: "Name",
-        text: location.value?.name ?? "",
-      },
-      {
-        name: "Description",
-        type: "markdown",
-        text: location.value?.description ?? "",
-      } as AnyDetail,
-    ];
-
-    if (preferences.value.showDetails) {
-      return [
-        ...details,
-        {
-          name: "Created",
-          text: location.value?.createdAt,
-          type: "date",
-        } as AnyDetail,
-        {
-          name: "Updated",
-          text: location.value?.updatedAt,
-          type: "date",
-        } as AnyDetail,
-        {
-          name: "Database ID",
-          text: location.value?.id,
-        } as AnyDetail,
-      ];
-    }
-
-    return details;
   });
 
   const confirm = useConfirm();
@@ -125,6 +86,7 @@
 
 <template>
   <div>
+    <!-- Update Dialog -->
     <BaseModal v-model="updateModal">
       <template #title> Update Location </template>
       <form v-if="location" @submit.prevent="update">
@@ -136,47 +98,56 @@
         </div>
       </form>
     </BaseModal>
-    <BaseContainer class="space-y-10 mb-16">
-      <BaseCard>
-        <template #title>
-          <BaseSectionHeader>
-            <Icon name="mdi-map-marker" class="mr-2 -mt-1 text-base-content" />
-            <span class="text-base-content">
-              {{ location ? location.name : "" }}
-            </span>
-            <div v-if="location && location.parent" class="text-sm breadcrumbs pb-0">
-              <ul class="text-base-content/70">
-                <li>
-                  <NuxtLink :to="`/location/${location.parent.id}`"> {{ location.parent.name }}</NuxtLink>
-                </li>
-                <li>{{ location.name }}</li>
-              </ul>
-            </div>
-          </BaseSectionHeader>
-        </template>
 
-        <template #title-actions>
-          <div class="flex flex-wrap mt-2 gap-2">
-            <div class="form-control max-w-[160px]">
-              <label class="label cursor-pointer">
-                <input v-model="preferences.showDetails" type="checkbox" class="toggle toggle-primary" />
-                <span class="label-text ml-2"> Detailed View </span>
-              </label>
-            </div>
+    <BaseContainer v-if="location" class="space-y-6 mb-16">
+      <section>
+        <BaseSectionHeader v-if="location">
+          <Icon name="mdi-package-variant" class="mr-2 -mt-1 text-base-content" />
+          <span class="text-base-content">
+            {{ location ? location.name : "" }}
+          </span>
+
+          <div v-if="location?.parent" class="text-sm breadcrumbs pb-0">
+            <ul class="text-base-content/70">
+              <li>
+                <NuxtLink :to="`/location/${location.parent.id}`"> {{ location.parent.name }}</NuxtLink>
+              </li>
+              <li>{{ location.name }}</li>
+            </ul>
+          </div>
+          <template #description>
+            <Markdown class="text-lg" :source="location.description"> </Markdown>
+          </template>
+        </BaseSectionHeader>
+
+        <div class="flex gap-3 flex-wrap mb-6 text-sm italic">
+          <div>
+            Created
+            <DateTime :date="location?.createdAt" />
+          </div>
+          <div>
+            <Icon name="mdi-circle-small" />
+          </div>
+          <div>
+            Last Updated
+            <DateTime :date="location?.updatedAt" />
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between mb-6 mt-3">
+          <div class="btn-group">
+            <PageQRCode class="dropdown-right" />
             <BaseButton class="ml-auto" size="sm" @click="openUpdate">
               <Icon class="mr-1" name="mdi-pencil" />
               Edit
             </BaseButton>
-            <BaseButton size="sm" @click="confirmDelete">
-              <Icon class="mr-1" name="mdi-delete" />
-              Delete
-            </BaseButton>
-            <PageQRCode />
           </div>
-        </template>
-
-        <DetailsSection :details="details" />
-      </BaseCard>
+          <BaseButton class="btn btn-sm" @click="confirmDelete()">
+            <Icon name="mdi-delete" class="mr-2" />
+            Delete
+          </BaseButton>
+        </div>
+      </section>
 
       <template v-if="location && location.items.length > 0">
         <ItemViewSelectable :items="location.items" />

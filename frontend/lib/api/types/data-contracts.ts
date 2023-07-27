@@ -10,11 +10,6 @@
  * ---------------------------------------------------------------
  */
 
-export interface MidErrorResponse {
-  error: string;
-  fields: Record<string, string>;
-}
-
 export interface DocumentOut {
   id: string;
   path: string;
@@ -431,4 +426,9 @@ export interface TokenResponse {
 
 export interface Wrapped {
   item: any;
+}
+
+export interface ValidateErrorResponse {
+  error: string;
+  fields: string;
 }
