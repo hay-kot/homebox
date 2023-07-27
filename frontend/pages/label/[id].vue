@@ -1,6 +1,4 @@
 <script setup lang="ts">
-  import type { AnyDetail, Details } from "~~/components/global/DetailsSection/types";
-
   definePageMeta({
     middleware: ["auth"],
   });
@@ -8,8 +6,6 @@
   const route = useRoute();
   const api = useUserApi();
   const toast = useNotifier();
-
-  const preferences = useViewPreferences();
 
   const labelId = computed<string>(() => route.params.id as string);
 
@@ -21,42 +17,6 @@
       return;
     }
     return data;
-  });
-
-  const details = computed<Details>(() => {
-    const details = [
-      {
-        name: "Name",
-        text: label.value?.name,
-      } as AnyDetail,
-      {
-        name: "Description",
-        type: "markdown",
-        text: label.value?.description,
-      } as AnyDetail,
-    ];
-
-    if (preferences.value.showDetails) {
-      return [
-        ...details,
-        {
-          name: "Created",
-          text: label.value?.createdAt,
-          type: "date",
-        } as AnyDetail,
-        {
-          name: "Updated",
-          text: label.value?.updatedAt,
-          type: "date",
-        } as AnyDetail,
-        {
-          name: "Database ID",
-          text: label.value?.id,
-        } as AnyDetail,
-      ];
-    }
-
-    return details;
   });
 
   const confirm = useConfirm();
