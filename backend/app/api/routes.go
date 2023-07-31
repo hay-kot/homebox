@@ -125,7 +125,7 @@ func (a *app) mountRoutes(r *chi.Mux, chain *errchain.ErrChain, repos *repo.AllR
 	r.Put(v1Base("/items/{id}/maintenance/{entry_id}"), chain.ToHandlerFunc(v1Ctrl.HandleMaintenanceEntryUpdate(), userMW...))
 	r.Delete(v1Base("/items/{id}/maintenance/{entry_id}"), chain.ToHandlerFunc(v1Ctrl.HandleMaintenanceEntryDelete(), userMW...))
 
-	r.Get(v1Base("/asset/{id}"), chain.ToHandlerFunc(v1Ctrl.HandleAssetGet(), userMW...))
+	r.Get(v1Base("/assets/{id}"), chain.ToHandlerFunc(v1Ctrl.HandleAssetGet(), userMW...))
 
 	// Notifiers
 	r.Get(v1Base("/notifiers"), chain.ToHandlerFunc(v1Ctrl.HandleGetUserNotifiers(), userMW...))
