@@ -131,24 +131,36 @@ const DefaultCurrency = CurrencyUsd
 
 // Currency values.
 const (
-	CurrencyUsd Currency = "usd"
+	CurrencyAed Currency = "aed"
+	CurrencyAud Currency = "aud"
+	CurrencyBgn Currency = "bgn"
+	CurrencyBrl Currency = "brl"
+	CurrencyCad Currency = "cad"
+	CurrencyChf Currency = "chf"
+	CurrencyCny Currency = "cny"
+	CurrencyCzk Currency = "czk"
+	CurrencyDkk Currency = "dkk"
 	CurrencyEur Currency = "eur"
 	CurrencyGbp Currency = "gbp"
+	CurrencyHkd Currency = "hkd"
+	CurrencyIdr Currency = "idr"
+	CurrencyInr Currency = "inr"
 	CurrencyJpy Currency = "jpy"
-	CurrencyZar Currency = "zar"
-	CurrencyAud Currency = "aud"
+	CurrencyKrw Currency = "krw"
+	CurrencyMxn Currency = "mxn"
 	CurrencyNok Currency = "nok"
 	CurrencyNzd Currency = "nzd"
-	CurrencySek Currency = "sek"
-	CurrencyDkk Currency = "dkk"
-	CurrencyInr Currency = "inr"
-	CurrencyRmb Currency = "rmb"
-	CurrencyBgn Currency = "bgn"
-	CurrencyChf Currency = "chf"
 	CurrencyPln Currency = "pln"
-	CurrencyTry Currency = "try"
+	CurrencyRmb Currency = "rmb"
 	CurrencyRon Currency = "ron"
-	CurrencyCzk Currency = "czk"
+	CurrencyRub Currency = "rub"
+	CurrencySar Currency = "sar"
+	CurrencySek Currency = "sek"
+	CurrencySgd Currency = "sgd"
+	CurrencyThb Currency = "thb"
+	CurrencyTry Currency = "try"
+	CurrencyUsd Currency = "usd"
+	CurrencyZar Currency = "zar"
 )
 
 func (c Currency) String() string {
@@ -158,7 +170,7 @@ func (c Currency) String() string {
 // CurrencyValidator is a validator for the "currency" field enum values. It is called by the builders before save.
 func CurrencyValidator(c Currency) error {
 	switch c {
-	case CurrencyUsd, CurrencyEur, CurrencyGbp, CurrencyJpy, CurrencyZar, CurrencyAud, CurrencyNok, CurrencyNzd, CurrencySek, CurrencyDkk, CurrencyInr, CurrencyRmb, CurrencyBgn, CurrencyChf, CurrencyPln, CurrencyTry, CurrencyRon, CurrencyCzk:
+	case CurrencyAed, CurrencyAud, CurrencyBgn, CurrencyBrl, CurrencyCad, CurrencyChf, CurrencyCny, CurrencyCzk, CurrencyDkk, CurrencyEur, CurrencyGbp, CurrencyHkd, CurrencyIdr, CurrencyInr, CurrencyJpy, CurrencyKrw, CurrencyMxn, CurrencyNok, CurrencyNzd, CurrencyPln, CurrencyRmb, CurrencyRon, CurrencyRub, CurrencySar, CurrencySek, CurrencySgd, CurrencyThb, CurrencyTry, CurrencyUsd, CurrencyZar:
 		return nil
 	default:
 		return fmt.Errorf("group: invalid enum value for currency field: %q", c)

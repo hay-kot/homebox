@@ -116,7 +116,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString, Size: 255},
-		{Name: "currency", Type: field.TypeEnum, Enums: []string{"usd", "eur", "gbp", "jpy", "zar", "aud", "nok", "nzd", "sek", "dkk", "inr", "rmb", "bgn", "chf", "pln", "try", "ron", "czk"}, Default: "usd"},
+		{Name: "currency", Type: field.TypeEnum, Enums: []string{"aed", "aud", "bgn", "brl", "cad", "chf", "cny", "czk", "dkk", "eur", "gbp", "hkd", "idr", "inr", "jpy", "krw", "mxn", "nok", "nzd", "pln", "rmb", "ron", "rub", "sar", "sek", "sgd", "thb", "try", "usd", "zar"}, Default: "usd"},
 	}
 	// GroupsTable holds the schema information for the "groups" table.
 	GroupsTable = &schema.Table{
