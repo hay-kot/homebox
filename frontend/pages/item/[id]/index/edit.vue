@@ -361,6 +361,44 @@
 
   const { query, results } = useItemSearch(api, { immediate: false });
   const parent = ref();
+
+  async function deleteItem() {
+    const confirmed = await confirm.open("Are you sure you want to delete this item?");
+
+    if (!confirmed.data) {
+      return;
+    }
+
+    const { error } = await api.items.delete(itemId.value);
+    if (error) {
+      toast.error("Failed to delete item");
+      return;
+    }
+    toast.success("Item deleted");
+    navigateTo("/home");
+  }
+
+  async function keyboardSave(e: KeyboardEvent) {
+    // Cmd + S
+    if (e.metaKey && e.key === "s") {
+      e.preventDefault();
+      await saveItem();
+    }
+
+    // Ctrl + S
+    if (e.ctrlKey && e.key === "s") {
+      e.preventDefault();
+      await saveItem();
+    }
+  }
+
+  onMounted(() => {
+    window.addEventListener("keydown", keyboardSave);
+  });
+
+  onUnmounted(() => {
+    window.removeEventListener("keydown", keyboardSave);
+  });
 </script>
 
 <template>
@@ -382,25 +420,30 @@
       </div>
     </BaseModal>
 
-    <section>
+    <section class="relative">
+      <div class="my-4 justify-end flex gap-2 items-center sticky z-10 top-1">
+        <div class="mr-auto tooltip tooltip-right" data-tip="Show Advanced View Options">
+          <label class="label cursor-pointer mr-auto">
+            <input v-model="preferences.editorAdvancedView" type="checkbox" class="toggle toggle-primary" />
+            <span class="label-text ml-4"> Advanced </span>
+          </label>
+        </div>
+        <BaseButton size="sm" @click="saveItem">
+          <template #icon>
+            <Icon name="mdi-content-save-outline" />
+          </template>
+          Save
+        </BaseButton>
+        <BaseButton class="btn btn-sm btn-error" @click="deleteItem()">
+          <Icon name="mdi-delete" class="mr-2" />
+          Delete
+        </BaseButton>
+      </div>
       <div class="space-y-6">
         <BaseCard class="overflow-visible">
           <template #title> Edit Details </template>
           <template #title-actions>
-            <div class="flex flex-wrap justify-between items-center mt-2 gap-4">
-              <div class="mr-auto tooltip" data-tip="Show Advanced Options">
-                <label class="label cursor-pointer mr-auto">
-                  <input v-model="preferences.editorAdvancedView" type="checkbox" class="toggle toggle-primary" />
-                  <span class="label-text ml-4"> Advanced </span>
-                </label>
-              </div>
-              <BaseButton size="sm" @click="saveItem">
-                <template #icon>
-                  <Icon name="mdi-content-save-outline" />
-                </template>
-                Save
-              </BaseButton>
-            </div>
+            <div class="flex flex-wrap justify-between items-center mt-2 gap-4"></div>
           </template>
           <div class="px-5 pt-2 border-t mb-6 grid md:grid-cols-2 gap-4">
             <LocationSelector v-model="item.location" />
