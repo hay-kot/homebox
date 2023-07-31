@@ -32,6 +32,12 @@
     },
   });
 
+  function escClose(e: KeyboardEvent) {
+    if (e.key === "Escape") {
+      close();
+    }
+  }
+
   function close() {
     if (props.readonly) {
       emit("cancel");
@@ -42,4 +48,12 @@
 
   const modalId = useId();
   const modal = useVModel(props, "modelValue", emit);
+
+  watchEffect(() => {
+    if (modal.value) {
+      document.addEventListener("keydown", escClose);
+    } else {
+      document.removeEventListener("keydown", escClose);
+    }
+  });
 </script>

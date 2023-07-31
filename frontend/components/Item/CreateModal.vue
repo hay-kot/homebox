@@ -1,20 +1,14 @@
 <template>
   <BaseModal v-model="modal">
     <template #title> Create Item </template>
-    <form @submit.prevent="create(true)">
+    <div @keyup="keySubmit">
       <LocationSelector v-model="form.location" />
-      <FormTextField
-        ref="locationNameRef"
-        v-model="form.name"
-        :trigger-focus="focused"
-        :autofocus="true"
-        label="Item Name"
-      />
+      <FormTextField ref="nameInput" v-model="form.name" :trigger-focus="focused" :autofocus="true" label="Item Name" />
       <FormTextArea v-model="form.description" label="Item Description" />
       <FormMultiselect v-model="form.labels" label="Labels" :items="labels ?? []" />
       <div class="modal-action">
         <div class="flex justify-center">
-          <BaseButton ref="submitBtn" type="submit" class="rounded-r-none" :loading="loading">
+          <BaseButton class="rounded-r-none" :loading="loading" @click="create(true)">
             <template #icon>
               <Icon name="mdi-package-variant" class="swap-off h-5 w-5" />
               <Icon name="mdi-package-variant-closed" class="swap-on h-5 w-5" />
@@ -26,12 +20,17 @@
               <Icon class="h-5 w-5" name="mdi-chevron-down" />
             </label>
             <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-64">
-              <li><button @click.prevent="create(false)">Create and Add Another</button></li>
+              <li>
+                <button type="button" @click.prevent="create(false)">Create and Add Another</button>
+              </li>
             </ul>
           </div>
         </div>
       </div>
-    </form>
+    </div>
+    <p class="text-sm text-center mt-4">
+      use <kbd class="kbd kbd-xs">Shift</kbd> + <kbd class="kbd kbd-xs"> Enter </kbd> to create and add another
+    </p>
   </BaseModal>
 </template>
 
@@ -46,6 +45,15 @@
       required: true,
     },
   });
+
+  const api = useUserApi();
+  const toast = useNotifier();
+
+  const locationsStore = useLocationStore();
+  const locations = computed(() => locationsStore.allLocations);
+
+  const labelStore = useLabelStore();
+  const labels = computed(() => labelStore.labels);
 
   const route = useRoute();
 
@@ -63,16 +71,7 @@
     return null;
   });
 
-  const api = useUserApi();
-  const toast = useNotifier();
-
-  const locationsStore = useLocationStore();
-  const locations = computed(() => locationsStore.allLocations);
-
-  const labelStore = useLabelStore();
-  const labels = computed(() => labelStore.labels);
-
-  const submitBtn = ref(null);
+  const nameInput = ref<HTMLInputElement | null>(null);
 
   const modal = useVModel(props, "modelValue");
   const loading = ref(false);
@@ -134,6 +133,20 @@
     if (close) {
       modal.value = false;
       navigateTo(`/item/${data.id}`);
+    }
+  }
+
+  async function keySubmit(e: KeyboardEvent) {
+    // Shift + Enter
+    if (e.shiftKey && e.key === "Enter") {
+      console.log("Shift + Enter");
+      e.preventDefault();
+      await create(false);
+      focused.value = true;
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      console.log("Enter");
+      await create(true);
     }
   }
 </script>
