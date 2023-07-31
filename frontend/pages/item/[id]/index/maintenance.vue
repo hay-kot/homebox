@@ -71,6 +71,7 @@
   }
 
   function resetEntry() {
+    console.log("Resetting entry");
     entry.id = null;
     entry.name = "";
     entry.completedDate = null;
@@ -79,13 +80,26 @@
     entry.cost = "";
   }
 
-  async function createEntry() {
+  watch(
+    () => entry.modal,
+    (v, pv) => {
+      if (pv === true && v === false) {
+        resetEntry();
+      }
+    }
+  );
+
+  // Calls either edit or create depending on entry.id being set
+  async function dispatchFormSubmit() {
     if (entry.id) {
-      editEntry();
-      resetEntry();
+      await editEntry();
       return;
     }
 
+    await createEntry();
+  }
+
+  async function createEntry() {
     const { error } = await api.items.maintenance.create(props.item.id, {
       name: entry.name,
       completedDate: entry.completedDate ?? "",
@@ -123,14 +137,13 @@
   }
 
   function openEditDialog(e: MaintenanceEntry) {
-    console.log(e);
-    entry.modal = true;
     entry.id = e.id;
     entry.name = e.name;
     entry.completedDate = new Date(e.completedDate);
     entry.scheduledDate = new Date(e.scheduledDate);
     entry.description = e.description;
     entry.cost = e.cost;
+    entry.modal = true;
   }
 
   async function editEntry() {
@@ -152,7 +165,6 @@
     }
 
     entry.modal = false;
-
     refreshLog();
   }
 </script>
@@ -163,7 +175,7 @@
       <template #title>
         {{ entry.id ? "Edit Entry" : "New Entry" }}
       </template>
-      <form @submit.prevent="createEntry">
+      <form @submit.prevent="dispatchFormSubmit">
         <FormTextField v-model="entry.name" autofocus label="Entry Name" />
         <DatePicker v-model="entry.completedDate" label="Completed Date" />
         <DatePicker v-model="entry.scheduledDate" label="Scheduled Date" />
