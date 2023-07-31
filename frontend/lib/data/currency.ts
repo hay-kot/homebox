@@ -5,7 +5,6 @@ export type Codes =
   | "BRL"
   | "CAD"
   | "CHF"
-  | "CNY"
   | "CZK"
   | "DKK"
   | "EUR"
@@ -44,7 +43,6 @@ export const currencies: Currency[] = [
   { code: "BRL", local: "Brazil", symbol: "R$", name: "Brazilian Real" },
   { code: "CAD", local: "Canada", symbol: "C$", name: "Canadian Dollar" },
   { code: "CHF", local: "Switzerland", symbol: "CHF", name: "Swiss Franc" },
-  { code: "CNY", local: "China", symbol: "¥", name: "Chinese Yuan" },
   { code: "CZK", local: "cs-CZ", symbol: "Kč", name: "Czech Koruna" },
   { code: "DKK", local: "da-DK", symbol: "kr", name: "Danish Krone" },
   { code: "EUR", local: "Eurozone", symbol: "€", name: "Euro" },

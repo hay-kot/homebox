@@ -36,7 +36,6 @@ func (Group) Fields() []ent.Field {
 				"brl",
 				"cad",
 				"chf",
-				"cny",
 				"czk",
 				"dkk",
 				"eur",
