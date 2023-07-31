@@ -29,7 +29,37 @@ func (Group) Fields() []ent.Field {
 			NotEmpty(),
 		field.Enum("currency").
 			Default("usd").
-			Values("usd", "eur", "gbp", "jpy", "zar", "aud", "nok", "nzd", "sek", "dkk", "inr", "rmb", "bgn", "chf", "pln", "try", "ron", "czk"),
+			Values(
+				"aed",
+				"aud",
+				"bgn",
+				"brl",
+				"cad",
+				"chf",
+				"czk",
+				"dkk",
+				"eur",
+				"gbp",
+				"hkd",
+				"idr",
+				"inr",
+				"jpy",
+				"krw",
+				"mxn",
+				"nok",
+				"nzd",
+				"pln",
+				"rmb",
+				"ron",
+				"rub",
+				"sar",
+				"sek",
+				"sgd",
+				"thb",
+				"try",
+				"usd",
+				"zar",
+			),
 	}
 }
 
@@ -70,7 +100,6 @@ func (g GroupMixin) Fields() []ent.Field {
 	}
 
 	return nil
-
 }
 
 func (g GroupMixin) Edges() []ent.Edge {
