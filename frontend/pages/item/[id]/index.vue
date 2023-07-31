@@ -360,24 +360,6 @@
     return v;
   });
 
-  const confirm = useConfirm();
-
-  async function deleteItem() {
-    const confirmed = await confirm.open("Are you sure you want to delete this item?");
-
-    if (!confirmed.data) {
-      return;
-    }
-
-    const { error } = await api.items.delete(itemId.value);
-    if (error) {
-      toast.error("Failed to delete item");
-      return;
-    }
-    toast.success("Item deleted");
-    navigateTo("/home");
-  }
-
   const refDialog = ref<HTMLDialogElement>();
   const dialoged = reactive({
     src: "",
@@ -480,10 +462,6 @@
             {{ t.name }}
           </NuxtLink>
         </div>
-        <BaseButton class="btn btn-sm" @click="deleteItem()">
-          <Icon name="mdi-delete" class="mr-2" />
-          Delete
-        </BaseButton>
       </div>
     </section>
 
