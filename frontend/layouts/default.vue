@@ -174,52 +174,30 @@
     },
   ];
 
-  function isMutation(method: string | undefined) {
-    return method === "POST" || method === "PUT" || method === "DELETE";
-  }
-  function isSuccess(status: number) {
-    return status >= 200 && status < 300;
-  }
-
   const labelStore = useLabelStore();
-  const reLabel = /\/api\/v1\/labels\/.*/gm;
-  const rmLabelStoreObserver = defineObserver("labelStore", {
-    handler: (resp, req) => {
-      if (isMutation(req?.method) && isSuccess(resp.status) && resp.url.match(reLabel)) {
-        labelStore.refresh();
-      }
-      console.debug("labelStore handler called by observer");
-    },
-  });
 
   const locationStore = useLocationStore();
-  const reLocation = /\/api\/v1\/locations\/.*/gm;
-  const rmLocationStoreObserver = defineObserver("locationStore", {
-    handler: (resp, req) => {
-      if (isMutation(req?.method) && isSuccess(resp.status) && resp.url.match(reLocation)) {
-        locationStore.refreshChildren();
-        locationStore.refreshParents();
+
+  type EventMessage = {
+    event: string;
+  };
+
+  onMounted(() => {
+    const ws = new WebSocket(`ws://${window.location.host}/api/v1/ws/events`);
+    ws.onmessage = event => {
+      const msg: EventMessage = JSON.parse(event.data);
+      switch (msg.event) {
+        case "label.mutation":
+          console.log("label.mutation");
+          labelStore.refresh();
+          break;
+        case "location.mutation":
+          console.log("location.mutation");
+          locationStore.refreshChildren();
+          locationStore.refreshParents();
+          break;
       }
-
-      console.debug("locationStore handler called by observer");
-    },
-  });
-
-  const eventBus = useEventBus();
-  eventBus.on(
-    EventTypes.InvalidStores,
-    () => {
-      labelStore.refresh();
-      locationStore.refreshChildren();
-      locationStore.refreshParents();
-    },
-    "stores"
-  );
-
-  onUnmounted(() => {
-    rmLabelStoreObserver();
-    rmLocationStoreObserver();
-    eventBus.off(EventTypes.InvalidStores, "stores");
+    };
   });
 
   const authCtx = useAuthContext();

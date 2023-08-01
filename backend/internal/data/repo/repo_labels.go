@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/hay-kot/homebox/backend/internal/core/services/reporting/eventbus"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/item"
@@ -13,8 +14,10 @@ import (
 )
 
 type LabelRepository struct {
-	db *ent.Client
+	db  *ent.Client
+	bus *eventbus.EventBus
 }
+
 type (
 	LabelCreate struct {
 		Name        string `json:"name" validate:"required,min=1,max=255"`
@@ -65,6 +68,12 @@ func mapLabelOut(label *ent.Label) LabelOut {
 	}
 }
 
+func (r *LabelRepository) publishMutationEvent(GID uuid.UUID) {
+	if r.bus != nil {
+		r.bus.Publish(eventbus.EventLabelMutation, eventbus.GroupMutationEvent{GID: GID})
+	}
+}
+
 func (r *LabelRepository) getOne(ctx context.Context, where ...predicate.Label) (LabelOut, error) {
 	return mapLabelOutErr(r.db.Label.Query().
 		Where(where...).
@@ -105,6 +114,7 @@ func (r *LabelRepository) Create(ctx context.Context, groupdId uuid.UUID, data L
 	}
 
 	label.Edges.Group = &ent.Group{ID: groupdId} // bootstrap group ID
+	r.publishMutationEvent(groupdId)
 	return mapLabelOut(label), err
 }
 
@@ -136,6 +146,7 @@ func (r *LabelRepository) UpdateByGroup(ctx context.Context, GID uuid.UUID, data
 		return LabelOut{}, err
 	}
 
+	r.publishMutationEvent(GID)
 	return r.GetOne(ctx, data.ID)
 }
 
@@ -149,6 +160,11 @@ func (r *LabelRepository) DeleteByGroup(ctx context.Context, gid, id uuid.UUID) 
 			label.ID(id),
 			label.HasGroupWith(group.ID(gid)),
 		).Exec(ctx)
+	if err != nil {
+		return err
+	}
 
-	return err
+	r.publishMutationEvent(gid)
+
+	return nil
 }

@@ -29,7 +29,7 @@
       </div>
     </div>
     <p class="text-sm text-center mt-4">
-      use <kbd class="kbd kbd-xs">Shift</kbd> + <kdb class="kbd kbd-xs"> Enter </kdb> to create and add another
+      use <kbd class="kbd kbd-xs">Shift</kbd> + <kbd class="kbd kbd-xs"> Enter </kbd> to create and add another
     </p>
   </BaseModal>
 </template>
