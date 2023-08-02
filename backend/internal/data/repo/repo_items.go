@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/hay-kot/homebox/backend/internal/core/services/reporting/eventbus"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/item"
@@ -17,7 +18,8 @@ import (
 )
 
 type ItemsRepository struct {
-	db *ent.Client
+	db  *ent.Client
+	bus *eventbus.EventBus
 }
 
 type (
@@ -263,6 +265,12 @@ func mapItemOut(item *ent.Item) ItemOut {
 		Attachments: attachments,
 		Fields:      fields,
 		Children:    children,
+	}
+}
+
+func (r *ItemsRepository) publishMutationEvent(GID uuid.UUID) {
+	if r.bus != nil {
+		r.bus.Publish(eventbus.EventItemMutation, eventbus.GroupMutationEvent{GID: GID})
 	}
 }
 
@@ -520,11 +528,18 @@ func (e *ItemsRepository) Create(ctx context.Context, gid uuid.UUID, data ItemCr
 		return ItemOut{}, err
 	}
 
+	e.publishMutationEvent(gid)
 	return e.GetOne(ctx, result.ID)
 }
 
 func (e *ItemsRepository) Delete(ctx context.Context, id uuid.UUID) error {
-	return e.db.Item.DeleteOneID(id).Exec(ctx)
+  err := e.db.Item.DeleteOneID(id).Exec(ctx)
+  if err != nil {
+    return err
+  }
+
+  e.publishMutationEvent(id)
+  return nil
 }
 
 func (e *ItemsRepository) DeleteByGroup(ctx context.Context, gid, id uuid.UUID) error {
@@ -534,6 +549,12 @@ func (e *ItemsRepository) DeleteByGroup(ctx context.Context, gid, id uuid.UUID) 
 			item.ID(id),
 			item.HasGroupWith(group.ID(gid)),
 		).Exec(ctx)
+  
+  if err != nil {
+    return err
+  }
+
+  e.publishMutationEvent(gid)
 	return err
 }
 
@@ -649,6 +670,7 @@ func (e *ItemsRepository) UpdateByGroup(ctx context.Context, GID uuid.UUID, data
 		}
 	}
 
+  e.publishMutationEvent(GID)
 	return e.GetOne(ctx, data.ID)
 }
 
@@ -687,6 +709,7 @@ func (e *ItemsRepository) Patch(ctx context.Context, GID, ID uuid.UUID, data Ite
 		q.SetQuantity(*data.Quantity)
 	}
 
+  e.publishMutationEvent(GID)
 	return q.Exec(ctx)
 }
 

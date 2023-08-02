@@ -30,7 +30,7 @@ func useLocations(t *testing.T, len int) []LocationOut {
 
 	t.Cleanup(func() {
 		for _, loc := range out {
-			err := tRepos.Locations.Delete(context.Background(), loc.ID)
+			err := tRepos.Locations.delete(context.Background(), loc.ID)
 			if err != nil {
 				assert.True(t, ent.IsNotFound(err))
 			}
@@ -49,7 +49,7 @@ func TestLocationRepository_Get(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, loc.ID, foundLoc.ID)
 
-	err = tRepos.Locations.Delete(context.Background(), loc.ID)
+	err = tRepos.Locations.delete(context.Background(), loc.ID)
 	assert.NoError(t, err)
 }
 
@@ -83,7 +83,7 @@ func TestLocationRepository_Create(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, loc.ID, foundLoc.ID)
 
-	err = tRepos.Locations.Delete(context.Background(), loc.ID)
+	err = tRepos.Locations.delete(context.Background(), loc.ID)
 	assert.NoError(t, err)
 }
 
@@ -96,7 +96,7 @@ func TestLocationRepository_Update(t *testing.T) {
 		Description: fk.Str(100),
 	}
 
-	update, err := tRepos.Locations.Update(context.Background(), updateData)
+	update, err := tRepos.Locations.UpdateByGroup(context.Background(), tGroup.ID, updateData.ID, updateData)
 	assert.NoError(t, err)
 
 	foundLoc, err := tRepos.Locations.Get(context.Background(), loc.ID)
@@ -106,14 +106,14 @@ func TestLocationRepository_Update(t *testing.T) {
 	assert.Equal(t, update.Name, foundLoc.Name)
 	assert.Equal(t, update.Description, foundLoc.Description)
 
-	err = tRepos.Locations.Delete(context.Background(), loc.ID)
+	err = tRepos.Locations.delete(context.Background(), loc.ID)
 	assert.NoError(t, err)
 }
 
 func TestLocationRepository_Delete(t *testing.T) {
 	loc := useLocations(t, 1)[0]
 
-	err := tRepos.Locations.Delete(context.Background(), loc.ID)
+	err := tRepos.Locations.delete(context.Background(), loc.ID)
 	assert.NoError(t, err)
 
 	_, err = tRepos.Locations.Get(context.Background(), loc.ID)

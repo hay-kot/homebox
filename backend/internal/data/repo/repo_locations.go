@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/hay-kot/homebox/backend/internal/core/services/reporting/eventbus"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/item"
@@ -14,7 +15,8 @@ import (
 )
 
 type LocationRepository struct {
-	db *ent.Client
+	db  *ent.Client
+	bus *eventbus.EventBus
 }
 
 type (
@@ -87,6 +89,12 @@ func mapLocationOut(location *ent.Location) LocationOut {
 			UpdatedAt:   location.UpdatedAt,
 		},
 		Items: mapEach(location.Edges.Items, mapItemSummary),
+	}
+}
+
+func (r *LocationRepository) publishMutationEvent(GID uuid.UUID) {
+	if r.bus != nil {
+		r.bus.Publish(eventbus.EventLocationMutation, eventbus.GroupMutationEvent{GID: GID})
 	}
 }
 
@@ -190,6 +198,7 @@ func (r *LocationRepository) Create(ctx context.Context, GID uuid.UUID, data Loc
 	}
 
 	location.Edges.Group = &ent.Group{ID: GID} // bootstrap group ID
+	r.publishMutationEvent(GID)
 	return mapLocationOut(location), nil
 }
 
@@ -213,20 +222,29 @@ func (r *LocationRepository) update(ctx context.Context, data LocationUpdate, wh
 	return r.Get(ctx, data.ID)
 }
 
-func (r *LocationRepository) Update(ctx context.Context, data LocationUpdate) (LocationOut, error) {
-	return r.update(ctx, data, location.ID(data.ID))
-}
-
 func (r *LocationRepository) UpdateByGroup(ctx context.Context, GID, ID uuid.UUID, data LocationUpdate) (LocationOut, error) {
-	return r.update(ctx, data, location.ID(ID), location.HasGroupWith(group.ID(GID)))
+	v, err := r.update(ctx, data, location.ID(ID), location.HasGroupWith(group.ID(GID)))
+	if err != nil {
+		return LocationOut{}, err
+	}
+
+	r.publishMutationEvent(GID)
+	return v, err
 }
 
-func (r *LocationRepository) Delete(ctx context.Context, ID uuid.UUID) error {
+// delete should only be used after checking that the location is owned by the
+// group. Otherwise, use DeleteByGroup
+func (r *LocationRepository) delete(ctx context.Context, ID uuid.UUID) error {
 	return r.db.Location.DeleteOneID(ID).Exec(ctx)
 }
 
 func (r *LocationRepository) DeleteByGroup(ctx context.Context, GID, ID uuid.UUID) error {
 	_, err := r.db.Location.Delete().Where(location.ID(ID), location.HasGroupWith(group.ID(GID))).Exec(ctx)
+	if err != nil {
+		return err
+	}
+	r.publishMutationEvent(GID)
+
 	return err
 }
 

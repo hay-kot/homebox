@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/hay-kot/homebox/backend/internal/core/services"
+	"github.com/hay-kot/homebox/backend/internal/core/services/reporting/eventbus"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/sys/config"
@@ -18,6 +19,7 @@ type app struct {
 	server   *server.Server
 	repos    *repo.AllRepos
 	services *services.AllServices
+	bus      *eventbus.EventBus
 }
 
 func new(conf *config.Config) *app {

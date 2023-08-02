@@ -174,52 +174,24 @@
     },
   ];
 
-  function isMutation(method: string | undefined) {
-    return method === "POST" || method === "PUT" || method === "DELETE";
-  }
-  function isSuccess(status: number) {
-    return status >= 200 && status < 300;
-  }
-
   const labelStore = useLabelStore();
-  const reLabel = /\/api\/v1\/labels\/.*/gm;
-  const rmLabelStoreObserver = defineObserver("labelStore", {
-    handler: (resp, req) => {
-      if (isMutation(req?.method) && isSuccess(resp.status) && resp.url.match(reLabel)) {
-        labelStore.refresh();
-      }
-      console.debug("labelStore handler called by observer");
-    },
-  });
 
   const locationStore = useLocationStore();
-  const reLocation = /\/api\/v1\/locations\/.*/gm;
-  const rmLocationStoreObserver = defineObserver("locationStore", {
-    handler: (resp, req) => {
-      if (isMutation(req?.method) && isSuccess(resp.status) && resp.url.match(reLocation)) {
-        locationStore.refreshChildren();
-        locationStore.refreshParents();
-      }
 
-      console.debug("locationStore handler called by observer");
-    },
+  onServerEvent(ServerEvent.LabelMutation, () => {
+    labelStore.refresh();
   });
 
-  const eventBus = useEventBus();
-  eventBus.on(
-    EventTypes.InvalidStores,
-    () => {
-      labelStore.refresh();
-      locationStore.refreshChildren();
-      locationStore.refreshParents();
-    },
-    "stores"
-  );
+  onServerEvent(ServerEvent.LocationMutation, () => {
+    locationStore.refreshChildren();
+    locationStore.refreshParents();
+  });
 
-  onUnmounted(() => {
-    rmLabelStoreObserver();
-    rmLocationStoreObserver();
-    eventBus.off(EventTypes.InvalidStores, "stores");
+  onServerEvent(ServerEvent.ItemMutation, () => {
+    // item mutations can affect locations counts
+    // so we need to refresh those as well
+    locationStore.refreshChildren();
+    locationStore.refreshParents();
   });
 
   const authCtx = useAuthContext();

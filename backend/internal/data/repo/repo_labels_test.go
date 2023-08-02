@@ -28,7 +28,7 @@ func useLabels(t *testing.T, len int) []LabelOut {
 
 	t.Cleanup(func() {
 		for _, item := range labels {
-			_ = tRepos.Labels.Delete(context.Background(), item.ID)
+			_ = tRepos.Labels.delete(context.Background(), item.ID)
 		}
 	})
 
@@ -62,7 +62,7 @@ func TestLabelRepository_Create(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, loc.ID, foundLoc.ID)
 
-	err = tRepos.Labels.Delete(context.Background(), loc.ID)
+	err = tRepos.Labels.delete(context.Background(), loc.ID)
 	assert.NoError(t, err)
 }
 
@@ -76,7 +76,7 @@ func TestLabelRepository_Update(t *testing.T) {
 		Description: fk.Str(100),
 	}
 
-	update, err := tRepos.Labels.Update(context.Background(), updateData)
+	update, err := tRepos.Labels.UpdateByGroup(context.Background(), tGroup.ID, updateData)
 	assert.NoError(t, err)
 
 	foundLoc, err := tRepos.Labels.GetOne(context.Background(), loc.ID)
@@ -86,7 +86,7 @@ func TestLabelRepository_Update(t *testing.T) {
 	assert.Equal(t, update.Name, foundLoc.Name)
 	assert.Equal(t, update.Description, foundLoc.Description)
 
-	err = tRepos.Labels.Delete(context.Background(), loc.ID)
+	err = tRepos.Labels.delete(context.Background(), loc.ID)
 	assert.NoError(t, err)
 }
 
@@ -94,7 +94,7 @@ func TestLabelRepository_Delete(t *testing.T) {
 	loc, err := tRepos.Labels.Create(context.Background(), tGroup.ID, labelFactory())
 	assert.NoError(t, err)
 
-	err = tRepos.Labels.Delete(context.Background(), loc.ID)
+	err = tRepos.Labels.delete(context.Background(), loc.ID)
 	assert.NoError(t, err)
 
 	_, err = tRepos.Labels.GetOne(context.Background(), loc.ID)

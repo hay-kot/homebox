@@ -14,6 +14,7 @@ require (
 	github.com/gorilla/schema v1.2.0
 	github.com/hay-kot/httpkit v0.0.3
 	github.com/mattn/go-sqlite3 v1.14.17
+	github.com/olahol/melody v1.1.4
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.29.1
 	github.com/stretchr/testify v1.8.4
@@ -43,6 +44,7 @@ require (
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
+	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.17.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect

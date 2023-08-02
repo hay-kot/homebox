@@ -15,7 +15,7 @@
 <script setup lang="ts">
   type Props = {
     modelValue: string;
-    placeholder: string;
+    placeholder?: string;
     label: string;
   };
 
