@@ -14,7 +14,8 @@ import (
 )
 
 var (
-	fk = faker.NewFaker()
+	fk   = faker.NewFaker()
+	tbus = eventbus.New()
 
 	tCtx    = Context{}
 	tClient *ent.Client
@@ -59,7 +60,7 @@ func TestMain(m *testing.M) {
 	}
 
 	tClient = client
-	tRepos = repo.New(tClient, eventbus.New(), os.TempDir()+"/homebox")
+	tRepos = repo.New(tClient, tbus, os.TempDir()+"/homebox")
 	tSvc = New(tRepos)
 	defer client.Close()
 

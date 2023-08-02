@@ -14,6 +14,7 @@ import (
 
 var (
 	fk = faker.NewFaker()
+  tbus = eventbus.New()
 
 	tClient *ent.Client
 	tRepos  *AllRepos
@@ -44,13 +45,15 @@ func TestMain(m *testing.M) {
 		log.Fatalf("failed opening connection to sqlite: %v", err)
 	}
 
+  go tbus.Run()
+
 	err = client.Schema.Create(context.Background())
 	if err != nil {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
 
 	tClient = client
-	tRepos = New(tClient, eventbus.New(), os.TempDir())
+	tRepos = New(tClient, tbus, os.TempDir())
 	defer client.Close()
 
 	bootstrap()
