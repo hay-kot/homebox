@@ -131,15 +131,6 @@ func (r *LabelRepository) update(ctx context.Context, data LabelUpdate, where ..
 		Save(ctx)
 }
 
-func (r *LabelRepository) Update(ctx context.Context, data LabelUpdate) (LabelOut, error) {
-	_, err := r.update(ctx, data, label.ID(data.ID))
-	if err != nil {
-		return LabelOut{}, err
-	}
-
-	return r.GetOne(ctx, data.ID)
-}
-
 func (r *LabelRepository) UpdateByGroup(ctx context.Context, GID uuid.UUID, data LabelUpdate) (LabelOut, error) {
 	_, err := r.update(ctx, data, label.ID(data.ID), label.HasGroupWith(group.ID(GID)))
 	if err != nil {
@@ -150,7 +141,9 @@ func (r *LabelRepository) UpdateByGroup(ctx context.Context, GID uuid.UUID, data
 	return r.GetOne(ctx, data.ID)
 }
 
-func (r *LabelRepository) Delete(ctx context.Context, id uuid.UUID) error {
+// delete removes the label from the database. This should only be used when
+// the label's ownership is already confirmed/validated. 
+func (r *LabelRepository) delete(ctx context.Context, id uuid.UUID) error {
 	return r.db.Label.DeleteOneID(id).Exec(ctx)
 }
 

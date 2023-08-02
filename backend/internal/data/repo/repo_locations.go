@@ -222,10 +222,6 @@ func (r *LocationRepository) update(ctx context.Context, data LocationUpdate, wh
 	return r.Get(ctx, data.ID)
 }
 
-func (r *LocationRepository) Update(ctx context.Context, data LocationUpdate) (LocationOut, error) {
-	return r.update(ctx, data, location.ID(data.ID))
-}
-
 func (r *LocationRepository) UpdateByGroup(ctx context.Context, GID, ID uuid.UUID, data LocationUpdate) (LocationOut, error) {
 	v, err := r.update(ctx, data, location.ID(ID), location.HasGroupWith(group.ID(GID)))
 	if err != nil {
@@ -236,7 +232,9 @@ func (r *LocationRepository) UpdateByGroup(ctx context.Context, GID, ID uuid.UUI
 	return v, err
 }
 
-func (r *LocationRepository) Delete(ctx context.Context, ID uuid.UUID) error {
+// delete should only be used after checking that the location is owned by the
+// group. Otherwise, use DeleteByGroup
+func (r *LocationRepository) delete(ctx context.Context, ID uuid.UUID) error {
 	return r.db.Location.DeleteOneID(ID).Exec(ctx)
 }
 
