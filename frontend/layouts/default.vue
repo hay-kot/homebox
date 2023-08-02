@@ -178,31 +178,20 @@
 
   const locationStore = useLocationStore();
 
-  type EventMessage = {
-    event: string;
-  };
+  onServerEvent(ServerEvent.LabelMutation, () => {
+    labelStore.refresh();
+  });
 
-  onMounted(() => {
-    const ws = new WebSocket(`ws://${window.location.host}/api/v1/ws/events`);
-    ws.onmessage = event => {
-      const msg: EventMessage = JSON.parse(event.data);
-      console.debug("recieved event", msg);
-      switch (msg.event) {
-        case "label.mutation":
-          labelStore.refresh();
-          break;
-        case "location.mutation":
-          locationStore.refreshChildren();
-          locationStore.refreshParents();
-          break;
-        case "item.mutation":
-          // item mutations can affect locations counts
-          // so we need to refresh those as well
-          locationStore.refreshChildren();
-          locationStore.refreshParents();
-          break;
-      }
-    };
+  onServerEvent(ServerEvent.LocationMutation, () => {
+    locationStore.refreshChildren();
+    locationStore.refreshParents();
+  });
+
+  onServerEvent(ServerEvent.ItemMutation, () => {
+    // item mutations can affect locations counts
+    // so we need to refresh those as well
+    locationStore.refreshChildren();
+    locationStore.refreshParents();
   });
 
   const authCtx = useAuthContext();
