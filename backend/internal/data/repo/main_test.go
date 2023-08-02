@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/hay-kot/homebox/backend/internal/core/services/reporting/eventbus"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/pkgs/faker"
 	_ "github.com/mattn/go-sqlite3"
@@ -49,7 +50,7 @@ func TestMain(m *testing.M) {
 	}
 
 	tClient = client
-	tRepos = New(tClient, os.TempDir())
+	tRepos = New(tClient, eventbus.New(), os.TempDir())
 	defer client.Close()
 
 	bootstrap()
