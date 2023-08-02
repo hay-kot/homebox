@@ -86,8 +86,6 @@
     importRef.value?.click();
   }
 
-  const eventBus = useEventBus();
-
   async function submitCsvFile() {
     if (!importCsv.value) {
       toast.error("Please select a file to import.");
@@ -110,8 +108,6 @@
     if (importRef.value) {
       importRef.value.value = "";
     }
-
-    eventBus.emit(EventTypes.InvalidStores);
 
     toast.success("Import successful!");
   }
