@@ -12,6 +12,7 @@ type Event string
 const (
 	EventLabelMutation    Event = "label.mutation"
 	EventLocationMutation Event = "location.mutation"
+	EventItemMutation     Event = "item.mutation"
 )
 
 type GroupMutationEvent struct {
@@ -37,6 +38,7 @@ func New() *EventBus {
 		subscribers: map[Event][]func(any){
 			EventLabelMutation:    {},
 			EventLocationMutation: {},
+      EventItemMutation:     {},
 		},
 	}
 }

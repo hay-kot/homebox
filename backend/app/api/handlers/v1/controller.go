@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -126,41 +127,31 @@ func (ctrl *V1Controller) HandleCacheWS() errchain.HandlerFunc {
 		s.Set("gid", auth.GID)
 	})
 
-	ctrl.bus.Subscribe(eventbus.EventLabelMutation, func(data any) {
-		eventData, ok := data.(eventbus.GroupMutationEvent)
-		if !ok {
-			log.Log().Msgf("invalid event data: %v", data)
-			return
-		}
-
-		_ = m.BroadcastFilter([]byte(`{"event": "label.mutation"}`), func(s *melody.Session) bool {
-			gidStr, ok := s.Get("gid")
+	factory := func(e string) func(data any) {
+		return func(data any) {
+			eventData, ok := data.(eventbus.GroupMutationEvent)
 			if !ok {
-				return false
+				log.Log().Msgf("invalid event data: %v", data)
+				return
 			}
 
-			gid := gidStr.(uuid.UUID)
-			return gid == eventData.GID
-		})
-	})
+			jsonStr := fmt.Sprintf(`{"event": "%s"}`, e)
 
-	ctrl.bus.Subscribe(eventbus.EventLocationMutation, func(data any) {
-		eventData, ok := data.(eventbus.GroupMutationEvent)
-		if !ok {
-			log.Log().Msgf("invalid event data: %v", data)
-			return
+			_ = m.BroadcastFilter([]byte(jsonStr), func(s *melody.Session) bool {
+				groupIDStr, ok := s.Get("gid")
+				if !ok {
+					return false
+				}
+
+				GID := groupIDStr.(uuid.UUID)
+				return GID == eventData.GID
+			})
 		}
+	}
 
-		_ = m.BroadcastFilter([]byte(`{"event": "location.mutation"}`), func(s *melody.Session) bool {
-			gidStr, ok := s.Get("gid")
-			if !ok {
-				return false
-			}
-
-			gid := gidStr.(uuid.UUID)
-			return gid == eventData.GID
-		})
-	})
+	ctrl.bus.Subscribe(eventbus.EventLabelMutation, factory("label.mutation"))
+	ctrl.bus.Subscribe(eventbus.EventLocationMutation, factory("location.mutation"))
+	ctrl.bus.Subscribe(eventbus.EventItemMutation, factory("item.mutation"))
 
 	return func(w http.ResponseWriter, r *http.Request) error {
 		return m.HandleRequest(w, r)

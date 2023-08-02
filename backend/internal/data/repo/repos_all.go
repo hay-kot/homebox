@@ -26,7 +26,7 @@ func New(db *ent.Client, bus *eventbus.EventBus, root string) *AllRepos {
 		Groups:      NewGroupRepository(db),
 		Locations:   &LocationRepository{db, bus},
 		Labels:      &LabelRepository{db, bus},
-		Items:       &ItemsRepository{db},
+		Items:       &ItemsRepository{db, bus},
 		Docs:        &DocumentRepository{db, root},
 		Attachments: &AttachmentRepo{db},
 		MaintEntry:  &MaintenanceEntryRepository{db},
