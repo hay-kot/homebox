@@ -2,6 +2,7 @@
 import { IncomingMessage } from "http";
 import internal from "stream";
 import { defineNuxtModule, logger } from "@nuxt/kit";
+// eslint-disable-next-line
 import { createProxyServer } from "http-proxy";
 
 export default defineNuxtModule({
