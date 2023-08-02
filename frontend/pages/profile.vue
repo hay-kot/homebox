@@ -288,20 +288,22 @@
     <BaseModal v-model="passwordChange.dialog">
       <template #title> Change Password </template>
 
-      <FormPassword v-model="passwordChange.current" label="Current Password" />
-      <FormPassword v-model="passwordChange.new" label="New Password" />
-      <PasswordScore v-model:valid="passwordChange.isValid" :password="passwordChange.new" />
+      <form @submit.prevent="changePassword">
+        <FormPassword v-model="passwordChange.current" label="Current Password" placeholder="" />
+        <FormPassword v-model="passwordChange.new" label="New Password" placeholder="" />
+        <PasswordScore v-model:valid="passwordChange.isValid" :password="passwordChange.new" />
 
-      <div class="flex">
-        <BaseButton
-          class="ml-auto"
-          :loading="passwordChange.loading"
-          :disabled="!passwordChange.isValid"
-          @click="changePassword"
-        >
-          Submit
-        </BaseButton>
-      </div>
+        <div class="flex">
+          <BaseButton
+            class="ml-auto"
+            :loading="passwordChange.loading"
+            :disabled="!passwordChange.isValid"
+            type="submit"
+          >
+            Submit
+          </BaseButton>
+        </div>
+      </form>
     </BaseModal>
 
     <BaseModal v-model="notifierDialog">

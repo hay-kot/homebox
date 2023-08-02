@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/hay-kot/homebox/backend/internal/core/services/reporting/eventbus"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/pkgs/faker"
@@ -13,7 +14,8 @@ import (
 )
 
 var (
-	fk = faker.NewFaker()
+	fk   = faker.NewFaker()
+	tbus = eventbus.New()
 
 	tCtx    = Context{}
 	tClient *ent.Client
@@ -58,7 +60,7 @@ func TestMain(m *testing.M) {
 	}
 
 	tClient = client
-	tRepos = repo.New(tClient, os.TempDir()+"/homebox")
+	tRepos = repo.New(tClient, tbus, os.TempDir()+"/homebox")
 	tSvc = New(tRepos)
 	defer client.Close()
 

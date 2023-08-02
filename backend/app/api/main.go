@@ -14,6 +14,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 
 	"github.com/hay-kot/homebox/backend/internal/core/services"
+	"github.com/hay-kot/homebox/backend/internal/core/services/reporting/eventbus"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/internal/data/migrations"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
@@ -116,8 +117,9 @@ func run(cfg *config.Config) error {
 		return err
 	}
 
+	app.bus = eventbus.New()
 	app.db = c
-	app.repos = repo.New(c, cfg.Storage.Data)
+	app.repos = repo.New(c, app.bus, cfg.Storage.Data)
 	app.services = services.New(
 		app.repos,
 		services.WithAutoIncrementAssetID(cfg.Options.AutoIncrementAssetID),
@@ -149,6 +151,8 @@ func run(cfg *config.Config) error {
 
 	// =========================================================================
 	// Start Reoccurring Tasks
+
+	go app.bus.Run()
 
 	go app.startBgTask(time.Duration(24)*time.Hour, func() {
 		_, err := app.repos.AuthTokens.PurgeExpiredTokens(context.Background())

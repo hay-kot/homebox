@@ -44,6 +44,9 @@ dependencies:
   dompurify:
     specifier: ^3.0.0
     version: 3.0.0
+  h3:
+    specifier: ^1.7.1
+    version: 1.7.1
   markdown-it:
     specifier: ^13.0.1
     version: 13.0.1

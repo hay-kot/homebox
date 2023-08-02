@@ -39,7 +39,7 @@ func useItems(t *testing.T, len int) []ItemOut {
 			_ = tRepos.Items.Delete(context.Background(), item.ID)
 		}
 
-		_ = tRepos.Locations.Delete(context.Background(), location.ID)
+		_ = tRepos.Locations.delete(context.Background(), location.ID)
 	})
 
 	return items
@@ -123,7 +123,7 @@ func TestItemsRepository_Create(t *testing.T) {
 	assert.NotEmpty(t, result.ID)
 
 	// Cleanup - Also deletes item
-	err = tRepos.Locations.Delete(context.Background(), location.ID)
+	err = tRepos.Locations.delete(context.Background(), location.ID)
 	assert.NoError(t, err)
 }
 
@@ -147,7 +147,7 @@ func TestItemsRepository_Create_Location(t *testing.T) {
 	assert.Equal(t, location.ID, foundItem.Location.ID)
 
 	// Cleanup - Also deletes item
-	err = tRepos.Locations.Delete(context.Background(), location.ID)
+	err = tRepos.Locations.delete(context.Background(), location.ID)
 	assert.NoError(t, err)
 }
 

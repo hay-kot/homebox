@@ -1,6 +1,9 @@
 package mid
 
 import (
+	"bufio"
+	"errors"
+	"net"
 	"net/http"
 
 	"github.com/go-chi/chi/v5/middleware"
@@ -15,6 +18,14 @@ type spy struct {
 func (s *spy) WriteHeader(status int) {
 	s.status = status
 	s.ResponseWriter.WriteHeader(status)
+}
+
+func (s *spy) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	hj, ok := s.ResponseWriter.(http.Hijacker)
+	if !ok {
+		return nil, nil, errors.New("response writer does not support hijacking")
+	}
+	return hj.Hijack()
 }
 
 func Logger(l zerolog.Logger) func(http.Handler) http.Handler {
