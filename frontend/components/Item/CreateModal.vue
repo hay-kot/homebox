@@ -1,14 +1,14 @@
 <template>
   <BaseModal v-model="modal">
     <template #title> Create Item </template>
-    <div @keyup="keySubmit">
+    <form @submit.prevent="create()">
       <LocationSelector v-model="form.location" />
       <FormTextField ref="nameInput" v-model="form.name" :trigger-focus="focused" :autofocus="true" label="Item Name" />
       <FormTextArea v-model="form.description" label="Item Description" />
       <FormMultiselect v-model="form.labels" label="Labels" :items="labels ?? []" />
       <div class="modal-action">
         <div class="flex justify-center">
-          <BaseButton class="rounded-r-none" :loading="loading" @click="create(true)">
+          <BaseButton class="rounded-r-none" :loading="loading" type="submit">
             <template #icon>
               <Icon name="mdi-package-variant" class="swap-off h-5 w-5" />
               <Icon name="mdi-package-variant-closed" class="swap-on h-5 w-5" />
@@ -21,13 +21,13 @@
             </label>
             <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-64">
               <li>
-                <button type="button" @click.prevent="create(false)">Create and Add Another</button>
+                <button type="button" @click="create(false)">Create and Add Another</button>
               </li>
             </ul>
           </div>
         </div>
       </div>
-    </div>
+    </form>
     <p class="text-sm text-center mt-4">
       use <kbd class="kbd kbd-xs">Shift</kbd> + <kbd class="kbd kbd-xs"> Enter </kbd> to create and add another
     </p>
@@ -84,6 +84,8 @@
     labels: [] as LabelOut[],
   });
 
+  const { shift } = useMagicKeys();
+
   whenever(
     () => modal.value,
     () => {
@@ -102,9 +104,13 @@
     }
   );
 
-  async function create(close = false) {
+  async function create(close = true) {
     if (!form.location) {
       return;
+    }
+
+    if (shift.value) {
+      close = false;
     }
 
     const out: ItemCreate = {
@@ -133,20 +139,6 @@
     if (close) {
       modal.value = false;
       navigateTo(`/item/${data.id}`);
-    }
-  }
-
-  async function keySubmit(e: KeyboardEvent) {
-    // Shift + Enter
-    if (e.shiftKey && e.key === "Enter") {
-      console.log("Shift + Enter");
-      e.preventDefault();
-      await create(false);
-      focused.value = true;
-    } else if (e.key === "Enter") {
-      e.preventDefault();
-      console.log("Enter");
-      await create(true);
     }
   }
 </script>
