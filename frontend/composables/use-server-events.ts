@@ -40,6 +40,7 @@ function connect(onmessage: (m: EventMessage) => void) {
 export function onServerEvent(event: ServerEvent, callback: () => void) {
   if (socket === null) {
     connect(e => {
+      console.debug("received event", e);
       listeners.get(e.event)?.forEach(c => c());
     });
   }
