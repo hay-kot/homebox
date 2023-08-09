@@ -38,7 +38,12 @@ export function fmtCurrency(value: number | string, currency = "USD", locale = "
   return formatter.format(value);
 }
 
+export function isImage(url: string) {
+  return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(url);
+}
+
 export type MaybeUrlResult = {
+  isImage: boolean,
   isUrl: boolean;
   url: string;
   text: string;
@@ -46,6 +51,7 @@ export type MaybeUrlResult = {
 
 export function maybeUrl(str: string): MaybeUrlResult {
   const result: MaybeUrlResult = {
+    isImage: isImage(str),
     isUrl: str.startsWith("http://") || str.startsWith("https://"),
     url: "",
     text: "",

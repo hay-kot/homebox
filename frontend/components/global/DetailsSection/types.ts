@@ -33,7 +33,13 @@ export type Detail = BaseDetail & {
   copyable?: boolean;
 };
 
-export type AnyDetail = DateDetail | CurrencyDetail | LinkDetail | MarkdownDetail | Detail;
+type ImageDetail = BaseDetail & {
+  type: "image";
+  text: string;
+  href: string;
+};
+
+export type AnyDetail = DateDetail | CurrencyDetail | LinkDetail | MarkdownDetail | Detail | ImageDetail;
 
 export type Details = Array<Detail | AnyDetail>;
 
@@ -45,6 +51,8 @@ export function filterZeroValues(details: Details): Details {
       case "currency":
         return !!detail.text;
       case "link":
+        return !!detail.text && !!detail.href;
+      case "image":
         return !!detail.text && !!detail.href;
       case undefined:
       case "text":

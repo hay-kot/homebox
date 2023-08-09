@@ -186,7 +186,14 @@
          * Support Special URL Syntax
          */
         const url = maybeUrl(field.textValue);
-        if (url.isUrl) {
+        if (url.isImage) {
+          return {
+            type: "image",
+            name: field.name,
+            text: url.text,
+            href: url.url,
+          } as AnyDetail;
+        } else {
           return {
             type: "link",
             name: field.name,

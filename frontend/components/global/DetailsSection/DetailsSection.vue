@@ -21,6 +21,13 @@
                 </a>
               </div>
             </template>
+            <template v-else-if="detail.type === 'image'">
+              <div class="tooltip tooltip-primary tooltip-right" :data-tip="detail.href">
+                <a class="btn btn-primary btn-xs" :href="detail.href" target="_blank">
+                  <img :src="detail.href" class="w-6 h-6">
+                </a>
+              </div>
+            </template>
             <template v-else-if="detail.type === 'markdown'">
               <ClientOnly>
                 <Markdown :source="detail.text" />
