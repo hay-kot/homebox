@@ -103,9 +103,6 @@ devDependencies:
   eslint-plugin-vue:
     specifier: ^9.4.0
     version: 9.8.0(eslint@8.29.0)
-  h3:
-    specifier: ^1.7.1
-    version: 1.7.1
   isomorphic-fetch:
     specifier: ^3.0.0
     version: 3.0.0
