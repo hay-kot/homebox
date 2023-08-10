@@ -114,6 +114,16 @@ class AuthContext implements IAuthContext {
     const r = await api.login(email, password, stayLoggedIn);
 
     if (!r.error) {
+      const expiresAt = new Date(r.data.expiresAt);
+      this._token = useCookie(AuthContext.cookieTokenKey, {
+        expires: expiresAt,
+      });
+      this._expiresAt = useCookie(AuthContext.cookieExpiresAtKey, {
+        expires: expiresAt,
+      });
+      this._attachmentToken = useCookie(AuthContext.cookieAttachmentTokenKey, {
+        expires: expiresAt,
+      });
       this._token.value = r.data.token;
       this._expiresAt.value = r.data.expiresAt as string;
       this._attachmentToken.value = r.data.attachmentToken;
