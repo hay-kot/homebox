@@ -2,9 +2,9 @@ package v1
 
 import (
 	"bytes"
-	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/rs/zerolog/log"
+	"github.com/signintech/gopdf"
 	"image/png"
 	"io"
 	"net/http"
@@ -25,8 +25,8 @@ type query struct {
 	Data string `schema:"data" validate:"required,max=4296"`
 }
 
-type locationQuery struct {
-	UUID uuid.UUID
+type nestedQuery struct {
+	Nested bool `schema:"nested" validate:"required,"`
 }
 
 // HandleGenerateQRCode godoc
@@ -73,15 +73,24 @@ func (ctrl *V1Controller) HandleGenerateQRCode() errchain.HandlerFunc {
 	}
 }
 
+// HandleGenerateQRCodeForLocations godoc
+//
+//  @Summary Create PDF of QR codes of a location
+
 func (ctrl *V1Controller) HandleGenerateQRCodeForLocations() errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
-		data, err := adapters.DecodeQuery[locationQuery](r)
+		data, err := adapters.DecodeQuery[nestedQuery](r)
+		if err != nil {
+			return err
+		}
+
+		routeUUID, err := ctrl.routeUUID(r, "location_id")
 		if err != nil {
 			return err
 		}
 
 		auth := services.NewContext(r.Context())
-		locations, err := ctrl.repo.Locations.GetOneByGroup(auth, auth.GID, data.UUID)
+		locations, err := ctrl.repo.Locations.GetOneByGroup(auth, auth.GID, routeUUID)
 		if err != nil {
 			return err
 		}
@@ -101,25 +110,36 @@ func (ctrl *V1Controller) HandleGenerateQRCodeForLocations() errchain.HandlerFun
 
 		var qrCodeBuffer bytes.Buffer
 
+		pdf := gopdf.GoPdf{}
+		pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4})
+
+		if data.Nested {
+
+		}
+
 		for _, location := range locations.Items {
 			encodeStr := r.URL.String() + location.ID.String() //concat the url and then UUID
 			log.Debug().Msg(encodeStr)
-			qrc, err := qrcode.New(encodeStr)
+
+			qrc, err := qrcode.New(encodeStr) //create QR code obj from screen
 			if err != nil {
 				return err
 			}
 
 			qrWriter := standard.NewWithWriter(toWriteCloser, standard.WithLogoImage(image))
+
 			err = qrc.Save(qrWriter)
 			if err != nil {
 				return err
 			}
+
+			_, err = w.Write(qrCodeBuffer.Bytes())
+
 		}
 
 		// Return the concatenated QR code images as a response
 		w.Header().Set("Content-Type", "image/png")
 		w.Header().Set("Content-Disposition", "attachment; filename=qrcodes.png")
-		_, err = w.Write(qrCodeBuffer.Bytes())
 		return err
 	}
 }
