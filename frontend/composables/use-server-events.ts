@@ -13,7 +13,12 @@ let socket: WebSocket | null = null;
 const listeners = new Map<ServerEvent, (() => void)[]>();
 
 function connect(onmessage: (m: EventMessage) => void) {
-  const ws = new WebSocket(`ws://${window.location.host}/api/v1/ws/events`);
+  let protocol = "ws";
+  if (window.location.protocol === "https:") {
+    protocol = "wss";
+  }
+
+  const ws = new WebSocket(`${protocol}://${window.location.host}/api/v1/ws/events`);
 
   ws.onopen = () => {
     console.debug("connected to server");
