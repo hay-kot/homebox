@@ -58,6 +58,8 @@ func (Group) Fields() []ent.Field {
 				"thb",
 				"try",
 				"usd",
+				"xag",
+				"xau",
 				"zar",
 			),
 	}
