@@ -85,8 +85,14 @@ func (ctrl *V1Controller) HandleGenerateQRCode() errchain.HandlerFunc {
 
 // HandleGenerateQRCodeForLocations godoc
 //
-//  @Summary Create PDF of QR codes of a location
-
+// @Summary Create PDF of QR codes of a location
+// @Tags Items
+// @Produce pdf
+// @Param location_id path string true "UUID of the location"
+// @Param page query PageQuery true "query info for how the QR codes are generated"
+// @Success 200 {string} string "application/pdf"
+// @Router /v1/qrcode/{location_id} [GET]
+// @Security Bearer
 func (ctrl *V1Controller) HandleGenerateQRCodeForLocations() errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 
