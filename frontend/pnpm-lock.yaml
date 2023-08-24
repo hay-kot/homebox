@@ -47,6 +47,9 @@ dependencies:
   h3:
     specifier: ^1.7.1
     version: 1.7.1
+  http-proxy:
+    specifier: ^1.18.1
+    version: 1.18.1
   markdown-it:
     specifier: ^13.0.1
     version: 13.0.1

@@ -48,6 +48,7 @@
     "daisyui": "^2.24.0",
     "dompurify": "^3.0.0",
     "h3": "^1.7.1",
+    "http-proxy": "^1.18.1",
     "markdown-it": "^13.0.1",
     "pinia": "^2.0.21",
     "postcss": "^8.4.16",
