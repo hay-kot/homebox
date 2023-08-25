@@ -87,9 +87,9 @@ func (ctrl *V1Controller) HandleGenerateQRCode() errchain.HandlerFunc {
 //
 // @Summary Create PDF of QR codes of a location
 // @Tags Items
-// @Produce pdf
+// @Produce application/pdf
 // @Param location_id path string true "UUID of the location"
-// @Param page query PageQuery true "query info for how the QR codes are generated"
+// @Param page query pageQuery true "query info for how the QR codes are generated"
 // @Success 200 {string} string "application/pdf"
 // @Router /v1/qrcode/{location_id} [GET]
 // @Security Bearer
@@ -122,9 +122,9 @@ func (ctrl *V1Controller) HandleGenerateQRCodeForLocations() errchain.HandlerFun
 
 		var URLs []string
 
-		if *data.Nested {
-
-		}
+		//if *data.Nested {
+		//
+		//}
 
 		if data.PrintType == "items" {
 			for _, thing := range locations.Items {
@@ -199,7 +199,7 @@ func (ctrl *V1Controller) HandleGenerateQRCodeForLocations() errchain.HandlerFun
 
 		// Return the concatenated QR code images as a response
 		w.Header().Set("Content-Type", "application/pdf")
-		w.Header().Set("Content-Disposition", "inline; filename=qrCodes.pdf")
+		w.Header().Set("Content-Disposition", "attachment; filename=qrCodes.pdf")
 
 		fmt.Printf("%v", URLs)
 		//_, err = w.Write([]byte(fmt.Sprintf("%v", URLs)))

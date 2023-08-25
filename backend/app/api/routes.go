@@ -147,6 +147,10 @@ func (a *app) mountRoutes(r *chi.Mux, chain *errchain.ErrChain, repos *repo.AllR
 		chain.ToHandlerFunc(v1Ctrl.HandleGenerateQRCode(), assetMW...),
 	)
 	r.Get(
+		v1Base("/qrcode/{location_id}"),
+		chain.ToHandlerFunc(v1Ctrl.HandleGenerateQRCodeForLocations(), assetMW...),
+	)
+	r.Get(
 		v1Base("/items/{id}/attachments/{attachment_id}"),
 		chain.ToHandlerFunc(v1Ctrl.HandleItemAttachmentGet(), assetMW...),
 	)
