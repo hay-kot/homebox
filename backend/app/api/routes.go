@@ -51,7 +51,7 @@ func (a *app) mountRoutes(r *chi.Mux, chain *errchain.ErrChain, repos *repo.AllR
 	v1Ctrl := v1.NewControllerV1(
 		a.services,
 		a.repos,
-    a.bus,
+		a.bus,
 		v1.WithMaxUploadSize(a.conf.Web.MaxUploadSize),
 		v1.WithRegistration(a.conf.Options.AllowRegistration),
 		v1.WithDemoStatus(a.conf.Demo), // Disable Password Change in Demo Mode
