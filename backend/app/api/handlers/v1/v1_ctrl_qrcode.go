@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	_ "embed"
-	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
@@ -113,8 +112,6 @@ func (ctrl *V1Controller) HandleGenerateQRCodeForLocations() errchain.HandlerFun
 			return err
 		}
 
-		fmt.Println(routeUUID)
-
 		auth := services.NewContext(r.Context())
 		locations, err := ctrl.repo.Locations.Get(auth, routeUUID) //get the location
 		if err != nil {
@@ -122,20 +119,19 @@ func (ctrl *V1Controller) HandleGenerateQRCodeForLocations() errchain.HandlerFun
 		}
 
 		var URLs []string
-
 		URLs, err = ctrl.generateQRCodeURLs(locations, URLs, data) //this will append URLS to the URLs slice based on config (data)
 		if err != nil {
 			return err
 		}
 
-		pdf, err := ctrl.generatePDF(URLs)
+		pdf, err := ctrl.generatePDF(URLs) //URLs to PDF
+		if err != nil {
+			return err
+		}
 
-		// Return the concatenated QR code images as a response
 		w.Header().Set("Content-Type", "application/pdf")
 		w.Header().Set("Content-Disposition", "attachment; filename=qrCodes.pdf")
 
-		fmt.Printf("%v", URLs)
-		//_, err = w.Write([]byte(fmt.Sprintf("%v", URLs)))
 		_, err = pdf.WriteTo(w)
 		if err != nil {
 			return err
