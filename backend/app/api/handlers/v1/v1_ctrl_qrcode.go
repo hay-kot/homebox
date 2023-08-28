@@ -2,9 +2,12 @@ package v1
 
 import (
 	"bytes"
+	"context"
+	_ "embed"
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/hay-kot/homebox/backend/internal/core/services"
+	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/web/adapters"
 	"github.com/hay-kot/httpkit/errchain"
 	"github.com/signintech/gopdf"
@@ -13,8 +16,6 @@ import (
 	"image/png"
 	"io"
 	"net/http"
-
-	_ "embed"
 )
 
 //go:embed assets/QRIcon.png
@@ -25,8 +26,9 @@ type query struct {
 	Data string `schema:"data" validate:"required,max=4296"`
 }
 
-type pageQuery struct {
+type pageConfigQuery struct {
 	Nested    *bool  `schema:"nested" validate:"required"`
+	NestLevel int    `schema:"nestLevel" validate:"required,gte=1"`
 	PrintType string `schema:"printType" validate:"required,oneof=items locations both"`
 	BaseAddr  string `schema:"baseAddr" validate:"required"`
 }
@@ -89,14 +91,14 @@ func (ctrl *V1Controller) HandleGenerateQRCode() errchain.HandlerFunc {
 // @Tags Items
 // @Produce application/pdf
 // @Param location_id path string true "UUID of the location"
-// @Param page query pageQuery true "query info for how the QR codes are generated"
+// @Param page query pageConfigQuery true "query info for how the QR codes are generated"
 // @Success 200 {string} string "application/pdf"
 // @Router /v1/qrcode/{location_id} [GET]
 // @Security Bearer
 func (ctrl *V1Controller) HandleGenerateQRCodeForLocations() errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 
-		data, err := adapters.DecodeQuery[pageQuery](r) //decode the query with the pageQuery struct
+		data, err := adapters.DecodeQuery[pageConfigQuery](r) //decode the query with the pageConfigQuery struct
 		if err != nil {
 			return err
 		}
@@ -114,88 +116,19 @@ func (ctrl *V1Controller) HandleGenerateQRCodeForLocations() errchain.HandlerFun
 		fmt.Println(routeUUID)
 
 		auth := services.NewContext(r.Context())
-		locations, err := ctrl.repo.Locations.Get(auth, routeUUID)
-
+		locations, err := ctrl.repo.Locations.Get(auth, routeUUID) //get the location
 		if err != nil {
 			return err
 		}
 
 		var URLs []string
 
-		//if *data.Nested {
-		//
-		//}
-
-		if data.PrintType == "items" {
-			for _, thing := range locations.Items {
-				encodeStr := data.BaseAddr + "/item/" + thing.ID.String() //concat the url and then UUID
-				URLs = append(URLs, encodeStr)
-			}
-		} else if data.PrintType == "locations" {
-			for _, thing := range locations.Children {
-				encodeStr := data.BaseAddr + "/location/" + thing.ID.String() //concat the url and then UUID
-				URLs = append(URLs, encodeStr)
-			}
-		} else if data.PrintType == "both" {
-			for _, thing := range locations.Items {
-				encodeStr := data.BaseAddr + "/item/" + thing.ID.String() //concat the url and then UUID
-				URLs = append(URLs, encodeStr)
-			}
-			for _, thing := range locations.Children {
-				encodeStr := data.BaseAddr + "/location/" + thing.ID.String() //concat the url and then UUID
-				URLs = append(URLs, encodeStr)
-			}
+		URLs, err = ctrl.generateQRCodeURLs(locations, URLs, data) //this will append URLS to the URLs slice based on config (data)
+		if err != nil {
+			return err
 		}
 
-		pdf := gopdf.GoPdf{}
-		pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4})
-		pdf.AddPage()
-		rowCounter := 0
-
-		const qrPerRow = 4
-		const qrPerPage = 24
-
-		for i, thing := range URLs {
-			if i%qrPerRow == 0 && i != 0 {
-				rowCounter++
-				if i%qrPerPage == 0 {
-					pdf.AddPage()
-				}
-			}
-
-			//turn each thing into a image buffer that gopdf accepts
-			qrc, err := qrcode.New(thing)
-			if err != nil {
-				return err
-			}
-
-			logo, err := png.Decode(bytes.NewReader(qrcodeLogo))
-			if err != nil {
-				return err
-			}
-
-			img := bytes.NewBuffer(nil)
-			wr := standard.NewWithWriter(nopCloser{Writer: img}, standard.WithLogoImage(logo), standard.WithBorderWidth(5), standard.WithQRWidth(7))
-
-			err = qrc.Save(wr)
-			if err != nil {
-				return err
-			}
-
-			//add the image buffer to the pdf
-			imgBytes, err := gopdf.ImageHolderByBytes(img.Bytes())
-			if err != nil {
-				return err
-			}
-
-			x := (i % 4) * 150
-			y := rowCounter * 150
-			err = pdf.ImageByHolder(imgBytes, float64(x), float64(y), nil)
-			if err != nil {
-				return err
-			}
-
-		}
+		pdf, err := ctrl.generatePDF(URLs)
 
 		// Return the concatenated QR code images as a response
 		w.Header().Set("Content-Type", "application/pdf")
@@ -209,4 +142,88 @@ func (ctrl *V1Controller) HandleGenerateQRCodeForLocations() errchain.HandlerFun
 		}
 		return err
 	}
+}
+
+func (ctrl *V1Controller) generateQRCodeURLs(input repo.LocationOut, output []string, printConfig pageConfigQuery) ([]string, error) {
+
+	// processLocation processes the given location and its items or children based on the printConfig settings
+	if printConfig.PrintType == "items" || printConfig.PrintType == "both" {
+		for _, item := range input.Items {
+			output = append(output, printConfig.BaseAddr+"/item/"+item.ID.String())
+		}
+	}
+
+	if printConfig.PrintType == "locations" || printConfig.PrintType == "both" {
+		for _, child := range input.Children {
+			output = append(output, printConfig.BaseAddr+"/location/"+child.ID.String())
+		}
+	}
+
+	if *printConfig.Nested && printConfig.NestLevel > 1 {
+		printConfig.NestLevel-- //decrease nest level for each recursive call
+		for _, child := range input.Children {
+			childLocation, err := ctrl.repo.Locations.Get(context.Background(), child.ID)
+			if err != nil {
+				return nil, err
+			}
+			output, err = ctrl.generateQRCodeURLs(childLocation, output, printConfig)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	return output, nil
+}
+
+func (ctrl *V1Controller) generatePDF(URLs []string) (*gopdf.GoPdf, error) {
+	pdf := gopdf.GoPdf{}
+	pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4})
+	pdf.AddPage()
+	rowCounter := 0
+
+	const qrPerRow = 4
+	const qrPerPage = 24
+
+	for i, thing := range URLs {
+		if i%qrPerRow == 0 && i != 0 {
+			rowCounter++
+			if i%qrPerPage == 0 {
+				pdf.AddPage()
+			}
+		}
+
+		//turn each thing into a image buffer that gopdf accepts
+		qrc, err := qrcode.New(thing)
+		if err != nil {
+			return nil, err
+		}
+
+		logo, err := png.Decode(bytes.NewReader(qrcodeLogo))
+		if err != nil {
+			return nil, err
+		}
+
+		img := bytes.NewBuffer(nil)
+		wr := standard.NewWithWriter(nopCloser{Writer: img}, standard.WithLogoImage(logo), standard.WithBorderWidth(5), standard.WithQRWidth(7))
+
+		err = qrc.Save(wr)
+		if err != nil {
+			return nil, err
+		}
+
+		//add the image buffer to the pdf
+		imgBytes, err := gopdf.ImageHolderByBytes(img.Bytes())
+		if err != nil {
+			return nil, err
+		}
+
+		x := (i % 4) * 150
+		y := rowCounter * 150
+		err = pdf.ImageByHolder(imgBytes, float64(x), float64(y), nil)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &pdf, nil
 }
