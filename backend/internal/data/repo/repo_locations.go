@@ -79,8 +79,7 @@ func mapLocationOut(location *ent.Location) LocationOut {
 	}
 
 	return LocationOut{
-		Parent:   parent,
-		Children: children,
+		Parent: parent,
 		LocationSummary: LocationSummary{
 			ID:          location.ID,
 			Name:        location.Name,
@@ -88,7 +87,8 @@ func mapLocationOut(location *ent.Location) LocationOut {
 			CreatedAt:   location.CreatedAt,
 			UpdatedAt:   location.UpdatedAt,
 		},
-		Items: mapEach(location.Edges.Items, mapItemSummary),
+		Items:    mapEach(location.Edges.Items, mapItemSummary),
+		Children: children,
 	}
 }
 
