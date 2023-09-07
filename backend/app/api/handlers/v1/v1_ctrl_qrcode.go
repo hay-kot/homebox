@@ -32,6 +32,13 @@ type pageConfigQuery struct {
 	BaseAddr  string `schema:"baseAddr" validate:"required"`
 }
 
+type pageTemplate struct {
+	size       gopdf.Rect
+	margin     gopdf.Margins
+	rows, cols int
+	xGap, yGap float64
+}
+
 type nopCloser struct {
 	io.Writer
 }
@@ -124,7 +131,16 @@ func (ctrl *V1Controller) HandleGenerateQRCodeForLocations() errchain.HandlerFun
 			return err
 		}
 
-		pdf, err := ctrl.generatePDF(URLs) //URLs to PDF
+		ave5260 := pageTemplate{
+			size:   *gopdf.PageSizeLetter,
+			margin: gopdf.Margins{Left: 0.21975 * 72, Top: 0.5 * 72, Right: 0.21975 * 72, Bottom: 0.5 * 72},
+			rows:   10,
+			cols:   3,
+			xGap:   0.14 * 72,
+			yGap:   0,
+		}
+
+		pdf, err := ctrl.generatePDF(URLs, ave5260) //URLs to PDF
 		if err != nil {
 			return err
 		}
@@ -172,18 +188,21 @@ func (ctrl *V1Controller) generateQRCodeURLs(input repo.LocationOut, output []st
 	return output, nil
 }
 
-func (ctrl *V1Controller) generatePDF(URLs []string) (*gopdf.GoPdf, error) {
+func (ctrl *V1Controller) generatePDF(URLs []string, template pageTemplate) (*gopdf.GoPdf, error) {
+
+	//lableWidth, labelHeight := func(t pageTemplate) (float64, float64) {
+	//	return (t.size.W - t.margin.Left - t.margin.Right - (t.xGap * float64(t.cols-1))) / float64(t.cols),
+	//		(t.size.H - t.margin.Top - t.margin.Bottom - (t.yGap * float64(t.rows-1))) / float64(t.rows)
+	//}(template)
+
 	pdf := gopdf.GoPdf{}
 	pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4})
 	pdf.AddPage()
-	rowCounter := 0
 
-	const qrPerRow = 4
-	const qrPerPage = 24
+	var qrPerPage = template.rows * template.cols
 
 	for i, thing := range URLs {
-		if i%qrPerRow == 0 && i != 0 {
-			rowCounter++
+		if i%template.rows == 0 && i != 0 {
 			if i%qrPerPage == 0 {
 				pdf.AddPage()
 			}
@@ -215,7 +234,7 @@ func (ctrl *V1Controller) generatePDF(URLs []string) (*gopdf.GoPdf, error) {
 		}
 
 		x := (i % 4) * 150
-		y := rowCounter * 150
+		y := (i / template.rows) * 150
 		err = pdf.ImageByHolder(imgBytes, float64(x), float64(y), nil)
 		if err != nil {
 			return nil, err
