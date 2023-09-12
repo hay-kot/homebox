@@ -4,11 +4,10 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"net/url"
-	"strings"
 
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/sys/validate"
+	"github.com/hay-kot/homebox/backend/pkgs/lookup"
 	"github.com/hay-kot/httpkit/errchain"
 )
 
@@ -69,45 +68,6 @@ func (a *app) mwRoles(rm RoleMode, required ...string) errchain.Middleware {
 	}
 }
 
-type KeyFunc func(r *http.Request) (string, error)
-
-func getBearer(r *http.Request) (string, error) {
-	auth := r.Header.Get("Authorization")
-	if auth == "" {
-		return "", errors.New("authorization header is required")
-	}
-
-	return auth, nil
-}
-
-func getQuery(r *http.Request) (string, error) {
-	token := r.URL.Query().Get("access_token")
-	if token == "" {
-		return "", errors.New("access_token query is required")
-	}
-
-	token, err := url.QueryUnescape(token)
-	if err != nil {
-		return "", errors.New("access_token query is required")
-	}
-
-	return token, nil
-}
-
-func getCookie(r *http.Request) (string, error) {
-	cookie, err := r.Cookie("hb.auth.token")
-	if err != nil {
-		return "", errors.New("access_token cookie is required")
-	}
-
-	token, err := url.QueryUnescape(cookie.Value)
-	if err != nil {
-		return "", errors.New("access_token cookie is required")
-	}
-
-	return token, nil
-}
-
 // mwAuthToken is a middleware that will check the database for a stateful token
 // and attach it's user to the request context, or return an appropriate error.
 // Authorization support is by token via Headers or Query Parameter
@@ -118,26 +78,15 @@ func getCookie(r *http.Request) (string, error) {
 //   - cookie = hb.auth.token = 1234567890
 func (a *app) mwAuthToken(next errchain.Handler) errchain.Handler {
 	return errchain.HandlerFunc(func(w http.ResponseWriter, r *http.Request) error {
-		keyFuncs := [...]KeyFunc{
-			getBearer,
-			getCookie,
-			getQuery,
+		extractor := lookup.MultiExtractor{
+			lookup.HeaderExtractor{Key: "Authorization", Prefix: "Bearer"},
+			lookup.ArgumentExtractor("access_token"),
+			lookup.CookieExtractor("hb.auth.token"),
 		}
-
-		var requestToken string
-		for _, keyFunc := range keyFuncs {
-			token, err := keyFunc(r)
-			if err == nil {
-				requestToken = token
-				break
-			}
-		}
-
-		if requestToken == "" {
+		requestToken, err := extractor.ExtractValue(r)
+		if err != nil || requestToken == "" {
 			return validate.NewRequestError(errors.New("Authorization header or query is required"), http.StatusUnauthorized)
 		}
-
-		requestToken = strings.TrimPrefix(requestToken, "Bearer ")
 
 		r = r.WithContext(context.WithValue(r.Context(), hashedToken, requestToken))
 
