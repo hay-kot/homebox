@@ -6,7 +6,7 @@ require (
 	ariga.io/atlas v0.12.0
 	entgo.io/ent v0.12.3
 	github.com/ardanlabs/conf/v3 v3.1.6
-	github.com/containrrr/shoutrrr v0.7.1
+	github.com/containrrr/shoutrrr v0.8.0
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-playground/validator/v10 v10.14.1
 	github.com/gocarina/gocsv v0.0.0-20230616125104-99d496ca653d
