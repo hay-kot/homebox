@@ -45,6 +45,7 @@ func (Group) Fields() []ent.Field {
 				"inr",
 				"jpy",
 				"krw",
+				"myr"
 				"mxn",
 				"nok",
 				"nzd",
