@@ -15,6 +15,7 @@ export type Codes =
   | "JPY"
   | "KRW"
   | "MXN"
+  | "MYR"
   | "NOK"
   | "NZD"
   | "PLN"
@@ -55,6 +56,7 @@ export const currencies: Currency[] = [
   { code: "JPY", local: "Japan", symbol: "¥", name: "Japanese Yen" },
   { code: "KRW", local: "South Korea", symbol: "₩", name: "South Korean Won" },
   { code: "MXN", local: "Mexico", symbol: "Mex$", name: "Mexican Peso" },
+  { code: "MYR", local: "Malaysia", symbol: "RM", name: "Malaysian Ringgit" },  
   { code: "NOK", local: "Norway", symbol: "kr", name: "Norwegian Krone" },
   { code: "NZD", local: "New Zealand", symbol: "NZ$", name: "New Zealand Dollar" },
   { code: "PLN", local: "Poland", symbol: "zł", name: "Polish Zloty" },
