@@ -10,6 +10,14 @@
           class="w-full input input-bordered"
           @change="search = $event.target.value"
         />
+        <button
+          v-if="!!value"
+          type="button"
+          class="absolute inset-y-0 right-6 flex items-center rounded-r-md px-2 focus:outline-none"
+          @click="clear"
+        >
+          <Icon name="mdi-close" class="w-5 h-5" />
+        </button>
         <ComboboxButton class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
           <Icon name="mdi-chevron-down" class="w-5 h-5" />
         </ComboboxButton>
@@ -85,6 +93,10 @@
     display: "text",
     multiple: false,
   });
+
+  function clear() {
+    emit("update:modelValue", null);
+  }
 
   const search = ref("");
   const value = useVModel(props, "modelValue", emit);
