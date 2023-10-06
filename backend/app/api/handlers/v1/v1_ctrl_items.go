@@ -231,7 +231,7 @@ func (ctrl *V1Controller) HandleGetAllCustomFieldValues() errchain.HandlerFunc {
 		return ctrl.repo.Items.GetAllCustomFieldValues(auth, auth.GID, q.Field)
 	}
 
-	return adapters.Action(fn, http.StatusOK)
+	return adapters.Query(fn, http.StatusOK)
 
 }
 
