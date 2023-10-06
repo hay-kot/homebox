@@ -16,7 +16,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.17
 	github.com/olahol/melody v1.1.4
 	github.com/pkg/errors v0.9.1
-	github.com/rs/zerolog v1.30.0
+	github.com/rs/zerolog v1.31.0
 	github.com/stretchr/testify v1.8.4
 	github.com/swaggo/http-swagger v1.3.4
 	github.com/swaggo/swag v1.16.2
