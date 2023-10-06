@@ -22,7 +22,7 @@ require (
 	github.com/swaggo/swag v1.16.2
 	github.com/yeqown/go-qrcode/v2 v2.2.2
 	github.com/yeqown/go-qrcode/writer/standard v1.2.2
-	golang.org/x/crypto v0.13.0
+	golang.org/x/crypto v0.14.0
 	modernc.org/sqlite v1.25.0
 )
 
@@ -61,7 +61,7 @@ require (
 	golang.org/x/image v0.9.0 // indirect
 	golang.org/x/mod v0.12.0 // indirect
 	golang.org/x/net v0.12.0 // indirect
-	golang.org/x/sys v0.12.0 // indirect
+	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	golang.org/x/tools v0.11.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
