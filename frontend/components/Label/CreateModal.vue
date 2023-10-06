@@ -77,6 +77,7 @@
     const { error, data } = await api.labels.create(form);
     if (error) {
       toast.error("Couldn't create label");
+      loading.value = false;
       return;
     }
 
