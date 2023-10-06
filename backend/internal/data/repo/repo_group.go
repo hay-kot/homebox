@@ -233,7 +233,7 @@ func (r *GroupRepository) StatsGroup(ctx context.Context, GID uuid.UUID) (GroupS
 			(SELECT COUNT(*) FROM items WHERE group_items = ? AND items.archived = false) AS total_items,
 			(SELECT COUNT(*) FROM locations WHERE group_locations = ?) AS total_locations,
 			(SELECT COUNT(*) FROM labels WHERE group_labels = ?) AS total_labels,
-			(SELECT SUM(purchase_price) FROM items WHERE group_items = ? AND items.archived = false) AS total_item_price,
+			(SELECT SUM(purchase_price*quantity) FROM items WHERE group_items = ? AND items.archived = false) AS total_item_price,
 			(SELECT COUNT(*)
 				FROM items
 					WHERE group_items = ?
