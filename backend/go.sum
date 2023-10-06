@@ -648,6 +648,8 @@ github.com/yeqown/go-qrcode/v2 v2.2.2 h1:0comk6jEwi0oWNhKEmzx4JI+Q7XIneAApmFSMKW
 github.com/yeqown/go-qrcode/v2 v2.2.2/go.mod h1:2Qsk2APUCPne0TsRo40DIkI5MYnbzYKCnKGEFWrxd24=
 github.com/yeqown/go-qrcode/writer/standard v1.2.1 h1:FMRZiur5yApUIe4fqtqmcdl/XQTZAZWt2DhkPx4VIW0=
 github.com/yeqown/go-qrcode/writer/standard v1.2.1/go.mod h1:ZelyDFiVymrauRjUn454iF7bjsabmB1vixkDA5kq2bw=
+github.com/yeqown/go-qrcode/writer/standard v1.2.2 h1:gyzunKXgC0ZUpKqQFUImbAEwewAiwNCkxFEKZV80Kt4=
+github.com/yeqown/go-qrcode/writer/standard v1.2.2/go.mod h1:bbVRiBJSRPj4UBZP/biLG7JSd9kHqXjErk1eakAMnRA=
 github.com/yeqown/reedsolomon v1.0.0 h1:x1h/Ej/uJnNu8jaX7GLHBWmZKCAWjEJTetkqaabr4B0=
 github.com/yeqown/reedsolomon v1.0.0/go.mod h1:P76zpcn2TCuL0ul1Fso373qHRc69LKwAw/Iy6g1WiiM=
 github.com/yuin/goldmark v1.1.25/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
