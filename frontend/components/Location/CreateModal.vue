@@ -85,6 +85,7 @@
     });
 
     if (error) {
+      loading.value = false;
       toast.error("Couldn't create location");
     }
 

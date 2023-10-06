@@ -122,6 +122,7 @@
     };
 
     const { error, data } = await api.items.create(out);
+    loading.value = false;
     if (error) {
       toast.error("Couldn't create item");
       return;
