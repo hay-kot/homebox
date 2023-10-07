@@ -23,7 +23,7 @@ func (svc *ItemService) AttachmentPath(ctx context.Context, attachmentId uuid.UU
 
 func (svc *ItemService) AttachmentUpdate(ctx Context, itemId uuid.UUID, data *repo.ItemAttachmentUpdate) (repo.ItemOut, error) {
 	// Update Attachment
-	attachment, err := svc.repo.Attachments.Update(ctx, data.ID, attachment.Type(data.Type))
+	attachment, err := svc.repo.Attachments.Update(ctx, data.ID, data)
 	if err != nil {
 		return repo.ItemOut{}, err
 	}

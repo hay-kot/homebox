@@ -8,7 +8,6 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/core/services/reporting/eventbus"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
-	"github.com/hay-kot/homebox/backend/internal/data/ent/item"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/label"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/predicate"
 )
@@ -42,7 +41,6 @@ type (
 
 	LabelOut struct {
 		LabelSummary
-		Items []ItemSummary `json:"items"`
 	}
 )
 
@@ -64,7 +62,6 @@ var (
 func mapLabelOut(label *ent.Label) LabelOut {
 	return LabelOut{
 		LabelSummary: mapLabelSummary(label),
-		Items:        mapEach(label.Edges.Items, mapItemSummary),
 	}
 }
 
@@ -78,9 +75,6 @@ func (r *LabelRepository) getOne(ctx context.Context, where ...predicate.Label) 
 	return mapLabelOutErr(r.db.Label.Query().
 		Where(where...).
 		WithGroup().
-		WithItems(func(iq *ent.ItemQuery) {
-			iq.Where(item.Archived(false))
-		}).
 		Only(ctx),
 	)
 }
@@ -142,7 +136,7 @@ func (r *LabelRepository) UpdateByGroup(ctx context.Context, GID uuid.UUID, data
 }
 
 // delete removes the label from the database. This should only be used when
-// the label's ownership is already confirmed/validated. 
+// the label's ownership is already confirmed/validated.
 func (r *LabelRepository) delete(ctx context.Context, id uuid.UUID) error {
 	return r.db.Label.DeleteOneID(id).Exec(ctx)
 }

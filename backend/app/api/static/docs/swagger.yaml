@@ -52,6 +52,8 @@ definitions:
         $ref: '#/definitions/repo.DocumentOut'
       id:
         type: string
+      primary:
+        type: boolean
       type:
         type: string
       updatedAt:
@@ -59,6 +61,8 @@ definitions:
     type: object
   repo.ItemAttachmentUpdate:
     properties:
+      primary:
+        type: boolean
       title:
         type: string
       type:
@@ -125,6 +129,8 @@ definitions:
           $ref: '#/definitions/repo.ItemField'
         type: array
       id:
+        type: string
+      imageId:
         type: string
       insured:
         type: boolean
@@ -200,6 +206,8 @@ definitions:
       description:
         type: string
       id:
+        type: string
+      imageId:
         type: string
       insured:
         type: boolean
@@ -312,10 +320,6 @@ definitions:
         type: string
       id:
         type: string
-      items:
-        items:
-          $ref: '#/definitions/repo.ItemSummary'
-        type: array
       name:
         type: string
       updatedAt:
@@ -356,10 +360,6 @@ definitions:
         type: string
       id:
         type: string
-      items:
-        items:
-          $ref: '#/definitions/repo.ItemSummary'
-        type: array
       name:
         type: string
       parent:
@@ -740,6 +740,21 @@ paths:
       security:
       - Bearer: []
       summary: Ensures Import Refs
+      tags:
+      - Actions
+  /v1/actions/set-primary-photos:
+    post:
+      description: Sets the first photo of each item as the primary photo
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.ActionAmountResult'
+      security:
+      - Bearer: []
+      summary: Set Primary Photos
       tags:
       - Actions
   /v1/actions/zero-item-time-fields:

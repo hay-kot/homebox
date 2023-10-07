@@ -68,3 +68,16 @@ func (ctrl *V1Controller) HandleEnsureImportRefs() errchain.HandlerFunc {
 func (ctrl *V1Controller) HandleItemDateZeroOut() errchain.HandlerFunc {
 	return actionHandlerFactory("zero out date time", ctrl.repo.Items.ZeroOutTimeFields)
 }
+
+// HandleSetPrimaryPhotos godoc
+//
+//	@Summary     Set Primary Photos
+//	@Description Sets the first photo of each item as the primary photo
+//	@Tags        Actions
+//	@Produce     json
+//	@Success     200     {object} ActionAmountResult
+//	@Router      /v1/actions/set-primary-photos [Post]
+//	@Security    Bearer
+func (ctrl *V1Controller) HandleSetPrimaryPhotos() errchain.HandlerFunc {
+	return actionHandlerFactory("ensure asset IDs", ctrl.repo.Items.SetPrimaryPhotos)
+}

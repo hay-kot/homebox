@@ -33,7 +33,12 @@
                   v-if="detail.copyable"
                   class="opacity-0 group-hover:opacity-100 ml-4 my-0 duration-75 transition-opacity"
                 >
-                  <CopyText :text="detail.text.toString()" :icon-size="16" class="btn btn-xs btn-ghost btn-circle" />
+                  <CopyText
+                    v-if="detail.text.toString()"
+                    :text="detail.text.toString()"
+                    :icon-size="16"
+                    class="btn btn-xs btn-ghost btn-circle"
+                  />
                 </span>
               </span>
             </template>

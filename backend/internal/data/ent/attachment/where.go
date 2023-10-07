@@ -66,6 +66,11 @@ func UpdatedAt(v time.Time) predicate.Attachment {
 	return predicate.Attachment(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
+// Primary applies equality check predicate on the "primary" field. It's identical to PrimaryEQ.
+func Primary(v bool) predicate.Attachment {
+	return predicate.Attachment(sql.FieldEQ(FieldPrimary, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Attachment {
 	return predicate.Attachment(sql.FieldEQ(FieldCreatedAt, v))
@@ -164,6 +169,16 @@ func TypeIn(vs ...Type) predicate.Attachment {
 // TypeNotIn applies the NotIn predicate on the "type" field.
 func TypeNotIn(vs ...Type) predicate.Attachment {
 	return predicate.Attachment(sql.FieldNotIn(FieldType, vs...))
+}
+
+// PrimaryEQ applies the EQ predicate on the "primary" field.
+func PrimaryEQ(v bool) predicate.Attachment {
+	return predicate.Attachment(sql.FieldEQ(FieldPrimary, v))
+}
+
+// PrimaryNEQ applies the NEQ predicate on the "primary" field.
+func PrimaryNEQ(v bool) predicate.Attachment {
+	return predicate.Attachment(sql.FieldNEQ(FieldPrimary, v))
 }
 
 // HasItem applies the HasEdge predicate on the "item" edge.

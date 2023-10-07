@@ -22,6 +22,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
+	// FieldPrimary holds the string denoting the primary field in the database.
+	FieldPrimary = "primary"
 	// EdgeItem holds the string denoting the item edge name in mutations.
 	EdgeItem = "item"
 	// EdgeDocument holds the string denoting the document edge name in mutations.
@@ -50,6 +52,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldType,
+	FieldPrimary,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "attachments"
@@ -81,6 +84,8 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultPrimary holds the default value on creation for the "primary" field.
+	DefaultPrimary bool
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )
@@ -135,6 +140,11 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByType orders the results by the type field.
 func ByType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldType, opts...).ToFunc()
+}
+
+// ByPrimary orders the results by the primary field.
+func ByPrimary(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPrimary, opts...).ToFunc()
 }
 
 // ByItemField orders the results by item field.

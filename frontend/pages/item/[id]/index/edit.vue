@@ -307,6 +307,7 @@
     id: "",
     title: "",
     type: "",
+    primary: false,
   });
 
   const attachmentOpts = Object.entries(AttachmentTypes).map(([key, value]) => ({
@@ -318,6 +319,7 @@
     editState.id = attachment.id;
     editState.title = attachment.document.title;
     editState.type = attachment.type;
+    editState.primary = attachment.primary;
     editState.modal = true;
 
     editState.obj = attachmentOpts.find(o => o.value === attachment.type) || attachmentOpts[0];
@@ -328,6 +330,7 @@
     const { error, data } = await api.items.attachments.update(itemId.value, editState.id, {
       title: editState.title,
       type: editState.type,
+      primary: editState.primary,
     });
 
     if (error) {
@@ -407,7 +410,6 @@
       <template #title> Attachment Edit </template>
 
       <FormTextField v-model="editState.title" label="Attachment Title" />
-      {{ editState.type }}
       <FormSelect
         v-model:value="editState.type"
         label="Attachment Type"
@@ -415,6 +417,14 @@
         name="text"
         :items="attachmentOpts"
       />
+      <div v-if="editState.type == 'photo'" class="flex gap-2 mt-3">
+        <input v-model="editState.primary" type="checkbox" class="checkbox" />
+        <p class="text-sm">
+          <span class="font-semibold">Primary Photo</span>
+          This options is only available for photos. Only one photo can be primary. If you select this option, the
+          current primary photo, if any will be unselected.
+        </p>
+      </div>
       <div class="modal-action">
         <BaseButton :loading="editState.loading" @click="updateAttachment"> Update </BaseButton>
       </div>

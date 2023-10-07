@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/attachment"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/item"
 )
 
 // AttachmentRepo is a repository for Attachments table that links Items to Documents
@@ -24,12 +25,14 @@ type (
 		UpdatedAt time.Time   `json:"updatedAt"`
 		Type      string      `json:"type"`
 		Document  DocumentOut `json:"document"`
+		Primary   bool        `json:"primary"`
 	}
 
 	ItemAttachmentUpdate struct {
-		ID    uuid.UUID `json:"-"`
-		Type  string    `json:"type"`
-		Title string    `json:"title"`
+		ID      uuid.UUID `json:"-"`
+		Type    string    `json:"type"`
+		Title   string    `json:"title"`
+		Primary bool      `json:"primary"`
 	}
 )
 
@@ -39,6 +42,7 @@ func ToItemAttachment(attachment *ent.Attachment) ItemAttachment {
 		CreatedAt: attachment.CreatedAt,
 		UpdatedAt: attachment.UpdatedAt,
 		Type:      attachment.Type.String(),
+		Primary:   attachment.Primary,
 		Document: DocumentOut{
 			ID:    attachment.Edges.Document.ID,
 			Title: attachment.Edges.Document.Title,
@@ -64,10 +68,33 @@ func (r *AttachmentRepo) Get(ctx context.Context, id uuid.UUID) (*ent.Attachment
 		Only(ctx)
 }
 
-func (r *AttachmentRepo) Update(ctx context.Context, itemId uuid.UUID, typ attachment.Type) (*ent.Attachment, error) {
-	itm, err := r.db.Attachment.UpdateOneID(itemId).
-		SetType(typ).
-		Save(ctx)
+func (r *AttachmentRepo) Update(ctx context.Context, itemId uuid.UUID, data *ItemAttachmentUpdate) (*ent.Attachment, error) {
+	// TODO: execute within Tx
+	typ := attachment.Type(data.Type)
+
+	bldr := r.db.Attachment.UpdateOneID(itemId).
+		SetType(typ)
+
+		// Primary only applies to photos
+	if typ == attachment.TypePhoto {
+		bldr = bldr.SetPrimary(data.Primary)
+	} else {
+		bldr = bldr.SetPrimary(false)
+	}
+
+	itm, err := bldr.Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// Ensure all other attachments are not primary
+	err = r.db.Attachment.Update().
+		Where(
+			attachment.HasItemWith(item.ID(itemId)),
+			attachment.IDNEQ(itm.ID),
+		).
+		SetPrimary(false).
+		Exec(ctx)
 	if err != nil {
 		return nil, err
 	}
