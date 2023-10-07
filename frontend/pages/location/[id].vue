@@ -68,6 +68,7 @@
     const { error, data } = await api.locations.update(locationId.value, updateData);
 
     if (error) {
+      updating.value = false;
       toast.error("Failed to update location");
       return;
     }

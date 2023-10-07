@@ -59,6 +59,7 @@
     const { error, data } = await api.labels.update(labelId.value, updateData);
 
     if (error) {
+      updating.value = false;
       toast.error("Failed to update label");
       return;
     }
