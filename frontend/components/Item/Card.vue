@@ -1,21 +1,21 @@
 <template>
-  <NuxtLink class="group card rounded-md" :to="`/item/${item.id}`">
-    <div class="rounded-t flex flex-col justify-center bg-neutral text-neutral-content p-5">
-      <h2 class="text-lg mb-1 last:mb-0 font-bold two-line">{{ item.name }}</h2>
-      <div>
-        <NuxtLink v-if="item.location" class="text-sm hover:link" :to="`/location/${item.location.id}`">
+  <NuxtLink class="group card rounded-md border border-gray-300" :to="`/item/${item.id}`">
+    <div class="relative h-[200px]">
+      <img v-if="imageUrl" class="h-[200px] w-full object-cover rounded-t shadow-sm border-gray-300" :src="imageUrl" />
+      <div class="absolute bottom-1 left-1">
+        <NuxtLink
+          v-if="item.location"
+          class="text-sm hover:link badge shadow-md rounded-md"
+          :to="`/location/${item.location.id}`"
+        >
           {{ item.location.name }}
         </NuxtLink>
-        <span class="flex-1"></span>
       </div>
     </div>
-    <div class="rounded-b p-4 pt-2 flex-grow col-span-4 flex flex-col gap-y-2 bg-base-100">
+    <div class="rounded-b p-4 pt-2 flex-grow col-span-4 flex flex-col gap-y-1 bg-base-100">
+      <h2 class="text-lg font-bold two-line">{{ item.name }}</h2>
+      <div class="divider my-0"></div>
       <div class="flex justify-between gap-2">
-        <div class="mr-auto tooltip tooltip-tip" data-tip="Purchase Price">
-          <span v-if="item.purchasePrice != '0'" class="badge badge-sm badge-ghost h-5">
-            <Currency :amount="item.purchasePrice" />
-          </span>
-        </div>
         <div v-if="item.insured" class="tooltip z-10" data-tip="Insured">
           <Icon class="h-5 w-5 text-primary" name="mdi-shield-check" />
         </div>
@@ -26,7 +26,6 @@
         </div>
       </div>
       <Markdown class="mb-2 text-clip three-line" :source="item.description" />
-
       <div class="flex gap-2 flex-wrap -mr-1 mt-auto justify-end">
         <LabelChip v-for="label in top3" :key="label.id" :label="label" size="sm" />
       </div>
@@ -36,6 +35,16 @@
 
 <script setup lang="ts">
   import { ItemOut, ItemSummary } from "~~/lib/api/types/data-contracts";
+
+  const api = useUserApi();
+
+  const imageUrl = computed(() => {
+    if (!props.item.imageId) {
+      return "/no-image.jpg";
+    }
+
+    return api.authURL(`/items/${props.item.id}/attachments/${props.item.imageId}`);
+  });
 
   const top3 = computed(() => {
     return props.item.labels.slice(0, 3) || [];

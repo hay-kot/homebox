@@ -68,6 +68,31 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/actions/set-primary-photos": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Sets the first photo of each item as the primary photo",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Actions"
+                ],
+                "summary": "Set Primary Photos",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.ActionAmountResult"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/actions/zero-item-time-fields": {
             "post": {
                 "security": [
@@ -1879,6 +1904,9 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "primary": {
+                    "type": "boolean"
+                },
                 "type": {
                     "type": "string"
                 },
@@ -1890,6 +1918,9 @@ const docTemplate = `{
         "repo.ItemAttachmentUpdate": {
             "type": "object",
             "properties": {
+                "primary": {
+                    "type": "boolean"
+                },
                 "title": {
                     "type": "string"
                 },
@@ -1987,6 +2018,9 @@ const docTemplate = `{
                     }
                 },
                 "id": {
+                    "type": "string"
+                },
+                "imageId": {
                     "type": "string"
                 },
                 "insured": {
@@ -2094,6 +2128,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
+                    "type": "string"
+                },
+                "imageId": {
                     "type": "string"
                 },
                 "insured": {
@@ -2255,12 +2292,6 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/repo.ItemSummary"
-                    }
-                },
                 "name": {
                     "type": "string"
                 },
@@ -2321,12 +2352,6 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string"
-                },
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/repo.ItemSummary"
-                    }
                 },
                 "name": {
                     "type": "string"

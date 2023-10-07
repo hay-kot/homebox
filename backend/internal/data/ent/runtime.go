@@ -40,6 +40,10 @@ func init() {
 	attachment.DefaultUpdatedAt = attachmentDescUpdatedAt.Default.(func() time.Time)
 	// attachment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	attachment.UpdateDefaultUpdatedAt = attachmentDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// attachmentDescPrimary is the schema descriptor for primary field.
+	attachmentDescPrimary := attachmentFields[1].Descriptor()
+	// attachment.DefaultPrimary holds the default value on creation for the primary field.
+	attachment.DefaultPrimary = attachmentDescPrimary.Default.(bool)
 	// attachmentDescID is the schema descriptor for id field.
 	attachmentDescID := attachmentMixinFields0[0].Descriptor()
 	// attachment.DefaultID holds the default value on creation for the id field.

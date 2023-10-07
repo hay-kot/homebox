@@ -24,6 +24,8 @@ func (Attachment) Fields() []ent.Field {
 		field.Enum("type").
 			Values("photo", "manual", "warranty", "attachment", "receipt").
 			Default("attachment"),
+		field.Bool("primary").
+			Default(false),
 	}
 }
 

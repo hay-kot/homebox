@@ -68,6 +68,7 @@
     const { error, data } = await api.locations.update(locationId.value, updateData);
 
     if (error) {
+      updating.value = false;
       toast.error("Failed to update location");
       return;
     }
@@ -82,6 +83,23 @@
   const locations = computed(() => locationStore.allLocations);
 
   const parent = ref<LocationSummary | any>({});
+
+  const items = computedAsync(async () => {
+    if (!location.value) {
+      return [];
+    }
+
+    const resp = await api.items.getAll({
+      locations: [location.value.id],
+    });
+
+    if (resp.error) {
+      toast.error("Failed to load items");
+      return [];
+    }
+
+    return resp.data.items;
+  });
 </script>
 
 <template>
@@ -99,65 +117,54 @@
       </form>
     </BaseModal>
 
-    <BaseContainer v-if="location" class="space-y-6 mb-16">
-      <section>
-        <BaseSectionHeader v-if="location">
-          <Icon name="mdi-package-variant" class="mr-2 -mt-1 text-base-content" />
-          <span class="text-base-content">
-            {{ location ? location.name : "" }}
-          </span>
-
-          <div v-if="location?.parent" class="text-sm breadcrumbs pb-0">
-            <ul class="text-base-content/70">
-              <li>
-                <NuxtLink :to="`/location/${location.parent.id}`"> {{ location.parent.name }}</NuxtLink>
-              </li>
-              <li>{{ location.name }}</li>
-            </ul>
+    <BaseContainer v-if="location">
+      <div class="bg-white rounded p-3">
+        <header class="mb-2">
+          <div class="flex flex-wrap items-end gap-2">
+            <div class="avatar placeholder mb-auto">
+              <div class="bg-neutral-focus text-neutral-content rounded-full w-12">
+                <Icon name="mdi-package-variant" class="h-7 w-7" />
+              </div>
+            </div>
+            <div>
+              <div v-if="location?.parent" class="text-sm breadcrumbs pt-0 pb-0">
+                <ul class="text-base-content/70">
+                  <li>
+                    <NuxtLink :to="`/location/${location.parent.id}`"> {{ location.parent.name }}</NuxtLink>
+                  </li>
+                  <li>{{ location.name }}</li>
+                </ul>
+              </div>
+              <h1 class="text-2xl pb-1">
+                {{ location ? location.name : "" }}
+              </h1>
+              <div class="flex gap-1 flex-wrap text-xs">
+                <div>
+                  Created
+                  <DateTime :date="location?.createdAt" />
+                </div>
+              </div>
+            </div>
+            <div class="ml-auto mt-2 flex flex-wrap items-center justify-between gap-3">
+              <div class="btn-group">
+                <PageQRCode class="dropdown-left" />
+                <BaseButton size="sm" @click="openUpdate">
+                  <Icon class="mr-1" name="mdi-pencil" />
+                  Edit
+                </BaseButton>
+              </div>
+              <BaseButton class="btn btn-sm" @click="confirmDelete()">
+                <Icon name="mdi-delete" class="mr-2" />
+                Delete
+              </BaseButton>
+            </div>
           </div>
-          <template #description>
-            <Markdown class="text-lg" :source="location.description"> </Markdown>
-          </template>
-        </BaseSectionHeader>
-
-        <div class="flex gap-3 flex-wrap mb-6 text-sm italic">
-          <div>
-            Created
-            <DateTime :date="location?.createdAt" />
-          </div>
-          <div>
-            <Icon name="mdi-circle-small" />
-          </div>
-          <div>
-            Last Updated
-            <DateTime :date="location?.updatedAt" />
-          </div>
-        </div>
-
-        <div class="flex flex-wrap items-center justify-between mb-6 mt-3">
-          <div class="btn-group">
-            <PageQRCode class="dropdown-right" />
-            <BaseButton class="ml-auto" size="sm" @click="openUpdate">
-              <Icon class="mr-1" name="mdi-pencil" />
-              Edit
-            </BaseButton>
-          </div>
-          <BaseButton class="btn btn-sm" @click="confirmDelete()">
-            <Icon name="mdi-delete" class="mr-2" />
-            Delete
-          </BaseButton>
-        </div>
-      </section>
-
-      <template v-if="location && location.items.length > 0">
-        <ItemViewSelectable :items="location.items" />
-      </template>
-
-      <section v-if="location && location.children.length > 0">
-        <BaseSectionHeader class="mb-5"> Child Locations </BaseSectionHeader>
-        <div class="grid gap-2 grid-cols-1 sm:grid-cols-3">
-          <LocationCard v-for="item in location.children" :key="item.id" :location="item" />
-        </div>
+        </header>
+        <div class="divider my-0 mb-1"></div>
+        <Markdown v-if="location && location.description" class="text-base" :source="location.description"> </Markdown>
+      </div>
+      <section v-if="location && items">
+        <ItemViewSelectable :items="items" />
       </section>
     </BaseContainer>
   </div>
