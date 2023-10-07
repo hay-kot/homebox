@@ -61,6 +61,7 @@ type AttachmentMutation struct {
 	created_at      *time.Time
 	updated_at      *time.Time
 	_type           *attachment.Type
+	primary         *bool
 	clearedFields   map[string]struct{}
 	item            *uuid.UUID
 	cleareditem     bool
@@ -283,6 +284,42 @@ func (m *AttachmentMutation) ResetType() {
 	m._type = nil
 }
 
+// SetPrimary sets the "primary" field.
+func (m *AttachmentMutation) SetPrimary(b bool) {
+	m.primary = &b
+}
+
+// Primary returns the value of the "primary" field in the mutation.
+func (m *AttachmentMutation) Primary() (r bool, exists bool) {
+	v := m.primary
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPrimary returns the old "primary" field's value of the Attachment entity.
+// If the Attachment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AttachmentMutation) OldPrimary(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPrimary is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPrimary requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPrimary: %w", err)
+	}
+	return oldValue.Primary, nil
+}
+
+// ResetPrimary resets all changes to the "primary" field.
+func (m *AttachmentMutation) ResetPrimary() {
+	m.primary = nil
+}
+
 // SetItemID sets the "item" edge to the Item entity by id.
 func (m *AttachmentMutation) SetItemID(id uuid.UUID) {
 	m.item = &id
@@ -395,7 +432,7 @@ func (m *AttachmentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AttachmentMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 4)
 	if m.created_at != nil {
 		fields = append(fields, attachment.FieldCreatedAt)
 	}
@@ -404,6 +441,9 @@ func (m *AttachmentMutation) Fields() []string {
 	}
 	if m._type != nil {
 		fields = append(fields, attachment.FieldType)
+	}
+	if m.primary != nil {
+		fields = append(fields, attachment.FieldPrimary)
 	}
 	return fields
 }
@@ -419,6 +459,8 @@ func (m *AttachmentMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case attachment.FieldType:
 		return m.GetType()
+	case attachment.FieldPrimary:
+		return m.Primary()
 	}
 	return nil, false
 }
@@ -434,6 +476,8 @@ func (m *AttachmentMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldUpdatedAt(ctx)
 	case attachment.FieldType:
 		return m.OldType(ctx)
+	case attachment.FieldPrimary:
+		return m.OldPrimary(ctx)
 	}
 	return nil, fmt.Errorf("unknown Attachment field %s", name)
 }
@@ -463,6 +507,13 @@ func (m *AttachmentMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetType(v)
+		return nil
+	case attachment.FieldPrimary:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPrimary(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Attachment field %s", name)
@@ -521,6 +572,9 @@ func (m *AttachmentMutation) ResetField(name string) error {
 		return nil
 	case attachment.FieldType:
 		m.ResetType()
+		return nil
+	case attachment.FieldPrimary:
+		m.ResetPrimary()
 		return nil
 	}
 	return fmt.Errorf("unknown Attachment field %s", name)

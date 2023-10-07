@@ -1879,6 +1879,9 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "primary": {
+                    "type": "boolean"
+                },
                 "type": {
                     "type": "string"
                 },
@@ -1890,6 +1893,9 @@ const docTemplate = `{
         "repo.ItemAttachmentUpdate": {
             "type": "object",
             "properties": {
+                "primary": {
+                    "type": "boolean"
+                },
                 "title": {
                     "type": "string"
                 },
@@ -1987,6 +1993,9 @@ const docTemplate = `{
                     }
                 },
                 "id": {
+                    "type": "string"
+                },
+                "imageId": {
                     "type": "string"
                 },
                 "insured": {
@@ -2094,6 +2103,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
+                    "type": "string"
+                },
+                "imageId": {
                     "type": "string"
                 },
                 "insured": {
@@ -2255,12 +2267,6 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/repo.ItemSummary"
-                    }
-                },
                 "name": {
                     "type": "string"
                 },
@@ -2321,12 +2327,6 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string"
-                },
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/repo.ItemSummary"
-                    }
                 },
                 "name": {
                     "type": "string"

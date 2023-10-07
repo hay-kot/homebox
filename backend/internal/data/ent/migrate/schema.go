@@ -14,6 +14,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"photo", "manual", "warranty", "attachment", "receipt"}, Default: "attachment"},
+		{Name: "primary", Type: field.TypeBool, Default: false},
 		{Name: "document_attachments", Type: field.TypeUUID},
 		{Name: "item_attachments", Type: field.TypeUUID},
 	}
@@ -25,13 +26,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "attachments_documents_attachments",
-				Columns:    []*schema.Column{AttachmentsColumns[4]},
+				Columns:    []*schema.Column{AttachmentsColumns[5]},
 				RefColumns: []*schema.Column{DocumentsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "attachments_items_attachments",
-				Columns:    []*schema.Column{AttachmentsColumns[5]},
+				Columns:    []*schema.Column{AttachmentsColumns[6]},
 				RefColumns: []*schema.Column{ItemsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -116,7 +117,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString, Size: 255},
-		{Name: "currency", Type: field.TypeEnum, Enums: []string{"aed", "aud", "bgn", "brl", "cad", "chf", "cny", "czk", "dkk", "eur", "gbp", "hkd", "idr", "inr", "jpy", "krw", "mxn", "nok", "nzd", "pln", "rmb", "ron", "rub", "sar", "sek", "sgd", "thb", "try", "usd", "zar"}, Default: "usd"},
+		{Name: "currency", Type: field.TypeEnum, Enums: []string{"aed", "aud", "bgn", "brl", "cad", "chf", "czk", "dkk", "eur", "gbp", "hkd", "idr", "inr", "jpy", "krw", "mxn", "nok", "nzd", "pln", "rmb", "ron", "rub", "sar", "sek", "sgd", "thb", "try", "usd", "xag", "xau", "zar"}, Default: "usd"},
 	}
 	// GroupsTable holds the schema information for the "groups" table.
 	GroupsTable = &schema.Table{

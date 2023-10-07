@@ -68,6 +68,23 @@
     updateModal.value = false;
     updating.value = false;
   }
+
+  const items = computedAsync(async () => {
+    if (!label.value) {
+      return [];
+    }
+
+    const resp = await api.items.getAll({
+      labels: [label.value.id],
+    });
+
+    if (resp.error) {
+      toast.error("Failed to load items");
+      return [];
+    }
+
+    return resp.data.items;
+  });
 </script>
 
 <template>
@@ -83,51 +100,47 @@
       </form>
     </BaseModal>
 
-    <BaseContainer v-if="label" class="space-y-6 mb-16">
-      <section>
-        <BaseSectionHeader v-if="label">
-          <Icon name="mdi-package-variant" class="mr-2 -mt-1 text-base-content" />
-          <span class="text-base-content">
-            {{ label ? label.name : "" }}
-          </span>
-
-          <template #description>
-            <Markdown class="text-lg" :source="label.description"> </Markdown>
-          </template>
-        </BaseSectionHeader>
-
-        <div class="flex gap-3 flex-wrap mb-6 text-sm italic">
-          <div>
-            Created
-            <DateTime :date="label?.createdAt" />
+    <BaseContainer v-if="label">
+      <div class="bg-white rounded p-3">
+        <header class="mb-2">
+          <div class="flex flex-wrap items-end gap-2">
+            <div class="avatar placeholder mb-auto">
+              <div class="bg-neutral-focus text-neutral-content rounded-full w-12">
+                <Icon name="mdi-package-variant" class="h-7 w-7" />
+              </div>
+            </div>
+            <div>
+              <h1 class="text-2xl pb-1">
+                {{ label ? label.name : "" }}
+              </h1>
+              <div class="flex gap-1 flex-wrap text-xs">
+                <div>
+                  Created
+                  <DateTime :date="label?.createdAt" />
+                </div>
+              </div>
+            </div>
+            <div class="ml-auto mt-2 flex flex-wrap items-center justify-between gap-3">
+              <div class="btn-group">
+                <PageQRCode class="dropdown-left" />
+                <BaseButton size="sm" @click="openUpdate">
+                  <Icon class="mr-1" name="mdi-pencil" />
+                  Edit
+                </BaseButton>
+              </div>
+              <BaseButton class="btn btn-sm" @click="confirmDelete()">
+                <Icon name="mdi-delete" class="mr-2" />
+                Delete
+              </BaseButton>
+            </div>
           </div>
-          <div>
-            <Icon name="mdi-circle-small" />
-          </div>
-          <div>
-            Last Updated
-            <DateTime :date="label?.updatedAt" />
-          </div>
-        </div>
-
-        <div class="flex flex-wrap items-center justify-between mb-6 mt-3">
-          <div class="btn-group">
-            <PageQRCode class="dropdown-right" />
-            <BaseButton class="ml-auto" size="sm" @click="openUpdate">
-              <Icon class="mr-1" name="mdi-pencil" />
-              Edit
-            </BaseButton>
-          </div>
-          <BaseButton class="btn btn-sm" @click="confirmDelete()">
-            <Icon name="mdi-delete" class="mr-2" />
-            Delete
-          </BaseButton>
-        </div>
+        </header>
+        <div class="divider my-0 mb-1"></div>
+        <Markdown v-if="label && label.description" class="text-base" :source="label.description"> </Markdown>
+      </div>
+      <section v-if="label && items">
+        <ItemViewSelectable :items="items" />
       </section>
     </BaseContainer>
-
-    <section v-if="label && label.items">
-      <ItemViewSelectable :items="label.items" />
-    </section>
   </BaseContainer>
 </template>

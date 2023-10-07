@@ -26,6 +26,8 @@ type Attachment struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Type holds the value of the "type" field.
 	Type attachment.Type `json:"type,omitempty"`
+	// Primary holds the value of the "primary" field.
+	Primary bool `json:"primary,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AttachmentQuery when eager-loading is set.
 	Edges                AttachmentEdges `json:"edges"`
@@ -76,6 +78,8 @@ func (*Attachment) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case attachment.FieldPrimary:
+			values[i] = new(sql.NullBool)
 		case attachment.FieldType:
 			values[i] = new(sql.NullString)
 		case attachment.FieldCreatedAt, attachment.FieldUpdatedAt:
@@ -124,6 +128,12 @@ func (a *Attachment) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field type", values[i])
 			} else if value.Valid {
 				a.Type = attachment.Type(value.String)
+			}
+		case attachment.FieldPrimary:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field primary", values[i])
+			} else if value.Valid {
+				a.Primary = value.Bool
 			}
 		case attachment.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
@@ -193,6 +203,9 @@ func (a *Attachment) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("type=")
 	builder.WriteString(fmt.Sprintf("%v", a.Type))
+	builder.WriteString(", ")
+	builder.WriteString("primary=")
+	builder.WriteString(fmt.Sprintf("%v", a.Primary))
 	builder.WriteByte(')')
 	return builder.String()
 }

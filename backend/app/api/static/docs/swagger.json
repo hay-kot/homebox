@@ -1871,6 +1871,9 @@
                 "id": {
                     "type": "string"
                 },
+                "primary": {
+                    "type": "boolean"
+                },
                 "type": {
                     "type": "string"
                 },
@@ -1882,6 +1885,9 @@
         "repo.ItemAttachmentUpdate": {
             "type": "object",
             "properties": {
+                "primary": {
+                    "type": "boolean"
+                },
                 "title": {
                     "type": "string"
                 },
@@ -1979,6 +1985,9 @@
                     }
                 },
                 "id": {
+                    "type": "string"
+                },
+                "imageId": {
                     "type": "string"
                 },
                 "insured": {
@@ -2086,6 +2095,9 @@
                     "type": "string"
                 },
                 "id": {
+                    "type": "string"
+                },
+                "imageId": {
                     "type": "string"
                 },
                 "insured": {
@@ -2247,12 +2259,6 @@
                 "id": {
                     "type": "string"
                 },
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/repo.ItemSummary"
-                    }
-                },
                 "name": {
                     "type": "string"
                 },
@@ -2313,12 +2319,6 @@
                 },
                 "id": {
                     "type": "string"
-                },
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/repo.ItemSummary"
-                    }
                 },
                 "name": {
                     "type": "string"

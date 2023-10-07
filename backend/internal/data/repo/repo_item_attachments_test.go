@@ -110,7 +110,10 @@ func TestAttachmentRepo_Update(t *testing.T) {
 
 	for _, typ := range []attachment.Type{"photo", "manual", "warranty", "attachment"} {
 		t.Run(string(typ), func(t *testing.T) {
-			_, err := tRepos.Attachments.Update(context.Background(), entity.ID, typ)
+			_, err := tRepos.Attachments.Update(context.Background(), entity.ID, &ItemAttachmentUpdate{
+				Type: string(typ),
+			})
+
 			assert.NoError(t, err)
 
 			updated, err := tRepos.Attachments.Get(context.Background(), entity.ID)
