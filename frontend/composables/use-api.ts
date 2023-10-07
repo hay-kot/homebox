@@ -30,7 +30,7 @@ export function usePublicApi(): PublicApi {
 export function useUserApi(): UserClient {
   const authCtx = useAuthContext();
 
-  const requests = new Requests("", () => authCtx.token || "", {});
+  const requests = new Requests("", "", {});
   requests.addResponseInterceptor(logger);
   requests.addResponseInterceptor(r => {
     if (r.status === 401) {
