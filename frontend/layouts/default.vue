@@ -199,5 +199,6 @@
 
   async function logout() {
     await authCtx.logout(api);
+    navigateTo("/");
   }
 </script>

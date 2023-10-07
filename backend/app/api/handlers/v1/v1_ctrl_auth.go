@@ -3,6 +3,7 @@ package v1
 import (
 	"errors"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -11,6 +12,12 @@ import (
 	"github.com/hay-kot/httpkit/errchain"
 	"github.com/hay-kot/httpkit/server"
 	"github.com/rs/zerolog/log"
+)
+
+const (
+	cookieNameToken    = "hb.auth.token"
+	cookieNameRemember = "hb.auth.remember"
+	cookieNameSession  = "hb.auth.session"
 )
 
 type (
@@ -26,6 +33,30 @@ type (
 		StayLoggedIn bool   `json:"stayLoggedIn"`
 	}
 )
+
+type CookieContents struct {
+	Token     string
+	ExpiresAt time.Time
+	Remember  bool
+}
+
+func GetCookies(r *http.Request) (*CookieContents, error) {
+	cookie, err := r.Cookie(cookieNameToken)
+	if err != nil {
+		return nil, errors.New("authorization cookie is required")
+	}
+
+	rememberCookie, err := r.Cookie(cookieNameRemember)
+	if err != nil {
+		return nil, errors.New("remember cookie is required")
+	}
+
+	return &CookieContents{
+		Token:     cookie.Value,
+		ExpiresAt: cookie.Expires,
+		Remember:  rememberCookie.Value == "true",
+	}, nil
+}
 
 // HandleAuthLogin godoc
 //
@@ -81,6 +112,7 @@ func (ctrl *V1Controller) HandleAuthLogin() errchain.HandlerFunc {
 			return validate.NewRequestError(errors.New("authentication failed"), http.StatusInternalServerError)
 		}
 
+		ctrl.setCookies(w, noPort(r.Host), newToken.Raw, newToken.ExpiresAt, loginForm.StayLoggedIn)
 		return server.JSON(w, http.StatusOK, TokenResponse{
 			Token:           "Bearer " + newToken.Raw,
 			ExpiresAt:       newToken.ExpiresAt,
@@ -108,6 +140,7 @@ func (ctrl *V1Controller) HandleAuthLogout() errchain.HandlerFunc {
 			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
+		ctrl.unsetCookies(w, noPort(r.Host))
 		return server.JSON(w, http.StatusNoContent, nil)
 	}
 }
@@ -133,6 +166,78 @@ func (ctrl *V1Controller) HandleAuthRefresh() errchain.HandlerFunc {
 			return validate.NewUnauthorizedError()
 		}
 
+		ctrl.setCookies(w, noPort(r.Host), newToken.Raw, newToken.ExpiresAt, false)
 		return server.JSON(w, http.StatusOK, newToken)
 	}
+}
+
+func noPort(host string) string {
+	return strings.Split(host, ":")[0]
+}
+
+func (ctrl *V1Controller) setCookies(w http.ResponseWriter, domain, token string, expires time.Time, remember bool) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     cookieNameRemember,
+		Value:    strconv.FormatBool(remember),
+		Expires:  expires,
+		Domain:   domain,
+		Secure:   ctrl.cookieSecure,
+		HttpOnly: true,
+		Path:     "/",
+	})
+
+	// Set HTTP only cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:     cookieNameToken,
+		Value:    token,
+		Expires:  expires,
+		Domain:   domain,
+		Secure:   ctrl.cookieSecure,
+		HttpOnly: true,
+		Path:     "/",
+	})
+
+	// Set Fake Session cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:     cookieNameSession,
+		Value:    "true",
+		Expires:  expires,
+		Domain:   domain,
+		Secure:   ctrl.cookieSecure,
+		HttpOnly: false,
+		Path:     "/",
+	})
+}
+
+func (ctrl *V1Controller) unsetCookies(w http.ResponseWriter, domain string) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     cookieNameToken,
+		Value:    "",
+		Expires:  time.Unix(0, 0),
+		Domain:   domain,
+		Secure:   ctrl.cookieSecure,
+		HttpOnly: true,
+		Path:     "/",
+	})
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     cookieNameRemember,
+		Value:    "false",
+		Expires:  time.Unix(0, 0),
+		Domain:   domain,
+		Secure:   ctrl.cookieSecure,
+		HttpOnly: true,
+		Path:     "/",
+	})
+
+	// Set Fake Session cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:     cookieNameSession,
+		Value:    "false",
+		Expires:  time.Unix(0, 0),
+		Domain:   domain,
+		Secure:   ctrl.cookieSecure,
+		HttpOnly: false,
+		Path:     "/",
+	})
 }

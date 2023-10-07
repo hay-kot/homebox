@@ -49,7 +49,14 @@ func WithRegistration(allowRegistration bool) func(*V1Controller) {
 	}
 }
 
+func WithSecureCookies(secure bool) func(*V1Controller) {
+	return func(ctrl *V1Controller) {
+		ctrl.cookieSecure = secure
+	}
+}
+
 type V1Controller struct {
+	cookieSecure      bool
 	repo              *repo.AllRepos
 	svc               *services.AllServices
 	maxUploadSize     int64

@@ -36,6 +36,9 @@ export function useUserApi(): UserClient {
     if (r.status === 401) {
       console.error("unauthorized request, invalidating session");
       authCtx.invalidateSession();
+      if (window.location.pathname !== "/") {
+        window.location.href = "/";
+      }
     }
   });
 
