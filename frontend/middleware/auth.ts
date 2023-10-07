@@ -7,6 +7,7 @@ export default defineNuxtRouteMiddleware(async () => {
   }
 
   if (!ctx.user) {
+    console.log("Fetching user data");
     const { data, error } = await api.user.self();
     if (error) {
       return navigateTo("/");

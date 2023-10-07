@@ -30,12 +30,15 @@ export function usePublicApi(): PublicApi {
 export function useUserApi(): UserClient {
   const authCtx = useAuthContext();
 
-  const requests = new Requests("", () => authCtx.token || "", {});
+  const requests = new Requests("", "", {});
   requests.addResponseInterceptor(logger);
   requests.addResponseInterceptor(r => {
     if (r.status === 401) {
       console.error("unauthorized request, invalidating session");
       authCtx.invalidateSession();
+      if (window.location.pathname !== "/") {
+        window.location.href = "/";
+      }
     }
   });
 
