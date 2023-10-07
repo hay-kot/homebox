@@ -742,6 +742,21 @@ paths:
       summary: Ensures Import Refs
       tags:
       - Actions
+  /v1/actions/set-primary-photos:
+    post:
+      description: Sets the first photo of each item as the primary photo
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.ActionAmountResult'
+      security:
+      - Bearer: []
+      summary: Set Primary Photos
+      tags:
+      - Actions
   /v1/actions/zero-item-time-fields:
     post:
       description: Resets all item date fields to the beginning of the day
