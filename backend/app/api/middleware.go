@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"strings"
 
+	v1 "github.com/hay-kot/homebox/backend/app/api/handlers/v1"
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/sys/validate"
 	"github.com/hay-kot/httpkit/errchain"
@@ -94,20 +95,6 @@ func getQuery(r *http.Request) (string, error) {
 	return token, nil
 }
 
-func getCookie(r *http.Request) (string, error) {
-	cookie, err := r.Cookie("hb.auth.token")
-	if err != nil {
-		return "", errors.New("access_token cookie is required")
-	}
-
-	token, err := url.QueryUnescape(cookie.Value)
-	if err != nil {
-		return "", errors.New("access_token cookie is required")
-	}
-
-	return token, nil
-}
-
 // mwAuthToken is a middleware that will check the database for a stateful token
 // and attach it's user to the request context, or return an appropriate error.
 // Authorization support is by token via Headers or Query Parameter
@@ -115,21 +102,30 @@ func getCookie(r *http.Request) (string, error) {
 // Example:
 //   - header = "Bearer 1234567890"
 //   - query = "?access_token=1234567890"
-//   - cookie = hb.auth.token = 1234567890
 func (a *app) mwAuthToken(next errchain.Handler) errchain.Handler {
 	return errchain.HandlerFunc(func(w http.ResponseWriter, r *http.Request) error {
-		keyFuncs := [...]KeyFunc{
-			getBearer,
-			getCookie,
-			getQuery,
+		var requestToken string
+
+		// We ignore the error to allow the next strategy to be attempted
+		{
+			cookies, _ := v1.GetCookies(r)
+			if cookies != nil {
+				requestToken = cookies.Token
+			}
 		}
 
-		var requestToken string
-		for _, keyFunc := range keyFuncs {
-			token, err := keyFunc(r)
-			if err == nil {
-				requestToken = token
-				break
+		if requestToken == "" {
+			keyFuncs := [...]KeyFunc{
+				getBearer,
+				getQuery,
+			}
+
+			for _, keyFunc := range keyFuncs {
+				token, err := keyFunc(r)
+				if err == nil {
+					requestToken = token
+					break
+				}
 			}
 		}
 

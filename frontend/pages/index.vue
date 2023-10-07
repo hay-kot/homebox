@@ -5,12 +5,17 @@
 
   definePageMeta({
     layout: "empty",
+    middleware: [
+      () => {
+        const ctx = useAuthContext();
+        if (ctx.isAuthorized()) {
+          return "/home";
+        }
+      },
+    ],
   });
 
   const ctx = useAuthContext();
-  if (ctx.isAuthorized()) {
-    navigateTo("/home");
-  }
 
   const api = usePublicApi();
   const toast = useNotifier();
