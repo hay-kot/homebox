@@ -45,7 +45,8 @@ class AuthContext implements IAuthContext {
   private _attachmentToken: CookieRef<string | null>;
 
   get token() {
-    return this._token.value === "true";
+    // @ts-ignore sometimes it's a boolean I guess?
+    return this._token.value === "true" || this._token.value === true;
   }
 
   get attachmentToken() {
@@ -66,11 +67,11 @@ class AuthContext implements IAuthContext {
   }
 
   isExpired() {
-    return this.token;
+    return !this.token;
   }
 
   isAuthorized() {
-    return !this.isExpired();
+    return this.token;
   }
 
   invalidateSession() {
@@ -79,7 +80,6 @@ class AuthContext implements IAuthContext {
     // Delete the cookies
     this._token.value = null;
     this._attachmentToken.value = null;
-
     console.log("Session invalidated");
   }
 
