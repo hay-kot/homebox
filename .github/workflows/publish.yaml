@@ -13,7 +13,7 @@ jobs:
     name: "Deploy Nightly to Fly.io"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - run: flyctl deploy --remote-only
 
