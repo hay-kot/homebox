@@ -2030,9 +2030,13 @@
                 },
                 "location": {
                     "description": "Edges",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/repo.LocationSummary"
+                        }
+                    ],
                     "x-nullable": true,
-                    "x-omitempty": true,
-                    "$ref": "#/definitions/repo.LocationSummary"
+                    "x-omitempty": true
                 },
                 "manufacturer": {
                     "type": "string"
@@ -2048,9 +2052,13 @@
                     "type": "string"
                 },
                 "parent": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/repo.ItemSummary"
+                        }
+                    ],
                     "x-nullable": true,
-                    "x-omitempty": true,
-                    "$ref": "#/definitions/repo.ItemSummary"
+                    "x-omitempty": true
                 },
                 "purchaseFrom": {
                     "type": "string"
@@ -2136,9 +2144,13 @@
                 },
                 "location": {
                     "description": "Edges",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/repo.LocationSummary"
+                        }
+                    ],
                     "x-nullable": true,
-                    "x-omitempty": true,
-                    "$ref": "#/definitions/repo.LocationSummary"
+                    "x-omitempty": true
                 },
                 "name": {
                     "type": "string"
@@ -2162,7 +2174,7 @@
                     "type": "boolean"
                 },
                 "assetId": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "description": {
                     "type": "string"
@@ -2247,7 +2259,6 @@
                     "type": "string"
                 },
                 "warrantyExpires": {
-                    "description": "Sold",
                     "type": "string"
                 }
             }
@@ -2421,7 +2432,6 @@
             "type": "object",
             "properties": {
                 "completedDate": {
-                    "description": "Sold",
                     "type": "string"
                 },
                 "cost": {
@@ -2438,7 +2448,6 @@
                     "type": "string"
                 },
                 "scheduledDate": {
-                    "description": "Sold",
                     "type": "string"
                 }
             }
@@ -2450,7 +2459,6 @@
             ],
             "properties": {
                 "completedDate": {
-                    "description": "Sold",
                     "type": "string"
                 },
                 "cost": {
@@ -2464,7 +2472,6 @@
                     "type": "string"
                 },
                 "scheduledDate": {
-                    "description": "Sold",
                     "type": "string"
                 }
             }
@@ -2473,7 +2480,6 @@
             "type": "object",
             "properties": {
                 "completedDate": {
-                    "description": "Sold",
                     "type": "string"
                 },
                 "cost": {
@@ -2487,7 +2493,6 @@
                     "type": "string"
                 },
                 "scheduledDate": {
-                    "description": "Sold",
                     "type": "string"
                 }
             }

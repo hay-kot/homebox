@@ -142,7 +142,8 @@ definitions:
         description: Warranty
         type: boolean
       location:
-        $ref: '#/definitions/repo.LocationSummary'
+        allOf:
+        - $ref: '#/definitions/repo.LocationSummary'
         description: Edges
         x-nullable: true
         x-omitempty: true
@@ -156,7 +157,8 @@ definitions:
         description: Extras
         type: string
       parent:
-        $ref: '#/definitions/repo.ItemSummary'
+        allOf:
+        - $ref: '#/definitions/repo.ItemSummary'
         x-nullable: true
         x-omitempty: true
       purchaseFrom:
@@ -216,7 +218,8 @@ definitions:
           $ref: '#/definitions/repo.LabelSummary'
         type: array
       location:
-        $ref: '#/definitions/repo.LocationSummary'
+        allOf:
+        - $ref: '#/definitions/repo.LocationSummary'
         description: Edges
         x-nullable: true
         x-omitempty: true
@@ -235,7 +238,7 @@ definitions:
       archived:
         type: boolean
       assetId:
-        type: string
+        type: integer
       description:
         type: string
       fields:
@@ -295,7 +298,6 @@ definitions:
       warrantyDetails:
         type: string
       warrantyExpires:
-        description: Sold
         type: string
     type: object
   repo.LabelCreate:
@@ -410,7 +412,6 @@ definitions:
   repo.MaintenanceEntry:
     properties:
       completedDate:
-        description: Sold
         type: string
       cost:
         example: "0"
@@ -422,13 +423,11 @@ definitions:
       name:
         type: string
       scheduledDate:
-        description: Sold
         type: string
     type: object
   repo.MaintenanceEntryCreate:
     properties:
       completedDate:
-        description: Sold
         type: string
       cost:
         example: "0"
@@ -438,7 +437,6 @@ definitions:
       name:
         type: string
       scheduledDate:
-        description: Sold
         type: string
     required:
     - name
@@ -446,7 +444,6 @@ definitions:
   repo.MaintenanceEntryUpdate:
     properties:
       completedDate:
-        description: Sold
         type: string
       cost:
         example: "0"
@@ -456,7 +453,6 @@ definitions:
       name:
         type: string
       scheduledDate:
-        description: Sold
         type: string
     type: object
   repo.MaintenanceLog:
