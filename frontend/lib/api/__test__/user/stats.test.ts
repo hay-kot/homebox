@@ -40,8 +40,8 @@ function importFileGenerator(entries: number): ImportObj[] {
 
   const pick = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
 
-  const labels = faker.random.words(5).split(" ").join(";");
-  const locations = faker.random.words(3).split(" ");
+  const labels = faker.word.words(5).split(" ").join(";");
+  const locations = faker.word.words(3).split(" ");
 
   const half = Math.floor(entries / 2);
 
@@ -53,21 +53,21 @@ function importFileGenerator(entries: number): ImportObj[] {
       [`HB.import_ref`]: faker.database.mongodbObjectId(),
       [`HB.location`]: pick(locations),
       [`HB.labels`]: labels,
-      [`HB.quantity`]: Number(faker.random.numeric(2)),
-      [`HB.name`]: faker.random.words(3),
+      [`HB.quantity`]: Number(faker.number.int(2)),
+      [`HB.name`]: faker.word.words(3),
       [`HB.description`]: "",
       [`HB.insured`]: faker.datatype.boolean(),
-      [`HB.serial_number`]: faker.random.alphaNumeric(5),
-      [`HB.model_number`]: faker.random.alphaNumeric(5),
-      [`HB.manufacturer`]: faker.random.alphaNumeric(5),
+      [`HB.serial_number`]: faker.string.alphanumeric(5),
+      [`HB.model_number`]: faker.string.alphanumeric(5),
+      [`HB.manufacturer`]: faker.string.alphanumeric(5),
       [`HB.notes`]: "",
-      [`HB.purchase_from`]: faker.name.fullName(),
-      [`HB.purchase_price`]: faker.datatype.number(100),
+      [`HB.purchase_from`]: faker.person.fullName(),
+      [`HB.purchase_price`]: faker.number.int(100),
       [`HB.purchase_time`]: faker.date.past().toDateString(),
       [`HB.lifetime_warranty`]: half > i,
       [`HB.warranty_details`]: "",
-      [`HB.sold_to`]: faker.name.fullName(),
-      [`HB.sold_price`]: faker.datatype.number(100),
+      [`HB.sold_to`]: faker.person.fullName(),
+      [`HB.sold_price`]: faker.number.int(100),
       [`HB.sold_time`]: formatDate(faker.date.past()),
       [`HB.sold_notes`]: "",
     });

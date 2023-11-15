@@ -8,8 +8,8 @@ describe("basic notifier workflows", () => {
 
     // Create Notifier
     const result = await client.notifiers.create({
-      name: faker.name.firstName(),
-      url: "discord://" + faker.random.alphaNumeric(10),
+      name: faker.person.firstName(),
+      url: "discord://" + faker.string.alphanumeric(10),
       isActive: true,
     });
 
@@ -22,8 +22,8 @@ describe("basic notifier workflows", () => {
     // Update Notifier with new URL
     {
       const updateData = {
-        name: faker.name.firstName(),
-        url: "discord://" + faker.random.alphaNumeric(10),
+        name: faker.person.firstName(),
+        url: "discord://" + faker.string.alphanumeric(10),
         isActive: true,
       };
 
@@ -37,7 +37,7 @@ describe("basic notifier workflows", () => {
     // Update Notifier with empty URL
     {
       const updateData = {
-        name: faker.name.firstName(),
+        name: faker.person.firstName(),
         url: null,
         isActive: true,
       };
