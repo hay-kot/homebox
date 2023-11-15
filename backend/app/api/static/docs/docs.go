@@ -2181,7 +2181,8 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "assetId": {
-                    "type": "integer"
+                    "type": "string",
+                    "example": "0"
                 },
                 "description": {
                     "type": "string"

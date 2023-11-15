@@ -141,7 +141,8 @@ export interface ItemSummary {
 
 export interface ItemUpdate {
   archived: boolean;
-  assetId: number;
+  /** @example "0" */
+  assetId: string;
   description: string;
   fields: ItemField[];
   id: string;

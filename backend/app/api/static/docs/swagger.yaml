@@ -238,7 +238,8 @@ definitions:
       archived:
         type: boolean
       assetId:
-        type: integer
+        example: "0"
+        type: string
       description:
         type: string
       fields:
