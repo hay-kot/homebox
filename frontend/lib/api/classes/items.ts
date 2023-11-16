@@ -22,6 +22,7 @@ export type ItemsQuery = {
   pageSize?: number;
   locations?: string[];
   labels?: string[];
+  parentIds?: string[];
   q?: string;
   fields?: string[];
 };
