@@ -160,7 +160,6 @@ type (
 
 		Attachments []ItemAttachment `json:"attachments"`
 		Fields      []ItemField      `json:"fields"`
-		Children    []ItemSummary    `json:"children"`
 	}
 )
 
@@ -241,11 +240,6 @@ func mapItemOut(item *ent.Item) ItemOut {
 		fields = mapFields(item.Edges.Fields)
 	}
 
-	var children []ItemSummary
-	if item.Edges.Children != nil {
-		children = mapEach(item.Edges.Children, mapItemSummary)
-	}
-
 	var parent *ItemSummary
 	if item.Edges.Parent != nil {
 		v := mapItemSummary(item.Edges.Parent)
@@ -279,7 +273,6 @@ func mapItemOut(item *ent.Item) ItemOut {
 		Notes:       item.Notes,
 		Attachments: attachments,
 		Fields:      fields,
-		Children:    children,
 	}
 }
 
@@ -297,7 +290,6 @@ func (e *ItemsRepository) getOne(ctx context.Context, where ...predicate.Item) (
 		WithLabel().
 		WithLocation().
 		WithGroup().
-		WithChildren().
 		WithParent().
 		WithAttachments(func(aq *ent.AttachmentQuery) {
 			aq.WithDocument()
