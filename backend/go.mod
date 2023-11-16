@@ -3,8 +3,8 @@ module github.com/hay-kot/homebox/backend
 go 1.20
 
 require (
-	ariga.io/atlas v0.12.0
-	entgo.io/ent v0.12.3
+	ariga.io/atlas v0.14.1-0.20230918065911-83ad451a4935
+	entgo.io/ent v0.12.5
 	github.com/ardanlabs/conf/v3 v3.1.6
 	github.com/containrrr/shoutrrr v0.8.0
 	github.com/go-chi/chi/v5 v5.0.10
