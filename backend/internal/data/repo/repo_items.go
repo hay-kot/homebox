@@ -36,6 +36,7 @@ type (
 		AssetID         AssetID      `json:"assetId"`
 		LocationIDs     []uuid.UUID  `json:"locationIds"`
 		LabelIDs        []uuid.UUID  `json:"labelIds"`
+		ParentItemIDs   []uuid.UUID  `json:"parentIds"`
 		SortBy          string       `json:"sortBy"`
 		IncludeArchived bool         `json:"includeArchived"`
 		Fields          []FieldQuery `json:"fields"`
@@ -397,6 +398,10 @@ func (e *ItemsRepository) QueryByGroup(ctx context.Context, gid uuid.UUID, q Ite
 			}
 
 			andPredicates = append(andPredicates, item.Or(fieldPredicates...))
+		}
+
+		if len(q.ParentItemIDs) > 0 {
+			andPredicates = append(andPredicates, item.HasParentWith(item.IDIn(q.ParentItemIDs...)))
 		}
 	}
 
