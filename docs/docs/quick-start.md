@@ -62,6 +62,9 @@ volumes:
 | HBOX_OPTIONS_ALLOW_REGISTRATION      | true                   | allow users to register themselves                                                 |
 | HBOX_OPTIONS_AUTO_INCREMENT_ASSET_ID | true                   | auto increments the asset_id field for new items                                   |
 | HBOX_WEB_MAX_UPLOAD_SIZE             | 10                     | maximum file upload size supported in MB                                           |
+| HBOX_WEB_READ_TIMEOUT                | 10                     | Read timeout of HTTP sever                                                         |
+| HBOX_WEB_WRITE_TIMEOUT               | 10                     | Write timeout of HTTP server                                                       |
+| HBOX_WEB_IDLE_TIMEOUT                | 30                     | Idle timeout of HTTP server                                                        |
 | HBOX_STORAGE_DATA                    | /data/                 | path to the data directory, do not change this if you're using docker              |
 | HBOX_STORAGE_SQLITE_URL              | /data/homebox.db?_fk=1 | sqlite database url, if you're using docker do not change this                     |
 | HBOX_LOG_LEVEL                       | info                   | log level to use, can be one of: trace, debug, info, warn, error, critical         |

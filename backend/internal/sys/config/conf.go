@@ -36,9 +36,12 @@ type DebugConf struct {
 }
 
 type WebConfig struct {
-	Port          string `yaml:"port" conf:"default:7745"`
+	Port          string `yaml:"port"            conf:"default:7745"`
 	Host          string `yaml:"host"`
 	MaxUploadSize int64  `yaml:"max_file_upload" conf:"default:10"`
+	ReadTimeout   int    `yaml:"read_timeout"    conf:"default:10"`
+	WriteTimeout  int    `yaml:"write_timeout"   conf:"default:10"`
+	IdleTimeout   int    `yaml:"idle_timeout"    conf:"default:30"`
 }
 
 // New parses the CLI/Config file and returns a Config struct. If the file argument is an empty string, the
