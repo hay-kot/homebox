@@ -13,8 +13,8 @@ import (
 )
 
 var (
-	fk = faker.NewFaker()
-  tbus = eventbus.New()
+	fk   = faker.NewFaker()
+	tbus = eventbus.New()
 
 	tClient *ent.Client
 	tRepos  *AllRepos
@@ -45,7 +45,7 @@ func TestMain(m *testing.M) {
 		log.Fatalf("failed opening connection to sqlite: %v", err)
 	}
 
-  go tbus.Run()
+	go tbus.Run()
 
 	err = client.Schema.Create(context.Background())
 	if err != nil {

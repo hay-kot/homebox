@@ -146,6 +146,9 @@ func run(cfg *config.Config) error {
 	app.server = server.NewServer(
 		server.WithHost(app.conf.Web.Host),
 		server.WithPort(app.conf.Web.Port),
+		server.WithReadTimeout(app.conf.Web.ReadTimeout),
+		server.WithWriteTimeout(app.conf.Web.WriteTimeout),
+		server.WithIdleTimeout(app.conf.Web.IdleTimeout),
 	)
 	log.Info().Msgf("Starting HTTP Server on %s:%s", app.server.Host, app.server.Port)
 
