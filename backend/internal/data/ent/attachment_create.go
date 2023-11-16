@@ -288,11 +288,15 @@ func (ac *AttachmentCreate) createSpec() (*Attachment, *sqlgraph.CreateSpec) {
 // AttachmentCreateBulk is the builder for creating many Attachment entities in bulk.
 type AttachmentCreateBulk struct {
 	config
+	err      error
 	builders []*AttachmentCreate
 }
 
 // Save creates the Attachment entities in the database.
 func (acb *AttachmentCreateBulk) Save(ctx context.Context) ([]*Attachment, error) {
+	if acb.err != nil {
+		return nil, acb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(acb.builders))
 	nodes := make([]*Attachment, len(acb.builders))
 	mutators := make([]Mutator, len(acb.builders))

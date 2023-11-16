@@ -48,6 +48,14 @@ func (gu *GroupUpdate) SetName(s string) *GroupUpdate {
 	return gu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (gu *GroupUpdate) SetNillableName(s *string) *GroupUpdate {
+	if s != nil {
+		gu.SetName(*s)
+	}
+	return gu
+}
+
 // SetCurrency sets the "currency" field.
 func (gu *GroupUpdate) SetCurrency(gr group.Currency) *GroupUpdate {
 	gu.mutation.SetCurrency(gr)
@@ -735,6 +743,14 @@ func (guo *GroupUpdateOne) SetUpdatedAt(t time.Time) *GroupUpdateOne {
 // SetName sets the "name" field.
 func (guo *GroupUpdateOne) SetName(s string) *GroupUpdateOne {
 	guo.mutation.SetName(s)
+	return guo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (guo *GroupUpdateOne) SetNillableName(s *string) *GroupUpdateOne {
+	if s != nil {
+		guo.SetName(*s)
+	}
 	return guo
 }
 

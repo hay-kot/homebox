@@ -43,9 +43,25 @@ func (du *DocumentUpdate) SetTitle(s string) *DocumentUpdate {
 	return du
 }
 
+// SetNillableTitle sets the "title" field if the given value is not nil.
+func (du *DocumentUpdate) SetNillableTitle(s *string) *DocumentUpdate {
+	if s != nil {
+		du.SetTitle(*s)
+	}
+	return du
+}
+
 // SetPath sets the "path" field.
 func (du *DocumentUpdate) SetPath(s string) *DocumentUpdate {
 	du.mutation.SetPath(s)
+	return du
+}
+
+// SetNillablePath sets the "path" field if the given value is not nil.
+func (du *DocumentUpdate) SetNillablePath(s *string) *DocumentUpdate {
+	if s != nil {
+		du.SetPath(*s)
+	}
 	return du
 }
 
@@ -288,9 +304,25 @@ func (duo *DocumentUpdateOne) SetTitle(s string) *DocumentUpdateOne {
 	return duo
 }
 
+// SetNillableTitle sets the "title" field if the given value is not nil.
+func (duo *DocumentUpdateOne) SetNillableTitle(s *string) *DocumentUpdateOne {
+	if s != nil {
+		duo.SetTitle(*s)
+	}
+	return duo
+}
+
 // SetPath sets the "path" field.
 func (duo *DocumentUpdateOne) SetPath(s string) *DocumentUpdateOne {
 	duo.mutation.SetPath(s)
+	return duo
+}
+
+// SetNillablePath sets the "path" field if the given value is not nil.
+func (duo *DocumentUpdateOne) SetNillablePath(s *string) *DocumentUpdateOne {
+	if s != nil {
+		duo.SetPath(*s)
+	}
 	return duo
 }
 
