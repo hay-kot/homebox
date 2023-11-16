@@ -63,6 +63,7 @@
       locationId: item.value.location?.id,
       labelIds: item.value.labels.map(l => l.id),
       parentId: parent.value ? parent.value.id : null,
+      assetId: item.value.assetId,
     };
 
     const { error } = await api.items.update(itemId.value, payload);

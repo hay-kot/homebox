@@ -366,11 +366,13 @@
   });
 
   function openDialog(img: Photo) {
+    // @ts-ignore - I don't know why this is happening
     refDialog.value?.showModal();
     dialoged.src = img.src;
   }
 
   function closeDialog() {
+    // @ts-ignore - I don't know why this is happening
     refDialog.value?.close();
   }
 

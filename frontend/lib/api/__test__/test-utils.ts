@@ -1,4 +1,5 @@
 import { beforeAll, expect } from "vitest";
+import { faker } from "@faker-js/faker";
 import { UserClient } from "../user";
 import { factories } from "./factories";
 
@@ -15,9 +16,9 @@ export async function sharedUserClient(): Promise<UserClient> {
     return factories.client.user(cache.token);
   }
   const testUser = {
-    email: "__test__@__test__.com",
-    name: "__test__",
-    password: "__test__",
+    email: faker.internet.email(),
+    name: faker.person.fullName(),
+    password: faker.internet.password(),
     token: "",
   };
 
