@@ -68,7 +68,7 @@ type (
 	ItemUpdate struct {
 		ParentID    uuid.UUID `json:"parentId" extensions:"x-nullable,x-omitempty"`
 		ID          uuid.UUID `json:"id"`
-		AssetID     AssetID   `json:"assetId,string"`
+		AssetID     AssetID   `json:"assetId"`
 		Name        string    `json:"name"`
 		Description string    `json:"description"`
 		Quantity    int       `json:"quantity"`
