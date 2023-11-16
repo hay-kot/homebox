@@ -141,6 +141,7 @@ export interface ItemSummary {
 
 export interface ItemUpdate {
   archived: boolean;
+  /** @example "0" */
   assetId: string;
   description: string;
   fields: ItemField[];
@@ -172,7 +173,6 @@ export interface ItemUpdate {
   soldTime: Date | string;
   soldTo: string;
   warrantyDetails: string;
-  /** Sold */
   warrantyExpires: Date | string;
 }
 
@@ -244,36 +244,30 @@ export interface LocationUpdate {
 }
 
 export interface MaintenanceEntry {
-  /** Sold */
   completedDate: Date | string;
   /** @example "0" */
   cost: string;
   description: string;
   id: string;
   name: string;
-  /** Sold */
   scheduledDate: Date | string;
 }
 
 export interface MaintenanceEntryCreate {
-  /** Sold */
   completedDate: Date | string;
   /** @example "0" */
   cost: string;
   description: string;
   name: string;
-  /** Sold */
   scheduledDate: Date | string;
 }
 
 export interface MaintenanceEntryUpdate {
-  /** Sold */
   completedDate: Date | string;
   /** @example "0" */
   cost: string;
   description: string;
   name: string;
-  /** Sold */
   scheduledDate: Date | string;
 }
 

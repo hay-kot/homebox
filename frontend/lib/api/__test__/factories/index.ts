@@ -15,7 +15,7 @@ function itemField(id = null): ItemField {
     type: "text",
     textValue: faker.lorem.sentence(),
     booleanValue: false,
-    numberValue: faker.datatype.number(),
+    numberValue: faker.number.int(),
     timeValue: "",
   };
 }
@@ -28,7 +28,7 @@ function user(): UserRegistration {
   return {
     email: faker.internet.email(),
     password: faker.internet.password(),
-    name: faker.name.firstName(),
+    name: faker.person.firstName(),
     token: "",
   };
 }
@@ -36,7 +36,7 @@ function user(): UserRegistration {
 function location(parentId: string | null = null): LocationCreate {
   return {
     parentId,
-    name: faker.address.city(),
+    name: faker.location.city(),
     description: faker.lorem.sentence(),
   };
 }

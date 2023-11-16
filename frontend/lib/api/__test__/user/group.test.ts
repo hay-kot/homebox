@@ -8,7 +8,7 @@ describe("first time user workflow (register, login, join group)", () => {
   test("user should be able to update group", async () => {
     const { client } = await factories.client.singleUse();
 
-    const name = faker.name.firstName();
+    const name = faker.person.firstName();
 
     const { response, data: group } = await client.group.update({
       name,
@@ -34,7 +34,7 @@ describe("first time user workflow (register, login, join group)", () => {
 
     for (const currency of currencies) {
       const { response, data: group } = await client.group.update({
-        name: faker.name.firstName(),
+        name: faker.person.firstName(),
         currency: currency.code,
       });
 
