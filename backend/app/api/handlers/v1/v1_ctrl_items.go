@@ -167,7 +167,6 @@ func (ctrl *V1Controller) HandleItemUpdate() errchain.HandlerFunc {
 	return adapters.ActionID("id", fn, http.StatusOK)
 }
 
-
 // HandleItemPatch godocs
 //
 //	@Summary  Update Item
@@ -183,12 +182,12 @@ func (ctrl *V1Controller) HandleItemPatch() errchain.HandlerFunc {
 		auth := services.NewContext(r.Context())
 
 		body.ID = ID
-    err :=  ctrl.repo.Items.Patch(auth, auth.GID, ID, body)
-    if err != nil {
-      return repo.ItemOut{}, err
-    }
+		err := ctrl.repo.Items.Patch(auth, auth.GID, ID, body)
+		if err != nil {
+			return repo.ItemOut{}, err
+		}
 
-    return ctrl.repo.Items.GetOneByGroup(auth, auth.GID, ID)
+		return ctrl.repo.Items.GetOneByGroup(auth, auth.GID, ID)
 	}
 
 	return adapters.ActionID("id", fn, http.StatusOK)
