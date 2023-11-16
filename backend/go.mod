@@ -5,7 +5,7 @@ go 1.20
 require (
 	ariga.io/atlas v0.12.0
 	entgo.io/ent v0.12.3
-	github.com/ardanlabs/conf/v3 v3.1.6
+	github.com/ardanlabs/conf/v3 v3.1.7
 	github.com/containrrr/shoutrrr v0.8.0
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-playground/validator/v10 v10.15.5
