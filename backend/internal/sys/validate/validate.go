@@ -13,6 +13,7 @@ func init() {
 
 	err := validate.RegisterValidation("shoutrrr", func(fl validator.FieldLevel) bool {
 		prefixes := [...]string{
+			"bark://",
 			"discord://",
 			"smtp://",
 			"gotify://",
@@ -21,6 +22,7 @@ func init() {
 			"join://",
 			"mattermost://",
 			"matrix://",
+			"ntfy://",
 			"opsgenie://",
 			"pushbullet://",
 			"pushover://",
@@ -30,6 +32,7 @@ func init() {
 			"telegram://",
 			"zulip://",
 			"generic://",
+			"generic+",
 		}
 
 		str := fl.Field().String()
