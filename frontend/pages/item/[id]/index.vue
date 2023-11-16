@@ -404,6 +404,23 @@
       },
     ];
   });
+
+  const items = computedAsync(async () => {
+    if (!item.value) {
+      return [];
+    }
+
+    const resp = await api.items.getAll({
+      parentIds: [item.value.id],
+    });
+
+    if (resp.error) {
+      toast.error("Failed to load items");
+      return [];
+    }
+
+    return resp.data.items;
+  });
 </script>
 
 <template>
@@ -565,8 +582,8 @@
       </div>
     </section>
 
-    <section v-if="!hasNested && item.children.length > 0" class="my-6">
-      <ItemViewSelectable :items="item.children" />
+    <section v-if="items && items.length > 0" class="my-6">
+      <ItemViewSelectable :items="items" />
     </section>
   </BaseContainer>
 </template>

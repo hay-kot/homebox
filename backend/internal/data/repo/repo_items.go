@@ -36,6 +36,7 @@ type (
 		AssetID         AssetID      `json:"assetId"`
 		LocationIDs     []uuid.UUID  `json:"locationIds"`
 		LabelIDs        []uuid.UUID  `json:"labelIds"`
+		ParentItemIDs   []uuid.UUID  `json:"parentIds"`
 		SortBy          string       `json:"sortBy"`
 		IncludeArchived bool         `json:"includeArchived"`
 		Fields          []FieldQuery `json:"fields"`
@@ -159,7 +160,6 @@ type (
 
 		Attachments []ItemAttachment `json:"attachments"`
 		Fields      []ItemField      `json:"fields"`
-		Children    []ItemSummary    `json:"children"`
 	}
 )
 
@@ -240,11 +240,6 @@ func mapItemOut(item *ent.Item) ItemOut {
 		fields = mapFields(item.Edges.Fields)
 	}
 
-	var children []ItemSummary
-	if item.Edges.Children != nil {
-		children = mapEach(item.Edges.Children, mapItemSummary)
-	}
-
 	var parent *ItemSummary
 	if item.Edges.Parent != nil {
 		v := mapItemSummary(item.Edges.Parent)
@@ -278,7 +273,6 @@ func mapItemOut(item *ent.Item) ItemOut {
 		Notes:       item.Notes,
 		Attachments: attachments,
 		Fields:      fields,
-		Children:    children,
 	}
 }
 
@@ -296,7 +290,6 @@ func (e *ItemsRepository) getOne(ctx context.Context, where ...predicate.Item) (
 		WithLabel().
 		WithLocation().
 		WithGroup().
-		WithChildren().
 		WithParent().
 		WithAttachments(func(aq *ent.AttachmentQuery) {
 			aq.WithDocument()
@@ -397,6 +390,10 @@ func (e *ItemsRepository) QueryByGroup(ctx context.Context, gid uuid.UUID, q Ite
 			}
 
 			andPredicates = append(andPredicates, item.Or(fieldPredicates...))
+		}
+
+		if len(q.ParentItemIDs) > 0 {
+			andPredicates = append(andPredicates, item.HasParentWith(item.IDIn(q.ParentItemIDs...)))
 		}
 	}
 
