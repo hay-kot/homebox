@@ -102,7 +102,7 @@
     </BaseModal>
 
     <BaseContainer v-if="label">
-      <div class="bg-white rounded p-3">
+      <div class="bg-base-100 rounded p-3">
         <header class="mb-2">
           <div class="flex flex-wrap items-end gap-2">
             <div class="avatar placeholder mb-auto">
