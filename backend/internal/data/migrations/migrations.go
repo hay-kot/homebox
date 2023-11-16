@@ -3,7 +3,7 @@ package migrations
 import (
 	"embed"
 	"os"
-	"path/filepath"
+	"path"
 )
 
 //go:embed all:migrations
@@ -28,12 +28,12 @@ func Write(temp string) error {
 			continue
 		}
 
-		b, err := Files.ReadFile(filepath.Join("migrations", f.Name()))
+		b, err := Files.ReadFile(path.Join("migrations", f.Name()))
 		if err != nil {
 			return err
 		}
 
-		err = os.WriteFile(filepath.Join(temp, f.Name()), b, 0o644)
+		err = os.WriteFile(path.Join(temp, f.Name()), b, 0o644)
 		if err != nil {
 			return err
 		}
