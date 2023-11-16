@@ -51,7 +51,7 @@ func (a *app) mountRoutes(r *chi.Mux, chain *errchain.ErrChain, repos *repo.AllR
 	v1Ctrl := v1.NewControllerV1(
 		a.services,
 		a.repos,
-    a.bus,
+		a.bus,
 		v1.WithMaxUploadSize(a.conf.Web.MaxUploadSize),
 		v1.WithRegistration(a.conf.Options.AllowRegistration),
 		v1.WithDemoStatus(a.conf.Demo), // Disable Password Change in Demo Mode
@@ -92,7 +92,7 @@ func (a *app) mountRoutes(r *chi.Mux, chain *errchain.ErrChain, repos *repo.AllR
 	r.Post(v1Base("/actions/ensure-asset-ids"), chain.ToHandlerFunc(v1Ctrl.HandleEnsureAssetID(), userMW...))
 	r.Post(v1Base("/actions/zero-item-time-fields"), chain.ToHandlerFunc(v1Ctrl.HandleItemDateZeroOut(), userMW...))
 	r.Post(v1Base("/actions/ensure-import-refs"), chain.ToHandlerFunc(v1Ctrl.HandleEnsureImportRefs(), userMW...))
-  r.Post(v1Base("/actions/set-primary-photos"), chain.ToHandlerFunc(v1Ctrl.HandleSetPrimaryPhotos(), userMW...))
+	r.Post(v1Base("/actions/set-primary-photos"), chain.ToHandlerFunc(v1Ctrl.HandleSetPrimaryPhotos(), userMW...))
 
 	r.Get(v1Base("/locations"), chain.ToHandlerFunc(v1Ctrl.HandleLocationGetAll(), userMW...))
 	r.Post(v1Base("/locations"), chain.ToHandlerFunc(v1Ctrl.HandleLocationCreate(), userMW...))
