@@ -341,11 +341,15 @@ func (lc *LocationCreate) createSpec() (*Location, *sqlgraph.CreateSpec) {
 // LocationCreateBulk is the builder for creating many Location entities in bulk.
 type LocationCreateBulk struct {
 	config
+	err      error
 	builders []*LocationCreate
 }
 
 // Save creates the Location entities in the database.
 func (lcb *LocationCreateBulk) Save(ctx context.Context) ([]*Location, error) {
+	if lcb.err != nil {
+		return nil, lcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(lcb.builders))
 	nodes := make([]*Location, len(lcb.builders))
 	mutators := make([]Mutator, len(lcb.builders))

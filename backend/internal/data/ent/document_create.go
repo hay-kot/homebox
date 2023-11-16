@@ -269,11 +269,15 @@ func (dc *DocumentCreate) createSpec() (*Document, *sqlgraph.CreateSpec) {
 // DocumentCreateBulk is the builder for creating many Document entities in bulk.
 type DocumentCreateBulk struct {
 	config
+	err      error
 	builders []*DocumentCreate
 }
 
 // Save creates the Document entities in the database.
 func (dcb *DocumentCreateBulk) Save(ctx context.Context) ([]*Document, error) {
+	if dcb.err != nil {
+		return nil, dcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(dcb.builders))
 	nodes := make([]*Document, len(dcb.builders))
 	mutators := make([]Mutator, len(dcb.builders))

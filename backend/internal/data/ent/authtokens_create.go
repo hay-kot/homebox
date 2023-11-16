@@ -280,11 +280,15 @@ func (atc *AuthTokensCreate) createSpec() (*AuthTokens, *sqlgraph.CreateSpec) {
 // AuthTokensCreateBulk is the builder for creating many AuthTokens entities in bulk.
 type AuthTokensCreateBulk struct {
 	config
+	err      error
 	builders []*AuthTokensCreate
 }
 
 // Save creates the AuthTokens entities in the database.
 func (atcb *AuthTokensCreateBulk) Save(ctx context.Context) ([]*AuthTokens, error) {
+	if atcb.err != nil {
+		return nil, atcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(atcb.builders))
 	nodes := make([]*AuthTokens, len(atcb.builders))
 	mutators := make([]Mutator, len(atcb.builders))

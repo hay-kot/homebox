@@ -43,6 +43,14 @@ func (lu *LabelUpdate) SetName(s string) *LabelUpdate {
 	return lu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (lu *LabelUpdate) SetNillableName(s *string) *LabelUpdate {
+	if s != nil {
+		lu.SetName(*s)
+	}
+	return lu
+}
+
 // SetDescription sets the "description" field.
 func (lu *LabelUpdate) SetDescription(s string) *LabelUpdate {
 	lu.mutation.SetDescription(s)
@@ -333,6 +341,14 @@ func (luo *LabelUpdateOne) SetUpdatedAt(t time.Time) *LabelUpdateOne {
 // SetName sets the "name" field.
 func (luo *LabelUpdateOne) SetName(s string) *LabelUpdateOne {
 	luo.mutation.SetName(s)
+	return luo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (luo *LabelUpdateOne) SetNillableName(s *string) *LabelUpdateOne {
+	if s != nil {
+		luo.SetName(*s)
+	}
 	return luo
 }
 

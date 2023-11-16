@@ -47,6 +47,14 @@ func (iu *ItemUpdate) SetName(s string) *ItemUpdate {
 	return iu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (iu *ItemUpdate) SetNillableName(s *string) *ItemUpdate {
+	if s != nil {
+		iu.SetName(*s)
+	}
+	return iu
+}
+
 // SetDescription sets the "description" field.
 func (iu *ItemUpdate) SetDescription(s string) *ItemUpdate {
 	iu.mutation.SetDescription(s)
@@ -1244,6 +1252,14 @@ func (iuo *ItemUpdateOne) SetUpdatedAt(t time.Time) *ItemUpdateOne {
 // SetName sets the "name" field.
 func (iuo *ItemUpdateOne) SetName(s string) *ItemUpdateOne {
 	iuo.mutation.SetName(s)
+	return iuo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (iuo *ItemUpdateOne) SetNillableName(s *string) *ItemUpdateOne {
+	if s != nil {
+		iuo.SetName(*s)
+	}
 	return iuo
 }
 
