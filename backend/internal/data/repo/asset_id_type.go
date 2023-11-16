@@ -47,6 +47,11 @@ func (aid AssetID) MarshalJSON() ([]byte, error) {
 }
 
 func (aid *AssetID) UnmarshalJSON(d []byte) error {
+	if len(d) == 0 || bytes.Equal(d, []byte(`""`)) {
+		*aid = -1
+		return nil
+	}
+
 	d = bytes.Replace(d, []byte(`"`), []byte(``), -1)
 	d = bytes.Replace(d, []byte(`-`), []byte(``), -1)
 
