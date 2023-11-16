@@ -306,11 +306,15 @@ func (mec *MaintenanceEntryCreate) createSpec() (*MaintenanceEntry, *sqlgraph.Cr
 // MaintenanceEntryCreateBulk is the builder for creating many MaintenanceEntry entities in bulk.
 type MaintenanceEntryCreateBulk struct {
 	config
+	err      error
 	builders []*MaintenanceEntryCreate
 }
 
 // Save creates the MaintenanceEntry entities in the database.
 func (mecb *MaintenanceEntryCreateBulk) Save(ctx context.Context) ([]*MaintenanceEntry, error) {
+	if mecb.err != nil {
+		return nil, mecb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(mecb.builders))
 	nodes := make([]*MaintenanceEntry, len(mecb.builders))
 	mutators := make([]Mutator, len(mecb.builders))

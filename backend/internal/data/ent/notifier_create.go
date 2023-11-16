@@ -300,11 +300,15 @@ func (nc *NotifierCreate) createSpec() (*Notifier, *sqlgraph.CreateSpec) {
 // NotifierCreateBulk is the builder for creating many Notifier entities in bulk.
 type NotifierCreateBulk struct {
 	config
+	err      error
 	builders []*NotifierCreate
 }
 
 // Save creates the Notifier entities in the database.
 func (ncb *NotifierCreateBulk) Save(ctx context.Context) ([]*Notifier, error) {
+	if ncb.err != nil {
+		return nil, ncb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ncb.builders))
 	nodes := make([]*Notifier, len(ncb.builders))
 	mutators := make([]Mutator, len(ncb.builders))

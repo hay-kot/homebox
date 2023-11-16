@@ -42,6 +42,14 @@ func (meu *MaintenanceEntryUpdate) SetItemID(u uuid.UUID) *MaintenanceEntryUpdat
 	return meu
 }
 
+// SetNillableItemID sets the "item_id" field if the given value is not nil.
+func (meu *MaintenanceEntryUpdate) SetNillableItemID(u *uuid.UUID) *MaintenanceEntryUpdate {
+	if u != nil {
+		meu.SetItemID(*u)
+	}
+	return meu
+}
+
 // SetDate sets the "date" field.
 func (meu *MaintenanceEntryUpdate) SetDate(t time.Time) *MaintenanceEntryUpdate {
 	meu.mutation.SetDate(t)
@@ -85,6 +93,14 @@ func (meu *MaintenanceEntryUpdate) ClearScheduledDate() *MaintenanceEntryUpdate 
 // SetName sets the "name" field.
 func (meu *MaintenanceEntryUpdate) SetName(s string) *MaintenanceEntryUpdate {
 	meu.mutation.SetName(s)
+	return meu
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (meu *MaintenanceEntryUpdate) SetNillableName(s *string) *MaintenanceEntryUpdate {
+	if s != nil {
+		meu.SetName(*s)
+	}
 	return meu
 }
 
@@ -302,6 +318,14 @@ func (meuo *MaintenanceEntryUpdateOne) SetItemID(u uuid.UUID) *MaintenanceEntryU
 	return meuo
 }
 
+// SetNillableItemID sets the "item_id" field if the given value is not nil.
+func (meuo *MaintenanceEntryUpdateOne) SetNillableItemID(u *uuid.UUID) *MaintenanceEntryUpdateOne {
+	if u != nil {
+		meuo.SetItemID(*u)
+	}
+	return meuo
+}
+
 // SetDate sets the "date" field.
 func (meuo *MaintenanceEntryUpdateOne) SetDate(t time.Time) *MaintenanceEntryUpdateOne {
 	meuo.mutation.SetDate(t)
@@ -345,6 +369,14 @@ func (meuo *MaintenanceEntryUpdateOne) ClearScheduledDate() *MaintenanceEntryUpd
 // SetName sets the "name" field.
 func (meuo *MaintenanceEntryUpdateOne) SetName(s string) *MaintenanceEntryUpdateOne {
 	meuo.mutation.SetName(s)
+	return meuo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (meuo *MaintenanceEntryUpdateOne) SetNillableName(s *string) *MaintenanceEntryUpdateOne {
+	if s != nil {
+		meuo.SetName(*s)
+	}
 	return meuo
 }
 

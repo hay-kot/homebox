@@ -43,6 +43,14 @@ func (lu *LocationUpdate) SetName(s string) *LocationUpdate {
 	return lu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (lu *LocationUpdate) SetNillableName(s *string) *LocationUpdate {
+	if s != nil {
+		lu.SetName(*s)
+	}
+	return lu
+}
+
 // SetDescription sets the "description" field.
 func (lu *LocationUpdate) SetDescription(s string) *LocationUpdate {
 	lu.mutation.SetDescription(s)
@@ -437,6 +445,14 @@ func (luo *LocationUpdateOne) SetUpdatedAt(t time.Time) *LocationUpdateOne {
 // SetName sets the "name" field.
 func (luo *LocationUpdateOne) SetName(s string) *LocationUpdateOne {
 	luo.mutation.SetName(s)
+	return luo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (luo *LocationUpdateOne) SetNillableName(s *string) *LocationUpdateOne {
+	if s != nil {
+		luo.SetName(*s)
+	}
 	return luo
 }
 

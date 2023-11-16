@@ -356,11 +356,15 @@ func (ifc *ItemFieldCreate) createSpec() (*ItemField, *sqlgraph.CreateSpec) {
 // ItemFieldCreateBulk is the builder for creating many ItemField entities in bulk.
 type ItemFieldCreateBulk struct {
 	config
+	err      error
 	builders []*ItemFieldCreate
 }
 
 // Save creates the ItemField entities in the database.
 func (ifcb *ItemFieldCreateBulk) Save(ctx context.Context) ([]*ItemField, error) {
+	if ifcb.err != nil {
+		return nil, ifcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ifcb.builders))
 	nodes := make([]*ItemField, len(ifcb.builders))
 	mutators := make([]Mutator, len(ifcb.builders))

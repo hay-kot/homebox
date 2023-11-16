@@ -9529,6 +9529,7 @@ func (m *MaintenanceEntryMutation) ResetCost() {
 // ClearItem clears the "item" edge to the Item entity.
 func (m *MaintenanceEntryMutation) ClearItem() {
 	m.cleareditem = true
+	m.clearedFields[maintenanceentry.FieldItemID] = struct{}{}
 }
 
 // ItemCleared reports if the "item" edge to the Item entity was cleared.
@@ -10292,6 +10293,7 @@ func (m *NotifierMutation) ResetIsActive() {
 // ClearGroup clears the "group" edge to the Group entity.
 func (m *NotifierMutation) ClearGroup() {
 	m.clearedgroup = true
+	m.clearedFields[notifier.FieldGroupID] = struct{}{}
 }
 
 // GroupCleared reports if the "group" edge to the Group entity was cleared.
@@ -10318,6 +10320,7 @@ func (m *NotifierMutation) ResetGroup() {
 // ClearUser clears the "user" edge to the User entity.
 func (m *NotifierMutation) ClearUser() {
 	m.cleareduser = true
+	m.clearedFields[notifier.FieldUserID] = struct{}{}
 }
 
 // UserCleared reports if the "user" edge to the User entity was cleared.

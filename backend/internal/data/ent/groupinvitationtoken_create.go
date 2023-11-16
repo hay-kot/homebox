@@ -269,11 +269,15 @@ func (gitc *GroupInvitationTokenCreate) createSpec() (*GroupInvitationToken, *sq
 // GroupInvitationTokenCreateBulk is the builder for creating many GroupInvitationToken entities in bulk.
 type GroupInvitationTokenCreateBulk struct {
 	config
+	err      error
 	builders []*GroupInvitationTokenCreate
 }
 
 // Save creates the GroupInvitationToken entities in the database.
 func (gitcb *GroupInvitationTokenCreateBulk) Save(ctx context.Context) ([]*GroupInvitationToken, error) {
+	if gitcb.err != nil {
+		return nil, gitcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(gitcb.builders))
 	nodes := make([]*GroupInvitationToken, len(gitcb.builders))
 	mutators := make([]Mutator, len(gitcb.builders))
