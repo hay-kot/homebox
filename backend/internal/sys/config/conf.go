@@ -15,6 +15,7 @@ const (
 )
 
 type Config struct {
+	conf.Version
 	Mode    string     `yaml:"mode" conf:"default:development"` // development or production
 	Web     WebConfig  `yaml:"web"`
 	Storage Storage    `yaml:"storage"`
@@ -46,9 +47,14 @@ type WebConfig struct {
 
 // New parses the CLI/Config file and returns a Config struct. If the file argument is an empty string, the
 // file is not read. If the file is not empty, the file is read and the Config struct is returned.
-func New() (*Config, error) {
+func New(buildstr string, description string) (*Config, error) {
 	var cfg Config
 	const prefix = "HBOX"
+
+	cfg.Version = conf.Version{
+		Build: buildstr,
+		Desc:  description,
+	}
 
 	help, err := conf.Parse(prefix, &cfg)
 	if err != nil {
