@@ -1,4 +1,6 @@
 <script setup lang="ts">
+  import Currency from "~~/components/global/Currency.vue";
+
   definePageMeta({
     middleware: ["auth"],
   });
@@ -84,6 +86,8 @@
       return [];
     }
 
+    label.value.totalPrice = resp.data.items.map(item => Number(item.purchasePrice)).reduce((a, b) => a + b, 0);
+
     return resp.data.items;
   });
 </script>
@@ -111,8 +115,17 @@
               </div>
             </div>
             <div>
-              <h1 class="text-2xl pb-1">
+              <h1 class="text-2xl pb-1 flex items-center gap-3">
                 {{ label ? label.name : "" }}
+
+                <div
+                  v-if="label && label.totalPrice"
+                  class="text-xs bg-secondary text-secondary-content rounded-full px-2 py-1"
+                >
+                  <div>
+                    <Currency :amount="label.totalPrice" />
+                  </div>
+                </div>
               </h1>
               <div class="flex gap-1 flex-wrap text-xs">
                 <div>

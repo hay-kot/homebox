@@ -193,6 +193,7 @@ export interface LabelOut {
   id: string;
   name: string;
   updatedAt: Date | string;
+  totalPrice: number | undefined;
 }
 
 export interface LabelSummary {
@@ -217,6 +218,7 @@ export interface LocationOut {
   name: string;
   parent: LocationSummary;
   updatedAt: Date | string;
+  totalPrice: number | undefined;
 }
 
 export interface LocationOutCount {

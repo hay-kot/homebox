@@ -1,6 +1,7 @@
 <script setup lang="ts">
-  import { LocationSummary, LocationUpdate } from "~~/lib/api/types/data-contracts";
+  import { LocationSummary, LocationUpdate, TreeItem } from "~~/lib/api/types/data-contracts";
   import { useLocationStore } from "~~/stores/locations";
+  import Currency from "~~/components/global/Currency.vue";
 
   definePageMeta({
     middleware: ["auth"],
@@ -89,8 +90,47 @@
       return [];
     }
 
+    const locationTreeResp = await api.locations.getTree();
+
+    if (locationTreeResp.error) {
+      toast.error("Failed to load items");
+      return [];
+    }
+
+    const fullLocationTree: TreeItem[] = locationTreeResp.data;
+
+    function flattenLocation(location: TreeItem): string[] {
+      return location.children.reduce((acc, child) => [...acc, ...flattenLocation(child)], [location.id]);
+    }
+
+    function findObjectById(locations: TreeItem[], targetId: string): TreeItem | undefined {
+      if (!locations || !Array.isArray(locations)) {
+        return undefined;
+      }
+
+      const target = locations.find(location => location.id === targetId);
+      if (target) return target;
+
+      for (let i = 0; i < locations.length; i++) {
+        const result = findObjectById(locations[i].children, targetId);
+        if (result) return result;
+      }
+
+      return undefined;
+    }
+
+    const locationTree: TreeItem | undefined = findObjectById(fullLocationTree, location.value.id);
+
+    if (!locationTree) {
+      toast.error("Failed to get tree for current location");
+
+      return [];
+    }
+
+    const allChildLocations = flattenLocation(locationTree);
+
     const resp = await api.items.getAll({
-      locations: [location.value.id],
+      locations: allChildLocations,
     });
 
     if (resp.error) {
@@ -98,7 +138,16 @@
       return [];
     }
 
-    return resp.data.items;
+    const locationItems = resp.data.items.filter(item => {
+      if (item.location && location.value) return item?.location.id === location?.value.id;
+      return false;
+    });
+
+    const totalPrice = resp.data.items.map(item => Number(item.purchasePrice)).reduce((a, b) => a + b, 0);
+
+    location.value.totalPrice = totalPrice;
+
+    return locationItems;
   });
 </script>
 
@@ -135,8 +184,17 @@
                   <li>{{ location.name }}</li>
                 </ul>
               </div>
-              <h1 class="text-2xl pb-1">
+              <h1 class="text-2xl pb-1 flex items-center gap-3">
                 {{ location ? location.name : "" }}
+
+                <div
+                  v-if="location && location.totalPrice"
+                  class="text-xs bg-secondary text-secondary-content rounded-full px-2 py-1"
+                >
+                  <div>
+                    <Currency :amount="location.totalPrice" />
+                  </div>
+                </div>
               </h1>
               <div class="flex gap-1 flex-wrap text-xs">
                 <div>
