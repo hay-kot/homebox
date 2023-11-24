@@ -35,6 +35,15 @@ var (
 	buildTime = "now"
 )
 
+func build() string {
+	short := commit
+	if len(short) > 7 {
+		short = short[:7]
+	}
+
+	return fmt.Sprintf("%s, commit %s, built at %s", version, short, buildTime)
+}
+
 // @title                      Homebox API
 // @version                    1.0
 // @description                Track, Manage, and Organize your Things.
@@ -47,7 +56,7 @@ var (
 func main() {
 	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 
-	cfg, err := config.New()
+	cfg, err := config.New(build(), "Homebox inventory management system")
 	if err != nil {
 		panic(err)
 	}
