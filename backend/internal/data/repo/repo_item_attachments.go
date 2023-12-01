@@ -52,11 +52,30 @@ func ToItemAttachment(attachment *ent.Attachment) ItemAttachment {
 }
 
 func (r *AttachmentRepo) Create(ctx context.Context, itemId, docId uuid.UUID, typ attachment.Type) (*ent.Attachment, error) {
-	return r.db.Attachment.Create().
+	bldr := r.db.Attachment.Create().
 		SetType(typ).
 		SetDocumentID(docId).
-		SetItemID(itemId).
-		Save(ctx)
+		SetItemID(itemId)
+
+  // Autoset primary to true if this is the first attachment
+  // that is of type photo
+  if typ == attachment.TypePhoto {
+    cnt, err := r.db.Attachment.Query().
+      Where(
+        attachment.HasItemWith(item.ID(itemId)),
+        attachment.TypeEQ(typ),
+      ).
+      Count(ctx)
+    if err != nil {
+      return nil, err
+    }
+
+    if cnt == 0 {
+      bldr = bldr.SetPrimary(true)
+    }
+  }
+
+  return bldr.Save(ctx)
 }
 
 func (r *AttachmentRepo) Get(ctx context.Context, id uuid.UUID) (*ent.Attachment, error) {
@@ -75,7 +94,7 @@ func (r *AttachmentRepo) Update(ctx context.Context, itemId uuid.UUID, data *Ite
 	bldr := r.db.Attachment.UpdateOneID(itemId).
 		SetType(typ)
 
-		// Primary only applies to photos
+	// Primary only applies to photos
 	if typ == attachment.TypePhoto {
 		bldr = bldr.SetPrimary(data.Primary)
 	} else {

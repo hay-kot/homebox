@@ -3,6 +3,7 @@ package v1
 import (
 	"errors"
 	"net/http"
+	"path/filepath"
 
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/attachment"
@@ -67,7 +68,15 @@ func (ctrl *V1Controller) HandleItemAttachmentCreate() errchain.HandlerFunc {
 
 		attachmentType := r.FormValue("type")
 		if attachmentType == "" {
-			attachmentType = attachment.TypeAttachment.String()
+			// Attempt to auto-detect the type of the file
+			ext := filepath.Ext(attachmentName)
+
+			switch ext {
+			case ".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp", ".tiff":
+				attachmentType = attachment.TypePhoto.String()
+			default:
+				attachmentType = attachment.TypeAttachment.String()
+			}
 		}
 
 		id, err := ctrl.routeID(r)

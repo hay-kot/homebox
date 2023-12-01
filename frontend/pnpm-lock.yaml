@@ -35,9 +35,6 @@ dependencies:
   autoprefixer:
     specifier: ^10.4.8
     version: 10.4.13(postcss@8.4.19)
-  chart.js:
-    specifier: ^4.0.1
-    version: 4.0.1
   daisyui:
     specifier: ^2.24.0
     version: 2.43.0(autoprefixer@10.4.13)(postcss@8.4.19)
@@ -65,9 +62,6 @@ dependencies:
   vue:
     specifier: ^3.3.1
     version: 3.3.4
-  vue-chartjs:
-    specifier: ^4.1.2
-    version: 4.1.2(chart.js@4.0.1)(vue@3.3.4)
   vue-router:
     specifier: '4'
     version: 4.1.6(vue@3.3.4)
@@ -3769,11 +3763,6 @@ packages:
   /chalk@5.3.0:
     resolution: {integrity: sha512-dLitG79d+GV1Nb/VYcCDFivJeK1hiukt9QjRNVOsUtTy1rR1YJsmpGGTZ3qJos+uw7WmWF4wUwBd9jxjocFC2w==}
     engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
-
-  /chart.js@4.0.1:
-    resolution: {integrity: sha512-5/8/9eBivwBZK81mKvmIwTb2Pmw4D/5h1RK9fBWZLLZ8mCJ+kfYNmV9rMrGoa5Hgy2/wVDBMLSUDudul2/9ihA==}
-    engines: {pnpm: ^7.0.0}
-    dev: false
 
   /check-error@1.0.2:
     resolution: {integrity: sha512-BrgHpW9NURQgzoNyjfq0Wu6VFO6D7IZEmJNdtgNqpzGG8RuNFHt2jQxWlAs4HMe119chBnv+34syEZtc6IhLtA==}
@@ -9106,16 +9095,6 @@ packages:
     resolution: {integrity: sha512-EfjX+5TTUl70bki9hPuVp+54JiZOvFIfoWBcfXsSwLzKEiDYyHNi5iX8srnqLIv3YRnvxgbntdcG1WPq0MvffQ==}
     dependencies:
       ufo: 1.1.2
-
-  /vue-chartjs@4.1.2(chart.js@4.0.1)(vue@3.3.4):
-    resolution: {integrity: sha512-QSggYjeFv/L4jFSBQpX8NzrAvX0B+Ha6nDgxkTG8tEXxYOOTwKI4phRLe+B4f+REnkmg7hgPY24R0cixZJyXBg==}
-    peerDependencies:
-      chart.js: ^3.7.0
-      vue: ^3.0.0-0 || ^2.6.0
-    dependencies:
-      chart.js: 4.0.1
-      vue: 3.3.4
-    dev: false
 
   /vue-demi@0.13.11(vue@3.3.4):
     resolution: {integrity: sha512-IR8HoEEGM65YY3ZJYAjMlKygDQn25D5ajNFNoKh9RSDMQtlzCxtfQjdQgv9jjK+m3377SsJXY8ysq8kLCZL25A==}

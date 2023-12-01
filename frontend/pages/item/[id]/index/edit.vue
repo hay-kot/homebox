@@ -253,7 +253,7 @@
       return;
     }
 
-    uploadAttachment([first], AttachmentTypes.Attachment);
+    uploadAttachment([first], null);
   }
 
   const dropPhoto = (files: File[] | null) => uploadAttachment(files, AttachmentTypes.Photo);
@@ -262,7 +262,7 @@
   const dropManual = (files: File[] | null) => uploadAttachment(files, AttachmentTypes.Manual);
   const dropReceipt = (files: File[] | null) => uploadAttachment(files, AttachmentTypes.Receipt);
 
-  async function uploadAttachment(files: File[] | null, type: AttachmentTypes) {
+  async function uploadAttachment(files: File[] | null, type: AttachmentTypes | null) {
     if (!files || files.length === 0) {
       return;
     }
