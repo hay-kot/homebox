@@ -9,7 +9,7 @@ require (
 	github.com/containrrr/shoutrrr v0.8.0
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-playground/validator/v10 v10.16.0
-	github.com/gocarina/gocsv v0.0.0-20230616125104-99d496ca653d
+	github.com/gocarina/gocsv v0.0.0-20231116093920-b87c2d0e983a
 	github.com/google/uuid v1.4.0
 	github.com/gorilla/schema v1.2.1
 	github.com/hay-kot/httpkit v0.0.3
