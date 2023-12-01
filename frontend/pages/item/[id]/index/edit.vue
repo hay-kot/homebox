@@ -23,7 +23,11 @@
   const labelStore = useLabelStore();
   const labels = computed(() => labelStore.labels);
 
-  const { data: nullableItem, refresh } = useAsyncData(async () => {
+  const {
+    data: nullableItem,
+    refresh,
+    pending: requestPending,
+  } = useAsyncData(async () => {
     const { data, error } = await api.items.get(itemId.value);
     if (error) {
       toast.error("Failed to load item");
@@ -450,7 +454,7 @@
           Delete
         </BaseButton>
       </div>
-      <div class="space-y-6">
+      <div v-if="!requestPending" class="space-y-6">
         <BaseCard class="overflow-visible">
           <template #title> Edit Details </template>
           <template #title-actions>
