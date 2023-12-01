@@ -15,6 +15,9 @@ export default defineNuxtConfig({
   },
   css: ["@/assets/css/main.css"],
   pwa: {
+    workbox: {
+      navigateFallbackDenylist: [/^\/api/],
+    },
     injectRegister: "script",
     injectManifest: {
       swSrc: "sw.js",
