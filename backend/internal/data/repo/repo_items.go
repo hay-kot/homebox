@@ -845,6 +845,7 @@ func (e *ItemsRepository) SetPrimaryPhotos(ctx context.Context, GID uuid.UUID) (
 		Where(
 			item.HasGroupWith(group.ID(GID)),
 			item.HasAttachmentsWith(
+				attachment.TypeEQ(attachment.TypePhoto),
 				attachment.Not(
 					attachment.And(
 						attachment.Primary(true),
