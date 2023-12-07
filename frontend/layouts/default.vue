@@ -93,11 +93,15 @@
 <script lang="ts" setup>
   import { useLabelStore } from "~~/stores/labels";
   import { useLocationStore } from "~~/stores/locations";
+  import { useQuickSearch } from "~~/composables/use-quick-search";
 
   const username = computed(() => authCtx.user?.name || "User");
 
   // Preload currency format
   useFormatCurrency();
+
+  // Enable global quick search:
+  useQuickSearch();
 
   const modals = reactive({
     item: false,
