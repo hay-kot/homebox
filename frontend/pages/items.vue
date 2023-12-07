@@ -77,6 +77,10 @@
     const qFields = route.query.fields as string[];
     if (qFields) {
       fieldTuples.value = qFields.map(f => f.split("=") as [string, string]);
+      // After loading for the first time, we keep track of the field tuples at this point,
+      // and use them as possible field values even if they're not included in the list of values for
+      // the given field:
+      fieldTuplesOnMount.value = fieldTuples.value;
 
       for (const t of fieldTuples.value) {
         if (t[0] && t[1]) {
@@ -139,6 +143,7 @@
   });
 
   const fieldTuples = ref<[string, string][]>([]);
+  const fieldTuplesOnMount = ref<[string, string][]>([]);
   const fieldValuesCache = ref<Record<string, string[]>>({});
 
   const { data: allFields } = useAsyncData(async () => {
@@ -171,6 +176,15 @@
     fieldValuesCache.value[field] = data;
 
     return data;
+  }
+
+  function fieldValuesFromCache(field: string) {
+    const fieldValues = fieldValuesCache.value[field] ?? [];
+    const valuesFromFirstMount = fieldTuplesOnMount.value
+      .filter(([fieldName]) => fieldName === field)
+      .map(([_, fieldValue]) => fieldValue);
+
+    return [...valuesFromFirstMount, ...fieldValues];
   }
 
   watch(advanced, (v, lv) => {
@@ -399,8 +413,8 @@
             <label class="label">
               <span class="label-text">Field Value</span>
             </label>
-            <select v-model="fieldTuples[idx][1]" class="select-bordered select" :items="fieldValuesCache[f[0]]">
-              <option v-for="v in fieldValuesCache[f[0]]" :key="v" :value="v">{{ v }}</option>
+            <select v-model="fieldTuples[idx][1]" class="select-bordered select" :items="fieldValuesFromCache(f[0])">
+              <option v-for="v in fieldValuesFromCache(f[0])" :key="v" :value="v">{{ v }}</option>
             </select>
           </div>
           <button

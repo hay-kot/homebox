@@ -104,12 +104,13 @@ export function useQuickSearch() {
       // Regardless of what we do next, we also clear the code buffer here:
       codeBuffer.value = "";
 
+      // TODO: Is there a good reason to not expose custom fields via search syntax?
       router.push({
         path: "/items",
         query: {
           q: "",
           fieldSelector: "true",
-          fields: [encodeURIComponent(`Barcode=${validCode}`)],
+          fields: [`Barcode=${validCode}`],
         },
       });
     } else {
