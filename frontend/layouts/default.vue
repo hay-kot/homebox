@@ -20,9 +20,9 @@
             <Icon name="mdi-menu" class="h-6 w-6" />
           </label>
           <NuxtLink to="/home">
-            <h2 class="text-3xl font-bold tracking-tight text-base-100 flex">
+            <h2 class="text-3xl font-bold tracking-tight text-base-100 flex flex-row items-end">
               HomeB
-              <AppLogo class="w-8 -mb-3" />
+              <AppLogo class="w-8" />
               x
             </h2>
           </NuxtLink>
