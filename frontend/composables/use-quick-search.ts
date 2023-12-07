@@ -110,7 +110,8 @@ export function useQuickSearch() {
         query: {
           q: "",
           fieldSelector: "true",
-          fields: [`Barcode=${validCode}`],
+          // TODO: Barcode= is a temporary approach to support this behavior.
+          fields: [encodeURIComponent(`Barcode=${validCode}`)],
         },
       });
     } else {
