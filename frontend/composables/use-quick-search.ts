@@ -38,6 +38,14 @@ function isValidIshCode(code: string): boolean {
 }
 
 /**
+ * Ignore code input if the user is actually trying to write anywhere:
+ */
+function isEventTargetInput(event: KeyboardEvent) {
+  const tagName = (event.target as HTMLElement).tagName;
+  return tagName != null && tagName.toUpperCase() === "INPUT";
+}
+
+/**
  * Provides utilities to:
  *
  * - Quickly open a global search utility, that forwards to the item page.
@@ -46,6 +54,8 @@ function isValidIshCode(code: string): boolean {
  *   USB barcode scanners to be used as a quick shortcut.
  */
 export function useQuickSearch() {
+  const router = useRouter();
+
   /**
    * Tracks if the quick search dialog is active.
    *
@@ -70,7 +80,7 @@ export function useQuickSearch() {
         isActive.value = true;
         event.preventDefault();
       }
-    } else if (isCodeFragment(event)) {
+    } else if (isCodeFragment(event) && !isEventTargetInput(event)) {
       const fragment = event.key;
 
       // Push this code fragment into our buffer. At this point we also
@@ -83,8 +93,6 @@ export function useQuickSearch() {
         // Reset the buffer:
         codeBuffer.value = fragment;
       }
-
-      event.preventDefault();
     } else if (event.key === "Enter" && isValidIshCode(codeBuffer.value)) {
       // If we have an active code buffer that seems valid, and the user presses Enter,
       // we want to generate a new search query from this code, as long as it seems valid.
@@ -96,7 +104,14 @@ export function useQuickSearch() {
       // Regardless of what we do next, we also clear the code buffer here:
       codeBuffer.value = "";
 
-      console.log("VALID", validCode);
+      router.push({
+        path: "/items",
+        query: {
+          q: "",
+          fieldSelector: "true",
+          fields: [encodeURIComponent(`Barcode=${validCode}`)],
+        },
+      });
     } else {
       // Every other key press resets the buffer - this applies to non-code values,
       // and also to pressing the Enter key without a valid code;
