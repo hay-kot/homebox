@@ -19,9 +19,9 @@ function isCodeFragment(event: KeyboardEvent): boolean {
 }
 
 /**
- * Performs a naive check to ensure something is a EAN13 or UPC-A code.
+ * Performs a check to ensure something is a EAN13 or UPC-A code.
  */
-function isValidIshCode(code: string): boolean {
+function isValidCode(code: string): boolean {
   try {
     // We check the format in advance, since we're only accepting EAN13 and UPC-A here.
     // There's no -real- reason for this limitation, besides protecting against feature
@@ -93,7 +93,7 @@ export function useQuickSearch() {
         // Reset the buffer:
         codeBuffer.value = fragment;
       }
-    } else if (event.key === "Enter" && isValidIshCode(codeBuffer.value)) {
+    } else if (event.key === "Enter" && isValidCode(codeBuffer.value)) {
       // If we have an active code buffer that seems valid, and the user presses Enter,
       // we want to generate a new search query from this code, as long as it seems valid.
       //
@@ -130,7 +130,6 @@ export function useQuickSearch() {
   });
 
   return {
-    codeBuffer,
     isActive,
   };
 }
