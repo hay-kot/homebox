@@ -17,6 +17,7 @@ export type Codes =
   | "MXN"
   | "NOK"
   | "NZD"
+  | "OMR"
   | "PLN"
   | "RMB"
   | "RUB"
@@ -57,6 +58,7 @@ export const currencies: Currency[] = [
   { code: "MXN", local: "Mexico", symbol: "Mex$", name: "Mexican Peso" },
   { code: "NOK", local: "Norway", symbol: "kr", name: "Norwegian Krone" },
   { code: "NZD", local: "New Zealand", symbol: "NZ$", name: "New Zealand Dollar" },
+  { code: "OMR", local: "Omani Rial", symbol: "OMR", name: "Omani Riyal" },
   { code: "PLN", local: "Poland", symbol: "zł", name: "Polish Zloty" },
   { code: "RMB", local: "zh-CN", symbol: "¥", name: "Chinese Yuan" },
   { code: "RON", local: "ro-RO", symbol: "lei", name: "Romanian Leu" },
