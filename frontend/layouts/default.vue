@@ -9,6 +9,7 @@
     <ItemCreateModal v-model="modals.item" />
     <LabelCreateModal v-model="modals.label" />
     <LocationCreateModal v-model="modals.location" />
+    <QuickSearch />
     <AppToast />
     <div class="drawer drawer-mobile">
       <input id="nav-drawer" v-model="drawerToggle" type="checkbox" class="drawer-toggle" />
@@ -93,15 +94,11 @@
 <script lang="ts" setup>
   import { useLabelStore } from "~~/stores/labels";
   import { useLocationStore } from "~~/stores/locations";
-  import { useQuickSearch } from "~~/composables/use-quick-search";
 
   const username = computed(() => authCtx.user?.name || "User");
 
   // Preload currency format
   useFormatCurrency();
-
-  // Enable global quick search:
-  useQuickSearch();
 
   const modals = reactive({
     item: false,

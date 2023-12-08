@@ -1,5 +1,5 @@
 <template>
-  <div class="z-[999]">
+  <div v-if="modal" class="z-[999]">
     <input :id="modalId" v-model="modal" type="checkbox" class="modal-toggle" />
     <div class="modal modal-bottom sm:modal-middle overflow-visible">
       <div class="modal-box overflow-visible relative">
