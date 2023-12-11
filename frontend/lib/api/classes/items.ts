@@ -22,15 +22,18 @@ export type ItemsQuery = {
   pageSize?: number;
   locations?: string[];
   labels?: string[];
+  parentIds?: string[];
   q?: string;
   fields?: string[];
 };
 
 export class AttachmentsAPI extends BaseAPI {
-  add(id: string, file: File | Blob, filename: string, type: AttachmentTypes) {
+  add(id: string, file: File | Blob, filename: string, type: AttachmentTypes | null = null) {
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("type", type);
+    if (type) {
+      formData.append("type", type);
+    }
     formData.append("name", filename);
 
     return this.http.post<FormData, ItemOut>({

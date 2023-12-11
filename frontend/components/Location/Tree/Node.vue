@@ -22,7 +22,7 @@
     get() {
       return state.value[nodeHash.value] ?? false;
     },
-    set(value) {
+    set(value: boolean) {
       state.value[nodeHash.value] = value;
     },
   });

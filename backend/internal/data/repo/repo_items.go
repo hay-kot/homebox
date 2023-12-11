@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/core/services/reporting/eventbus"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/attachment"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/item"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/itemfield"
@@ -35,6 +36,7 @@ type (
 		AssetID         AssetID      `json:"assetId"`
 		LocationIDs     []uuid.UUID  `json:"locationIds"`
 		LabelIDs        []uuid.UUID  `json:"labelIds"`
+		ParentItemIDs   []uuid.UUID  `json:"parentIds"`
 		SortBy          string       `json:"sortBy"`
 		IncludeArchived bool         `json:"includeArchived"`
 		Fields          []FieldQuery `json:"fields"`
@@ -125,6 +127,8 @@ type (
 		// Edges
 		Location *LocationSummary `json:"location,omitempty" extensions:"x-nullable,x-omitempty"`
 		Labels   []LabelSummary   `json:"labels"`
+
+		ImageID *uuid.UUID `json:"imageId,omitempty"`
 	}
 
 	ItemOut struct {
@@ -156,7 +160,6 @@ type (
 
 		Attachments []ItemAttachment `json:"attachments"`
 		Fields      []ItemField      `json:"fields"`
-		Children    []ItemSummary    `json:"children"`
 	}
 )
 
@@ -172,6 +175,16 @@ func mapItemSummary(item *ent.Item) ItemSummary {
 	labels := make([]LabelSummary, len(item.Edges.Label))
 	if item.Edges.Label != nil {
 		labels = mapEach(item.Edges.Label, mapLabelSummary)
+	}
+
+	var imageID *uuid.UUID
+	if item.Edges.Attachments != nil {
+		for _, a := range item.Edges.Attachments {
+			if a.Primary && a.Edges.Document != nil {
+				imageID = &a.ID
+				break
+			}
+		}
 	}
 
 	return ItemSummary{
@@ -191,6 +204,7 @@ func mapItemSummary(item *ent.Item) ItemSummary {
 
 		// Warranty
 		Insured: item.Insured,
+		ImageID: imageID,
 	}
 }
 
@@ -226,11 +240,6 @@ func mapItemOut(item *ent.Item) ItemOut {
 		fields = mapFields(item.Edges.Fields)
 	}
 
-	var children []ItemSummary
-	if item.Edges.Children != nil {
-		children = mapEach(item.Edges.Children, mapItemSummary)
-	}
-
 	var parent *ItemSummary
 	if item.Edges.Parent != nil {
 		v := mapItemSummary(item.Edges.Parent)
@@ -264,7 +273,6 @@ func mapItemOut(item *ent.Item) ItemOut {
 		Notes:       item.Notes,
 		Attachments: attachments,
 		Fields:      fields,
-		Children:    children,
 	}
 }
 
@@ -282,7 +290,6 @@ func (e *ItemsRepository) getOne(ctx context.Context, where ...predicate.Item) (
 		WithLabel().
 		WithLocation().
 		WithGroup().
-		WithChildren().
 		WithParent().
 		WithAttachments(func(aq *ent.AttachmentQuery) {
 			aq.WithDocument()
@@ -384,6 +391,10 @@ func (e *ItemsRepository) QueryByGroup(ctx context.Context, gid uuid.UUID, q Ite
 
 			andPredicates = append(andPredicates, item.Or(fieldPredicates...))
 		}
+
+		if len(q.ParentItemIDs) > 0 {
+			andPredicates = append(andPredicates, item.HasParentWith(item.IDIn(q.ParentItemIDs...)))
+		}
 	}
 
 	if len(andPredicates) > 0 {
@@ -407,7 +418,13 @@ func (e *ItemsRepository) QueryByGroup(ctx context.Context, gid uuid.UUID, q Ite
 
 	qb = qb.
 		WithLabel().
-		WithLocation()
+		WithLocation().
+		WithAttachments(func(aq *ent.AttachmentQuery) {
+			aq.Where(
+				attachment.Primary(true),
+			).
+				WithDocument()
+		})
 
 	if q.Page != -1 || q.PageSize != -1 {
 		qb = qb.
@@ -533,13 +550,13 @@ func (e *ItemsRepository) Create(ctx context.Context, gid uuid.UUID, data ItemCr
 }
 
 func (e *ItemsRepository) Delete(ctx context.Context, id uuid.UUID) error {
-  err := e.db.Item.DeleteOneID(id).Exec(ctx)
-  if err != nil {
-    return err
-  }
+	err := e.db.Item.DeleteOneID(id).Exec(ctx)
+	if err != nil {
+		return err
+	}
 
-  e.publishMutationEvent(id)
-  return nil
+	e.publishMutationEvent(id)
+	return nil
 }
 
 func (e *ItemsRepository) DeleteByGroup(ctx context.Context, gid, id uuid.UUID) error {
@@ -549,12 +566,11 @@ func (e *ItemsRepository) DeleteByGroup(ctx context.Context, gid, id uuid.UUID) 
 			item.ID(id),
 			item.HasGroupWith(group.ID(gid)),
 		).Exec(ctx)
-  
-  if err != nil {
-    return err
-  }
+	if err != nil {
+		return err
+	}
 
-  e.publishMutationEvent(gid)
+	e.publishMutationEvent(gid)
 	return err
 }
 
@@ -670,7 +686,7 @@ func (e *ItemsRepository) UpdateByGroup(ctx context.Context, GID uuid.UUID, data
 		}
 	}
 
-  e.publishMutationEvent(GID)
+	e.publishMutationEvent(GID)
 	return e.GetOne(ctx, data.ID)
 }
 
@@ -709,7 +725,7 @@ func (e *ItemsRepository) Patch(ctx context.Context, GID, ID uuid.UUID, data Ite
 		q.SetQuantity(*data.Quantity)
 	}
 
-  e.publishMutationEvent(GID)
+	e.publishMutationEvent(GID)
 	return q.Exec(ctx)
 }
 
@@ -815,6 +831,55 @@ func (e *ItemsRepository) ZeroOutTimeFields(ctx context.Context, GID uuid.UUID) 
 		_, err = updateQ.Save(ctx)
 		if err != nil {
 			return updated, fmt.Errorf("ZeroOutTimeFields() -> failed to update item: %w", err)
+		}
+
+		updated++
+	}
+
+	return updated, nil
+}
+
+func (e *ItemsRepository) SetPrimaryPhotos(ctx context.Context, GID uuid.UUID) (int, error) {
+	// All items where there is no primary photo
+	itemIDs, err := e.db.Item.Query().
+		Where(
+			item.HasGroupWith(group.ID(GID)),
+			item.HasAttachmentsWith(
+				attachment.TypeEQ(attachment.TypePhoto),
+				attachment.Not(
+					attachment.And(
+						attachment.Primary(true),
+						attachment.TypeEQ(attachment.TypePhoto),
+					),
+				),
+			),
+		).
+		IDs(ctx)
+	if err != nil {
+		return -1, err
+	}
+
+	updated := 0
+	for _, id := range itemIDs {
+		// Find the first photo attachment
+		a, err := e.db.Attachment.Query().
+			Where(
+				attachment.HasItemWith(item.ID(id)),
+				attachment.TypeEQ(attachment.TypePhoto),
+				attachment.Primary(false),
+			).
+			First(ctx)
+		if err != nil {
+			return updated, err
+		}
+
+		// Set it as primary
+		_, err = e.db.Attachment.UpdateOne(a).
+			SetPrimary(true).
+			Save(ctx)
+
+		if err != nil {
+			return updated, err
 		}
 
 		updated++

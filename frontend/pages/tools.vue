@@ -82,6 +82,12 @@
               See Github Issue #236 for more details.
             </a>
           </DetailAction>
+          <DetailAction @action="setPrimaryPhotos">
+            <template #title> Set Primary Photos </template>
+            In version v0.10.0 of Homebox, the primary image field was added to attachments of type photo. This action
+            will set the primary image field to the first image in the attachments array in the database, if it is not
+            already set. <a class="link" href="https://github.com/hay-kot/homebox/pull/576">See GitHub PR #576</a>
+          </DetailAction>
         </div>
       </BaseCard>
     </BaseContainer>
@@ -168,6 +174,25 @@
 
     if (result.error) {
       notify.error("Failed to reset date and time values.");
+      return;
+    }
+
+    notify.success(`${result.data.completed} assets have been updated.`);
+  }
+
+  async function setPrimaryPhotos() {
+    const { isCanceled } = await confirm.open(
+      "Are you sure you want to set primary photos? This can take a while and cannot be undone."
+    );
+
+    if (isCanceled) {
+      return;
+    }
+
+    const result = await api.actions.setPrimaryPhotos();
+
+    if (result.error) {
+      notify.error("Failed to set primary photos.");
       return;
     }
 

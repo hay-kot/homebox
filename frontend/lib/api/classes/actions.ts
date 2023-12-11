@@ -19,4 +19,10 @@ export class ActionsAPI extends BaseAPI {
       url: route("/actions/ensure-import-refs"),
     });
   }
+
+  setPrimaryPhotos() {
+    return this.http.post<void, ActionAmountResult>({
+      url: route("/actions/set-primary-photos"),
+    });
+  }
 }

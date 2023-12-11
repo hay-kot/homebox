@@ -52,6 +52,8 @@ definitions:
         $ref: '#/definitions/repo.DocumentOut'
       id:
         type: string
+      primary:
+        type: boolean
       type:
         type: string
       updatedAt:
@@ -59,6 +61,8 @@ definitions:
     type: object
   repo.ItemAttachmentUpdate:
     properties:
+      primary:
+        type: boolean
       title:
         type: string
       type:
@@ -126,6 +130,8 @@ definitions:
         type: array
       id:
         type: string
+      imageId:
+        type: string
       insured:
         type: boolean
       labels:
@@ -136,7 +142,8 @@ definitions:
         description: Warranty
         type: boolean
       location:
-        $ref: '#/definitions/repo.LocationSummary'
+        allOf:
+        - $ref: '#/definitions/repo.LocationSummary'
         description: Edges
         x-nullable: true
         x-omitempty: true
@@ -150,7 +157,8 @@ definitions:
         description: Extras
         type: string
       parent:
-        $ref: '#/definitions/repo.ItemSummary'
+        allOf:
+        - $ref: '#/definitions/repo.ItemSummary'
         x-nullable: true
         x-omitempty: true
       purchaseFrom:
@@ -201,6 +209,8 @@ definitions:
         type: string
       id:
         type: string
+      imageId:
+        type: string
       insured:
         type: boolean
       labels:
@@ -208,7 +218,8 @@ definitions:
           $ref: '#/definitions/repo.LabelSummary'
         type: array
       location:
-        $ref: '#/definitions/repo.LocationSummary'
+        allOf:
+        - $ref: '#/definitions/repo.LocationSummary'
         description: Edges
         x-nullable: true
         x-omitempty: true
@@ -227,6 +238,7 @@ definitions:
       archived:
         type: boolean
       assetId:
+        example: "0"
         type: string
       description:
         type: string
@@ -287,7 +299,6 @@ definitions:
       warrantyDetails:
         type: string
       warrantyExpires:
-        description: Sold
         type: string
     type: object
   repo.LabelCreate:
@@ -312,10 +323,6 @@ definitions:
         type: string
       id:
         type: string
-      items:
-        items:
-          $ref: '#/definitions/repo.ItemSummary'
-        type: array
       name:
         type: string
       updatedAt:
@@ -356,10 +363,6 @@ definitions:
         type: string
       id:
         type: string
-      items:
-        items:
-          $ref: '#/definitions/repo.ItemSummary'
-        type: array
       name:
         type: string
       parent:
@@ -410,7 +413,6 @@ definitions:
   repo.MaintenanceEntry:
     properties:
       completedDate:
-        description: Sold
         type: string
       cost:
         example: "0"
@@ -422,13 +424,11 @@ definitions:
       name:
         type: string
       scheduledDate:
-        description: Sold
         type: string
     type: object
   repo.MaintenanceEntryCreate:
     properties:
       completedDate:
-        description: Sold
         type: string
       cost:
         example: "0"
@@ -438,7 +438,6 @@ definitions:
       name:
         type: string
       scheduledDate:
-        description: Sold
         type: string
     required:
     - name
@@ -446,7 +445,6 @@ definitions:
   repo.MaintenanceEntryUpdate:
     properties:
       completedDate:
-        description: Sold
         type: string
       cost:
         example: "0"
@@ -456,7 +454,6 @@ definitions:
       name:
         type: string
       scheduledDate:
-        description: Sold
         type: string
     type: object
   repo.MaintenanceLog:
@@ -740,6 +737,21 @@ paths:
       security:
       - Bearer: []
       summary: Ensures Import Refs
+      tags:
+      - Actions
+  /v1/actions/set-primary-photos:
+    post:
+      description: Sets the first photo of each item as the primary photo
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.ActionAmountResult'
+      security:
+      - Bearer: []
+      summary: Set Primary Photos
       tags:
       - Actions
   /v1/actions/zero-item-time-fields:

@@ -43,9 +43,25 @@ func (nu *NotifierUpdate) SetGroupID(u uuid.UUID) *NotifierUpdate {
 	return nu
 }
 
+// SetNillableGroupID sets the "group_id" field if the given value is not nil.
+func (nu *NotifierUpdate) SetNillableGroupID(u *uuid.UUID) *NotifierUpdate {
+	if u != nil {
+		nu.SetGroupID(*u)
+	}
+	return nu
+}
+
 // SetUserID sets the "user_id" field.
 func (nu *NotifierUpdate) SetUserID(u uuid.UUID) *NotifierUpdate {
 	nu.mutation.SetUserID(u)
+	return nu
+}
+
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (nu *NotifierUpdate) SetNillableUserID(u *uuid.UUID) *NotifierUpdate {
+	if u != nil {
+		nu.SetUserID(*u)
+	}
 	return nu
 }
 
@@ -55,9 +71,25 @@ func (nu *NotifierUpdate) SetName(s string) *NotifierUpdate {
 	return nu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (nu *NotifierUpdate) SetNillableName(s *string) *NotifierUpdate {
+	if s != nil {
+		nu.SetName(*s)
+	}
+	return nu
+}
+
 // SetURL sets the "url" field.
 func (nu *NotifierUpdate) SetURL(s string) *NotifierUpdate {
 	nu.mutation.SetURL(s)
+	return nu
+}
+
+// SetNillableURL sets the "url" field if the given value is not nil.
+func (nu *NotifierUpdate) SetNillableURL(s *string) *NotifierUpdate {
+	if s != nil {
+		nu.SetURL(*s)
+	}
 	return nu
 }
 
@@ -273,9 +305,25 @@ func (nuo *NotifierUpdateOne) SetGroupID(u uuid.UUID) *NotifierUpdateOne {
 	return nuo
 }
 
+// SetNillableGroupID sets the "group_id" field if the given value is not nil.
+func (nuo *NotifierUpdateOne) SetNillableGroupID(u *uuid.UUID) *NotifierUpdateOne {
+	if u != nil {
+		nuo.SetGroupID(*u)
+	}
+	return nuo
+}
+
 // SetUserID sets the "user_id" field.
 func (nuo *NotifierUpdateOne) SetUserID(u uuid.UUID) *NotifierUpdateOne {
 	nuo.mutation.SetUserID(u)
+	return nuo
+}
+
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (nuo *NotifierUpdateOne) SetNillableUserID(u *uuid.UUID) *NotifierUpdateOne {
+	if u != nil {
+		nuo.SetUserID(*u)
+	}
 	return nuo
 }
 
@@ -285,9 +333,25 @@ func (nuo *NotifierUpdateOne) SetName(s string) *NotifierUpdateOne {
 	return nuo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (nuo *NotifierUpdateOne) SetNillableName(s *string) *NotifierUpdateOne {
+	if s != nil {
+		nuo.SetName(*s)
+	}
+	return nuo
+}
+
 // SetURL sets the "url" field.
 func (nuo *NotifierUpdateOne) SetURL(s string) *NotifierUpdateOne {
 	nuo.mutation.SetURL(s)
+	return nuo
+}
+
+// SetNillableURL sets the "url" field if the given value is not nil.
+func (nuo *NotifierUpdateOne) SetNillableURL(s *string) *NotifierUpdateOne {
+	if s != nil {
+		nuo.SetURL(*s)
+	}
 	return nuo
 }
 

@@ -297,11 +297,15 @@ func (lc *LabelCreate) createSpec() (*Label, *sqlgraph.CreateSpec) {
 // LabelCreateBulk is the builder for creating many Label entities in bulk.
 type LabelCreateBulk struct {
 	config
+	err      error
 	builders []*LabelCreate
 }
 
 // Save creates the Label entities in the database.
 func (lcb *LabelCreateBulk) Save(ctx context.Context) ([]*Label, error) {
+	if lcb.err != nil {
+		return nil, lcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(lcb.builders))
 	nodes := make([]*Label, len(lcb.builders))
 	mutators := make([]Mutator, len(lcb.builders))

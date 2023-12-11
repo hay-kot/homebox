@@ -2,11 +2,11 @@
 
 ## Quick Start
 
-Using the CSV import is the recommended way for adding items to the database. It is always going to be the fastest way to import any large amount of items and provides the most flexibility when it comes to adding items.
+Using the CSV import is the recommended way for adding items to the database. It is always going to be the fastest way to import any large number of items and provides the most flexibility when it comes to adding items.
 
 **Current Limitations**
 
- - Imports only supports importing items, locations, and labels
+ - Imports only support importing items, locations, and labels
  - Imports and Exports do not support attachments. Attachments must be uploaded after import
  - CSV Exports do not support nested path exports (e.g. `Home / Office / Desk`) and will only export the Items direct parent, (though imports _do_ support nested paths)
  - Cannot specify item-to-item relationships (e.g. `Item A` is a child of `Item B`)
@@ -16,13 +16,13 @@ Using the CSV import is the recommended way for adding items to the database. It
 
 ## CSV Reference
 
-Below are the supported columns. They are case sensitive, can be in any ordered or can be omitted unless otherwise specified.
+Below are the supported columns. They are case-sensitive, can be in any ordered or can be omitted unless otherwise specified.
 
 ### Special Syntax Columns
 
 `HB.import_ref`
 
-:   Import Refs are unique strings that can be used to deduplicate imports. Before an item is imported, we check the database for a matching ref. If the ref exists, we skip creation of that item.
+:   Import Refs are unique strings that can be used to deduplicate imports. Before an item is imported, we check the database for a matching ref. If the ref exists, we skip the creation of that item.
 
     * String Type
     * Max 100 Characters
@@ -52,7 +52,7 @@ Below are the supported columns. They are case sensitive, can be in any ordered 
 ### Standard Columns
 
 | Column               | Type          | Description                                   |
-| -------------------- | ------------- | --------------------------------------------- |
+|----------------------|---------------|-----------------------------------------------|
 | HB.quantity          | Integer       | The quantity of items to create               |
 | HB.name              | String        | Name of the item                              |
 | HB.asset_id          | AssetID       | Asset ID for the item                         |
@@ -76,7 +76,7 @@ Below are the supported columns. They are case sensitive, can be in any ordered 
 **Type Key**
 
 | Type    | Format                                              |
-| ------- | --------------------------------------------------- |
+|---------|-----------------------------------------------------|
 | String  | Max 255 Characters unless otherwise specified       |
 | Date    | YYYY-MM-DD                                          |
 | Boolean | true or false, yes or no, 1 or 0 - case insensitive |

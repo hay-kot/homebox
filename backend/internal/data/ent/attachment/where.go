@@ -66,6 +66,11 @@ func UpdatedAt(v time.Time) predicate.Attachment {
 	return predicate.Attachment(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
+// Primary applies equality check predicate on the "primary" field. It's identical to PrimaryEQ.
+func Primary(v bool) predicate.Attachment {
+	return predicate.Attachment(sql.FieldEQ(FieldPrimary, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Attachment {
 	return predicate.Attachment(sql.FieldEQ(FieldCreatedAt, v))
@@ -166,6 +171,16 @@ func TypeNotIn(vs ...Type) predicate.Attachment {
 	return predicate.Attachment(sql.FieldNotIn(FieldType, vs...))
 }
 
+// PrimaryEQ applies the EQ predicate on the "primary" field.
+func PrimaryEQ(v bool) predicate.Attachment {
+	return predicate.Attachment(sql.FieldEQ(FieldPrimary, v))
+}
+
+// PrimaryNEQ applies the NEQ predicate on the "primary" field.
+func PrimaryNEQ(v bool) predicate.Attachment {
+	return predicate.Attachment(sql.FieldNEQ(FieldPrimary, v))
+}
+
 // HasItem applies the HasEdge predicate on the "item" edge.
 func HasItem() predicate.Attachment {
 	return predicate.Attachment(func(s *sql.Selector) {
@@ -214,32 +229,15 @@ func HasDocumentWith(preds ...predicate.Document) predicate.Attachment {
 
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Attachment) predicate.Attachment {
-	return predicate.Attachment(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for _, p := range predicates {
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.Attachment(sql.AndPredicates(predicates...))
 }
 
 // Or groups predicates with the OR operator between them.
 func Or(predicates ...predicate.Attachment) predicate.Attachment {
-	return predicate.Attachment(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for i, p := range predicates {
-			if i > 0 {
-				s1.Or()
-			}
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.Attachment(sql.OrPredicates(predicates...))
 }
 
 // Not applies the not operator on the given predicate.
 func Not(p predicate.Attachment) predicate.Attachment {
-	return predicate.Attachment(func(s *sql.Selector) {
-		p(s.Not())
-	})
+	return predicate.Attachment(sql.NotPredicates(p))
 }

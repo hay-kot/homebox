@@ -9,7 +9,6 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/core/services/reporting/eventbus"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
-	"github.com/hay-kot/homebox/backend/internal/data/ent/item"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/location"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/predicate"
 )
@@ -49,7 +48,6 @@ type (
 	LocationOut struct {
 		Parent *LocationSummary `json:"parent,omitempty"`
 		LocationSummary
-		Items    []ItemSummary     `json:"items"`
 		Children []LocationSummary `json:"children"`
 	}
 )
@@ -87,8 +85,6 @@ func mapLocationOut(location *ent.Location) LocationOut {
 			CreatedAt:   location.CreatedAt,
 			UpdatedAt:   location.UpdatedAt,
 		},
-		Items:    mapEach(location.Edges.Items, mapItemSummary),
-		Children: children,
 	}
 }
 
@@ -164,11 +160,6 @@ func (r *LocationRepository) getOne(ctx context.Context, where ...predicate.Loca
 	return mapLocationOutErr(r.db.Location.Query().
 		Where(where...).
 		WithGroup().
-		WithItems(func(iq *ent.ItemQuery) {
-			iq.Where(item.Archived(false)).
-				Order(ent.Asc(item.FieldName)).
-				WithLabel()
-		}).
 		WithParent().
 		WithChildren().
 		Only(ctx))

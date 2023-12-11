@@ -12,15 +12,25 @@ tasks:
       - cd backend && go mod tidy
       - cd frontend && pnpm install --shamefully-hoist
 
-  generate:
-    desc: |
-      Generates collateral files from the backend project
-      including swagger docs and typescripts type for the frontend
-    deps:
-      - db:generate
+  swag:
+    desc: Generate swagger docs
+    dir: backend/app/api/static/
+    vars:
+      API: "../"
+      INTERNAL: "../../../internal"
+      PKGS: "../../../pkgs"
     cmds:
-      - cd backend/app/api/static && swag fmt --dir=../
-      - cd backend/app/api/static && swag init --dir=../,../../../internal,../../../pkgs --parseDependency
+      - swag fmt --dir={{ .API }}
+      - swag init --dir={{ .API }},{{ .INTERNAL }}/core/services,{{ .INTERNAL }}/data/repo --parseDependency
+    sources:
+      - "./backend/app/api/**/*"
+      - "./backend/internal/data/**"
+      - "./backend/internal/core/services/**/*"
+      - "./backend/app/tools/typegen/main.go"
+
+  typescript-types:
+    desc: Generates typescript types from swagger definition
+    cmds:
       - |
         npx swagger-typescript-api \
           --no-client \
@@ -28,12 +38,17 @@ tasks:
           --path ./backend/app/api/static/docs/swagger.json \
           --output ./frontend/lib/api/types
       - go run ./backend/app/tools/typegen/main.go ./frontend/lib/api/types/data-contracts.ts
-      - cp ./backend/app/api/static/docs/swagger.json docs/docs/api/openapi-2.0.json
     sources:
-      - "./backend/app/api/**/*"
-      - "./backend/internal/data/**"
-      - "./backend/internal/core/services/**/*"
-      - "./backend/app/tools/typegen/main.go"
+      - ./backend/app/tools/typegen/main.go
+      - ./backend/app/api/static/docs/swagger.json
+
+  generate:
+    deps:
+      - db:generate
+    cmds:
+      - task: swag
+      - task: typescript-types
+      - cp ./backend/app/api/static/docs/swagger.json docs/docs/api/openapi-2.0.json
 
   go:run:
     desc: Starts the backend api server (depends on generate task)

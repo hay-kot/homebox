@@ -18,7 +18,7 @@
             <label tabindex="0" class="btn rounded-l-none rounded-r-xl">
               <Icon class="h-5 w-5" name="mdi-chevron-down" />
             </label>
-            <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-64">
+            <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-64 right-0">
               <li>
                 <button type="button" @click="create(false)">Create and Add Another</button>
               </li>
@@ -85,6 +85,7 @@
     });
 
     if (error) {
+      loading.value = false;
       toast.error("Couldn't create location");
     }
 

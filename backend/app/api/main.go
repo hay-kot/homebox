@@ -35,6 +35,15 @@ var (
 	buildTime = "now"
 )
 
+func build() string {
+	short := commit
+	if len(short) > 7 {
+		short = short[:7]
+	}
+
+	return fmt.Sprintf("%s, commit %s, built at %s", version, short, buildTime)
+}
+
 // @title                      Homebox API
 // @version                    1.0
 // @description                Track, Manage, and Organize your Things.
@@ -47,7 +56,7 @@ var (
 func main() {
 	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 
-	cfg, err := config.New()
+	cfg, err := config.New(build(), "Homebox inventory management system")
 	if err != nil {
 		panic(err)
 	}
@@ -146,6 +155,9 @@ func run(cfg *config.Config) error {
 	app.server = server.NewServer(
 		server.WithHost(app.conf.Web.Host),
 		server.WithPort(app.conf.Web.Port),
+		server.WithReadTimeout(app.conf.Web.ReadTimeout),
+		server.WithWriteTimeout(app.conf.Web.WriteTimeout),
+		server.WithIdleTimeout(app.conf.Web.IdleTimeout),
 	)
 	log.Info().Msgf("Starting HTTP Server on %s:%s", app.server.Host, app.server.Port)
 

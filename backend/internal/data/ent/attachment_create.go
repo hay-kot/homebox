@@ -65,6 +65,20 @@ func (ac *AttachmentCreate) SetNillableType(a *attachment.Type) *AttachmentCreat
 	return ac
 }
 
+// SetPrimary sets the "primary" field.
+func (ac *AttachmentCreate) SetPrimary(b bool) *AttachmentCreate {
+	ac.mutation.SetPrimary(b)
+	return ac
+}
+
+// SetNillablePrimary sets the "primary" field if the given value is not nil.
+func (ac *AttachmentCreate) SetNillablePrimary(b *bool) *AttachmentCreate {
+	if b != nil {
+		ac.SetPrimary(*b)
+	}
+	return ac
+}
+
 // SetID sets the "id" field.
 func (ac *AttachmentCreate) SetID(u uuid.UUID) *AttachmentCreate {
 	ac.mutation.SetID(u)
@@ -148,6 +162,10 @@ func (ac *AttachmentCreate) defaults() {
 		v := attachment.DefaultType
 		ac.mutation.SetType(v)
 	}
+	if _, ok := ac.mutation.Primary(); !ok {
+		v := attachment.DefaultPrimary
+		ac.mutation.SetPrimary(v)
+	}
 	if _, ok := ac.mutation.ID(); !ok {
 		v := attachment.DefaultID()
 		ac.mutation.SetID(v)
@@ -169,6 +187,9 @@ func (ac *AttachmentCreate) check() error {
 		if err := attachment.TypeValidator(v); err != nil {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Attachment.type": %w`, err)}
 		}
+	}
+	if _, ok := ac.mutation.Primary(); !ok {
+		return &ValidationError{Name: "primary", err: errors.New(`ent: missing required field "Attachment.primary"`)}
 	}
 	if _, ok := ac.mutation.ItemID(); !ok {
 		return &ValidationError{Name: "item", err: errors.New(`ent: missing required edge "Attachment.item"`)}
@@ -223,6 +244,10 @@ func (ac *AttachmentCreate) createSpec() (*Attachment, *sqlgraph.CreateSpec) {
 		_spec.SetField(attachment.FieldType, field.TypeEnum, value)
 		_node.Type = value
 	}
+	if value, ok := ac.mutation.Primary(); ok {
+		_spec.SetField(attachment.FieldPrimary, field.TypeBool, value)
+		_node.Primary = value
+	}
 	if nodes := ac.mutation.ItemIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -263,11 +288,15 @@ func (ac *AttachmentCreate) createSpec() (*Attachment, *sqlgraph.CreateSpec) {
 // AttachmentCreateBulk is the builder for creating many Attachment entities in bulk.
 type AttachmentCreateBulk struct {
 	config
+	err      error
 	builders []*AttachmentCreate
 }
 
 // Save creates the Attachment entities in the database.
 func (acb *AttachmentCreateBulk) Save(ctx context.Context) ([]*Attachment, error) {
+	if acb.err != nil {
+		return nil, acb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(acb.builders))
 	nodes := make([]*Attachment, len(acb.builders))
 	mutators := make([]Mutator, len(acb.builders))

@@ -42,6 +42,14 @@ func (ifu *ItemFieldUpdate) SetName(s string) *ItemFieldUpdate {
 	return ifu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ifu *ItemFieldUpdate) SetNillableName(s *string) *ItemFieldUpdate {
+	if s != nil {
+		ifu.SetName(*s)
+	}
+	return ifu
+}
+
 // SetDescription sets the "description" field.
 func (ifu *ItemFieldUpdate) SetDescription(s string) *ItemFieldUpdate {
 	ifu.mutation.SetDescription(s)
@@ -65,6 +73,14 @@ func (ifu *ItemFieldUpdate) ClearDescription() *ItemFieldUpdate {
 // SetType sets the "type" field.
 func (ifu *ItemFieldUpdate) SetType(i itemfield.Type) *ItemFieldUpdate {
 	ifu.mutation.SetType(i)
+	return ifu
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (ifu *ItemFieldUpdate) SetNillableType(i *itemfield.Type) *ItemFieldUpdate {
+	if i != nil {
+		ifu.SetType(*i)
+	}
 	return ifu
 }
 
@@ -343,6 +359,14 @@ func (ifuo *ItemFieldUpdateOne) SetName(s string) *ItemFieldUpdateOne {
 	return ifuo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ifuo *ItemFieldUpdateOne) SetNillableName(s *string) *ItemFieldUpdateOne {
+	if s != nil {
+		ifuo.SetName(*s)
+	}
+	return ifuo
+}
+
 // SetDescription sets the "description" field.
 func (ifuo *ItemFieldUpdateOne) SetDescription(s string) *ItemFieldUpdateOne {
 	ifuo.mutation.SetDescription(s)
@@ -366,6 +390,14 @@ func (ifuo *ItemFieldUpdateOne) ClearDescription() *ItemFieldUpdateOne {
 // SetType sets the "type" field.
 func (ifuo *ItemFieldUpdateOne) SetType(i itemfield.Type) *ItemFieldUpdateOne {
 	ifuo.mutation.SetType(i)
+	return ifuo
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (ifuo *ItemFieldUpdateOne) SetNillableType(i *itemfield.Type) *ItemFieldUpdateOne {
+	if i != nil {
+		ifuo.SetType(*i)
+	}
 	return ifuo
 }
 

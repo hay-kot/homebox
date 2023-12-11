@@ -366,11 +366,13 @@
   });
 
   function openDialog(img: Photo) {
+    // @ts-ignore - I don't know why this is happening
     refDialog.value?.showModal();
     dialoged.src = img.src;
   }
 
   function closeDialog() {
+    // @ts-ignore - I don't know why this is happening
     refDialog.value?.close();
   }
 
@@ -401,6 +403,23 @@
         to: `/item/${itemId.value}/edit`,
       },
     ];
+  });
+
+  const items = computedAsync(async () => {
+    if (!item.value) {
+      return [];
+    }
+
+    const resp = await api.items.getAll({
+      parentIds: [item.value.id],
+    });
+
+    if (resp.error) {
+      toast.error("Failed to load items");
+      return [];
+    }
+
+    return resp.data.items;
   });
 </script>
 
@@ -563,8 +582,8 @@
       </div>
     </section>
 
-    <section v-if="!hasNested && item.children.length > 0" class="my-6">
-      <ItemViewSelectable :items="item.children" />
+    <section v-if="items && items.length > 0" class="my-6">
+      <ItemViewSelectable :items="items" />
     </section>
   </BaseContainer>
 </template>

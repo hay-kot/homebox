@@ -51,6 +51,20 @@ func (au *AttachmentUpdate) SetNillableType(a *attachment.Type) *AttachmentUpdat
 	return au
 }
 
+// SetPrimary sets the "primary" field.
+func (au *AttachmentUpdate) SetPrimary(b bool) *AttachmentUpdate {
+	au.mutation.SetPrimary(b)
+	return au
+}
+
+// SetNillablePrimary sets the "primary" field if the given value is not nil.
+func (au *AttachmentUpdate) SetNillablePrimary(b *bool) *AttachmentUpdate {
+	if b != nil {
+		au.SetPrimary(*b)
+	}
+	return au
+}
+
 // SetItemID sets the "item" edge to the Item entity by ID.
 func (au *AttachmentUpdate) SetItemID(id uuid.UUID) *AttachmentUpdate {
 	au.mutation.SetItemID(id)
@@ -160,6 +174,9 @@ func (au *AttachmentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := au.mutation.GetType(); ok {
 		_spec.SetField(attachment.FieldType, field.TypeEnum, value)
 	}
+	if value, ok := au.mutation.Primary(); ok {
+		_spec.SetField(attachment.FieldPrimary, field.TypeBool, value)
+	}
 	if au.mutation.ItemCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -254,6 +271,20 @@ func (auo *AttachmentUpdateOne) SetType(a attachment.Type) *AttachmentUpdateOne 
 func (auo *AttachmentUpdateOne) SetNillableType(a *attachment.Type) *AttachmentUpdateOne {
 	if a != nil {
 		auo.SetType(*a)
+	}
+	return auo
+}
+
+// SetPrimary sets the "primary" field.
+func (auo *AttachmentUpdateOne) SetPrimary(b bool) *AttachmentUpdateOne {
+	auo.mutation.SetPrimary(b)
+	return auo
+}
+
+// SetNillablePrimary sets the "primary" field if the given value is not nil.
+func (auo *AttachmentUpdateOne) SetNillablePrimary(b *bool) *AttachmentUpdateOne {
+	if b != nil {
+		auo.SetPrimary(*b)
 	}
 	return auo
 }
@@ -396,6 +427,9 @@ func (auo *AttachmentUpdateOne) sqlSave(ctx context.Context) (_node *Attachment,
 	}
 	if value, ok := auo.mutation.GetType(); ok {
 		_spec.SetField(attachment.FieldType, field.TypeEnum, value)
+	}
+	if value, ok := auo.mutation.Primary(); ok {
+		_spec.SetField(attachment.FieldPrimary, field.TypeBool, value)
 	}
 	if auo.mutation.ItemCleared() {
 		edge := &sqlgraph.EdgeSpec{

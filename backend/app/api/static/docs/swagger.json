@@ -60,6 +60,31 @@
                 }
             }
         },
+        "/v1/actions/set-primary-photos": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Sets the first photo of each item as the primary photo",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Actions"
+                ],
+                "summary": "Set Primary Photos",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.ActionAmountResult"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/actions/zero-item-time-fields": {
             "post": {
                 "security": [
@@ -1871,6 +1896,9 @@
                 "id": {
                     "type": "string"
                 },
+                "primary": {
+                    "type": "boolean"
+                },
                 "type": {
                     "type": "string"
                 },
@@ -1882,6 +1910,9 @@
         "repo.ItemAttachmentUpdate": {
             "type": "object",
             "properties": {
+                "primary": {
+                    "type": "boolean"
+                },
                 "title": {
                     "type": "string"
                 },
@@ -1981,6 +2012,9 @@
                 "id": {
                     "type": "string"
                 },
+                "imageId": {
+                    "type": "string"
+                },
                 "insured": {
                     "type": "boolean"
                 },
@@ -1996,9 +2030,13 @@
                 },
                 "location": {
                     "description": "Edges",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/repo.LocationSummary"
+                        }
+                    ],
                     "x-nullable": true,
-                    "x-omitempty": true,
-                    "$ref": "#/definitions/repo.LocationSummary"
+                    "x-omitempty": true
                 },
                 "manufacturer": {
                     "type": "string"
@@ -2014,9 +2052,13 @@
                     "type": "string"
                 },
                 "parent": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/repo.ItemSummary"
+                        }
+                    ],
                     "x-nullable": true,
-                    "x-omitempty": true,
-                    "$ref": "#/definitions/repo.ItemSummary"
+                    "x-omitempty": true
                 },
                 "purchaseFrom": {
                     "type": "string"
@@ -2088,6 +2130,9 @@
                 "id": {
                     "type": "string"
                 },
+                "imageId": {
+                    "type": "string"
+                },
                 "insured": {
                     "type": "boolean"
                 },
@@ -2099,9 +2144,13 @@
                 },
                 "location": {
                     "description": "Edges",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/repo.LocationSummary"
+                        }
+                    ],
                     "x-nullable": true,
-                    "x-omitempty": true,
-                    "$ref": "#/definitions/repo.LocationSummary"
+                    "x-omitempty": true
                 },
                 "name": {
                     "type": "string"
@@ -2125,7 +2174,8 @@
                     "type": "boolean"
                 },
                 "assetId": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "0"
                 },
                 "description": {
                     "type": "string"
@@ -2210,7 +2260,6 @@
                     "type": "string"
                 },
                 "warrantyExpires": {
-                    "description": "Sold",
                     "type": "string"
                 }
             }
@@ -2246,12 +2295,6 @@
                 },
                 "id": {
                     "type": "string"
-                },
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/repo.ItemSummary"
-                    }
                 },
                 "name": {
                     "type": "string"
@@ -2313,12 +2356,6 @@
                 },
                 "id": {
                     "type": "string"
-                },
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/repo.ItemSummary"
-                    }
                 },
                 "name": {
                     "type": "string"
@@ -2396,7 +2433,6 @@
             "type": "object",
             "properties": {
                 "completedDate": {
-                    "description": "Sold",
                     "type": "string"
                 },
                 "cost": {
@@ -2413,7 +2449,6 @@
                     "type": "string"
                 },
                 "scheduledDate": {
-                    "description": "Sold",
                     "type": "string"
                 }
             }
@@ -2425,7 +2460,6 @@
             ],
             "properties": {
                 "completedDate": {
-                    "description": "Sold",
                     "type": "string"
                 },
                 "cost": {
@@ -2439,7 +2473,6 @@
                     "type": "string"
                 },
                 "scheduledDate": {
-                    "description": "Sold",
                     "type": "string"
                 }
             }
@@ -2448,7 +2481,6 @@
             "type": "object",
             "properties": {
                 "completedDate": {
-                    "description": "Sold",
                     "type": "string"
                 },
                 "cost": {
@@ -2462,7 +2494,6 @@
                     "type": "string"
                 },
                 "scheduledDate": {
-                    "description": "Sold",
                     "type": "string"
                 }
             }

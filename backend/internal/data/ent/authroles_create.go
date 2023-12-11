@@ -158,11 +158,15 @@ func (arc *AuthRolesCreate) createSpec() (*AuthRoles, *sqlgraph.CreateSpec) {
 // AuthRolesCreateBulk is the builder for creating many AuthRoles entities in bulk.
 type AuthRolesCreateBulk struct {
 	config
+	err      error
 	builders []*AuthRolesCreate
 }
 
 // Save creates the AuthRoles entities in the database.
 func (arcb *AuthRolesCreateBulk) Save(ctx context.Context) ([]*AuthRoles, error) {
+	if arcb.err != nil {
+		return nil, arcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(arcb.builders))
 	nodes := make([]*AuthRoles, len(arcb.builders))
 	mutators := make([]Mutator, len(arcb.builders))

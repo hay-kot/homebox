@@ -27,6 +27,7 @@ import (
 //	@Param    pageSize  query    int      false "items per page"
 //	@Param    labels    query    []string false "label Ids"    collectionFormat(multi)
 //	@Param    locations query    []string false "location Ids" collectionFormat(multi)
+//  @Param    parentIds query    []string false "parent Ids"   collectionFormat(multi)
 //	@Success  200       {object} repo.PaginationResult[repo.ItemSummary]{}
 //	@Router   /v1/items [GET]
 //	@Security Bearer
@@ -56,6 +57,7 @@ func (ctrl *V1Controller) HandleItemsGetAll() errchain.HandlerFunc {
 			Search:          params.Get("q"),
 			LocationIDs:     queryUUIDList(params, "locations"),
 			LabelIDs:        queryUUIDList(params, "labels"),
+      ParentItemIDs:   queryUUIDList(params, "parentIds"),
 			IncludeArchived: queryBool(params.Get("includeArchived")),
 			Fields:          filterFieldItems(params["fields"]),
 			OrderBy:         params.Get("orderBy"),
@@ -167,7 +169,6 @@ func (ctrl *V1Controller) HandleItemUpdate() errchain.HandlerFunc {
 	return adapters.ActionID("id", fn, http.StatusOK)
 }
 
-
 // HandleItemPatch godocs
 //
 //	@Summary  Update Item
@@ -183,12 +184,12 @@ func (ctrl *V1Controller) HandleItemPatch() errchain.HandlerFunc {
 		auth := services.NewContext(r.Context())
 
 		body.ID = ID
-    err :=  ctrl.repo.Items.Patch(auth, auth.GID, ID, body)
-    if err != nil {
-      return repo.ItemOut{}, err
-    }
+		err := ctrl.repo.Items.Patch(auth, auth.GID, ID, body)
+		if err != nil {
+			return repo.ItemOut{}, err
+		}
 
-    return ctrl.repo.Items.GetOneByGroup(auth, auth.GID, ID)
+		return ctrl.repo.Items.GetOneByGroup(auth, auth.GID, ID)
 	}
 
 	return adapters.ActionID("id", fn, http.StatusOK)
@@ -231,7 +232,7 @@ func (ctrl *V1Controller) HandleGetAllCustomFieldValues() errchain.HandlerFunc {
 		return ctrl.repo.Items.GetAllCustomFieldValues(auth, auth.GID, q.Field)
 	}
 
-	return adapters.Action(fn, http.StatusOK)
+	return adapters.Query(fn, http.StatusOK)
 
 }
 

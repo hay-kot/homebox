@@ -27,6 +27,8 @@ export type Codes =
   | "THB"
   | "TRY"
   | "USD"
+  | "XAG"
+  | "XAU"
   | "ZAR";
 
 export type Currency = {
@@ -65,5 +67,7 @@ export const currencies: Currency[] = [
   { code: "THB", local: "Thailand", symbol: "฿", name: "Thai Baht" },
   { code: "TRY", local: "Turkey", symbol: "₺", name: "Turkish Lira" },
   { code: "USD", local: "United States", symbol: "$", name: "United States Dollar" },
+  { code: "XAG", local: "Global", symbol: "XAG", name: "Silver Troy Ounce" },
+  { code: "XAU", local: "Global", symbol: "XAU", name: "Gold Troy Ounce" },
   { code: "ZAR", local: "South Africa", symbol: "R", name: "South African Rand" },
 ];

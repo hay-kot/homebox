@@ -15,6 +15,14 @@ import (
 	"image/png"
 	"io"
 	"net/http"
+	"net/url"
+
+	"github.com/hay-kot/homebox/backend/internal/web/adapters"
+	"github.com/hay-kot/httpkit/errchain"
+	"github.com/yeqown/go-qrcode/v2"
+	"github.com/yeqown/go-qrcode/writer/standard"
+
+	_ "embed"
 )
 
 //go:embed assets/QRIcon.png
@@ -69,7 +77,12 @@ func (ctrl *V1Controller) HandleGenerateQRCode() errchain.HandlerFunc {
 			panic(err)
 		}
 
-		qrc, err := qrcode.New(q.Data)
+		decodedStr, err := url.QueryUnescape(q.Data)
+		if err != nil {
+			return err
+		}
+
+		qrc, err := qrcode.New(decodedStr)
 		if err != nil {
 			return err
 		}

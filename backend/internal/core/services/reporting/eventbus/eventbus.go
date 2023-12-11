@@ -38,7 +38,7 @@ func New() *EventBus {
 		subscribers: map[Event][]func(any){
 			EventLabelMutation:    {},
 			EventLocationMutation: {},
-      EventItemMutation:     {},
+			EventItemMutation:     {},
 		},
 	}
 }

@@ -7,7 +7,7 @@ Great for testing out the application, but not recommended for stable use. Check
 For each image there are two tags, respectively the regular tag and $TAG-rootless, which uses a non-root image.
 
 ```sh
-# If using the rootless image, ensure data 
+# If using the rootless image, ensure data
 # folder has correct permissions
 $ mkdir -p /path/to/data/folder
 $ chown 65532:65532 -R /path/to/data/folder
@@ -21,7 +21,7 @@ $ docker run -d \
   --volume /path/to/data/folder/:/data \
   ghcr.io/hay-kot/homebox:latest
 # ghcr.io/hay-kot/homebox:latest-rootless
- 
+
 ```
 
 ## Docker-Compose
@@ -62,8 +62,11 @@ volumes:
 | HBOX_OPTIONS_ALLOW_REGISTRATION      | true                   | allow users to register themselves                                                 |
 | HBOX_OPTIONS_AUTO_INCREMENT_ASSET_ID | true                   | auto increments the asset_id field for new items                                   |
 | HBOX_WEB_MAX_UPLOAD_SIZE             | 10                     | maximum file upload size supported in MB                                           |
+| HBOX_WEB_READ_TIMEOUT                | 10                     | Read timeout of HTTP sever                                                         |
+| HBOX_WEB_WRITE_TIMEOUT               | 10                     | Write timeout of HTTP server                                                       |
+| HBOX_WEB_IDLE_TIMEOUT                | 30                     | Idle timeout of HTTP server                                                        |
 | HBOX_STORAGE_DATA                    | /data/                 | path to the data directory, do not change this if you're using docker              |
-| HBOX_STORAGE_SQLITE_URL              | /data/homebox.db?_fk=1 | sqlite database url, in you're using docker do not change this                     |
+| HBOX_STORAGE_SQLITE_URL              | /data/homebox.db?_fk=1 | sqlite database url, if you're using docker do not change this                     |
 | HBOX_LOG_LEVEL                       | info                   | log level to use, can be one of: trace, debug, info, warn, error, critical         |
 | HBOX_LOG_FORMAT                      | text                   | log format to use, can be one of: text, json                                       |
 | HBOX_MAILER_HOST                     |                        | email host to use, if not set no email provider will be used                       |

@@ -22,55 +22,11 @@
 
   const itemTable = itemsTable(api);
   const stats = statCardData(api);
-
-  // const purchasePriceOverTime = purchasePriceOverTimeChart(api);
-
-  // const inventoryByLocation = inventoryByLocationChart(api);
-
-  // const refDonutEl = ref<HTMLDivElement>();
-
-  // const donutElWidth = computed(() => {
-  //   return refDonutEl.value?.clientWidth || 0;
-  // });
 </script>
 
 <template>
   <div>
     <BaseContainer class="flex flex-col gap-12 pb-16">
-      <!-- <section class="grid grid-cols-6 gap-6">
-        <article class="col-span-4">
-          <Subtitle> Inventory Value Over Time </Subtitle>
-          <BaseCard>
-            <div class="p-10 h-[300px]">
-              <ClientOnly>
-                <ChartLine :chart-data="purchasePriceOverTime" />
-              </ClientOnly>
-            </div>
-          </BaseCard>
-        </article>
-        <article class="col-span-2">
-          <Subtitle>
-            Inventory By
-            <span class="btn-group">
-              <button class="btn btn-xs btn-active text-no-transform">Locations</button>
-              <button class="btn btn-xs text-no-transform">Labels</button>
-            </span>
-          </Subtitle>
-          <BaseCard class="h-[300px]">
-            <div ref="refDonutEl" class="grid place-content-center h-full">
-              <ClientOnly>
-                <ChartDonut
-                  chart-id="donut"
-                  :width="donutElWidth - 50"
-                  :height="265"
-                  :chart-data="inventoryByLocation"
-                />
-              </ClientOnly>
-            </div>
-          </BaseCard>
-        </article>
-      </section> -->
-
       <section>
         <Subtitle> Quick Statistics </Subtitle>
         <div class="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-6">
