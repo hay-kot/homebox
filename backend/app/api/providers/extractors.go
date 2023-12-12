@@ -29,7 +29,7 @@ func getLoginForm(r *http.Request) (LoginForm, error) {
 		loginForm.Password = r.PostFormValue("password")
 		loginForm.StayLoggedIn = r.PostFormValue("stayLoggedIn") == "true"
 	case "application/json":
-		err := server.Decode(r, loginForm)
+		err := server.Decode(r, &loginForm)
 		if err != nil {
 			log.Err(err).Msg("failed to decode login form")
 			return loginForm, errors.New("failed to decode login form")
