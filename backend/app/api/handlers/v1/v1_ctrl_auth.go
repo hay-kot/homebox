@@ -58,6 +58,25 @@ func GetCookies(r *http.Request) (*CookieContents, error) {
 	}, nil
 }
 
+// AuthProvider is an interface that can be implemented by any authentication provider.
+// to extend authentication methods for the API.
+type AuthProvider interface {
+	// Name returns the name of the authentication provider. This should be a unique name.
+	// that is URL friendly.
+	//
+	// Example: "local", "ldap"
+	Name() string
+	// Authenticate is called when a user attempts to login to the API. The implementation
+	// should return an error if the user cannot be authenticated. If an error is returned
+	// the API controller will return a vague error message to the user.
+	//
+	// Authenticate should do the following:
+	//
+	// 1. Ensure that the user exists within the database (either create, or get)
+	// 2. On successful authentication, they must set the user cookies.
+	Authenticate(w http.ResponseWriter, r *http.Request) (services.UserAuthTokenDetail, error)
+}
+
 // HandleAuthLogin godoc
 //
 //	@Summary User Login
@@ -66,53 +85,42 @@ func GetCookies(r *http.Request) (*CookieContents, error) {
 //	@Accept  application/json
 //	@Param   username formData string false "string" example(admin@admin.com)
 //	@Param   password formData string false "string" example(admin)
-//	@Param    payload body     LoginForm true "Login Data"
+//	@Param   payload body     LoginForm true "Login Data"
+//	@Param   provider    query    string   false "auth provider"
 //	@Produce json
 //	@Success 200 {object} TokenResponse
 //	@Router  /v1/users/login [POST]
-func (ctrl *V1Controller) HandleAuthLogin() errchain.HandlerFunc {
+func (ctrl *V1Controller) HandleAuthLogin(ps ...AuthProvider) errchain.HandlerFunc {
+	if len(ps) == 0 {
+		panic("no auth providers provided")
+	}
+
+	providers := make(map[string]AuthProvider)
+	for _, p := range ps {
+		log.Info().Str("name", p.Name()).Msg("registering auth provider")
+		providers[p.Name()] = p
+	}
+
 	return func(w http.ResponseWriter, r *http.Request) error {
-		loginForm := &LoginForm{}
-
-		switch r.Header.Get("Content-Type") {
-		case "application/x-www-form-urlencoded":
-			err := r.ParseForm()
-			if err != nil {
-				return errors.New("failed to parse form")
-			}
-
-			loginForm.Username = r.PostFormValue("username")
-			loginForm.Password = r.PostFormValue("password")
-			loginForm.StayLoggedIn = r.PostFormValue("stayLoggedIn") == "true"
-		case "application/json":
-			err := server.Decode(r, loginForm)
-			if err != nil {
-				log.Err(err).Msg("failed to decode login form")
-				return errors.New("failed to decode login form")
-			}
-		default:
-			return server.JSON(w, http.StatusBadRequest, errors.New("invalid content type"))
+		// Extract provider query
+		provider := r.URL.Query().Get("provider")
+		if provider == "" {
+			provider = "local"
 		}
 
-		if loginForm.Username == "" || loginForm.Password == "" {
-			return validate.NewFieldErrors(
-				validate.FieldError{
-					Field: "username",
-					Error: "username or password is empty",
-				},
-				validate.FieldError{
-					Field: "password",
-					Error: "username or password is empty",
-				},
-			)
+		// Get the provider
+		p, ok := providers[provider]
+		if !ok {
+			return validate.NewRequestError(errors.New("invalid auth provider"), http.StatusBadRequest)
 		}
 
-		newToken, err := ctrl.svc.User.Login(r.Context(), strings.ToLower(loginForm.Username), loginForm.Password, loginForm.StayLoggedIn)
+		newToken, err := p.Authenticate(w, r)
 		if err != nil {
-			return validate.NewRequestError(errors.New("authentication failed"), http.StatusInternalServerError)
+			log.Err(err).Msg("failed to authenticate")
+			return server.JSON(w, http.StatusInternalServerError, err.Error())
 		}
 
-		ctrl.setCookies(w, noPort(r.Host), newToken.Raw, newToken.ExpiresAt, loginForm.StayLoggedIn)
+		ctrl.setCookies(w, noPort(r.Host), newToken.Raw, newToken.ExpiresAt, true)
 		return server.JSON(w, http.StatusOK, TokenResponse{
 			Token:           "Bearer " + newToken.Raw,
 			ExpiresAt:       newToken.ExpiresAt,
