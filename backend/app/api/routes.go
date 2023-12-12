@@ -12,6 +12,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/hay-kot/homebox/backend/app/api/handlers/debughandlers"
 	v1 "github.com/hay-kot/homebox/backend/app/api/handlers/v1"
+	"github.com/hay-kot/homebox/backend/app/api/providers"
 	_ "github.com/hay-kot/homebox/backend/app/api/static/docs"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authroles"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
@@ -63,8 +64,12 @@ func (a *app) mountRoutes(r *chi.Mux, chain *errchain.ErrChain, repos *repo.AllR
 		BuildTime: buildTime,
 	})))
 
+	providers := []v1.AuthProvider{
+		providers.NewLocalProvider(a.services.User),
+	}
+
 	r.Post(v1Base("/users/register"), chain.ToHandlerFunc(v1Ctrl.HandleUserRegistration()))
-	r.Post(v1Base("/users/login"), chain.ToHandlerFunc(v1Ctrl.HandleAuthLogin()))
+	r.Post(v1Base("/users/login"), chain.ToHandlerFunc(v1Ctrl.HandleAuthLogin(providers...)))
 
 	userMW := []errchain.Middleware{
 		a.mwAuthToken,
