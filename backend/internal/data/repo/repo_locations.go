@@ -135,6 +135,7 @@ func (r *LocationRepository) GetAll(ctx context.Context, GID uuid.UUID, filter L
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	list := []LocationOutCount{}
 	for rows.Next() {
@@ -285,6 +286,7 @@ func (lr *LocationRepository) PathForLoc(ctx context.Context, GID, locID uuid.UU
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	var locations []LocationPath
 
