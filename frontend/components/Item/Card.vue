@@ -19,7 +19,7 @@
         <div v-if="item.insured" class="tooltip z-10" data-tip="Insured">
           <Icon class="h-5 w-5 text-primary" name="mdi-shield-check" />
         </div>
-        <div v-if="item.quantity > 1" class="tooltip" data-tip="Quantity">
+        <div v-if="item.quantity > 1 || item.quantity == 0" class="tooltip" data-tip="Quantity">
           <span class="badge h-5 w-5 badge-primary badge-sm text-xs">
             {{ item.quantity }}
           </span>
