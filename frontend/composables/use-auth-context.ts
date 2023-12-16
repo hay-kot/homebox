@@ -71,6 +71,7 @@ class AuthContext implements IAuthContext {
   }
 
   isAuthorized() {
+    console.debug("isAuthorized", this.token);
     return this.token;
   }
 
