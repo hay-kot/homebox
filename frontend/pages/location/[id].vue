@@ -31,7 +31,7 @@
 
   async function confirmDelete() {
     const { isCanceled } = await confirm.open(
-      "Are you sure you want to delete this location and all of its items? This action cannot be undone."
+      "Delete Location", "Are you sure you want to delete this location and all of its items? This action cannot be undone."
     );
     if (isCanceled) {
       return;
@@ -108,9 +108,9 @@
     <BaseModal v-model="updateModal">
       <template #title> Update Location </template>
       <form v-if="location" @submit.prevent="update">
-        <FormTextField v-model="updateData.name" :autofocus="true" label="Location Name" />
-        <FormTextArea v-model="updateData.description" label="Location Description" />
-        <LocationSelector v-model="parent" />
+        <FormTextField class="mt-3" v-model="updateData.name" :autofocus="true" label="Location Name" />
+        <FormTextArea class="mt-2" v-model="updateData.description" label="Location Description" />
+        <LocationSelector class="mt-2" v-model="parent" />
         <div class="modal-action">
           <BaseButton type="submit" :loading="updating"> Update </BaseButton>
         </div>
@@ -122,8 +122,8 @@
         <header class="mb-2">
           <div class="flex flex-wrap items-end gap-2">
             <div class="avatar placeholder mb-auto">
-              <div class="bg-neutral-focus text-neutral-content rounded-full w-12">
-                <Icon name="mdi-package-variant" class="h-7 w-7" />
+              <div class="bg-neutral-focus text-neutral-content rounded-full w-12 ml-2">
+                <Icon name="heroicons-map-pin" class="h-7 w-7" />
               </div>
             </div>
             <div>
@@ -145,15 +145,13 @@
                 </div>
               </div>
             </div>
-            <div class="ml-auto mt-2 flex flex-wrap items-center justify-between gap-3">
-              <div class="btn-group">
-                <PageQRCode class="dropdown-left" />
-                <BaseButton size="sm" @click="openUpdate">
-                  <Icon class="mr-1" name="mdi-pencil" />
-                  Edit
-                </BaseButton>
-              </div>
-              <BaseButton class="btn btn-sm" @click="confirmDelete()">
+            <div class="ml-auto mt-2 mr-3 flex flex-wrap items-center justify-between gap-3">
+              <PageQRCode class="dropdown-left" />
+              <BaseButton size="sm" @click="openUpdate">
+                <Icon class="mr-2" name="mdi-pencil" />
+                Edit
+              </BaseButton>
+              <BaseButton class="btn btn-sm btn-error" @click="confirmDelete()">
                 <Icon name="mdi-delete" class="mr-2" />
                 Delete
               </BaseButton>
@@ -161,7 +159,7 @@
           </div>
         </header>
         <div class="divider my-0 mb-1"></div>
-        <Markdown v-if="location && location.description" class="text-base" :source="location.description"> </Markdown>
+        <Markdown v-if="location && location.description" class="text-base ml-2" :source="location.description"> </Markdown>
       </div>
       <section v-if="location && items">
         <ItemViewSelectable :items="items" />
