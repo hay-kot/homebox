@@ -185,8 +185,12 @@ func (svc *ItemService) CsvImport(ctx context.Context, GID uuid.UUID, data io.Re
 
 	finished := 0
 
+	var errorMessage string
+
 	for i := range sheet.Rows {
 		row := sheet.Rows[i]
+		
+		var hasNegativeValues bool
 
 		createRequired := true
 
@@ -201,6 +205,25 @@ func (svc *ItemService) CsvImport(ctx context.Context, GID uuid.UUID, data io.Re
 			if exists {
 				createRequired = false
 			}
+		}
+		
+		// Ooi J Sen
+		// Check integer fields for negative values
+		if row.Quantity < 0 {
+			errorMessage += fmt.Sprintf("Negative quantity at row %d\n", i+1)
+			hasNegativeValues = true
+		}
+		if row.PurchasePrice < 0 {
+			errorMessage += fmt.Sprintf("Negative purchase price at row %d\n", i+1)
+			hasNegativeValues = true
+		}
+		if row.SoldPrice < 0 {
+			errorMessage += fmt.Sprintf("Negative sold price at row %d\n", i+1)
+			hasNegativeValues = true
+		}
+
+		if (hasNegativeValues) {
+			continue
 		}
 
 		// ========================================
@@ -348,6 +371,15 @@ func (svc *ItemService) CsvImport(ctx context.Context, GID uuid.UUID, data io.Re
 		}
 
 		finished++
+	}
+
+	// Ooi J Sen
+	// Display error messages in console
+	if errorMessage != "" {
+		// Log or handle the error message here
+		fmt.Println("Error Messages:")
+		fmt.Println(errorMessage)
+		return 0, fmt.Errorf("Errors detected in CSV:\n%s", errorMessage)
 	}
 
 	return finished, nil
