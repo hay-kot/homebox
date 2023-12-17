@@ -89,6 +89,20 @@ func serializeLocation[T ~[]string](location T) string {
 	return strings.Join(location, "/")
 }
 
+// Ooi J Sen
+// Function to validate headers
+func validateHeaders(expected, actual []string) bool {
+	if len(expected) != len(actual) {
+		return false
+	}
+	for i := range expected {
+		if expected[i] != actual[i] {
+			return false
+		}
+	}
+	return true
+}
+
 // CsvImport imports items from a CSV file. using the standard defined format.
 //
 // CsvImport applies the following rules/operations
@@ -102,6 +116,16 @@ func (svc *ItemService) CsvImport(ctx context.Context, GID uuid.UUID, data io.Re
 	err := sheet.Read(data)
 	if err != nil {
 		return 0, err
+	}
+	
+	// Ooi J Sen
+	// Access excel sheet headers
+	headers := sheet.GetHeaders()
+
+	// Validate column headers
+	expectedHeaders := []string{"HB.import_ref", "HB.location", "HB.labels", "HB.asset_id", "HB.archived", "HB.name", "HB.quantity", "HB.description", "HB.insured", "HB.notes", "HB.purchase_price", "HB.purchase_from", "HB.purchase_time", "HB.manufacturer", "HB.model_number", "HB.serial_number", "HB.lifetime_warranty", "HB.warranty_expires", "HB.warranty_details", "HB.sold_to", "HB.sold_price", "HB.sold_time", "HB.sold_notes",}
+	if !validateHeaders(expectedHeaders, headers) {
+		return 0, fmt.Errorf("CSV columns do not match the expected format")
 	}
 
 	// ========================================
