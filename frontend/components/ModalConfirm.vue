@@ -1,7 +1,7 @@
 <template>
   <BaseModal v-model="isRevealed" readonly @cancel="cancel(false)">
-    <template #title> Confirm </template>
-    <div>
+    <template #title> Confirm {{ title }}</template>
+    <div class="mt-3">
       <p>{{ text }}</p>
     </div>
     <div class="modal-action">
@@ -11,5 +11,5 @@
 </template>
 
 <script setup lang="ts">
-  const { text, isRevealed, confirm, cancel } = useConfirm();
+  const { title, text, isRevealed, confirm, cancel } = useConfirm();
 </script>

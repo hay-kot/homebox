@@ -122,7 +122,7 @@
   const confirm = useConfirm();
 
   async function deleteEntry(id: string) {
-    const result = await confirm.open("Are you sure you want to delete this entry?");
+    const result = await confirm.open("Delete Maintenance Entry", "Are you sure you want to delete this entry?");
     if (result.isCanceled) {
       return;
     }
@@ -253,7 +253,7 @@
               </template>
               Edit
             </BaseButton>
-            <BaseButton size="sm" @click="deleteEntry(e.id)">
+            <BaseButton class="btn-error" size="sm" @click="deleteEntry(e.id)">
               <template #icon>
                 <Icon name="mdi-delete" />
               </template>

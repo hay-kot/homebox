@@ -97,7 +97,7 @@
 
   async function deleteProfile() {
     const result = await confirm.open(
-      "Are you sure you want to delete your account? If you are the last member in your group all your data will be deleted. This action cannot be undone."
+      "Delete Account", "Are you sure you want to delete your account? If you are the last member in your group all your data will be deleted. This action cannot be undone."
     );
 
     if (result.isCanceled) {
@@ -251,7 +251,7 @@
   }
 
   async function deleteNotifier(id: string) {
-    const result = await confirm.open("Are you sure you want to delete this notifier?");
+    const result = await confirm.open("Delete Notifier", "Are you sure you want to delete this notifier?");
 
     if (result.isCanceled) {
       return;
@@ -367,7 +367,7 @@
               <p class="mr-auto text-lg">{{ n.name }}</p>
               <div class="flex gap-2 justify-end">
                 <div class="tooltip" data-tip="Delete">
-                  <button class="btn btn-sm btn-square" @click="deleteNotifier(n.id)">
+                  <button class="btn btn-sm btn-square btn-error" @click="deleteNotifier(n.id)">
                     <Icon name="mdi-delete" />
                   </button>
                 </div>

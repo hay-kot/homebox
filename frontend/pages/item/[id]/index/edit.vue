@@ -286,7 +286,7 @@
   const confirm = useConfirm();
 
   async function deleteAttachment(attachmentId: string) {
-    const confirmed = await confirm.open("Are you sure you want to delete this attachment?");
+    const confirmed = await confirm.open("Delete Attachment" , "Are you sure you want to delete this attachment?");
 
     if (confirmed.isCanceled) {
       return;
@@ -521,7 +521,7 @@
               <div class="flex items-end col-span-3">
                 <FormTextField v-model="field.textValue" label="Value" />
                 <div class="tooltip" data-tip="Delete">
-                  <button class="btn btn-sm btn-square mb-2 ml-2" @click="item.fields.splice(idx, 1)">
+                  <button class="btn btn-sm btn-square mb-2 ml-2 btn-error" @click="item.fields.splice(idx, 1)">
                     <Icon name="mdi-delete" />
                   </button>
                 </div>
@@ -575,7 +575,7 @@
                 </p>
                 <div class="flex gap-2 justify-end">
                   <div class="tooltip" data-tip="Delete">
-                    <button class="btn btn-sm btn-square" @click="deleteAttachment(attachment.id)">
+                    <button class="btn btn-sm btn-square btn-error" @click="deleteAttachment(attachment.id)">
                       <Icon name="mdi-delete" />
                     </button>
                   </div>
