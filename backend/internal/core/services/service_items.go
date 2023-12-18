@@ -92,15 +92,31 @@ func serializeLocation[T ~[]string](location T) string {
 // Ooi J Sen
 // Function to validate headers
 func validateHeaders(expected, actual []string) bool {
-	if len(expected) != len(actual) {
-		return false
+	actualHeaderCount := make(map[string]int)
+
+	// Count occurrences of headers in the actual slice
+	for _, header := range actual {
+		actualHeaderCount[header]++
 	}
-	for i := range expected {
-		if expected[i] != actual[i] {
+
+	// Check if all actual headers are within the expected headers
+	for header, count := range actualHeaderCount {
+		if count > 0 && !contains(expected, header) {
 			return false
 		}
 	}
+
 	return true
+}
+
+// Function to check if a string slice contains a specific string
+func contains(slice []string, str string) bool {
+	for _, s := range slice {
+		if s == str {
+			return true
+		}
+	}
+	return false
 }
 
 // CsvImport imports items from a CSV file. using the standard defined format.
