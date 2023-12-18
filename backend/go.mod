@@ -22,7 +22,7 @@ require (
 	github.com/swaggo/swag v1.16.2
 	github.com/yeqown/go-qrcode/v2 v2.2.2
 	github.com/yeqown/go-qrcode/writer/standard v1.2.2
-	golang.org/x/crypto v0.16.0
+	golang.org/x/crypto v0.17.0
 	modernc.org/sqlite v1.27.0
 )
 
