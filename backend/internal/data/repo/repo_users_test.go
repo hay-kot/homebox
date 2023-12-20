@@ -28,7 +28,7 @@ func TestUserRepo_GetOneEmail(t *testing.T) {
 	foundUser, err := tRepos.Users.GetOneEmail(ctx, user.Email)
 
 	assert.NotNil(foundUser)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(user.Email, foundUser.Email)
 	assert.Equal(user.Name, foundUser.Name)
 
@@ -46,7 +46,7 @@ func TestUserRepo_GetOneId(t *testing.T) {
 	foundUser, err := tRepos.Users.GetOneId(ctx, userOut.ID)
 
 	assert.NotNil(foundUser)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(user.Email, foundUser.Email)
 	assert.Equal(user.Name, foundUser.Name)
 
@@ -131,12 +131,12 @@ func TestUserRepo_Delete(t *testing.T) {
 	ctx := context.Background()
 	allUsers, _ := tRepos.Users.GetAll(ctx)
 
-	assert.Greater(t, len(allUsers), 0)
+	assert.NotEmpty(t, allUsers)
 	err := tRepos.Users.DeleteAll(ctx)
 	assert.NoError(t, err)
 
 	allUsers, _ = tRepos.Users.GetAll(ctx)
-	assert.Equal(t, len(allUsers), 0)
+	assert.Empty(t, allUsers)
 }
 
 func TestUserRepo_GetSuperusers(t *testing.T) {

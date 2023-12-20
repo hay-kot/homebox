@@ -59,5 +59,5 @@ func Test_Mailer(t *testing.T) {
 
 	err = mailer.Send(msg)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 }

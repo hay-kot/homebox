@@ -67,7 +67,7 @@ func TestMaintenanceEntryRepository_GetLog(t *testing.T) {
 	}
 
 	assert.Equal(t, item.ID, log.ItemID)
-	assert.Equal(t, 10, len(log.Entries))
+	assert.Len(t, log.Entries, 10)
 
 	// Calculate the average cost
 	var total float64

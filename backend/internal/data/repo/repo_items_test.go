@@ -97,7 +97,7 @@ func TestItemsRepository_GetAll(t *testing.T) {
 	results, err := tRepos.Items.GetAll(context.Background(), tGroup.ID)
 	assert.NoError(t, err)
 
-	assert.Equal(t, length, len(results))
+	assert.Len(t, results, length)
 
 	for _, item := range results {
 		for _, expectedItem := range expected {

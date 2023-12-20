@@ -136,12 +136,12 @@ func TestItemRepository_TreeQuery(t *testing.T) {
 
 	assert.NoError(t, err)
 
-	assert.Equal(t, 2, len(locations))
+	assert.Len(t, locations, 2)
 
 	// Check roots
 	for _, loc := range locations {
 		if loc.ID == locs[1].ID {
-			assert.Equal(t, 1, len(loc.Children))
+			assert.Len(t, loc.Children, 1)
 		}
 	}
 }
@@ -165,7 +165,7 @@ func TestLocationRepository_PathForLoc(t *testing.T) {
 	path, err := tRepos.Locations.PathForLoc(context.Background(), tGroup.ID, last.ID)
 
 	assert.NoError(t, err)
-	assert.Equal(t, 3, len(path))
+	assert.Len(t, path, 3)
 
 	// Check path and order
 	for i, loc := range path {
