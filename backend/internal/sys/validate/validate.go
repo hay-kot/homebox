@@ -52,7 +52,6 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-
 }
 
 // Checks a struct for validation errors and returns any errors the occur. This

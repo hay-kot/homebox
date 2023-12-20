@@ -21,12 +21,12 @@ type LocationRepository struct {
 type (
 	LocationCreate struct {
 		Name        string    `json:"name"`
-		ParentID    uuid.UUID `json:"parentId" extensions:"x-nullable"`
+		ParentID    uuid.UUID `json:"parentId"    extensions:"x-nullable"`
 		Description string    `json:"description"`
 	}
 
 	LocationUpdate struct {
-		ParentID    uuid.UUID `json:"parentId" extensions:"x-nullable"`
+		ParentID    uuid.UUID `json:"parentId"    extensions:"x-nullable"`
 		ID          uuid.UUID `json:"id"`
 		Name        string    `json:"name"`
 		Description string    `json:"description"`

@@ -12,7 +12,7 @@ import (
 
 type (
 	GroupInvitationCreate struct {
-		Uses      int       `json:"uses" validate:"required,min=1,max=100"`
+		Uses      int       `json:"uses"      validate:"required,min=1,max=100"`
 		ExpiresAt time.Time `json:"expiresAt"`
 	}
 

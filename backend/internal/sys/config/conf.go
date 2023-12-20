@@ -16,7 +16,7 @@ const (
 
 type Config struct {
 	conf.Version
-	Mode    string     `yaml:"mode" conf:"default:development"` // development or production
+	Mode    string     `yaml:"mode"    conf:"default:development"` // development or production
 	Web     WebConfig  `yaml:"web"`
 	Storage Storage    `yaml:"storage"`
 	Log     LoggerConf `yaml:"logger"`
@@ -27,13 +27,13 @@ type Config struct {
 }
 
 type Options struct {
-	AllowRegistration    bool `yaml:"disable_registration" conf:"default:true"`
+	AllowRegistration    bool `yaml:"disable_registration"    conf:"default:true"`
 	AutoIncrementAssetID bool `yaml:"auto_increment_asset_id" conf:"default:true"`
 }
 
 type DebugConf struct {
 	Enabled bool   `yaml:"enabled" conf:"default:false"`
-	Port    string `yaml:"port" conf:"default:4000"`
+	Port    string `yaml:"port"    conf:"default:4000"`
 }
 
 type WebConfig struct {

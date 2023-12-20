@@ -233,7 +233,6 @@ func (ctrl *V1Controller) HandleGetAllCustomFieldValues() errchain.HandlerFunc {
 	}
 
 	return adapters.Query(fn, http.StatusOK)
-
 }
 
 // HandleItemsImport godocs

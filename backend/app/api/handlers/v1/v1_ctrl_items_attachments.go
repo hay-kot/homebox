@@ -39,7 +39,6 @@ func (ctrl *V1Controller) HandleItemAttachmentCreate() errchain.HandlerFunc {
 		if err != nil {
 			log.Err(err).Msg("failed to parse multipart form")
 			return validate.NewRequestError(errors.New("failed to parse multipart form"), http.StatusBadRequest)
-
 		}
 
 		errs := validate.NewFieldErrors()

@@ -35,15 +35,15 @@ func NewNotifierRepository(db *ent.Client) *NotifierRepository {
 
 type (
 	NotifierCreate struct {
-		Name     string `json:"name" validate:"required,min=1,max=255"`
+		Name     string `json:"name"     validate:"required,min=1,max=255"`
 		IsActive bool   `json:"isActive"`
-		URL      string `json:"url" validate:"required,shoutrrr"`
+		URL      string `json:"url"      validate:"required,shoutrrr"`
 	}
 
 	NotifierUpdate struct {
-		Name     string  `json:"name" validate:"required,min=1,max=255"`
+		Name     string  `json:"name"     validate:"required,min=1,max=255"`
 		IsActive bool    `json:"isActive"`
-		URL      *string `json:"url" validate:"omitempty,shoutrrr" extensions:"x-nullable" `
+		URL      *string `json:"url"      validate:"omitempty,shoutrrr"     extensions:"x-nullable"`
 	}
 
 	NotifierOut struct {

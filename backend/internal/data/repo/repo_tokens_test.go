@@ -116,7 +116,6 @@ func TestAuthTokenRepo_PurgeExpiredTokens(t *testing.T) {
 		assert.NotNil(createdToken)
 
 		createdTokens = append(createdTokens, createdToken)
-
 	}
 
 	// Purge expired tokens
