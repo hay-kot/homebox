@@ -276,9 +276,9 @@ func mapItemOut(item *ent.Item) ItemOut {
 	}
 }
 
-func (r *ItemsRepository) publishMutationEvent(GID uuid.UUID) {
-	if r.bus != nil {
-		r.bus.Publish(eventbus.EventItemMutation, eventbus.GroupMutationEvent{GID: GID})
+func (e *ItemsRepository) publishMutationEvent(GID uuid.UUID) {
+	if e.bus != nil {
+		e.bus.Publish(eventbus.EventItemMutation, eventbus.GroupMutationEvent{GID: GID})
 	}
 }
 

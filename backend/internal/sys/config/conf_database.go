@@ -7,5 +7,5 @@ const (
 type Storage struct {
 	// Data is the path to the root directory
 	Data      string `yaml:"data"       conf:"default:./.data"`
-	SqliteUrl string `yaml:"sqlite-url" conf:"default:./.data/homebox.db?_pragma=busy_timeout=1000&_pragma=journal_mode=WAL&_fk=1"`
+	SqliteURL string `yaml:"sqlite-url" conf:"default:./.data/homebox.db?_pragma=busy_timeout=999&_pragma=journal_mode=WAL&_fk=1"`
 }

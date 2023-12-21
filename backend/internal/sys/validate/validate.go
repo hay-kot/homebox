@@ -1,3 +1,4 @@
+// Package validate provides a wrapper around the go-playground/validator package
 package validate
 
 import (
@@ -8,7 +9,7 @@ import (
 
 var validate *validator.Validate
 
-func init() {
+func init() { // nolint
 	validate = validator.New()
 
 	err := validate.RegisterValidation("shoutrrr", func(fl validator.FieldLevel) bool {
@@ -54,14 +55,14 @@ func init() {
 	}
 }
 
-// Checks a struct for validation errors and returns any errors the occur. This
+// Check a struct for validation errors and returns any errors the occur. This
 // wraps the validate.Struct() function and provides some error wrapping. When
 // a validator.ValidationErrors is returned, it is wrapped transformed into a
 // FieldErrors array and returned.
 func Check(val any) error {
 	err := validate.Struct(val)
 	if err != nil {
-		verrors, ok := err.(validator.ValidationErrors)
+		verrors, ok := err.(validator.ValidationErrors) // nolint - we know it's a validator.ValidationErrors
 		if !ok {
 			return err
 		}

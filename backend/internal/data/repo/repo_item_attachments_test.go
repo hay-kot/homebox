@@ -8,6 +8,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/attachment"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAttachmentRepo_Create(t *testing.T) {
@@ -23,8 +24,8 @@ func TestAttachmentRepo_Create(t *testing.T) {
 
 	type args struct {
 		ctx    context.Context
-		itemId uuid.UUID
-		docId  uuid.UUID
+		itemID uuid.UUID
+		docID  uuid.UUID
 		typ    attachment.Type
 	}
 	tests := []struct {
@@ -37,8 +38,8 @@ func TestAttachmentRepo_Create(t *testing.T) {
 			name: "create attachment",
 			args: args{
 				ctx:    context.Background(),
-				itemId: item.ID,
-				docId:  doc.ID,
+				itemID: item.ID,
+				docID:  doc.ID,
 				typ:    attachment.TypePhoto,
 			},
 			want: &ent.Attachment{
@@ -49,8 +50,8 @@ func TestAttachmentRepo_Create(t *testing.T) {
 			name: "create attachment with invalid item id",
 			args: args{
 				ctx:    context.Background(),
-				itemId: uuid.New(),
-				docId:  doc.ID,
+				itemID: uuid.New(),
+				docID:  doc.ID,
 				typ:    "blarg",
 			},
 			wantErr: true,
@@ -58,7 +59,7 @@ func TestAttachmentRepo_Create(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := tRepos.Attachments.Create(tt.args.ctx, tt.args.itemId, tt.args.docId, tt.args.typ)
+			got, err := tRepos.Attachments.Create(tt.args.ctx, tt.args.itemID, tt.args.docID, tt.args.typ)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("AttachmentRepo.Create() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -71,9 +72,9 @@ func TestAttachmentRepo_Create(t *testing.T) {
 			assert.Equal(t, tt.want.Type, got.Type)
 
 			withItems, err := tRepos.Attachments.Get(tt.args.ctx, got.ID)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.args.itemId, withItems.Edges.Item.ID)
-			assert.Equal(t, tt.args.docId, withItems.Edges.Document.ID)
+			require.NoError(t, err)
+			assert.Equal(t, tt.args.itemID, withItems.Edges.Item.ID)
+			assert.Equal(t, tt.args.docID, withItems.Edges.Document.ID)
 
 			ids = append(ids, got.ID)
 		})
@@ -96,7 +97,7 @@ func useAttachments(t *testing.T, n int) []*ent.Attachment {
 	attachments := make([]*ent.Attachment, n)
 	for i := 0; i < n; i++ {
 		attachment, err := tRepos.Attachments.Create(context.Background(), item.ID, doc.ID, attachment.TypePhoto)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		attachments[i] = attachment
 
 		ids = append(ids, attachment.ID)
@@ -114,10 +115,10 @@ func TestAttachmentRepo_Update(t *testing.T) {
 				Type: string(typ),
 			})
 
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			updated, err := tRepos.Attachments.Get(context.Background(), entity.ID)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, typ, updated.Type)
 		})
 	}
@@ -127,7 +128,7 @@ func TestAttachmentRepo_Delete(t *testing.T) {
 	entity := useAttachments(t, 1)[0]
 
 	err := tRepos.Attachments.Delete(context.Background(), entity.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	_, err = tRepos.Attachments.Get(context.Background(), entity.ID)
 	assert.Error(t, err)

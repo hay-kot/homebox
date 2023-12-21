@@ -1,4 +1,4 @@
-// / Package eventbus provides an interface for event bus.
+// Package eventbus provides an interface for event bus.
 package eventbus
 
 import (

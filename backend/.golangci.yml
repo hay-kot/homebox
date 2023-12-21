@@ -22,8 +22,6 @@ linters-settings:
               package io or package os, and those implementations should be
               preferred in new code. See the specific function documentation for
               details.
-          - pkg: github.com/pkg/errors
-            desc: Should be replaced by standard lib errors package
   gocritic:
     enabled-checks:
       - ruleguard

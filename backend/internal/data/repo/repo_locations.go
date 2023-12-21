@@ -99,7 +99,7 @@ type LocationQuery struct {
 	FilterChildren bool `json:"filterChildren" schema:"filterChildren"`
 }
 
-// GetALlWithCount returns all locations with item count field populated
+// GetAll returns all locations with item count field populated
 func (r *LocationRepository) GetAll(ctx context.Context, GID uuid.UUID, filter LocationQuery) ([]LocationOutCount, error) {
 	query := `--sql
 		SELECT
@@ -135,7 +135,7 @@ func (r *LocationRepository) GetAll(ctx context.Context, GID uuid.UUID, filter L
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	list := []LocationOutCount{}
 	for rows.Next() {
@@ -286,7 +286,7 @@ func (lr *LocationRepository) PathForLoc(ctx context.Context, GID, locID uuid.UU
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var locations []LocationPath
 
@@ -311,7 +311,7 @@ func (lr *LocationRepository) PathForLoc(ctx context.Context, GID, locID uuid.UU
 	return locations, nil
 }
 
-func (lr *LocationRepository) Tree(ctx context.Context, GID uuid.UUID, tq TreeQuery) ([]TreeItem, error) {
+func (r *LocationRepository) Tree(ctx context.Context, GID uuid.UUID, tq TreeQuery) ([]TreeItem, error) {
 	query := `
 		WITH recursive location_tree(id, NAME, parent_id, level, node_type) AS
 		(
@@ -393,11 +393,11 @@ func (lr *LocationRepository) Tree(ctx context.Context, GID uuid.UUID, tq TreeQu
 		query = strings.ReplaceAll(query, "{{ WITH_ITEMS_FROM }}", "")
 	}
 
-	rows, err := lr.db.Sql().QueryContext(ctx, query, GID)
+	rows, err := r.db.Sql().QueryContext(ctx, query, GID)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var locations []FlatTreeItem
 	for rows.Next() {

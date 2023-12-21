@@ -10,7 +10,7 @@ import (
 	"github.com/hay-kot/httpkit/errchain"
 )
 
-// HandleMaintenanceGetLog godoc
+// HandleMaintenanceLogGet godoc
 //
 //	@Summary  Get Maintenance Log
 //	@Tags     Maintenance

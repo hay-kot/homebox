@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func locationFactory() LocationCreate {
@@ -24,7 +25,7 @@ func useLocations(t *testing.T, len int) []LocationOut {
 
 	for i := 0; i < len; i++ {
 		loc, err := tRepos.Locations.Create(context.Background(), tGroup.ID, locationFactory())
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		out[i] = loc
 	}
 
@@ -42,15 +43,15 @@ func useLocations(t *testing.T, len int) []LocationOut {
 
 func TestLocationRepository_Get(t *testing.T) {
 	loc, err := tRepos.Locations.Create(context.Background(), tGroup.ID, locationFactory())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	// Get by ID
 	foundLoc, err := tRepos.Locations.Get(context.Background(), loc.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, loc.ID, foundLoc.ID)
 
 	err = tRepos.Locations.delete(context.Background(), loc.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }
 
 func TestLocationRepositoryGetAllWithCount(t *testing.T) {
@@ -63,10 +64,10 @@ func TestLocationRepositoryGetAllWithCount(t *testing.T) {
 		LocationID:  result.ID,
 	})
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	results, err := tRepos.Locations.GetAll(context.Background(), tGroup.ID, LocationQuery{})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	for _, loc := range results {
 		if loc.ID == result.ID {
@@ -80,11 +81,11 @@ func TestLocationRepository_Create(t *testing.T) {
 
 	// Get by ID
 	foundLoc, err := tRepos.Locations.Get(context.Background(), loc.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, loc.ID, foundLoc.ID)
 
 	err = tRepos.Locations.delete(context.Background(), loc.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }
 
 func TestLocationRepository_Update(t *testing.T) {
@@ -97,24 +98,24 @@ func TestLocationRepository_Update(t *testing.T) {
 	}
 
 	update, err := tRepos.Locations.UpdateByGroup(context.Background(), tGroup.ID, updateData.ID, updateData)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	foundLoc, err := tRepos.Locations.Get(context.Background(), loc.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	assert.Equal(t, update.ID, foundLoc.ID)
 	assert.Equal(t, update.Name, foundLoc.Name)
 	assert.Equal(t, update.Description, foundLoc.Description)
 
 	err = tRepos.Locations.delete(context.Background(), loc.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }
 
 func TestLocationRepository_Delete(t *testing.T) {
 	loc := useLocations(t, 1)[0]
 
 	err := tRepos.Locations.delete(context.Background(), loc.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	_, err = tRepos.Locations.Get(context.Background(), loc.ID)
 	assert.Error(t, err)
@@ -130,11 +131,11 @@ func TestItemRepository_TreeQuery(t *testing.T) {
 		Name:        locs[0].Name,
 		Description: locs[0].Description,
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	locations, err := tRepos.Locations.Tree(context.Background(), tGroup.ID, TreeQuery{WithItems: true})
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	assert.Len(t, locations, 2)
 
@@ -157,14 +158,14 @@ func TestLocationRepository_PathForLoc(t *testing.T) {
 			Name:        locs[i].Name,
 			Description: locs[i].Description,
 		})
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	}
 
 	last := locs[0]
 
 	path, err := tRepos.Locations.PathForLoc(context.Background(), tGroup.ID, last.ID)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, path, 3)
 
 	// Check path and order

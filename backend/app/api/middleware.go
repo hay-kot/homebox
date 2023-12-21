@@ -131,7 +131,7 @@ func (a *app) mwAuthToken(next errchain.Handler) errchain.Handler {
 		}
 
 		if requestToken == "" {
-			return validate.NewRequestError(errors.New("Authorization header or query is required"), http.StatusUnauthorized)
+			return validate.NewRequestError(errors.New("authorization header or query is required"), http.StatusUnauthorized)
 		}
 
 		requestToken = strings.TrimPrefix(requestToken, "Bearer ")

@@ -32,7 +32,7 @@ func (svc *ItemService) Create(ctx Context, item repo.ItemCreate) (repo.ItemOut,
 			return repo.ItemOut{}, err
 		}
 
-		item.AssetID = repo.AssetID(highest + 1)
+		item.AssetID = highest + 1
 	}
 
 	return svc.repo.Items.Create(ctx, ctx.GID, item)
@@ -53,7 +53,7 @@ func (svc *ItemService) EnsureAssetID(ctx context.Context, GID uuid.UUID) (int, 
 	for _, item := range items {
 		highest++
 
-		err = svc.repo.Items.SetAssetID(ctx, GID, item.ID, repo.AssetID(highest))
+		err = svc.repo.Items.SetAssetID(ctx, GID, item.ID, highest)
 		if err != nil {
 			return 0, err
 		}

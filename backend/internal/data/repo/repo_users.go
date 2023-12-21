@@ -60,9 +60,9 @@ func mapUserOut(user *ent.User) UserOut {
 	}
 }
 
-func (e *UserRepository) GetOneId(ctx context.Context, id uuid.UUID) (UserOut, error) {
+func (e *UserRepository) GetOneId(ctx context.Context, ID uuid.UUID) (UserOut, error) {
 	return mapUserOutErr(e.db.User.Query().
-		Where(user.ID(id)).
+		Where(user.ID(ID)).
 		WithGroup().
 		Only(ctx))
 }

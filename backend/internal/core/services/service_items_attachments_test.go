@@ -9,6 +9,7 @@ import (
 
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestItemService_AddAttachment(t *testing.T) {
@@ -23,7 +24,7 @@ func TestItemService_AddAttachment(t *testing.T) {
 		Description: "test",
 		Name:        "test",
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, loc)
 
 	itmC := repo.ItemCreate{
@@ -33,11 +34,11 @@ func TestItemService_AddAttachment(t *testing.T) {
 	}
 
 	itm, err := svc.repo.Items.Create(context.Background(), tGroup.ID, itmC)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, itm)
 	t.Cleanup(func() {
 		err := svc.repo.Items.Delete(context.Background(), itm.ID)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	})
 
 	contents := fk.Str(1000)
@@ -45,7 +46,7 @@ func TestItemService_AddAttachment(t *testing.T) {
 
 	// Setup
 	afterAttachment, err := svc.AttachmentAdd(tCtx, itm.ID, "testfile.txt", "attachment", reader)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, afterAttachment)
 
 	// Check that the file exists
@@ -56,6 +57,6 @@ func TestItemService_AddAttachment(t *testing.T) {
 
 	// Check that the file contents are correct
 	bts, err := os.ReadFile(storedPath)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, contents, string(bts))
 }

@@ -16,7 +16,7 @@ var (
 	oneWeek              = time.Hour * 24 * 7
 	ErrorInvalidLogin    = errors.New("invalid username or password")
 	ErrorInvalidToken    = errors.New("invalid token")
-	ErrorTokenIdMismatch = errors.New("token id mismatch")
+	ErrorTokenIDMismatch = errors.New("token id mismatch")
 )
 
 type UserService struct {
@@ -140,7 +140,7 @@ func (svc *UserService) UpdateSelf(ctx context.Context, ID uuid.UUID, data repo.
 // ============================================================================
 // User Authentication
 
-func (svc *UserService) createSessionToken(ctx context.Context, userId uuid.UUID, extendedSession bool) (UserAuthTokenDetail, error) {
+func (svc *UserService) createSessionToken(ctx context.Context, userID uuid.UUID, extendedSession bool) (UserAuthTokenDetail, error) {
 	attachmentToken := hasher.GenerateToken()
 
 	expiresAt := time.Now().Add(oneWeek)
@@ -149,7 +149,7 @@ func (svc *UserService) createSessionToken(ctx context.Context, userId uuid.UUID
 	}
 
 	attachmentData := repo.UserAuthTokenCreate{
-		UserID:    userId,
+		UserID:    userID,
 		TokenHash: attachmentToken.Hash,
 		ExpiresAt: expiresAt,
 	}
@@ -161,7 +161,7 @@ func (svc *UserService) createSessionToken(ctx context.Context, userId uuid.UUID
 
 	userToken := hasher.GenerateToken()
 	data := repo.UserAuthTokenCreate{
-		UserID:    userId,
+		UserID:    userID,
 		TokenHash: userToken.Hash,
 		ExpiresAt: expiresAt,
 	}

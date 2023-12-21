@@ -7,6 +7,7 @@ import (
 
 	"github.com/hay-kot/homebox/backend/pkgs/hasher"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAuthTokenRepo_CreateToken(t *testing.T) {
@@ -77,20 +78,20 @@ func TestAuthTokenRepo_GetUserByToken(t *testing.T) {
 		UserID:    userOut.ID,
 	})
 
-	assert.NoError(err)
+	require.NoError(t, err)
 
 	// Get User from token
 	foundUser, err := tRepos.AuthTokens.GetUserFromToken(ctx, token.TokenHash)
 
-	assert.NoError(err)
+	require.NoError(t, err)
 	assert.Equal(userOut.ID, foundUser.ID)
 	assert.Equal(userOut.Name, foundUser.Name)
 	assert.Equal(userOut.Email, foundUser.Email)
 
 	// Cleanup
-	assert.NoError(tRepos.Users.Delete(ctx, userOut.ID))
+	require.NoError(t, tRepos.Users.Delete(ctx, userOut.ID))
 	_, err = tRepos.AuthTokens.DeleteAll(ctx)
-	assert.NoError(err)
+	require.NoError(t, err)
 }
 
 func TestAuthTokenRepo_PurgeExpiredTokens(t *testing.T) {
@@ -112,7 +113,7 @@ func TestAuthTokenRepo_PurgeExpiredTokens(t *testing.T) {
 			UserID:    userOut.ID,
 		})
 
-		assert.NoError(err)
+		require.NoError(t, err)
 		assert.NotNil(createdToken)
 
 		createdTokens = append(createdTokens, createdToken)
@@ -121,7 +122,7 @@ func TestAuthTokenRepo_PurgeExpiredTokens(t *testing.T) {
 	// Purge expired tokens
 	tokensDeleted, err := tRepos.AuthTokens.PurgeExpiredTokens(ctx)
 
-	assert.NoError(err)
+	require.NoError(t, err)
 	assert.Equal(5, tokensDeleted)
 
 	// Check if tokens are deleted
@@ -131,7 +132,7 @@ func TestAuthTokenRepo_PurgeExpiredTokens(t *testing.T) {
 	}
 
 	// Cleanup
-	assert.NoError(tRepos.Users.Delete(ctx, userOut.ID))
+	require.NoError(t, tRepos.Users.Delete(ctx, userOut.ID))
 	_, err = tRepos.AuthTokens.DeleteAll(ctx)
-	assert.NoError(err)
+	require.NoError(t, err)
 }

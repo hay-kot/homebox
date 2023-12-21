@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func userFactory() UserCreate {
@@ -23,18 +24,18 @@ func TestUserRepo_GetOneEmail(t *testing.T) {
 	ctx := context.Background()
 
 	_, err := tRepos.Users.Create(ctx, user)
-	assert.NoError(err)
+	require.NoError(t, err)
 
 	foundUser, err := tRepos.Users.GetOneEmail(ctx, user.Email)
 
 	assert.NotNil(foundUser)
-	assert.NoError(err)
+	require.NoError(t, err)
 	assert.Equal(user.Email, foundUser.Email)
 	assert.Equal(user.Name, foundUser.Name)
 
 	// Cleanup
 	err = tRepos.Users.DeleteAll(ctx)
-	assert.NoError(err)
+	require.NoError(t, err)
 }
 
 func TestUserRepo_GetOneId(t *testing.T) {
@@ -46,13 +47,13 @@ func TestUserRepo_GetOneId(t *testing.T) {
 	foundUser, err := tRepos.Users.GetOneId(ctx, userOut.ID)
 
 	assert.NotNil(foundUser)
-	assert.NoError(err)
+	require.NoError(t, err)
 	assert.Equal(user.Email, foundUser.Email)
 	assert.Equal(user.Name, foundUser.Name)
 
 	// Cleanup
 	err = tRepos.Users.DeleteAll(ctx)
-	assert.NoError(err)
+	require.NoError(t, err)
 }
 
 func TestUserRepo_GetAll(t *testing.T) {
@@ -76,7 +77,7 @@ func TestUserRepo_GetAll(t *testing.T) {
 	// Validate
 	allUsers, err := tRepos.Users.GetAll(ctx)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, len(created), len(allUsers))
 
 	for _, usr := range created {
@@ -96,12 +97,12 @@ func TestUserRepo_GetAll(t *testing.T) {
 
 	// Cleanup
 	err = tRepos.Users.DeleteAll(ctx)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }
 
 func TestUserRepo_Update(t *testing.T) {
 	user, err := tRepos.Users.Create(context.Background(), userFactory())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	updateData := UserUpdate{
 		Name:  fk.Str(10),
@@ -110,11 +111,11 @@ func TestUserRepo_Update(t *testing.T) {
 
 	// Update
 	err = tRepos.Users.Update(context.Background(), user.ID, updateData)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	// Validate
 	updated, err := tRepos.Users.GetOneId(context.Background(), user.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotEqual(t, user.Name, updated.Name)
 	assert.NotEqual(t, user.Email, updated.Email)
 }
@@ -133,7 +134,7 @@ func TestUserRepo_Delete(t *testing.T) {
 
 	assert.NotEmpty(t, allUsers)
 	err := tRepos.Users.DeleteAll(ctx)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	allUsers, _ = tRepos.Users.GetAll(ctx)
 	assert.Empty(t, allUsers)
@@ -160,7 +161,7 @@ func TestUserRepo_GetSuperusers(t *testing.T) {
 	ctx := context.Background()
 
 	superUsers, err := tRepos.Users.GetSuperusers(ctx)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	for _, usr := range superUsers {
 		assert.True(t, usr.IsSuperuser)
@@ -168,5 +169,5 @@ func TestUserRepo_GetSuperusers(t *testing.T) {
 
 	// Cleanup
 	err = tRepos.Users.DeleteAll(ctx)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }

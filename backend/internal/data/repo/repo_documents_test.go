@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func useDocs(t *testing.T, num int) []DocumentOut {
@@ -25,7 +26,7 @@ func useDocs(t *testing.T, num int) []DocumentOut {
 			Content: bytes.NewReader([]byte(fk.Str(10))),
 		})
 
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotNil(t, doc)
 		results = append(results, doc)
 		ids = append(ids, doc.ID)
@@ -80,31 +81,31 @@ func TestDocumentRepository_CreateUpdateDelete(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// Create Document
 			got, err := r.Create(tt.args.ctx, tt.args.gid, tt.args.doc)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.title, got.Title)
 			assert.Equal(t, fmt.Sprintf("%s/%s/documents", temp, tt.args.gid), filepath.Dir(got.Path))
 
 			ensureRead := func() {
 				// Read Document
 				bts, err := os.ReadFile(got.Path)
-				assert.NoError(t, err)
+				require.NoError(t, err)
 				assert.Equal(t, tt.content, string(bts))
 			}
 			ensureRead()
 
 			// Update Document
 			got, err = r.Rename(tt.args.ctx, got.ID, "__"+tt.title+"__")
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, "__"+tt.title+"__", got.Title)
 
 			ensureRead()
 
 			// Delete Document
 			err = r.Delete(tt.args.ctx, got.ID)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			_, err = os.Stat(got.Path)
-			assert.Error(t, err)
+			require.Error(t, err)
 		})
 	}
 }
