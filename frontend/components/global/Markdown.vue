@@ -11,6 +11,7 @@
   });
 
   const md = new MarkdownIt({
+    breaks: true,
     html: true,
     linkify: true,
     typographer: true,
