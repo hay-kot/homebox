@@ -1,0 +1,718 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://hay-kot.github.io/homebox/quick-start/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../tips-tricks/">
+      
+      <link rel="icon" href="../assets/img/favicon.svg">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.6">
+    
+    
+      
+        <title>Quick Start - Homebox</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.558e4712.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/extras.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="homebox" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#quick-start" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Homebox" class="md-header__button md-logo" aria-label="Homebox" data-md-component="logo">
+      
+  <img src="../assets/img/favicon.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Homebox
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Quick Start
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="homebox" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+            </label>
+          
+        
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hay-kot/homebox" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Homebox
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link md-tabs__link--active">
+        Home
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="https://redocly.github.io/redoc/?url=https://hay-kot.github.io/homebox/api/openapi-2.0.json" class="md-tabs__link">
+      API
+    </a>
+  </li>
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Homebox" class="md-nav__button md-logo" aria-label="Homebox" data-md-component="logo">
+      
+  <img src="../assets/img/favicon.svg" alt="logo">
+
+    </a>
+    Homebox
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hay-kot/homebox" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Homebox
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " data-md-toggle="__nav_1" type="checkbox" id="__nav_1" checked>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1" tabindex="0" aria-expanded="true">
+          Home
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Home" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          Home
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Quick Start
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Quick Start
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#docker-run" class="md-nav__link">
+    Docker Run
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docker-compose" class="md-nav__link">
+    Docker-Compose
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#env-variables-configuration" class="md-nav__link">
+    Env Variables &amp; Configuration
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tips-tricks/" class="md-nav__link">
+        Tips and Tricks
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../import-csv/" class="md-nav__link">
+        Import and Export
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../build/" class="md-nav__link">
+        Building The Binary
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://redocly.github.io/redoc/?url=https://hay-kot.github.io/homebox/api/openapi-2.0.json" class="md-nav__link">
+        API
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#docker-run" class="md-nav__link">
+    Docker Run
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docker-compose" class="md-nav__link">
+    Docker-Compose
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#env-variables-configuration" class="md-nav__link">
+    Env Variables &amp; Configuration
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+
+
+
+  
+  
+
+
+
+<h1 id="quick-start">Quick Start</h1>
+<h2 id="docker-run">Docker Run</h2>
+<p>Great for testing out the application, but not recommended for stable use. Checkout the docker-compose for the recommended deployment.</p>
+<p>For each image there are two tags, respectively the regular tag and $TAG-rootless, which uses a non-root image.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># If using the rootless image, ensure data</span>
+<span class="c1"># folder has correct permissions</span>
+$<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/path/to/data/folder
+$<span class="w"> </span>chown<span class="w"> </span><span class="m">65532</span>:65532<span class="w"> </span>-R<span class="w"> </span>/path/to/data/folder
+<span class="c1"># ---------------------------------------</span>
+<span class="c1"># Run the image</span>
+$<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--name<span class="w"> </span>homebox<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--restart<span class="w"> </span>unless-stopped<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--publish<span class="w"> </span><span class="m">3100</span>:7745<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--env<span class="w"> </span><span class="nv">TZ</span><span class="o">=</span>Europe/Bucharest<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--volume<span class="w"> </span>/path/to/data/folder/:/data<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>ghcr.io/hay-kot/homebox:latest
+<span class="c1"># ghcr.io/hay-kot/homebox:latest-rootless</span>
+</code></pre></div>
+<h2 id="docker-compose">Docker-Compose</h2>
+<div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3.4&quot;</span>
+
+<span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">homebox</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ghcr.io/hay-kot/homebox:latest</span>
+<span class="c1">#   image: ghcr.io/hay-kot/homebox:latest-rootless</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">homebox</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HBOX_LOG_LEVEL=info</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HBOX_LOG_FORMAT=text</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HBOX_WEB_MAX_UPLOAD_SIZE=10</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">homebox-data:/data/</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3100:7745</span>
+
+<span class="nt">volumes</span><span class="p">:</span>
+<span class="w">   </span><span class="nt">homebox-data</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">driver</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you use the <code>rootless</code> image, and instead of using named volumes you would prefer using a hostMount directly (e.g., <code>volumes: [ /path/to/data/folder:/data ]</code>) you need to <code>chown</code> the chosen directory in advance to the <code>65532</code> user (as shown in the Docker example above).</p>
+</div>
+<h2 id="env-variables-configuration">Env Variables &amp; Configuration</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HBOX_MODE</td>
+<td>production</td>
+<td>application mode used for runtime behavior  can be one of: development, production</td>
+</tr>
+<tr>
+<td>HBOX_WEB_PORT</td>
+<td>7745</td>
+<td>port to run the web server on, if you're using docker do not change this</td>
+</tr>
+<tr>
+<td>HBOX_WEB_HOST</td>
+<td></td>
+<td>host to run the web server on, if you're using docker do not change this</td>
+</tr>
+<tr>
+<td>HBOX_OPTIONS_ALLOW_REGISTRATION</td>
+<td>true</td>
+<td>allow users to register themselves</td>
+</tr>
+<tr>
+<td>HBOX_OPTIONS_AUTO_INCREMENT_ASSET_ID</td>
+<td>true</td>
+<td>auto increments the asset_id field for new items</td>
+</tr>
+<tr>
+<td>HBOX_WEB_MAX_UPLOAD_SIZE</td>
+<td>10</td>
+<td>maximum file upload size supported in MB</td>
+</tr>
+<tr>
+<td>HBOX_WEB_READ_TIMEOUT</td>
+<td>10</td>
+<td>Read timeout of HTTP sever</td>
+</tr>
+<tr>
+<td>HBOX_WEB_WRITE_TIMEOUT</td>
+<td>10</td>
+<td>Write timeout of HTTP server</td>
+</tr>
+<tr>
+<td>HBOX_WEB_IDLE_TIMEOUT</td>
+<td>30</td>
+<td>Idle timeout of HTTP server</td>
+</tr>
+<tr>
+<td>HBOX_STORAGE_DATA</td>
+<td>/data/</td>
+<td>path to the data directory, do not change this if you're using docker</td>
+</tr>
+<tr>
+<td>HBOX_STORAGE_SQLITE_URL</td>
+<td>/data/homebox.db?_fk=1</td>
+<td>sqlite database url, if you're using docker do not change this</td>
+</tr>
+<tr>
+<td>HBOX_LOG_LEVEL</td>
+<td>info</td>
+<td>log level to use, can be one of: trace, debug, info, warn, error, critical</td>
+</tr>
+<tr>
+<td>HBOX_LOG_FORMAT</td>
+<td>text</td>
+<td>log format to use, can be one of: text, json</td>
+</tr>
+<tr>
+<td>HBOX_MAILER_HOST</td>
+<td></td>
+<td>email host to use, if not set no email provider will be used</td>
+</tr>
+<tr>
+<td>HBOX_MAILER_PORT</td>
+<td>587</td>
+<td>email port to use</td>
+</tr>
+<tr>
+<td>HBOX_MAILER_USERNAME</td>
+<td></td>
+<td>email user to use</td>
+</tr>
+<tr>
+<td>HBOX_MAILER_PASSWORD</td>
+<td></td>
+<td>email password to use</td>
+</tr>
+<tr>
+<td>HBOX_MAILER_FROM</td>
+<td></td>
+<td>email from address to use</td>
+</tr>
+<tr>
+<td>HBOX_SWAGGER_HOST</td>
+<td>7745</td>
+<td>swagger host to use, if not set swagger will be disabled</td>
+</tr>
+<tr>
+<td>HBOX_SWAGGER_SCHEMA</td>
+<td>http</td>
+<td>swagger schema to use, can be one of: http, https</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">CLI Arguments</p>
+<p>If you're deploying without docker you can use command line arguments to configure the application. Run <code>homebox --help</code> for more information.</p>
+<div class="highlight"><pre><span></span><code>Usage:<span class="w"> </span>api<span class="w"> </span><span class="o">[</span>options<span class="o">]</span><span class="w"> </span><span class="o">[</span>arguments<span class="o">]</span>
+
+OPTIONS
+<span class="w">  </span>--mode/<span class="nv">$HBOX_MODE</span><span class="w">                                                        </span>&lt;string&gt;<span class="w">  </span><span class="o">(</span>default:<span class="w"> </span>development<span class="o">)</span>
+<span class="w">  </span>--web-port/<span class="nv">$HBOX_WEB_PORT</span><span class="w">                                                </span>&lt;string&gt;<span class="w">  </span><span class="o">(</span>default:<span class="w"> </span><span class="m">7745</span><span class="o">)</span>
+<span class="w">  </span>--web-host/<span class="nv">$HBOX_WEB_HOST</span><span class="w">                                                </span>&lt;string&gt;
+<span class="w">  </span>--web-max-upload-size/<span class="nv">$HBOX_WEB_MAX_UPLOAD_SIZE</span><span class="w">                          </span>&lt;int&gt;<span class="w">     </span><span class="o">(</span>default:<span class="w"> </span><span class="m">10</span><span class="o">)</span>
+<span class="w">  </span>--storage-data/<span class="nv">$HBOX_STORAGE_DATA</span><span class="w">                                        </span>&lt;string&gt;<span class="w">  </span><span class="o">(</span>default:<span class="w"> </span>./.data<span class="o">)</span>
+<span class="w">  </span>--storage-sqlite-url/<span class="nv">$HBOX_STORAGE_SQLITE_URL</span><span class="w">                            </span>&lt;string&gt;<span class="w">  </span><span class="o">(</span>default:<span class="w"> </span>./.data/homebox.db?_fk<span class="o">=</span><span class="m">1</span><span class="o">)</span>
+<span class="w">  </span>--log-level/<span class="nv">$HBOX_LOG_LEVEL</span><span class="w">                                              </span>&lt;string&gt;<span class="w">  </span><span class="o">(</span>default:<span class="w"> </span>info<span class="o">)</span>
+<span class="w">  </span>--log-format/<span class="nv">$HBOX_LOG_FORMAT</span><span class="w">                                            </span>&lt;string&gt;<span class="w">  </span><span class="o">(</span>default:<span class="w"> </span>text<span class="o">)</span>
+<span class="w">  </span>--mailer-host/<span class="nv">$HBOX_MAILER_HOST</span><span class="w">                                          </span>&lt;string&gt;
+<span class="w">  </span>--mailer-port/<span class="nv">$HBOX_MAILER_PORT</span><span class="w">                                          </span>&lt;int&gt;
+<span class="w">  </span>--mailer-username/<span class="nv">$HBOX_MAILER_USERNAME</span><span class="w">                                  </span>&lt;string&gt;
+<span class="w">  </span>--mailer-password/<span class="nv">$HBOX_MAILER_PASSWORD</span><span class="w">                                  </span>&lt;string&gt;
+<span class="w">  </span>--mailer-from/<span class="nv">$HBOX_MAILER_FROM</span><span class="w">                                          </span>&lt;string&gt;
+<span class="w">  </span>--swagger-host/<span class="nv">$HBOX_SWAGGER_HOST</span><span class="w">                                        </span>&lt;string&gt;<span class="w">  </span><span class="o">(</span>default:<span class="w"> </span>localhost:7745<span class="o">)</span>
+<span class="w">  </span>--swagger-scheme/<span class="nv">$HBOX_SWAGGER_SCHEME</span><span class="w">                                    </span>&lt;string&gt;<span class="w">  </span><span class="o">(</span>default:<span class="w"> </span>http<span class="o">)</span>
+<span class="w">  </span>--demo/<span class="nv">$HBOX_DEMO</span><span class="w">                                                        </span>&lt;bool&gt;
+<span class="w">  </span>--debug-enabled/<span class="nv">$HBOX_DEBUG_ENABLED</span><span class="w">                                      </span>&lt;bool&gt;<span class="w">    </span><span class="o">(</span>default:<span class="w"> </span><span class="nb">false</span><span class="o">)</span>
+<span class="w">  </span>--debug-port/<span class="nv">$HBOX_DEBUG_PORT</span><span class="w">                                            </span>&lt;string&gt;<span class="w">  </span><span class="o">(</span>default:<span class="w"> </span><span class="m">4000</span><span class="o">)</span>
+<span class="w">  </span>--options-allow-registration/<span class="nv">$HBOX_OPTIONS_ALLOW_REGISTRATION</span><span class="w">            </span>&lt;bool&gt;<span class="w">    </span><span class="o">(</span>default:<span class="w"> </span><span class="nb">true</span><span class="o">)</span>
+<span class="w">  </span>--options-auto-increment-asset-id/<span class="nv">$HBOX_OPTIONS_AUTO_INCREMENT_ASSET_ID</span><span class="w">  </span>&lt;bool&gt;<span class="w">    </span><span class="o">(</span>default:<span class="w"> </span><span class="nb">true</span><span class="o">)</span>
+<span class="w">  </span>--help/-h
+<span class="w">  </span>display<span class="w"> </span>this<span class="w"> </span><span class="nb">help</span><span class="w"> </span>message
+</code></pre></div>
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.annotate", "navigation.instant", "navigation.expand", "navigation.sections", "navigation.tabs.sticky", "navigation.tabs"], "search": "../assets/javascripts/workers/search.e5c33ebb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.51d95adb.min.js"></script>
+      
+    
+  </body>
+</html>
