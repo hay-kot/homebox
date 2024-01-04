@@ -1,3 +1,4 @@
+// Package set provides a simple set implementation.
 package set
 
 type key interface {

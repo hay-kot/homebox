@@ -55,8 +55,8 @@ type (
 
 	ItemCreate struct {
 		ImportRef   string    `json:"-"`
-		ParentID    uuid.UUID `json:"parentId" extensions:"x-nullable"`
-		Name        string    `json:"name" validate:"required,min=1,max=255"`
+		ParentID    uuid.UUID `json:"parentId"    extensions:"x-nullable"`
+		Name        string    `json:"name"        validate:"required,min=1,max=255"`
 		Description string    `json:"description" validate:"max=1000"`
 		AssetID     AssetID   `json:"-"`
 
@@ -66,7 +66,7 @@ type (
 	}
 
 	ItemUpdate struct {
-		ParentID    uuid.UUID `json:"parentId" extensions:"x-nullable,x-omitempty"`
+		ParentID    uuid.UUID `json:"parentId"    extensions:"x-nullable,x-omitempty"`
 		ID          uuid.UUID `json:"id"`
 		AssetID     AssetID   `json:"assetId"`
 		Name        string    `json:"name"`
@@ -108,7 +108,7 @@ type (
 	ItemPatch struct {
 		ID        uuid.UUID `json:"id"`
 		Quantity  *int      `json:"quantity,omitempty" extensions:"x-nullable,x-omitempty"`
-		ImportRef *string   `json:"-,omitempty" extensions:"x-nullable,x-omitempty"`
+		ImportRef *string   `json:"-,omitempty"        extensions:"x-nullable,x-omitempty"`
 	}
 
 	ItemSummary struct {
@@ -276,9 +276,9 @@ func mapItemOut(item *ent.Item) ItemOut {
 	}
 }
 
-func (r *ItemsRepository) publishMutationEvent(GID uuid.UUID) {
-	if r.bus != nil {
-		r.bus.Publish(eventbus.EventItemMutation, eventbus.GroupMutationEvent{GID: GID})
+func (e *ItemsRepository) publishMutationEvent(GID uuid.UUID) {
+	if e.bus != nil {
+		e.bus.Publish(eventbus.EventItemMutation, eventbus.GroupMutationEvent{GID: GID})
 	}
 }
 

@@ -152,7 +152,7 @@ func (s *IOSheet) Read(data io.Reader) error {
 	return nil
 }
 
-// Write writes the sheet to a writer.
+// ReadItems writes the sheet to a writer.
 func (s *IOSheet) ReadItems(ctx context.Context, items []repo.ItemOut, GID uuid.UUID, repos *repo.AllRepos) error {
 	s.Rows = make([]ExportTSVRow, len(items))
 
@@ -162,9 +162,9 @@ func (s *IOSheet) ReadItems(ctx context.Context, items []repo.ItemOut, GID uuid.
 		item := items[i]
 
 		// TODO: Support fetching nested locations
-		locId := item.Location.ID
+		locID := item.Location.ID
 
-		locPaths, err := repos.Locations.PathForLoc(context.Background(), GID, locId)
+		locPaths, err := repos.Locations.PathForLoc(context.Background(), GID, locID)
 		if err != nil {
 			log.Error().Err(err).Msg("could not get location path")
 			return err
@@ -252,7 +252,7 @@ func (s *IOSheet) ReadItems(ctx context.Context, items []repo.ItemOut, GID uuid.
 	return nil
 }
 
-// Writes the current sheet to a writer in TSV format.
+// TSV writes the current sheet to a writer in TSV format.
 func (s *IOSheet) TSV() ([][]string, error) {
 	memcsv := make([][]string, len(s.Rows)+1)
 

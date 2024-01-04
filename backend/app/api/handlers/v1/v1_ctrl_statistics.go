@@ -12,7 +12,7 @@ import (
 	"github.com/hay-kot/httpkit/server"
 )
 
-// HandleGroupGet godoc
+// HandleGroupStatisticsLocations godoc
 //
 //	@Summary  Get Location Statistics
 //	@Tags     Statistics

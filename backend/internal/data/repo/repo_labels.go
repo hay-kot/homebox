@@ -19,14 +19,14 @@ type LabelRepository struct {
 
 type (
 	LabelCreate struct {
-		Name        string `json:"name" validate:"required,min=1,max=255"`
+		Name        string `json:"name"        validate:"required,min=1,max=255"`
 		Description string `json:"description" validate:"max=255"`
 		Color       string `json:"color"`
 	}
 
 	LabelUpdate struct {
 		ID          uuid.UUID `json:"id"`
-		Name        string    `json:"name" validate:"required,min=1,max=255"`
+		Name        string    `json:"name"        validate:"required,min=1,max=255"`
 		Description string    `json:"description" validate:"max=255"`
 		Color       string    `json:"color"`
 	}
@@ -87,28 +87,28 @@ func (r *LabelRepository) GetOneByGroup(ctx context.Context, gid, ld uuid.UUID) 
 	return r.getOne(ctx, label.ID(ld), label.HasGroupWith(group.ID(gid)))
 }
 
-func (r *LabelRepository) GetAll(ctx context.Context, groupId uuid.UUID) ([]LabelSummary, error) {
+func (r *LabelRepository) GetAll(ctx context.Context, groupID uuid.UUID) ([]LabelSummary, error) {
 	return mapLabelsOut(r.db.Label.Query().
-		Where(label.HasGroupWith(group.ID(groupId))).
+		Where(label.HasGroupWith(group.ID(groupID))).
 		Order(ent.Asc(label.FieldName)).
 		WithGroup().
 		All(ctx),
 	)
 }
 
-func (r *LabelRepository) Create(ctx context.Context, groupdId uuid.UUID, data LabelCreate) (LabelOut, error) {
+func (r *LabelRepository) Create(ctx context.Context, groupID uuid.UUID, data LabelCreate) (LabelOut, error) {
 	label, err := r.db.Label.Create().
 		SetName(data.Name).
 		SetDescription(data.Description).
 		SetColor(data.Color).
-		SetGroupID(groupdId).
+		SetGroupID(groupID).
 		Save(ctx)
 	if err != nil {
 		return LabelOut{}, err
 	}
 
-	label.Edges.Group = &ent.Group{ID: groupdId} // bootstrap group ID
-	r.publishMutationEvent(groupdId)
+	label.Edges.Group = &ent.Group{ID: groupID} // bootstrap group ID
+	r.publishMutationEvent(groupID)
 	return mapLabelOut(label), err
 }
 

@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func labelFactory() LabelCreate {
@@ -22,7 +23,7 @@ func useLabels(t *testing.T, len int) []LabelOut {
 		itm := labelFactory()
 
 		item, err := tRepos.Labels.Create(context.Background(), tGroup.ID, itm)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		labels[i] = item
 	}
 
@@ -41,7 +42,7 @@ func TestLabelRepository_Get(t *testing.T) {
 
 	// Get by ID
 	foundLoc, err := tRepos.Labels.GetOne(context.Background(), label.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, label.ID, foundLoc.ID)
 }
 
@@ -49,26 +50,26 @@ func TestLabelRepositoryGetAll(t *testing.T) {
 	useLabels(t, 10)
 
 	all, err := tRepos.Labels.GetAll(context.Background(), tGroup.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, all, 10)
 }
 
 func TestLabelRepository_Create(t *testing.T) {
 	loc, err := tRepos.Labels.Create(context.Background(), tGroup.ID, labelFactory())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	// Get by ID
 	foundLoc, err := tRepos.Labels.GetOne(context.Background(), loc.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, loc.ID, foundLoc.ID)
 
 	err = tRepos.Labels.delete(context.Background(), loc.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }
 
 func TestLabelRepository_Update(t *testing.T) {
 	loc, err := tRepos.Labels.Create(context.Background(), tGroup.ID, labelFactory())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	updateData := LabelUpdate{
 		ID:          loc.ID,
@@ -77,26 +78,26 @@ func TestLabelRepository_Update(t *testing.T) {
 	}
 
 	update, err := tRepos.Labels.UpdateByGroup(context.Background(), tGroup.ID, updateData)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	foundLoc, err := tRepos.Labels.GetOne(context.Background(), loc.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	assert.Equal(t, update.ID, foundLoc.ID)
 	assert.Equal(t, update.Name, foundLoc.Name)
 	assert.Equal(t, update.Description, foundLoc.Description)
 
 	err = tRepos.Labels.delete(context.Background(), loc.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }
 
 func TestLabelRepository_Delete(t *testing.T) {
 	loc, err := tRepos.Labels.Create(context.Background(), tGroup.ID, labelFactory())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	err = tRepos.Labels.delete(context.Background(), loc.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	_, err = tRepos.Labels.GetOne(context.Background(), loc.ID)
-	assert.Error(t, err)
+	require.Error(t, err)
 }

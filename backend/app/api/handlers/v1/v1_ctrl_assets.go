@@ -27,10 +27,10 @@ import (
 func (ctrl *V1Controller) HandleAssetGet() errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := services.NewContext(r.Context())
-		assetIdParam := chi.URLParam(r, "id")
-		assetIdParam = strings.ReplaceAll(assetIdParam, "-", "") // Remove dashes
+		assetIDParam := chi.URLParam(r, "id")
+		assetIDParam = strings.ReplaceAll(assetIDParam, "-", "") // Remove dashes
 		// Convert the asset ID to an int64
-		assetId, err := strconv.ParseInt(assetIdParam, 10, 64)
+		assetID, err := strconv.ParseInt(assetIDParam, 10, 64)
 		if err != nil {
 			return err
 		}
@@ -52,7 +52,7 @@ func (ctrl *V1Controller) HandleAssetGet() errchain.HandlerFunc {
 			}
 		}
 
-		items, err := ctrl.repo.Items.QueryByAssetID(r.Context(), ctx.GID, repo.AssetID(assetId), int(page), int(pageSize))
+		items, err := ctrl.repo.Items.QueryByAssetID(r.Context(), ctx.GID, repo.AssetID(assetID), int(page), int(pageSize))
 		if err != nil {
 			log.Err(err).Msg("failed to get item")
 			return validate.NewRequestError(err, http.StatusInternalServerError)

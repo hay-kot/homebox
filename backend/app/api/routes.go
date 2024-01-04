@@ -47,7 +47,7 @@ func (a *app) mountRoutes(r *chi.Mux, chain *errchain.ErrChain, repos *repo.AllR
 	// =========================================================================
 	// API Version 1
 
-	v1Base := v1.BaseUrlFunc(prefix)
+	v1Base := v1.BaseURLFunc(prefix)
 
 	v1Ctrl := v1.NewControllerV1(
 		a.services,
@@ -183,7 +183,7 @@ func notFoundHandler() errchain.HandlerFunc {
 		if err != nil {
 			return err
 		}
-		defer f.Close()
+		defer func() { _ = f.Close() }()
 
 		stat, _ := f.Stat()
 		if stat.IsDir() {

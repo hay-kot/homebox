@@ -51,31 +51,31 @@ func ToItemAttachment(attachment *ent.Attachment) ItemAttachment {
 	}
 }
 
-func (r *AttachmentRepo) Create(ctx context.Context, itemId, docId uuid.UUID, typ attachment.Type) (*ent.Attachment, error) {
+func (r *AttachmentRepo) Create(ctx context.Context, itemID, docID uuid.UUID, typ attachment.Type) (*ent.Attachment, error) {
 	bldr := r.db.Attachment.Create().
 		SetType(typ).
-		SetDocumentID(docId).
-		SetItemID(itemId)
+		SetDocumentID(docID).
+		SetItemID(itemID)
 
-  // Autoset primary to true if this is the first attachment
-  // that is of type photo
-  if typ == attachment.TypePhoto {
-    cnt, err := r.db.Attachment.Query().
-      Where(
-        attachment.HasItemWith(item.ID(itemId)),
-        attachment.TypeEQ(typ),
-      ).
-      Count(ctx)
-    if err != nil {
-      return nil, err
-    }
+	// Autoset primary to true if this is the first attachment
+	// that is of type photo
+	if typ == attachment.TypePhoto {
+		cnt, err := r.db.Attachment.Query().
+			Where(
+				attachment.HasItemWith(item.ID(itemID)),
+				attachment.TypeEQ(typ),
+			).
+			Count(ctx)
+		if err != nil {
+			return nil, err
+		}
 
-    if cnt == 0 {
-      bldr = bldr.SetPrimary(true)
-    }
-  }
+		if cnt == 0 {
+			bldr = bldr.SetPrimary(true)
+		}
+	}
 
-  return bldr.Save(ctx)
+	return bldr.Save(ctx)
 }
 
 func (r *AttachmentRepo) Get(ctx context.Context, id uuid.UUID) (*ent.Attachment, error) {
@@ -87,11 +87,11 @@ func (r *AttachmentRepo) Get(ctx context.Context, id uuid.UUID) (*ent.Attachment
 		Only(ctx)
 }
 
-func (r *AttachmentRepo) Update(ctx context.Context, itemId uuid.UUID, data *ItemAttachmentUpdate) (*ent.Attachment, error) {
+func (r *AttachmentRepo) Update(ctx context.Context, itemID uuid.UUID, data *ItemAttachmentUpdate) (*ent.Attachment, error) {
 	// TODO: execute within Tx
 	typ := attachment.Type(data.Type)
 
-	bldr := r.db.Attachment.UpdateOneID(itemId).
+	bldr := r.db.Attachment.UpdateOneID(itemID).
 		SetType(typ)
 
 	// Primary only applies to photos
@@ -109,7 +109,7 @@ func (r *AttachmentRepo) Update(ctx context.Context, itemId uuid.UUID, data *Ite
 	// Ensure all other attachments are not primary
 	err = r.db.Attachment.Update().
 		Where(
-			attachment.HasItemWith(item.ID(itemId)),
+			attachment.HasItemWith(item.ID(itemID)),
 			attachment.IDNEQ(itm.ID),
 		).
 		SetPrimary(false).

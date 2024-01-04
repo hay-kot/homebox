@@ -1,4 +1,4 @@
-// sqlite package provides a CGO free implementation of the sqlite3 driver. This wraps the
+// Package cgofreesqlite package provides a CGO free implementation of the sqlite3 driver. This wraps the
 // modernc.org/sqlite driver and adds the PRAGMA foreign_keys = ON; statement to the connection
 // initialization as well as registering the driver with the sql package as "sqlite3" for compatibility
 // with entgo.io
@@ -35,6 +35,6 @@ func (d CGOFreeSqliteDriver) Open(name string) (conn driver.Conn, err error) {
 	return conn, err
 }
 
-func init() {
+func init() { //nolint:gochecknoinits
 	sql.Register("sqlite3", CGOFreeSqliteDriver{Driver: &sqlite.Driver{}})
 }

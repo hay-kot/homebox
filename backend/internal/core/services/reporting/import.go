@@ -1,3 +1,4 @@
+// Package reporting provides a way to import CSV files into the database.
 package reporting
 
 import (

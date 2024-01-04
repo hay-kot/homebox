@@ -7,6 +7,7 @@ import (
 
 	"github.com/hay-kot/homebox/backend/internal/data/types"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // get the previous month from the current month, accounts for errors when run
@@ -67,7 +68,7 @@ func TestMaintenanceEntryRepository_GetLog(t *testing.T) {
 	}
 
 	assert.Equal(t, item.ID, log.ItemID)
-	assert.Equal(t, 10, len(log.Entries))
+	assert.Len(t, log.Entries, 10)
 
 	// Calculate the average cost
 	var total float64
@@ -76,11 +77,11 @@ func TestMaintenanceEntryRepository_GetLog(t *testing.T) {
 		total += entry.Cost
 	}
 
-	assert.Equal(t, total, log.CostTotal, "total cost should be equal to the sum of all entries")
-	assert.Equal(t, total/2, log.CostAverage, "average cost should be the average of the two months")
+	assert.InDelta(t, total, log.CostTotal, .001, "total cost should be equal to the sum of all entries")
+	assert.InDelta(t, total/2, log.CostAverage, 001, "average cost should be the average of the two months")
 
 	for _, entry := range log.Entries {
 		err := tRepos.MaintEntry.Delete(context.Background(), entry.ID)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	}
 }

@@ -22,7 +22,7 @@ func useItems(t *testing.T, len int) []ItemOut {
 	t.Helper()
 
 	location, err := tRepos.Locations.Create(context.Background(), tGroup.ID, locationFactory())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	items := make([]ItemOut, len)
 	for i := 0; i < len; i++ {
@@ -30,7 +30,7 @@ func useItems(t *testing.T, len int) []ItemOut {
 		itm.LocationID = location.ID
 
 		item, err := tRepos.Items.Create(context.Background(), tGroup.ID, itm)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		items[i] = item
 	}
 
@@ -61,23 +61,22 @@ func TestItemsRepository_RecursiveRelationships(t *testing.T) {
 
 		// Append Parent ID
 		_, err := tRepos.Items.UpdateByGroup(context.Background(), tGroup.ID, update)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		// Check Parent ID
 		updated, err := tRepos.Items.GetOne(context.Background(), child.ID)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, parent.ID, updated.Parent.ID)
 
 		// Remove Parent ID
 		update.ParentID = uuid.Nil
 		_, err = tRepos.Items.UpdateByGroup(context.Background(), tGroup.ID, update)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		// Check Parent ID
 		updated, err = tRepos.Items.GetOne(context.Background(), child.ID)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Nil(t, updated.Parent)
-
 	}
 }
 
@@ -86,7 +85,7 @@ func TestItemsRepository_GetOne(t *testing.T) {
 
 	for _, item := range entity {
 		result, err := tRepos.Items.GetOne(context.Background(), item.ID)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, item.ID, result.ID)
 	}
 }
@@ -96,9 +95,9 @@ func TestItemsRepository_GetAll(t *testing.T) {
 	expected := useItems(t, length)
 
 	results, err := tRepos.Items.GetAll(context.Background(), tGroup.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
-	assert.Equal(t, length, len(results))
+	assert.Len(t, results, length)
 
 	for _, item := range results {
 		for _, expectedItem := range expected {
@@ -113,23 +112,23 @@ func TestItemsRepository_GetAll(t *testing.T) {
 
 func TestItemsRepository_Create(t *testing.T) {
 	location, err := tRepos.Locations.Create(context.Background(), tGroup.ID, locationFactory())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	itm := itemFactory()
 	itm.LocationID = location.ID
 
 	result, err := tRepos.Items.Create(context.Background(), tGroup.ID, itm)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotEmpty(t, result.ID)
 
 	// Cleanup - Also deletes item
 	err = tRepos.Locations.delete(context.Background(), location.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }
 
 func TestItemsRepository_Create_Location(t *testing.T) {
 	location, err := tRepos.Locations.Create(context.Background(), tGroup.ID, locationFactory())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotEmpty(t, location.ID)
 
 	item := itemFactory()
@@ -137,18 +136,18 @@ func TestItemsRepository_Create_Location(t *testing.T) {
 
 	// Create Resource
 	result, err := tRepos.Items.Create(context.Background(), tGroup.ID, item)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotEmpty(t, result.ID)
 
 	// Get Resource
 	foundItem, err := tRepos.Items.GetOne(context.Background(), result.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, result.ID, foundItem.ID)
 	assert.Equal(t, location.ID, foundItem.Location.ID)
 
 	// Cleanup - Also deletes item
 	err = tRepos.Locations.delete(context.Background(), location.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }
 
 func TestItemsRepository_Delete(t *testing.T) {
@@ -156,11 +155,11 @@ func TestItemsRepository_Delete(t *testing.T) {
 
 	for _, item := range entities {
 		err := tRepos.Items.Delete(context.Background(), item.ID)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	}
 
 	results, err := tRepos.Items.GetAll(context.Background(), tGroup.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Empty(t, results)
 }
 
@@ -213,7 +212,7 @@ func TestItemsRepository_Update_Labels(t *testing.T) {
 			}
 
 			updated, err := tRepos.Items.UpdateByGroup(context.Background(), tGroup.ID, updateData)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Len(t, tt.want, len(updated.Labels))
 
 			for _, label := range updated.Labels {
@@ -250,10 +249,10 @@ func TestItemsRepository_Update(t *testing.T) {
 	}
 
 	updatedEntity, err := tRepos.Items.UpdateByGroup(context.Background(), tGroup.ID, updateData)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	got, err := tRepos.Items.GetOne(context.Background(), updatedEntity.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	assert.Equal(t, updateData.ID, got.ID)
 	assert.Equal(t, updateData.Name, got.Name)
@@ -263,10 +262,10 @@ func TestItemsRepository_Update(t *testing.T) {
 	assert.Equal(t, updateData.Manufacturer, got.Manufacturer)
 	// assert.Equal(t, updateData.PurchaseTime, got.PurchaseTime)
 	assert.Equal(t, updateData.PurchaseFrom, got.PurchaseFrom)
-	assert.Equal(t, updateData.PurchasePrice, got.PurchasePrice)
+	assert.InDelta(t, updateData.PurchasePrice, got.PurchasePrice, 0.01)
 	// assert.Equal(t, updateData.SoldTime, got.SoldTime)
 	assert.Equal(t, updateData.SoldTo, got.SoldTo)
-	assert.Equal(t, updateData.SoldPrice, got.SoldPrice)
+	assert.InDelta(t, updateData.SoldPrice, got.SoldPrice, 0.01)
 	assert.Equal(t, updateData.SoldNotes, got.SoldNotes)
 	assert.Equal(t, updateData.Notes, got.Notes)
 	// assert.Equal(t, updateData.WarrantyExpires, got.WarrantyExpires)
@@ -275,15 +274,15 @@ func TestItemsRepository_Update(t *testing.T) {
 }
 
 func TestItemRepository_GetAllCustomFields(t *testing.T) {
-	const FIELDS_COUNT = 5
+	const FieldsCount = 5
 
 	entity := useItems(t, 1)[0]
 
-	fields := make([]ItemField, FIELDS_COUNT)
-	names := make([]string, FIELDS_COUNT)
-	values := make([]string, FIELDS_COUNT)
+	fields := make([]ItemField, FieldsCount)
+	names := make([]string, FieldsCount)
+	values := make([]string, FieldsCount)
 
-	for i := 0; i < FIELDS_COUNT; i++ {
+	for i := 0; i < FieldsCount; i++ {
 		name := fk.Str(10)
 		fields[i] = ItemField{
 			Name:      name,
@@ -306,7 +305,7 @@ func TestItemRepository_GetAllCustomFields(t *testing.T) {
 	// Test getting all fields
 	{
 		results, err := tRepos.Items.GetAllCustomFieldNames(context.Background(), tGroup.ID)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.ElementsMatch(t, names, results)
 	}
 
@@ -314,7 +313,7 @@ func TestItemRepository_GetAllCustomFields(t *testing.T) {
 	{
 		results, err := tRepos.Items.GetAllCustomFieldValues(context.Background(), tUser.GroupID, names[0])
 
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.ElementsMatch(t, values[:1], results)
 	}
 }

@@ -44,7 +44,7 @@ func Errors(svr *server.Server, log zerolog.Logger) errchain.ErrorHandler {
 				case validate.IsFieldError(err):
 					code = http.StatusUnprocessableEntity
 
-					fieldErrors := err.(validate.FieldErrors)
+					fieldErrors := err.(validate.FieldErrors) // nolint
 					resp.Error = "Validation Error"
 					resp.Fields = map[string]string{}
 
@@ -52,7 +52,7 @@ func Errors(svr *server.Server, log zerolog.Logger) errchain.ErrorHandler {
 						resp.Fields[fieldError.Field] = fieldError.Error
 					}
 				case validate.IsRequestError(err):
-					requestError := err.(*validate.RequestError)
+					requestError := err.(*validate.RequestError) // nolint
 					resp.Error = requestError.Error()
 
 					if requestError.Status == 0 {
