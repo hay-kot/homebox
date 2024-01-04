@@ -134,7 +134,7 @@ func (svc *UserService) UpdateSelf(ctx context.Context, ID uuid.UUID, data repo.
 		return repo.UserOut{}, err
 	}
 
-	return svc.repos.Users.GetOneId(ctx, ID)
+	return svc.repos.Users.GetOneID(ctx, ID)
 }
 
 // ============================================================================
@@ -218,7 +218,7 @@ func (svc *UserService) DeleteSelf(ctx context.Context, ID uuid.UUID) error {
 }
 
 func (svc *UserService) ChangePassword(ctx Context, current string, new string) (ok bool) {
-	usr, err := svc.repos.Users.GetOneId(ctx, ctx.UID)
+	usr, err := svc.repos.Users.GetOneID(ctx, ctx.UID)
 	if err != nil {
 		return false
 	}

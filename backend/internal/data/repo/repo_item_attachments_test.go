@@ -131,5 +131,5 @@ func TestAttachmentRepo_Delete(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = tRepos.Attachments.Get(context.Background(), entity.ID)
-	assert.Error(t, err)
+	require.Error(t, err)
 }

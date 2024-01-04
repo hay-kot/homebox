@@ -265,7 +265,7 @@ type LocationPath struct {
 	Name string    `json:"name"`
 }
 
-func (lr *LocationRepository) PathForLoc(ctx context.Context, GID, locID uuid.UUID) ([]LocationPath, error) {
+func (r *LocationRepository) PathForLoc(ctx context.Context, GID, locID uuid.UUID) ([]LocationPath, error) {
 	query := `WITH RECURSIVE location_path AS (
 		SELECT id, name, location_children
 		FROM locations
@@ -282,7 +282,7 @@ func (lr *LocationRepository) PathForLoc(ctx context.Context, GID, locID uuid.UU
 	  SELECT id, name
 	  FROM location_path`
 
-	rows, err := lr.db.Sql().QueryContext(ctx, query, locID, GID)
+	rows, err := r.db.Sql().QueryContext(ctx, query, locID, GID)
 	if err != nil {
 		return nil, err
 	}

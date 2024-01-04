@@ -99,5 +99,5 @@ func TestLabelRepository_Delete(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = tRepos.Labels.GetOne(context.Background(), loc.ID)
-	assert.Error(t, err)
+	require.Error(t, err)
 }

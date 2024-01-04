@@ -44,7 +44,7 @@ func TestUserRepo_GetOneId(t *testing.T) {
 	ctx := context.Background()
 
 	userOut, _ := tRepos.Users.Create(ctx, user)
-	foundUser, err := tRepos.Users.GetOneId(ctx, userOut.ID)
+	foundUser, err := tRepos.Users.GetOneID(ctx, userOut.ID)
 
 	assert.NotNil(foundUser)
 	require.NoError(t, err)
@@ -114,7 +114,7 @@ func TestUserRepo_Update(t *testing.T) {
 	require.NoError(t, err)
 
 	// Validate
-	updated, err := tRepos.Users.GetOneId(context.Background(), user.ID)
+	updated, err := tRepos.Users.GetOneID(context.Background(), user.ID)
 	require.NoError(t, err)
 	assert.NotEqual(t, user.Name, updated.Name)
 	assert.NotEqual(t, user.Email, updated.Email)

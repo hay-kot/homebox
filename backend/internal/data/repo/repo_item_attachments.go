@@ -51,10 +51,10 @@ func ToItemAttachment(attachment *ent.Attachment) ItemAttachment {
 	}
 }
 
-func (r *AttachmentRepo) Create(ctx context.Context, itemID, docId uuid.UUID, typ attachment.Type) (*ent.Attachment, error) {
+func (r *AttachmentRepo) Create(ctx context.Context, itemID, docID uuid.UUID, typ attachment.Type) (*ent.Attachment, error) {
 	bldr := r.db.Attachment.Create().
 		SetType(typ).
-		SetDocumentID(docId).
+		SetDocumentID(docID).
 		SetItemID(itemID)
 
 	// Autoset primary to true if this is the first attachment
@@ -87,11 +87,11 @@ func (r *AttachmentRepo) Get(ctx context.Context, id uuid.UUID) (*ent.Attachment
 		Only(ctx)
 }
 
-func (r *AttachmentRepo) Update(ctx context.Context, itemId uuid.UUID, data *ItemAttachmentUpdate) (*ent.Attachment, error) {
+func (r *AttachmentRepo) Update(ctx context.Context, itemID uuid.UUID, data *ItemAttachmentUpdate) (*ent.Attachment, error) {
 	// TODO: execute within Tx
 	typ := attachment.Type(data.Type)
 
-	bldr := r.db.Attachment.UpdateOneID(itemId).
+	bldr := r.db.Attachment.UpdateOneID(itemID).
 		SetType(typ)
 
 	// Primary only applies to photos
@@ -109,7 +109,7 @@ func (r *AttachmentRepo) Update(ctx context.Context, itemId uuid.UUID, data *Ite
 	// Ensure all other attachments are not primary
 	err = r.db.Attachment.Update().
 		Where(
-			attachment.HasItemWith(item.ID(itemId)),
+			attachment.HasItemWith(item.ID(itemID)),
 			attachment.IDNEQ(itm.ID),
 		).
 		SetPrimary(false).

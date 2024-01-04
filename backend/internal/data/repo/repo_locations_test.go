@@ -118,7 +118,7 @@ func TestLocationRepository_Delete(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = tRepos.Locations.Get(context.Background(), loc.ID)
-	assert.Error(t, err)
+	require.Error(t, err)
 }
 
 func TestItemRepository_TreeQuery(t *testing.T) {

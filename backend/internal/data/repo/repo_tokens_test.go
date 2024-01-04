@@ -11,12 +11,11 @@ import (
 )
 
 func TestAuthTokenRepo_CreateToken(t *testing.T) {
-	asrt := assert.New(t)
 	ctx := context.Background()
 	user := userFactory()
 
 	userOut, err := tRepos.Users.Create(ctx, user)
-	asrt.NoError(err)
+	require.NoError(t, err)
 
 	expiresAt := time.Now().Add(time.Hour)
 
@@ -28,23 +27,22 @@ func TestAuthTokenRepo_CreateToken(t *testing.T) {
 		UserID:    userOut.ID,
 	})
 
-	asrt.NoError(err)
-	asrt.Equal(userOut.ID, token.UserID)
-	asrt.Equal(expiresAt, token.ExpiresAt)
+	require.NoError(t, err)
+	assert.Equal(t, userOut.ID, token.UserID)
+	assert.Equal(t, expiresAt, token.ExpiresAt)
 
 	// Cleanup
-	asrt.NoError(tRepos.Users.Delete(ctx, userOut.ID))
+	require.NoError(t, tRepos.Users.Delete(ctx, userOut.ID))
 	_, err = tRepos.AuthTokens.DeleteAll(ctx)
-	asrt.NoError(err)
+	require.NoError(t, err)
 }
 
 func TestAuthTokenRepo_DeleteToken(t *testing.T) {
-	asrt := assert.New(t)
 	ctx := context.Background()
 	user := userFactory()
 
 	userOut, err := tRepos.Users.Create(ctx, user)
-	asrt.NoError(err)
+	require.NoError(t, err)
 
 	expiresAt := time.Now().Add(time.Hour)
 
@@ -55,15 +53,14 @@ func TestAuthTokenRepo_DeleteToken(t *testing.T) {
 		ExpiresAt: expiresAt,
 		UserID:    userOut.ID,
 	})
-	asrt.NoError(err)
+	require.NoError(t, err)
 
 	// Delete token
 	err = tRepos.AuthTokens.DeleteToken(ctx, []byte(generatedToken.Raw))
-	asrt.NoError(err)
+	require.NoError(t, err)
 }
 
 func TestAuthTokenRepo_GetUserByToken(t *testing.T) {
-	assert := assert.New(t)
 	ctx := context.Background()
 
 	user := userFactory()
@@ -84,9 +81,9 @@ func TestAuthTokenRepo_GetUserByToken(t *testing.T) {
 	foundUser, err := tRepos.AuthTokens.GetUserFromToken(ctx, token.TokenHash)
 
 	require.NoError(t, err)
-	assert.Equal(userOut.ID, foundUser.ID)
-	assert.Equal(userOut.Name, foundUser.Name)
-	assert.Equal(userOut.Email, foundUser.Email)
+	assert.Equal(t, userOut.ID, foundUser.ID)
+	assert.Equal(t, userOut.Name, foundUser.Name)
+	assert.Equal(t, userOut.Email, foundUser.Email)
 
 	// Cleanup
 	require.NoError(t, tRepos.Users.Delete(ctx, userOut.ID))
@@ -95,7 +92,6 @@ func TestAuthTokenRepo_GetUserByToken(t *testing.T) {
 }
 
 func TestAuthTokenRepo_PurgeExpiredTokens(t *testing.T) {
-	assert := assert.New(t)
 	ctx := context.Background()
 
 	user := userFactory()
@@ -114,7 +110,7 @@ func TestAuthTokenRepo_PurgeExpiredTokens(t *testing.T) {
 		})
 
 		require.NoError(t, err)
-		assert.NotNil(createdToken)
+		assert.NotNil(t, createdToken)
 
 		createdTokens = append(createdTokens, createdToken)
 	}
@@ -123,12 +119,12 @@ func TestAuthTokenRepo_PurgeExpiredTokens(t *testing.T) {
 	tokensDeleted, err := tRepos.AuthTokens.PurgeExpiredTokens(ctx)
 
 	require.NoError(t, err)
-	assert.Equal(5, tokensDeleted)
+	assert.Equal(t, 5, tokensDeleted)
 
 	// Check if tokens are deleted
 	for _, token := range createdTokens {
 		_, err := tRepos.AuthTokens.GetUserFromToken(ctx, token.TokenHash)
-		assert.Error(err)
+		require.Error(t, err)
 	}
 
 	// Cleanup

@@ -78,7 +78,7 @@ func TestMaintenanceEntryRepository_GetLog(t *testing.T) {
 	}
 
 	assert.InDelta(t, total, log.CostTotal, .001, "total cost should be equal to the sum of all entries")
-	assert.Equal(t, total/2, log.CostAverage, "average cost should be the average of the two months")
+	assert.InDelta(t, total/2, log.CostAverage, 001, "average cost should be the average of the two months")
 
 	for _, entry := range log.Entries {
 		err := tRepos.MaintEntry.Delete(context.Background(), entry.ID)
