@@ -1,3 +1,4 @@
+// Package faker provides a simple interface for generating fake data for testing.
 package faker
 
 import (

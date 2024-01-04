@@ -32,7 +32,7 @@ FROM alpine:latest
 
 ENV HBOX_MODE=production
 ENV HBOX_STORAGE_DATA=/data/
-ENV HBOX_STORAGE_SQLITE_URL=/data/homebox.db?_fk=1
+ENV HBOX_STORAGE_SQLITE_URL=/data/homebox.db?_pragma=busy_timeout=2000&_pragma=journal_mode=WAL&_fk=1
 
 RUN apk --no-cache add ca-certificates
 RUN mkdir /app

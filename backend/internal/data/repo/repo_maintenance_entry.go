@@ -23,7 +23,7 @@ type MaintenanceEntryRepository struct {
 type MaintenanceEntryCreate struct {
 	CompletedDate types.Date `json:"completedDate"`
 	ScheduledDate types.Date `json:"scheduledDate"`
-	Name          string     `json:"name" validate:"required"`
+	Name          string     `json:"name"          validate:"required"`
 	Description   string     `json:"description"`
 	Cost          float64    `json:"cost,string"`
 }
@@ -152,7 +152,6 @@ func (r *MaintenanceEntryRepository) GetLog(ctx context.Context, groupID, itemID
 			maintenanceentry.DateNotNil(),
 			maintenanceentry.DateNEQ(time.Time{}),
 		))
-
 	} else if query.Scheduled {
 		q = q.Where(maintenanceentry.And(
 			maintenanceentry.Or(

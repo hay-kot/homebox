@@ -62,7 +62,7 @@ func TestMain(m *testing.M) {
 	tClient = client
 	tRepos = repo.New(tClient, tbus, os.TempDir()+"/homebox")
 	tSvc = New(tRepos)
-	defer client.Close()
+	defer func() { _ = client.Close() }()
 
 	bootstrap()
 	tCtx = Context{

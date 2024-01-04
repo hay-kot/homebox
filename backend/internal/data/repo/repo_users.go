@@ -60,32 +60,32 @@ func mapUserOut(user *ent.User) UserOut {
 	}
 }
 
-func (e *UserRepository) GetOneId(ctx context.Context, id uuid.UUID) (UserOut, error) {
-	return mapUserOutErr(e.db.User.Query().
-		Where(user.ID(id)).
+func (r *UserRepository) GetOneID(ctx context.Context, ID uuid.UUID) (UserOut, error) {
+	return mapUserOutErr(r.db.User.Query().
+		Where(user.ID(ID)).
 		WithGroup().
 		Only(ctx))
 }
 
-func (e *UserRepository) GetOneEmail(ctx context.Context, email string) (UserOut, error) {
-	return mapUserOutErr(e.db.User.Query().
+func (r *UserRepository) GetOneEmail(ctx context.Context, email string) (UserOut, error) {
+	return mapUserOutErr(r.db.User.Query().
 		Where(user.EmailEqualFold(email)).
 		WithGroup().
 		Only(ctx),
 	)
 }
 
-func (e *UserRepository) GetAll(ctx context.Context) ([]UserOut, error) {
-	return mapUsersOutErr(e.db.User.Query().WithGroup().All(ctx))
+func (r *UserRepository) GetAll(ctx context.Context) ([]UserOut, error) {
+	return mapUsersOutErr(r.db.User.Query().WithGroup().All(ctx))
 }
 
-func (e *UserRepository) Create(ctx context.Context, usr UserCreate) (UserOut, error) {
+func (r *UserRepository) Create(ctx context.Context, usr UserCreate) (UserOut, error) {
 	role := user.RoleUser
 	if usr.IsOwner {
 		role = user.RoleOwner
 	}
 
-	entUser, err := e.db.User.
+	entUser, err := r.db.User.
 		Create().
 		SetName(usr.Name).
 		SetEmail(usr.Email).
@@ -98,11 +98,11 @@ func (e *UserRepository) Create(ctx context.Context, usr UserCreate) (UserOut, e
 		return UserOut{}, err
 	}
 
-	return e.GetOneId(ctx, entUser.ID)
+	return r.GetOneID(ctx, entUser.ID)
 }
 
-func (e *UserRepository) Update(ctx context.Context, ID uuid.UUID, data UserUpdate) error {
-	q := e.db.User.Update().
+func (r *UserRepository) Update(ctx context.Context, ID uuid.UUID, data UserUpdate) error {
+	q := r.db.User.Update().
 		Where(user.ID(ID)).
 		SetName(data.Name).
 		SetEmail(data.Email)
@@ -111,18 +111,18 @@ func (e *UserRepository) Update(ctx context.Context, ID uuid.UUID, data UserUpda
 	return err
 }
 
-func (e *UserRepository) Delete(ctx context.Context, id uuid.UUID) error {
-	_, err := e.db.User.Delete().Where(user.ID(id)).Exec(ctx)
+func (r *UserRepository) Delete(ctx context.Context, id uuid.UUID) error {
+	_, err := r.db.User.Delete().Where(user.ID(id)).Exec(ctx)
 	return err
 }
 
-func (e *UserRepository) DeleteAll(ctx context.Context) error {
-	_, err := e.db.User.Delete().Exec(ctx)
+func (r *UserRepository) DeleteAll(ctx context.Context) error {
+	_, err := r.db.User.Delete().Exec(ctx)
 	return err
 }
 
-func (e *UserRepository) GetSuperusers(ctx context.Context) ([]*ent.User, error) {
-	users, err := e.db.User.Query().Where(user.IsSuperuser(true)).All(ctx)
+func (r *UserRepository) GetSuperusers(ctx context.Context) ([]*ent.User, error) {
+	users, err := r.db.User.Query().Where(user.IsSuperuser(true)).All(ctx)
 	if err != nil {
 		return nil, err
 	}

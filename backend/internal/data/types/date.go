@@ -1,3 +1,4 @@
+// Package types provides custom types for the application.
 package types
 
 import (

@@ -10,7 +10,7 @@ import (
 	"github.com/hay-kot/httpkit/errchain"
 )
 
-// HandleLocationTreeQuery
+// HandleLocationTreeQuery godoc
 //
 //	@Summary  Get Locations Tree
 //	@Tags     Locations
@@ -28,7 +28,7 @@ func (ctrl *V1Controller) HandleLocationTreeQuery() errchain.HandlerFunc {
 	return adapters.Query(fn, http.StatusOK)
 }
 
-// HandleLocationGetAll
+// HandleLocationGetAll godoc
 //
 //	@Summary  Get All Locations
 //	@Tags     Locations
@@ -46,7 +46,7 @@ func (ctrl *V1Controller) HandleLocationGetAll() errchain.HandlerFunc {
 	return adapters.Query(fn, http.StatusOK)
 }
 
-// HandleLocationCreate
+// HandleLocationCreate godoc
 //
 //	@Summary  Create Location
 //	@Tags     Locations
@@ -64,7 +64,7 @@ func (ctrl *V1Controller) HandleLocationCreate() errchain.HandlerFunc {
 	return adapters.Action(fn, http.StatusCreated)
 }
 
-// HandleLocationDelete
+// HandleLocationDelete godoc
 //
 //	@Summary  Delete Location
 //	@Tags     Locations
@@ -83,7 +83,7 @@ func (ctrl *V1Controller) HandleLocationDelete() errchain.HandlerFunc {
 	return adapters.CommandID("id", fn, http.StatusNoContent)
 }
 
-// HandleLocationGet
+// HandleLocationGet godoc
 //
 //	@Summary  Get Location
 //	@Tags     Locations
@@ -101,7 +101,7 @@ func (ctrl *V1Controller) HandleLocationGet() errchain.HandlerFunc {
 	return adapters.CommandID("id", fn, http.StatusOK)
 }
 
-// HandleLocationUpdate
+// HandleLocationUpdate godoc
 //
 //	@Summary  Update Location
 //	@Tags     Locations

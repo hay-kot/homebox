@@ -1,3 +1,4 @@
+// Package pathlib provides a way to safely create a file path without overwriting any existing files.
 package pathlib
 
 import (
@@ -14,7 +15,7 @@ var dirReader dirReaderFunc = func(directory string) []string {
 	if err != nil {
 		return nil
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	names, err := f.Readdirnames(-1)
 	if err != nil {

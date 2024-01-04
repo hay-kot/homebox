@@ -9,6 +9,7 @@ import (
 
 	v1 "github.com/hay-kot/homebox/backend/app/api/handlers/v1"
 	"github.com/hay-kot/homebox/backend/internal/core/services"
+	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/internal/sys/validate"
 	"github.com/hay-kot/httpkit/errchain"
 )
@@ -130,7 +131,7 @@ func (a *app) mwAuthToken(next errchain.Handler) errchain.Handler {
 		}
 
 		if requestToken == "" {
-			return validate.NewRequestError(errors.New("Authorization header or query is required"), http.StatusUnauthorized)
+			return validate.NewRequestError(errors.New("authorization header or query is required"), http.StatusUnauthorized)
 		}
 
 		requestToken = strings.TrimPrefix(requestToken, "Bearer ")
@@ -140,7 +141,11 @@ func (a *app) mwAuthToken(next errchain.Handler) errchain.Handler {
 		usr, err := a.services.User.GetSelf(r.Context(), requestToken)
 		// Check the database for the token
 		if err != nil {
-			return validate.NewRequestError(errors.New("valid authorization header is required"), http.StatusUnauthorized)
+			if ent.IsNotFound(err) {
+				return validate.NewRequestError(errors.New("valid authorization token is required"), http.StatusUnauthorized)
+			}
+
+			return err
 		}
 
 		r = r.WithContext(services.SetUserCtx(r.Context(), &usr, requestToken))

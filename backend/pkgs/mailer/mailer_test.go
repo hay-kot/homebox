@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -59,5 +59,5 @@ func Test_Mailer(t *testing.T) {
 
 	err = mailer.Send(msg)
 
-	assert.Nil(t, err)
+	require.NoError(t, err)
 }

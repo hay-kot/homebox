@@ -153,7 +153,7 @@ func (ctrl *V1Controller) HandleAuthLogout() errchain.HandlerFunc {
 	}
 }
 
-// HandleAuthLogout godoc
+// HandleAuthRefresh godoc
 //
 //	@Summary     User Token Refresh
 //	@Description handleAuthRefresh returns a handler that will issue a new token from an existing token.

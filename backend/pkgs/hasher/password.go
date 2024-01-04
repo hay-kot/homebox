@@ -9,7 +9,7 @@ import (
 
 var enabled = true
 
-func init() {
+func init() { // nolint: gochecknoinits
 	disableHas := os.Getenv("UNSAFE_DISABLE_PASSWORD_PROJECTION") == "yes_i_am_sure"
 
 	if disableHas {

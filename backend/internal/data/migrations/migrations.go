@@ -1,3 +1,4 @@
+// Package migrations provides a way to embed the migrations into the binary.
 package migrations
 
 import (

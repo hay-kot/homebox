@@ -16,7 +16,7 @@ var (
 	oneWeek              = time.Hour * 24 * 7
 	ErrorInvalidLogin    = errors.New("invalid username or password")
 	ErrorInvalidToken    = errors.New("invalid token")
-	ErrorTokenIdMismatch = errors.New("token id mismatch")
+	ErrorTokenIDMismatch = errors.New("token id mismatch")
 )
 
 type UserService struct {
@@ -134,13 +134,13 @@ func (svc *UserService) UpdateSelf(ctx context.Context, ID uuid.UUID, data repo.
 		return repo.UserOut{}, err
 	}
 
-	return svc.repos.Users.GetOneId(ctx, ID)
+	return svc.repos.Users.GetOneID(ctx, ID)
 }
 
 // ============================================================================
 // User Authentication
 
-func (svc *UserService) createSessionToken(ctx context.Context, userId uuid.UUID, extendedSession bool) (UserAuthTokenDetail, error) {
+func (svc *UserService) createSessionToken(ctx context.Context, userID uuid.UUID, extendedSession bool) (UserAuthTokenDetail, error) {
 	attachmentToken := hasher.GenerateToken()
 
 	expiresAt := time.Now().Add(oneWeek)
@@ -149,7 +149,7 @@ func (svc *UserService) createSessionToken(ctx context.Context, userId uuid.UUID
 	}
 
 	attachmentData := repo.UserAuthTokenCreate{
-		UserID:    userId,
+		UserID:    userID,
 		TokenHash: attachmentToken.Hash,
 		ExpiresAt: expiresAt,
 	}
@@ -161,7 +161,7 @@ func (svc *UserService) createSessionToken(ctx context.Context, userId uuid.UUID
 
 	userToken := hasher.GenerateToken()
 	data := repo.UserAuthTokenCreate{
-		UserID:    userId,
+		UserID:    userID,
 		TokenHash: userToken.Hash,
 		ExpiresAt: expiresAt,
 	}
@@ -218,7 +218,7 @@ func (svc *UserService) DeleteSelf(ctx context.Context, ID uuid.UUID) error {
 }
 
 func (svc *UserService) ChangePassword(ctx Context, current string, new string) (ok bool) {
-	usr, err := svc.repos.Users.GetOneId(ctx, ctx.UID)
+	usr, err := svc.repos.Users.GetOneID(ctx, ctx.UID)
 	if err != nil {
 		return false
 	}

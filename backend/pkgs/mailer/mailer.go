@@ -1,3 +1,4 @@
+// Package mailer provides a simple mailer for sending emails.
 package mailer
 
 import (

@@ -9,6 +9,7 @@ import (
 
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -103,9 +104,9 @@ func TestSheet_Read(t *testing.T) {
 
 			switch {
 			case tt.wantErr:
-				assert.Error(t, err)
+				require.Error(t, err)
 			default:
-				assert.NoError(t, err)
+				require.NoError(t, err)
 				assert.ElementsMatch(t, tt.want, sheet.Rows)
 			}
 		})

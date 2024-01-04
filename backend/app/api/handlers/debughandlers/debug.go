@@ -1,3 +1,4 @@
+// Package debughandlers provides handlers for debugging.
 package debughandlers
 
 import (

@@ -71,7 +71,7 @@ func (r *TokenRepository) GetRoles(ctx context.Context, token string) (*set.Set[
 	return &roleSet, nil
 }
 
-// Creates a token for a user
+// CreateToken Creates a token for a user
 func (r *TokenRepository) CreateToken(ctx context.Context, createToken UserAuthTokenCreate, roles ...authroles.Role) (UserAuthToken, error) {
 	dbToken, err := r.db.AuthTokens.Create().
 		SetToken(createToken.TokenHash).
