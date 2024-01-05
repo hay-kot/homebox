@@ -161,6 +161,10 @@ func init() {
 			return nil
 		}
 	}()
+	// groupDescCurrency is the schema descriptor for currency field.
+	groupDescCurrency := groupFields[1].Descriptor()
+	// group.DefaultCurrency holds the default value on creation for the currency field.
+	group.DefaultCurrency = groupDescCurrency.Default.(string)
 	// groupDescID is the schema descriptor for id field.
 	groupDescID := groupMixinFields0[0].Descriptor()
 	// group.DefaultID holds the default value on creation for the id field.

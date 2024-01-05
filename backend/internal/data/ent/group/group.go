@@ -3,7 +3,6 @@
 package group
 
 import (
-	"fmt"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -119,64 +118,11 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
+	// DefaultCurrency holds the default value on creation for the "currency" field.
+	DefaultCurrency string
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )
-
-// Currency defines the type for the "currency" enum field.
-type Currency string
-
-// CurrencyUsd is the default value of the Currency enum.
-const DefaultCurrency = CurrencyUsd
-
-// Currency values.
-const (
-	CurrencyAed Currency = "aed"
-	CurrencyAud Currency = "aud"
-	CurrencyBgn Currency = "bgn"
-	CurrencyBrl Currency = "brl"
-	CurrencyCad Currency = "cad"
-	CurrencyChf Currency = "chf"
-	CurrencyCzk Currency = "czk"
-	CurrencyDkk Currency = "dkk"
-	CurrencyEur Currency = "eur"
-	CurrencyGbp Currency = "gbp"
-	CurrencyHkd Currency = "hkd"
-	CurrencyIdr Currency = "idr"
-	CurrencyInr Currency = "inr"
-	CurrencyJpy Currency = "jpy"
-	CurrencyKrw Currency = "krw"
-	CurrencyMxn Currency = "mxn"
-	CurrencyNok Currency = "nok"
-	CurrencyNzd Currency = "nzd"
-	CurrencyPln Currency = "pln"
-	CurrencyRmb Currency = "rmb"
-	CurrencyRon Currency = "ron"
-	CurrencyRub Currency = "rub"
-	CurrencySar Currency = "sar"
-	CurrencySek Currency = "sek"
-	CurrencySgd Currency = "sgd"
-	CurrencyThb Currency = "thb"
-	CurrencyTry Currency = "try"
-	CurrencyUsd Currency = "usd"
-	CurrencyXag Currency = "xag"
-	CurrencyXau Currency = "xau"
-	CurrencyZar Currency = "zar"
-)
-
-func (c Currency) String() string {
-	return string(c)
-}
-
-// CurrencyValidator is a validator for the "currency" field enum values. It is called by the builders before save.
-func CurrencyValidator(c Currency) error {
-	switch c {
-	case CurrencyAed, CurrencyAud, CurrencyBgn, CurrencyBrl, CurrencyCad, CurrencyChf, CurrencyCzk, CurrencyDkk, CurrencyEur, CurrencyGbp, CurrencyHkd, CurrencyIdr, CurrencyInr, CurrencyJpy, CurrencyKrw, CurrencyMxn, CurrencyNok, CurrencyNzd, CurrencyPln, CurrencyRmb, CurrencyRon, CurrencyRub, CurrencySar, CurrencySek, CurrencySgd, CurrencyThb, CurrencyTry, CurrencyUsd, CurrencyXag, CurrencyXau, CurrencyZar:
-		return nil
-	default:
-		return fmt.Errorf("group: invalid enum value for currency field: %q", c)
-	}
-}
 
 // OrderOption defines the ordering options for the Group queries.
 type OrderOption func(*sql.Selector)

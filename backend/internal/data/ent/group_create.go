@@ -63,15 +63,15 @@ func (gc *GroupCreate) SetName(s string) *GroupCreate {
 }
 
 // SetCurrency sets the "currency" field.
-func (gc *GroupCreate) SetCurrency(gr group.Currency) *GroupCreate {
-	gc.mutation.SetCurrency(gr)
+func (gc *GroupCreate) SetCurrency(s string) *GroupCreate {
+	gc.mutation.SetCurrency(s)
 	return gc
 }
 
 // SetNillableCurrency sets the "currency" field if the given value is not nil.
-func (gc *GroupCreate) SetNillableCurrency(gr *group.Currency) *GroupCreate {
-	if gr != nil {
-		gc.SetCurrency(*gr)
+func (gc *GroupCreate) SetNillableCurrency(s *string) *GroupCreate {
+	if s != nil {
+		gc.SetCurrency(*s)
 	}
 	return gc
 }
@@ -267,11 +267,6 @@ func (gc *GroupCreate) check() error {
 	if _, ok := gc.mutation.Currency(); !ok {
 		return &ValidationError{Name: "currency", err: errors.New(`ent: missing required field "Group.currency"`)}
 	}
-	if v, ok := gc.mutation.Currency(); ok {
-		if err := group.CurrencyValidator(v); err != nil {
-			return &ValidationError{Name: "currency", err: fmt.Errorf(`ent: validator failed for field "Group.currency": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -320,7 +315,7 @@ func (gc *GroupCreate) createSpec() (*Group, *sqlgraph.CreateSpec) {
 		_node.Name = value
 	}
 	if value, ok := gc.mutation.Currency(); ok {
-		_spec.SetField(group.FieldCurrency, field.TypeEnum, value)
+		_spec.SetField(group.FieldCurrency, field.TypeString, value)
 		_node.Currency = value
 	}
 	if nodes := gc.mutation.UsersIDs(); len(nodes) > 0 {

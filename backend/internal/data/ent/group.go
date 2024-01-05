@@ -25,7 +25,7 @@ type Group struct {
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Currency holds the value of the "currency" field.
-	Currency group.Currency `json:"currency,omitempty"`
+	Currency string `json:"currency,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the GroupQuery when eager-loading is set.
 	Edges        GroupEdges `json:"edges"`
@@ -170,7 +170,7 @@ func (gr *Group) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field currency", values[i])
 			} else if value.Valid {
-				gr.Currency = group.Currency(value.String)
+				gr.Currency = value.String
 			}
 		default:
 			gr.selectValues.Set(columns[i], values[i])
@@ -253,7 +253,7 @@ func (gr *Group) String() string {
 	builder.WriteString(gr.Name)
 	builder.WriteString(", ")
 	builder.WriteString("currency=")
-	builder.WriteString(fmt.Sprintf("%v", gr.Currency))
+	builder.WriteString(gr.Currency)
 	builder.WriteByte(')')
 	return builder.String()
 }
