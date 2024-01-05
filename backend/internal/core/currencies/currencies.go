@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"io"
 	"slices"
+	"strings"
 	"sync"
 )
 
@@ -89,8 +90,10 @@ func (cs *CurrencyRegistry) Slice() []Currency {
 }
 
 func (cs *CurrencyRegistry) IsSupported(code string) bool {
+	lower := strings.ToLower(code)
+
 	cs.mu.RLock()
 	defer cs.mu.RUnlock()
-	_, ok := cs.registry[code]
+	_, ok := cs.registry[lower]
 	return ok
 }
