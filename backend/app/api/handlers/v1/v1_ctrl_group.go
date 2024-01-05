@@ -6,6 +6,7 @@ import (
 
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
+	"github.com/hay-kot/homebox/backend/internal/sys/validate"
 	"github.com/hay-kot/homebox/backend/internal/web/adapters"
 	"github.com/hay-kot/httpkit/errchain"
 )
@@ -52,6 +53,14 @@ func (ctrl *V1Controller) HandleGroupGet() errchain.HandlerFunc {
 func (ctrl *V1Controller) HandleGroupUpdate() errchain.HandlerFunc {
 	fn := func(r *http.Request, body repo.GroupUpdate) (repo.Group, error) {
 		auth := services.NewContext(r.Context())
+
+		ok := ctrl.svc.Currencies.IsSupported(body.Currency)
+		if !ok {
+			return repo.Group{}, validate.NewFieldErrors(
+				validate.NewFieldError("currency", "currency is not supported"),
+			)
+		}
+
 		return ctrl.svc.Group.UpdateGroup(auth, body)
 	}
 

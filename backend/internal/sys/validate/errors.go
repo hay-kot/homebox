@@ -88,7 +88,7 @@ func (fe FieldErrors) Nil() bool {
 	return len(fe) == 0
 }
 
-// Error implments the error interface.
+// Error implements the error interface.
 func (fe FieldErrors) Error() string {
 	d, err := json.Marshal(fe)
 	if err != nil {
@@ -99,6 +99,10 @@ func (fe FieldErrors) Error() string {
 
 func NewFieldErrors(errs ...FieldError) FieldErrors {
 	return errs
+}
+
+func NewFieldError(field, reason string) FieldError {
+	return FieldError{Field: field, Error: reason}
 }
 
 func IsFieldError(err error) bool {
