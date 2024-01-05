@@ -1,5 +1,16 @@
 basePath: /api
 definitions:
+  currencies.Currency:
+    properties:
+      code:
+        type: string
+      local:
+        type: string
+      name:
+        type: string
+      symbol:
+        type: string
+    type: object
   repo.DocumentOut:
     properties:
       id:
@@ -115,10 +126,6 @@ definitions:
       attachments:
         items:
           $ref: '#/definitions/repo.ItemAttachment'
-        type: array
-      children:
-        items:
-          $ref: '#/definitions/repo.ItemSummary'
         type: array
       createdAt:
         type: string
@@ -238,8 +245,7 @@ definitions:
       archived:
         type: boolean
       assetId:
-        example: "0"
-        type: string
+        type: integer
       description:
         type: string
       fields:
@@ -608,12 +614,7 @@ definitions:
       token:
         type: string
     type: object
-  v1.ActionAmountResult:
-    properties:
-      completed:
-        type: integer
-    type: object
-  v1.ApiSummary:
+  v1.APISummary:
     properties:
       allowRegistration:
         type: boolean
@@ -631,6 +632,11 @@ definitions:
         items:
           type: string
         type: array
+    type: object
+  v1.ActionAmountResult:
+    properties:
+      completed:
+        type: integer
     type: object
   v1.Build:
     properties:
@@ -789,6 +795,18 @@ paths:
       summary: Get Item by Asset ID
       tags:
       - Items
+  /v1/currency:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/currencies.Currency'
+      summary: Currency
+      tags:
+      - Base
   /v1/groups:
     get:
       produces:
@@ -941,6 +959,13 @@ paths:
         items:
           type: string
         name: locations
+        type: array
+      - collectionFormat: multi
+        description: parent Ids
+        in: query
+        items:
+          type: string
+        name: parentIds
         type: array
       produces:
       - application/json
@@ -1656,7 +1681,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/v1.ApiSummary'
+            $ref: '#/definitions/v1.APISummary'
       summary: Application Info
       tags:
       - Base
@@ -1699,6 +1724,10 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/v1.LoginForm'
+      - description: auth provider
+        in: query
+        name: provider
+        type: string
       produces:
       - application/json
       responses:

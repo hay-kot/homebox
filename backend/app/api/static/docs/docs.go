@@ -150,6 +150,25 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/currency": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Base"
+                ],
+                "summary": "Currency",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/currencies.Currency"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/groups": {
             "get": {
                 "security": [
@@ -409,6 +428,16 @@ const docTemplate = `{
                         "collectionFormat": "multi",
                         "description": "location Ids",
                         "name": "locations",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "parent Ids",
+                        "name": "parentIds",
                         "in": "query"
                     }
                 ],
@@ -1574,7 +1603,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/v1.ApiSummary"
+                            "$ref": "#/definitions/v1.APISummary"
                         }
                     }
                 }
@@ -1645,6 +1674,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/v1.LoginForm"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "auth provider",
+                        "name": "provider",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1823,6 +1858,23 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "currencies.Currency": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "local": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                }
+            }
+        },
         "repo.DocumentOut": {
             "type": "object",
             "properties": {
@@ -1996,12 +2048,6 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/repo.ItemAttachment"
-                    }
-                },
-                "children": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/repo.ItemSummary"
                     }
                 },
                 "createdAt": {
@@ -2181,8 +2227,7 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "assetId": {
-                    "type": "string",
-                    "example": "0"
+                    "type": "integer"
                 },
                 "description": {
                     "type": "string"
@@ -2736,15 +2781,7 @@ const docTemplate = `{
                 }
             }
         },
-        "v1.ActionAmountResult": {
-            "type": "object",
-            "properties": {
-                "completed": {
-                    "type": "integer"
-                }
-            }
-        },
-        "v1.ApiSummary": {
+        "v1.APISummary": {
             "type": "object",
             "properties": {
                 "allowRegistration": {
@@ -2770,6 +2807,14 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "v1.ActionAmountResult": {
+            "type": "object",
+            "properties": {
+                "completed": {
+                    "type": "integer"
                 }
             }
         },

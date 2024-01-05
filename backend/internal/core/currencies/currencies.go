@@ -68,7 +68,7 @@ func NewCurrencyService(currencies []Currency) *CurrencyRegistry {
 	}
 }
 
-func (cs *CurrencyRegistry) GetCurrencies() []Currency {
+func (cs *CurrencyRegistry) Slice() []Currency {
 	cs.mu.RLock()
 	defer cs.mu.RUnlock()
 	out := make([]Currency, 0, len(cs.registry))
