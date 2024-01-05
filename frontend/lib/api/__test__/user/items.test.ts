@@ -9,7 +9,7 @@ import { sharedUserClient } from "../test-utils";
 describe("user should be able to create an item and add an attachment", () => {
   let increment = 0;
   /**
-   * useLocatio sets up a location resource for testing, and returns a function
+   * useLocation sets up a location resource for testing, and returns a function
    * that can be used to delete the location from the backend server.
    */
   async function useLocation(api: UserClient): Promise<[LocationOut, () => Promise<void>]> {
