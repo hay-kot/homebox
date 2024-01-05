@@ -133,6 +133,10 @@ func run(cfg *config.Config) error {
 	}
 
 	if cfg.CurrencyConfig != "" {
+		log.Info().
+			Str("path", cfg.CurrencyConfig).
+			Msg("loading currency config file")
+
 		content, err := os.ReadFile(cfg.CurrencyConfig)
 		if err != nil {
 			log.Fatal().
