@@ -7,6 +7,7 @@ import (
 	_ "embed"
 	"encoding/json"
 	"io"
+	"slices"
 	"sync"
 )
 
@@ -71,9 +72,17 @@ func NewCurrencyService(currencies []Currency) *CurrencyRegistry {
 func (cs *CurrencyRegistry) Slice() []Currency {
 	cs.mu.RLock()
 	defer cs.mu.RUnlock()
-	out := make([]Currency, 0, len(cs.registry))
+
+	keys := make([]string, 0, len(cs.registry))
 	for key := range cs.registry {
-		out = append(out, cs.registry[key])
+		keys = append(keys, key)
+	}
+
+	slices.Sort(keys)
+
+	out := make([]Currency, 0, len(cs.registry))
+	for i := range keys {
+		out = append(out, cs.registry[keys[i]])
 	}
 
 	return out

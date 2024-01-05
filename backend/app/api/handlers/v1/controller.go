@@ -136,6 +136,9 @@ func (ctrl *V1Controller) HandleBase(ready ReadyFunc, build Build) errchain.Hand
 // @Router  /v1/currency [GET]
 func (ctrl *V1Controller) HandleCurrency() errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
+		// Set Cache for 10 Minutes
+		w.Header().Set("Cache-Control", "max-age=600")
+
 		return server.JSON(w, http.StatusOK, ctrl.svc.Currencies.Slice())
 	}
 }
