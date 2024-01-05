@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { Detail } from "~~/components/global/DetailsSection/types";
   import { themes } from "~~/lib/data/themes";
-  import { NotifierCreate, NotifierOut } from "~~/lib/api/types/data-contracts";
+  import { CurrenciesCurrency, NotifierCreate, NotifierOut } from "~~/lib/api/types/data-contracts";
 
   definePageMeta({
     middleware: ["auth"],
@@ -25,7 +25,7 @@
   });
 
   // Currency Selection
-  const currency = ref<typeof currencies.value[number]>({
+  const currency = ref<CurrenciesCurrency>({
     code: "USD",
     name: "United States Dollar",
     local: "en-US",
