@@ -90,10 +90,10 @@ func (cs *CurrencyRegistry) Slice() []Currency {
 }
 
 func (cs *CurrencyRegistry) IsSupported(code string) bool {
-	lower := strings.ToLower(code)
+	upper := strings.ToUpper(code)
 
 	cs.mu.RLock()
 	defer cs.mu.RUnlock()
-	_, ok := cs.registry[lower]
+	_, ok := cs.registry[upper]
 	return ok
 }

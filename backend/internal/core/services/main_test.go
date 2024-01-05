@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/hay-kot/homebox/backend/internal/core/currencies"
 	"github.com/hay-kot/homebox/backend/internal/core/services/reporting/eventbus"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
@@ -61,7 +62,12 @@ func TestMain(m *testing.M) {
 
 	tClient = client
 	tRepos = repo.New(tClient, tbus, os.TempDir()+"/homebox")
-	tSvc = New(tRepos)
+
+	defaults, _ := currencies.CollectionCurrencies(
+		currencies.CollectDefaults(),
+	)
+
+	tSvc = New(tRepos, WithCurrencies(defaults))
 	defer func() { _ = client.Close() }()
 
 	bootstrap()
