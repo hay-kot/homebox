@@ -125,7 +125,8 @@
 
   async function ensureAssetIDs() {
     const { isCanceled } = await confirm.open(
-      "Ensure Asset IDs", "Are you sure you want to ensure all assets have an ID? This can take a while and cannot be undone."
+      "Ensure Asset IDs",
+      "Are you sure you want to ensure all assets have an ID? This can take a while and cannot be undone."
     );
 
     if (isCanceled) {

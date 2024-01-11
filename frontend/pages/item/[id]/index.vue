@@ -586,7 +586,7 @@
         </template>
       </div>
     </section>
-    
+
     <section v-if="items && items.length > 0" class="my-6">
       <ItemViewSelectable :items="items" />
     </section>

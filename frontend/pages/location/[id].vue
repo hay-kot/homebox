@@ -31,7 +31,8 @@
 
   async function confirmDelete() {
     const { isCanceled } = await confirm.open(
-      "Delete Location", "Are you sure you want to delete this location and all of its items? This action cannot be undone."
+      "Delete Location",
+      "Are you sure you want to delete this location and all of its items? This action cannot be undone."
     );
     if (isCanceled) {
       return;
@@ -108,9 +109,9 @@
     <BaseModal v-model="updateModal">
       <template #title> Update Location </template>
       <form v-if="location" @submit.prevent="update">
-        <FormTextField class="mt-3" v-model="updateData.name" :autofocus="true" label="Location Name" />
-        <FormTextArea class="mt-2" v-model="updateData.description" label="Location Description" />
-        <LocationSelector class="mt-2" v-model="parent" />
+        <FormTextField v-model="updateData.name" class="mt-3" :autofocus="true" label="Location Name" />
+        <FormTextArea v-model="updateData.description" class="mt-2" label="Location Description" />
+        <LocationSelector v-model="parent" class="mt-2" />
         <div class="modal-action">
           <BaseButton type="submit" :loading="updating"> Update </BaseButton>
         </div>
@@ -159,7 +160,8 @@
           </div>
         </header>
         <div class="divider my-0 mb-1"></div>
-        <Markdown v-if="location && location.description" class="text-base ml-2" :source="location.description"> </Markdown>
+        <Markdown v-if="location && location.description" class="text-base ml-2" :source="location.description">
+        </Markdown>
       </div>
       <section v-if="location && items">
         <ItemViewSelectable :items="items" />

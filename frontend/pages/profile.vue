@@ -97,7 +97,8 @@
 
   async function deleteProfile() {
     const result = await confirm.open(
-      "Delete Account", "Are you sure you want to delete your account? If you are the last member in your group all your data will be deleted. This action cannot be undone."
+      "Delete Account",
+      "Are you sure you want to delete your account? If you are the last member in your group all your data will be deleted. This action cannot be undone."
     );
 
     if (result.isCanceled) {

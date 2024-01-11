@@ -42,7 +42,7 @@ export function useConfirm(): Store {
     if (!store.title) {
       throw new Error("title is not defined");
     }
-  
+
     store.title.value = title;
     store.text.value = msg;
     return await store.reveal();
