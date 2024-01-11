@@ -62,3 +62,28 @@ jobs:
 
       - name: Run Integration Tests
         run: task test:ci
+
+  accessibility-tests:
+    name: Accessibility Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - uses: pnpm/action-setup@v2.2.4
+        with:
+          version: 6.0.2
+
+      - name: Install dependencies
+        run: pnpm install --save-dev pa11y-ci
+        working-directory: frontend
+
+      - name: Run Accessibility Tests
+        run: pnpm run test:accessibility
+        working-directory: frontend

@@ -6,7 +6,8 @@
   });
 
   useHead({
-    title: "Homebox | Items",
+    title: "Homebox | Locations",
+    htmlAttrs: { lang: "en" },
   });
 
   const api = useUserApi();

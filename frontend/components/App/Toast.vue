@@ -12,7 +12,7 @@
         }"
         @click="dropNotification(index)"
       >
-        <div class="flex gap-1">
+        <div class="flex gap-1" style="background-color: #008933;">
           <template v-if="notify.type == 'success'">
             <Icon name="heroicons-check" class="h-5 w-5" />
           </template>

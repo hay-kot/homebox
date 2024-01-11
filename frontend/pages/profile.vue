@@ -9,6 +9,7 @@
   });
   useHead({
     title: "Homebox | Profile",
+    htmlAttrs: { lang: "en" },
   });
 
   const api = useUserApi();

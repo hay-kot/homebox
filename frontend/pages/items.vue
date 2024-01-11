@@ -9,6 +9,7 @@
 
   useHead({
     title: "Homebox | Items",
+    htmlAttrs: { lang: "en" },
   });
 
   const searchLocked = ref(false);

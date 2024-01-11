@@ -11,7 +11,8 @@
     "typecheck": "nuxi typecheck",
     "test:ci": "TEST_SHUTDOWN_API_SERVER=true vitest --run --config ./test/vitest.config.ts",
     "test:local": "TEST_SHUTDOWN_API_SERVER=false && vitest --run --config ./test/vitest.config.ts",
-    "test:watch": " TEST_SHUTDOWN_API_SERVER=false vitest --config ./test/vitest.config.ts"
+    "test:watch": " TEST_SHUTDOWN_API_SERVER=false vitest --config ./test/vitest.config.ts",
+    "test:accessibility": "pa11y-ci"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.0.0",
@@ -28,6 +29,7 @@
     "h3": "^1.7.1",
     "isomorphic-fetch": "^3.0.0",
     "nuxt": "3.6.5",
+    "pa11y-ci": "^3.1.0",
     "prettier": "^2.7.1",
     "typescript": "^5.0.0",
     "vite-plugin-eslint": "^1.8.1",
@@ -46,6 +48,7 @@
     "autoprefixer": "^10.4.8",
     "daisyui": "^2.24.0",
     "dompurify": "^3.0.0",
+    "dotenv": "^16.3.1",
     "h3": "^1.7.1",
     "http-proxy": "^1.18.1",
     "markdown-it": "^14.0.0",

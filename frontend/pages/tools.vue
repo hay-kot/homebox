@@ -99,7 +99,8 @@
     middleware: ["auth"],
   });
   useHead({
-    title: "Homebox | Profile",
+    title: "Homebox | Tools",
+    htmlAttrs: { lang: "en" },
   });
 
   const modals = ref({

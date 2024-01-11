@@ -132,7 +132,7 @@
     <div>
       <header class="p-4 sm:px-6 lg:p-14 sm:py-6 sm:flex sm:items-end mx-auto">
         <div>
-          <h2 class="mt-1 text-4xl font-bold tracking-tight text-neutral-content sm:text-5xl lg:text-6xl flex">
+          <h2 class="mt-1 text-4xl font-bold tracking-tight text-neutral-content sm:text-5xl lg:text-6xl flex" style="color: #929687;">
             HomeB
             <AppLogo class="w-12 -mb-4" />
             x
@@ -140,16 +140,16 @@
           <p class="ml-1 text-lg text-base-content/50">Track, Organize, and Manage your Things.</p>
         </div>
         <div class="flex mt-6 sm:mt-0 gap-4 ml-auto text-neutral-content">
-          <a class="tooltip" data-tip="Project Github" href="https://github.com/hay-kot/homebox" target="_blank">
+          <a class="tooltip" data-tip="Project Github" href="https://github.com/hay-kot/homebox" target="_blank" aria-label="Project Github">
             <Icon name="mdi-github" class="h-8 w-8" />
           </a>
-          <a href="https://twitter.com/haybytes" class="tooltip" data-tip="Follow The Developer" target="_blank">
+          <a  href="https://twitter.com/haybytes" class="tooltip" data-tip="Follow The Developer" target="_blank" aria-label="Follow The Developer">
             <Icon name="mdi-twitter" class="h-8 w-8" />
           </a>
-          <a href="https://discord.gg/tuncmNrE4z" class="tooltip" data-tip="Join The Discord" target="_blank">
+          <a href="https://discord.gg/tuncmNrE4z" class="tooltip" data-tip="Join The Discord" target="_blank" aria-label="Join The Discord">
             <Icon name="mdi-discord" class="h-8 w-8" />
           </a>
-          <a href="https://hay-kot.github.io/homebox/" class="tooltip" data-tip="Read The Docs" target="_blank">
+          <a href="https://hay-kot.github.io/homebox/" class="tooltip" data-tip="Read The Docs" target="_blank" aria-label="Read The Docs">
             <Icon name="mdi-folder" class="h-8 w-8" />
           </a>
         </div>
@@ -210,6 +210,7 @@
                       class="btn btn-primary btn-block"
                       :class="loading ? 'loading' : ''"
                       :disabled="loading"
+                      style="background-color: #000100;"
                     >
                       Login
                     </button>
@@ -223,6 +224,7 @@
               v-if="status && status.allowRegistration"
               class="btn-primary btn-wide"
               @click="() => toggleLogin()"
+              style="background-color: #000100;"
             >
               <template #icon>
                 <Icon v-if="!registerForm" name="mdi-account-plus-outline" class="w-5 h-5 swap-off" />
