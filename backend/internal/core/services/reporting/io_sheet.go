@@ -41,6 +41,12 @@ func (s *IOSheet) indexHeaders() {
 	}
 }
 
+// Ooi J Sen
+// function to return headers from excel sheet
+func (s *IOSheet) GetHeaders() []string {
+    return s.headers
+}
+
 func (s *IOSheet) GetColumn(str string) (col int, ok bool) {
 	if s.index == nil {
 		s.indexHeaders()
