@@ -112,7 +112,7 @@ func NewControllerV1(svc *services.AllServices, repos *repo.AllRepos, bus *event
 //	@Summary Application Info
 //	@Tags    Base
 //	@Produce json
-//	@Success 200 {object} ApiSummary
+//	@Success 200 {object} APISummary
 //	@Router  /v1/status [GET]
 func (ctrl *V1Controller) HandleBase(ready ReadyFunc, build Build) errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
