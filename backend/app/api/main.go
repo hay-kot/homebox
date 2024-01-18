@@ -132,16 +132,16 @@ func run(cfg *config.Config) error {
 		currencies.CollectDefaults(),
 	}
 
-	if cfg.CurrencyConfig != "" {
+	if cfg.Options.CurrencyConfig != "" {
 		log.Info().
-			Str("path", cfg.CurrencyConfig).
+			Str("path", cfg.Options.CurrencyConfig).
 			Msg("loading currency config file")
 
-		content, err := os.ReadFile(cfg.CurrencyConfig)
+		content, err := os.ReadFile(cfg.Options.CurrencyConfig)
 		if err != nil {
 			log.Fatal().
 				Err(err).
-				Str("path", cfg.CurrencyConfig).
+				Str("path", cfg.Options.CurrencyConfig).
 				Msg("failed to read currency config file")
 		}
 

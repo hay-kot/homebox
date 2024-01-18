@@ -17,8 +17,7 @@ const (
 
 type Config struct {
 	conf.Version
-	Mode           string     `yaml:"mode"       conf:"default:development"` // development or production
-	CurrencyConfig string     `yaml:"currencies"`
+	Mode           string     `yaml:"mode"    conf:"default:development"` // development or production
 	Web            WebConfig  `yaml:"web"`
 	Storage        Storage    `yaml:"storage"`
 	Log            LoggerConf `yaml:"logger"`
@@ -31,6 +30,7 @@ type Config struct {
 type Options struct {
 	AllowRegistration    bool `yaml:"disable_registration"    conf:"default:true"`
 	AutoIncrementAssetID bool `yaml:"auto_increment_asset_id" conf:"default:true"`
+	CurrencyConfig string     `yaml:"currencies"`
 }
 
 type DebugConf struct {
