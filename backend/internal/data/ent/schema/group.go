@@ -27,41 +27,8 @@ func (Group) Fields() []ent.Field {
 		field.String("name").
 			MaxLen(255).
 			NotEmpty(),
-		field.Enum("currency").
-			Default("usd").
-			Values(
-				"aed",
-				"aud",
-				"bgn",
-				"brl",
-				"cad",
-				"chf",
-				"czk",
-				"dkk",
-				"eur",
-				"gbp",
-				"hkd",
-				"idr",
-				"inr",
-				"jpy",
-				"krw",
-				"mxn",
-				"nok",
-				"nzd",
-				"pln",
-				"rmb",
-				"ron",
-				"rub",
-				"sar",
-				"sek",
-				"sgd",
-				"thb",
-				"try",
-				"usd",
-				"xag",
-				"xau",
-				"zar",
-			),
+		field.String("currency").
+			Default("usd"),
 	}
 }
 

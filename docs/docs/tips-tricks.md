@@ -56,3 +56,25 @@ Homebox uses [shoutrrr](https://containrrr.dev/shoutrrr/0.7/) to send notificati
 **Notifications are sent on the day the maintenance is scheduled at or around 8am.**
 
 As of `v0.9.0` we have limited support for complex scheduling of maintenance events. If you have requests for extended functionality, please open an issue on GitHub or reach out on Discord. We're still gauging the demand for this feature.
+
+
+## Custom Currencies
+
+:octicons-tag-24: v0.11.0
+
+Homebox allows you to add additional currencies to your instance by specify a JSON file containing the currencies you want to add.
+
+**Environment Variable:** `HBOX_OPTIONS_CURRENCY_CONFIG`
+
+### Example
+
+```json
+[
+  {
+    "code": "AED",
+    "local": "United Arab Emirates",
+    "symbol": "د.إ",
+    "name": "United Arab Emirates Dirham"
+  },
+]
+```

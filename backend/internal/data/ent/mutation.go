@@ -2340,7 +2340,7 @@ type GroupMutation struct {
 	created_at               *time.Time
 	updated_at               *time.Time
 	name                     *string
-	currency                 *group.Currency
+	currency                 *string
 	clearedFields            map[string]struct{}
 	users                    map[uuid.UUID]struct{}
 	removedusers             map[uuid.UUID]struct{}
@@ -2581,12 +2581,12 @@ func (m *GroupMutation) ResetName() {
 }
 
 // SetCurrency sets the "currency" field.
-func (m *GroupMutation) SetCurrency(gr group.Currency) {
-	m.currency = &gr
+func (m *GroupMutation) SetCurrency(s string) {
+	m.currency = &s
 }
 
 // Currency returns the value of the "currency" field in the mutation.
-func (m *GroupMutation) Currency() (r group.Currency, exists bool) {
+func (m *GroupMutation) Currency() (r string, exists bool) {
 	v := m.currency
 	if v == nil {
 		return
@@ -2597,7 +2597,7 @@ func (m *GroupMutation) Currency() (r group.Currency, exists bool) {
 // OldCurrency returns the old "currency" field's value of the Group entity.
 // If the Group object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GroupMutation) OldCurrency(ctx context.Context) (v group.Currency, err error) {
+func (m *GroupMutation) OldCurrency(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCurrency is only allowed on UpdateOne operations")
 	}
@@ -3105,7 +3105,7 @@ func (m *GroupMutation) SetField(name string, value ent.Value) error {
 		m.SetName(v)
 		return nil
 	case group.FieldCurrency:
-		v, ok := value.(group.Currency)
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

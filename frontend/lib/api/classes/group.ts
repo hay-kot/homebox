@@ -1,5 +1,11 @@
 import { BaseAPI, route } from "../base";
-import { Group, GroupInvitation, GroupInvitationCreate, GroupUpdate } from "../types/data-contracts";
+import {
+  CurrenciesCurrency,
+  Group,
+  GroupInvitation,
+  GroupInvitationCreate,
+  GroupUpdate,
+} from "../types/data-contracts";
 
 export class GroupApi extends BaseAPI {
   createInvitation(data: GroupInvitationCreate) {
@@ -19,6 +25,12 @@ export class GroupApi extends BaseAPI {
   get() {
     return this.http.get<Group>({
       url: route("/groups"),
+    });
+  }
+
+  currencies() {
+    return this.http.get<CurrenciesCurrency[]>({
+      url: route("/currencies"),
     });
   }
 }

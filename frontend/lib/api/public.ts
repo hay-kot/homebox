@@ -1,5 +1,5 @@
 import { BaseAPI, route } from "./base";
-import { ApiSummary, LoginForm, TokenResponse, UserRegistration } from "./types/data-contracts";
+import { APISummary, LoginForm, TokenResponse, UserRegistration } from "./types/data-contracts";
 
 export type StatusResult = {
   health: boolean;
@@ -10,7 +10,7 @@ export type StatusResult = {
 
 export class PublicApi extends BaseAPI {
   public status() {
-    return this.http.get<ApiSummary>({ url: route("/status") });
+    return this.http.get<APISummary>({ url: route("/status") });
   }
 
   public login(username: string, password: string, stayLoggedIn = false) {

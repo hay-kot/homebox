@@ -28,7 +28,7 @@ func NewGroupRepository(db *ent.Client) *GroupRepository {
 			Name:      g.Name,
 			CreatedAt: g.CreatedAt,
 			UpdatedAt: g.UpdatedAt,
-			Currency:  strings.ToUpper(g.Currency.String()),
+			Currency:  strings.ToUpper(g.Currency),
 		}
 	}
 
@@ -265,11 +265,9 @@ func (r *GroupRepository) GroupCreate(ctx context.Context, name string) (Group, 
 }
 
 func (r *GroupRepository) GroupUpdate(ctx context.Context, ID uuid.UUID, data GroupUpdate) (Group, error) {
-	currency := group.Currency(strings.ToLower(data.Currency))
-
 	entity, err := r.db.Group.UpdateOneID(ID).
 		SetName(data.Name).
-		SetCurrency(currency).
+		SetCurrency(strings.ToLower(data.Currency)).
 		Save(ctx)
 
 	return r.groupMapper.MapErr(entity, err)

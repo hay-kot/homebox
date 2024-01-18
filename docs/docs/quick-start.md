@@ -61,6 +61,7 @@ volumes:
 | HBOX_WEB_HOST                        |                        | host to run the web server on, if you're using docker do not change this           |
 | HBOX_OPTIONS_ALLOW_REGISTRATION      | true                   | allow users to register themselves                                                 |
 | HBOX_OPTIONS_AUTO_INCREMENT_ASSET_ID | true                   | auto increments the asset_id field for new items                                   |
+| HBOX_OPTIONS_CURRENCY_CONFIG         |                        | json configuration file containing additional currencie                            |
 | HBOX_WEB_MAX_UPLOAD_SIZE             | 10                     | maximum file upload size supported in MB                                           |
 | HBOX_WEB_READ_TIMEOUT                | 10                     | Read timeout of HTTP sever                                                         |
 | HBOX_WEB_WRITE_TIMEOUT               | 10                     | Write timeout of HTTP server                                                       |
@@ -104,6 +105,7 @@ volumes:
         --debug-port/$HBOX_DEBUG_PORT                                            <string>  (default: 4000)
         --options-allow-registration/$HBOX_OPTIONS_ALLOW_REGISTRATION            <bool>    (default: true)
         --options-auto-increment-asset-id/$HBOX_OPTIONS_AUTO_INCREMENT_ASSET_ID  <bool>    (default: true)
+        --options-currency-config/$HBOX_OPTIONS_CURRENCY_CONFIG                  <string>
         --help/-h
         display this help message
       ```
