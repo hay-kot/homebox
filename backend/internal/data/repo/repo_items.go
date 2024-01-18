@@ -341,8 +341,10 @@ func (e *ItemsRepository) QueryByGroup(ctx context.Context, gid uuid.UUID, q Ite
 			item.Or(
 				item.NameContainsFold(q.Search),
 				item.DescriptionContainsFold(q.Search),
-				item.NotesContainsFold(q.Search),
+				item.SerialNumberContainsFold(q.Search),
+				item.ModelNumberContainsFold(q.Search),
 				item.ManufacturerContainsFold(q.Search),
+				item.NotesContainsFold(q.Search),
 			),
 		)
 	}
