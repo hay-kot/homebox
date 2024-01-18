@@ -78,7 +78,6 @@ func (g UserMixin) Fields() []ent.Field {
 	}
 
 	return nil
-
 }
 
 func (g UserMixin) Edges() []ent.Edge {

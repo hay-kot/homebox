@@ -57,15 +57,15 @@ func (gu *GroupUpdate) SetNillableName(s *string) *GroupUpdate {
 }
 
 // SetCurrency sets the "currency" field.
-func (gu *GroupUpdate) SetCurrency(gr group.Currency) *GroupUpdate {
-	gu.mutation.SetCurrency(gr)
+func (gu *GroupUpdate) SetCurrency(s string) *GroupUpdate {
+	gu.mutation.SetCurrency(s)
 	return gu
 }
 
 // SetNillableCurrency sets the "currency" field if the given value is not nil.
-func (gu *GroupUpdate) SetNillableCurrency(gr *group.Currency) *GroupUpdate {
-	if gr != nil {
-		gu.SetCurrency(*gr)
+func (gu *GroupUpdate) SetNillableCurrency(s *string) *GroupUpdate {
+	if s != nil {
+		gu.SetCurrency(*s)
 	}
 	return gu
 }
@@ -370,11 +370,6 @@ func (gu *GroupUpdate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Group.name": %w`, err)}
 		}
 	}
-	if v, ok := gu.mutation.Currency(); ok {
-		if err := group.CurrencyValidator(v); err != nil {
-			return &ValidationError{Name: "currency", err: fmt.Errorf(`ent: validator failed for field "Group.currency": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -397,7 +392,7 @@ func (gu *GroupUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.SetField(group.FieldName, field.TypeString, value)
 	}
 	if value, ok := gu.mutation.Currency(); ok {
-		_spec.SetField(group.FieldCurrency, field.TypeEnum, value)
+		_spec.SetField(group.FieldCurrency, field.TypeString, value)
 	}
 	if gu.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -755,15 +750,15 @@ func (guo *GroupUpdateOne) SetNillableName(s *string) *GroupUpdateOne {
 }
 
 // SetCurrency sets the "currency" field.
-func (guo *GroupUpdateOne) SetCurrency(gr group.Currency) *GroupUpdateOne {
-	guo.mutation.SetCurrency(gr)
+func (guo *GroupUpdateOne) SetCurrency(s string) *GroupUpdateOne {
+	guo.mutation.SetCurrency(s)
 	return guo
 }
 
 // SetNillableCurrency sets the "currency" field if the given value is not nil.
-func (guo *GroupUpdateOne) SetNillableCurrency(gr *group.Currency) *GroupUpdateOne {
-	if gr != nil {
-		guo.SetCurrency(*gr)
+func (guo *GroupUpdateOne) SetNillableCurrency(s *string) *GroupUpdateOne {
+	if s != nil {
+		guo.SetCurrency(*s)
 	}
 	return guo
 }
@@ -1081,11 +1076,6 @@ func (guo *GroupUpdateOne) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Group.name": %w`, err)}
 		}
 	}
-	if v, ok := guo.mutation.Currency(); ok {
-		if err := group.CurrencyValidator(v); err != nil {
-			return &ValidationError{Name: "currency", err: fmt.Errorf(`ent: validator failed for field "Group.currency": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -1125,7 +1115,7 @@ func (guo *GroupUpdateOne) sqlSave(ctx context.Context) (_node *Group, err error
 		_spec.SetField(group.FieldName, field.TypeString, value)
 	}
 	if value, ok := guo.mutation.Currency(); ok {
-		_spec.SetField(group.FieldCurrency, field.TypeEnum, value)
+		_spec.SetField(group.FieldCurrency, field.TypeString, value)
 	}
 	if guo.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -1,8 +1,7 @@
 <script setup lang="ts">
   import { Detail } from "~~/components/global/DetailsSection/types";
   import { themes } from "~~/lib/data/themes";
-  import { currencies, Currency } from "~~/lib/data/currency";
-  import { NotifierCreate, NotifierOut } from "~~/lib/api/types/data-contracts";
+  import { CurrenciesCurrency, NotifierCreate, NotifierOut } from "~~/lib/api/types/data-contracts";
 
   definePageMeta({
     middleware: ["auth"],
@@ -15,9 +14,23 @@
   const confirm = useConfirm();
   const notify = useNotifier();
 
-  // Currency Selection
-  const currency = ref<Currency>(currencies[0]);
+  const currencies = computedAsync(async () => {
+    const resp = await api.group.currencies();
+    if (resp.error) {
+      notify.error("Failed to get currencies");
+      return [];
+    }
 
+    return resp.data;
+  });
+
+  // Currency Selection
+  const currency = ref<CurrenciesCurrency>({
+    code: "USD",
+    name: "United States Dollar",
+    local: "en-US",
+    symbol: "$",
+  });
   watch(currency, () => {
     if (group.value) {
       group.value.currency = currency.value.code;
@@ -45,7 +58,7 @@
     }
 
     // @ts-expect-error - typescript is stupid, it should know group.value is not null
-    const found = currencies.find(c => c.code === group.value.currency);
+    const found = currencies.value.find(c => c.code === group.value.currency);
     if (found) {
       currency.value = found;
     }

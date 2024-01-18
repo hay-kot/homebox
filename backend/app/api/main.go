@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"net/http"
@@ -13,6 +14,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
+	"github.com/hay-kot/homebox/backend/internal/core/currencies"
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/core/services/reporting/eventbus"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
@@ -126,12 +128,40 @@ func run(cfg *config.Config) error {
 		return err
 	}
 
+	collectFuncs := []currencies.CollectorFunc{
+		currencies.CollectDefaults(),
+	}
+
+	if cfg.Options.CurrencyConfig != "" {
+		log.Info().
+			Str("path", cfg.Options.CurrencyConfig).
+			Msg("loading currency config file")
+
+		content, err := os.ReadFile(cfg.Options.CurrencyConfig)
+		if err != nil {
+			log.Fatal().
+				Err(err).
+				Str("path", cfg.Options.CurrencyConfig).
+				Msg("failed to read currency config file")
+		}
+
+		collectFuncs = append(collectFuncs, currencies.CollectJSON(bytes.NewReader(content)))
+	}
+
+	currencies, err := currencies.CollectionCurrencies(collectFuncs...)
+	if err != nil {
+		log.Fatal().
+			Err(err).
+			Msg("failed to collect currencies")
+	}
+
 	app.bus = eventbus.New()
 	app.db = c
 	app.repos = repo.New(c, app.bus, cfg.Storage.Data)
 	app.services = services.New(
 		app.repos,
 		services.WithAutoIncrementAssetID(cfg.Options.AutoIncrementAssetID),
+		services.WithCurrencies(currencies),
 	)
 
 	// =========================================================================

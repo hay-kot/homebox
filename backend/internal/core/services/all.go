@@ -2,6 +2,7 @@
 package services
 
 import (
+	"github.com/hay-kot/homebox/backend/internal/core/currencies"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 )
 
@@ -10,12 +11,14 @@ type AllServices struct {
 	Group             *GroupService
 	Items             *ItemService
 	BackgroundService *BackgroundService
+	Currencies        *currencies.CurrencyRegistry
 }
 
 type OptionsFunc func(*options)
 
 type options struct {
 	autoIncrementAssetID bool
+	currencies           []currencies.Currency
 }
 
 func WithAutoIncrementAssetID(v bool) func(*options) {
@@ -24,13 +27,27 @@ func WithAutoIncrementAssetID(v bool) func(*options) {
 	}
 }
 
+func WithCurrencies(v []currencies.Currency) func(*options) {
+	return func(o *options) {
+		o.currencies = v
+	}
+}
+
 func New(repos *repo.AllRepos, opts ...OptionsFunc) *AllServices {
 	if repos == nil {
 		panic("repos cannot be nil")
 	}
 
+	defaultCurrencies, err := currencies.CollectionCurrencies(
+		currencies.CollectDefaults(),
+	)
+	if err != nil {
+		panic("failed to collect default currencies")
+	}
+
 	options := &options{
 		autoIncrementAssetID: true,
+		currencies:           defaultCurrencies,
 	}
 
 	for _, opt := range opts {
@@ -45,5 +62,6 @@ func New(repos *repo.AllRepos, opts ...OptionsFunc) *AllServices {
 			autoIncrementAssetID: options.autoIncrementAssetID,
 		},
 		BackgroundService: &BackgroundService{repos},
+		Currencies:        currencies.NewCurrencyService(options.currencies),
 	}
 }
