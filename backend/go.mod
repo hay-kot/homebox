@@ -8,7 +8,7 @@ require (
 	github.com/ardanlabs/conf/v3 v3.1.7
 	github.com/containrrr/shoutrrr v0.8.0
 	github.com/go-chi/chi/v5 v5.0.11
-	github.com/go-playground/validator/v10 v10.16.0
+	github.com/go-playground/validator/v10 v10.17.0
 	github.com/gocarina/gocsv v0.0.0-20231116093920-b87c2d0e983a
 	github.com/google/uuid v1.5.0
 	github.com/gorilla/schema v1.2.1
