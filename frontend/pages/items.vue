@@ -74,9 +74,17 @@
     queryParamsInitialized.value = true;
     searchLocked.value = false;
 
-    const qFields = route.query.fields as string[];
-    if (qFields) {
-      fieldTuples.value = qFields.map(f => f.split("=") as [string, string]);
+    const qFields = route.query.fields as string[] | string;
+    if (qFields != null) {
+      // Ensure qFields are represented as an array of string, as expected:
+      const qFieldsAsArray = Array.isArray(qFields) ? qFields : [qFields];
+      const parsedFieldTuples = qFieldsAsArray.map(f => decodeURIComponent(f).split("=") as [string, string]);
+
+      // After loading for the first time, we keep track of the field tuples at this point,
+      // and use them as possible field values even if they're not included in the list of values for
+      // the given field:
+      fieldTuples.value = parsedFieldTuples;
+      fieldTuplesOnMount.value = parsedFieldTuples;
 
       for (const t of fieldTuples.value) {
         if (t[0] && t[1]) {
@@ -139,6 +147,7 @@
   });
 
   const fieldTuples = ref<[string, string][]>([]);
+  const fieldTuplesOnMount = ref<[string, string][]>([]);
   const fieldValuesCache = ref<Record<string, string[]>>({});
 
   const { data: allFields } = useAsyncData(async () => {
@@ -171,6 +180,22 @@
     fieldValuesCache.value[field] = data;
 
     return data;
+  }
+
+  /**
+   * Temporary approach to arbitrary field values, which merges search query input
+   * into the values cache for a given field.
+   *
+   * Since this relies on `onMounted`, and due to how search works, it's less than
+   * ideal, and supremely confusing when a value you saw 2 seconds ago suddenly disappears.
+   */
+  function fieldValuesFromCache(field: string) {
+    const fieldValues = fieldValuesCache.value[field] ?? [];
+    const valuesFromFirstMount = fieldTuplesOnMount.value
+      .filter(([fieldName]) => fieldName === field)
+      .map(([_, fieldValue]) => fieldValue);
+
+    return [...new Set([...valuesFromFirstMount, ...fieldValues])];
   }
 
   watch(advanced, (v, lv) => {
@@ -245,7 +270,10 @@
     initialSearch.value = false;
   }
 
-  watchDebounced([page, pageSize, query, selectedLabels, selectedLocations], search, { debounce: 250, maxWait: 1000 });
+  watchDebounced([page, pageSize, query, selectedLabels, selectedLocations], search, {
+    debounce: 250,
+    maxWait: 1000,
+  });
 
   async function submit() {
     // Set URL Params
@@ -399,8 +427,8 @@
             <label class="label">
               <span class="label-text">Field Value</span>
             </label>
-            <select v-model="fieldTuples[idx][1]" class="select-bordered select" :items="fieldValuesCache[f[0]]">
-              <option v-for="v in fieldValuesCache[f[0]]" :key="v" :value="v">{{ v }}</option>
+            <select v-model="fieldTuples[idx][1]" class="select-bordered select" :items="fieldValuesFromCache(f[0])">
+              <option v-for="v in fieldValuesFromCache(f[0])" :key="v" :value="v">{{ v }}</option>
             </select>
           </div>
           <button

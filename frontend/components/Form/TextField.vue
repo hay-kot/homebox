@@ -41,16 +41,10 @@
     },
   });
 
-  const input = ref<HTMLElement | null>(null);
-
-  whenever(
-    () => props.triggerFocus,
-    () => {
-      if (input.value) {
-        input.value.focus();
-      }
-    }
-  );
+  const input = ref<HTMLInputElement | null>(null);
+  whenever(input, () => {
+    input.value!.focus();
+  });
 
   const value = useVModel(props, "modelValue");
 </script>

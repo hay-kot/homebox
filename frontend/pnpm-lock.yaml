@@ -41,6 +41,9 @@ dependencies:
   dompurify:
     specifier: ^3.0.0
     version: 3.0.0
+  gtin:
+    specifier: ^1.0.2
+    version: 1.0.2
   h3:
     specifier: ^1.7.1
     version: 1.7.1
@@ -5757,6 +5760,11 @@ packages:
   /graphemer@1.4.0:
     resolution: {integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==}
     dev: true
+
+  /gtin@1.0.2:
+    resolution: {integrity: sha512-jEsHMz16c3yz0rlM4TvUUU0022FTniIAcBfCDoch+38RJC32yGkdKFC9ixpBqPskYpCRrb614AjF8O0QQP0gPg==}
+    engines: {node: '>=10'}
+    dev: false
 
   /gzip-size@7.0.0:
     resolution: {integrity: sha512-O1Ld7Dr+nqPnmGpdhzLmMTQ4vAsD+rHwMm1NLUmoUFFymBOMKxCCrtDxqdBRYXdeEPEi3SyoR4TizJLQrnKBNA==}

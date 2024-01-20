@@ -9,20 +9,21 @@
     <ItemCreateModal v-model="modals.item" />
     <LabelCreateModal v-model="modals.label" />
     <LocationCreateModal v-model="modals.location" />
+    <QuickSearch />
     <AppToast />
     <div class="drawer drawer-mobile">
-      <input id="my-drawer-2" v-model="drawerToggle" type="checkbox" class="drawer-toggle" />
+      <input id="nav-drawer" v-model="drawerToggle" type="checkbox" class="drawer-toggle" />
       <div class="drawer-content justify-center bg-base-300 pt-20 lg:pt-0">
         <AppHeaderDecor class="-mt-10 hidden lg:block" />
         <!-- Button -->
         <div class="navbar z-[99] lg:hidden top-0 fixed bg-primary shadow-md drawer-button">
-          <label for="my-drawer-2" class="btn btn-square btn-ghost text-base-100 drawer-button lg:hidden">
+          <label for="nav-drawer" class="btn btn-square btn-ghost text-base-100 drawer-button lg:hidden">
             <Icon name="mdi-menu" class="h-6 w-6" />
           </label>
           <NuxtLink to="/home">
-            <h2 class="text-3xl font-bold tracking-tight text-base-100 flex">
+            <h2 class="text-3xl font-bold tracking-tight text-base-100 flex flex-row items-end">
               HomeB
-              <AppLogo class="w-8 -mb-3" />
+              <AppLogo class="w-8" />
               x
             </h2>
           </NuxtLink>
@@ -33,7 +34,7 @@
 
       <!-- Sidebar -->
       <div class="drawer-side shadow-lg">
-        <label for="my-drawer-2" class="drawer-overlay"></label>
+        <label for="nav-drawer" class="drawer-overlay"></label>
 
         <!-- Top Section -->
         <div class="w-60 py-5 md:py-10 bg-base-200 flex flex-grow-1 flex-col">
