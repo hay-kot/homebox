@@ -100,7 +100,7 @@ func (ctrl *V1Controller) GetLocationWithPrice(auth context.Context, GID uuid.UU
 	totalPriceFloat.Quo(totalPriceFloat, big.NewFloat(100))
 	location.TotalPrice, _ = totalPriceFloat.Float64()
 
-	// Add price from child locatinos
+	// Add price from child locations
 	for _, childLocation := range location.Children {
 		var childLocation, err = ctrl.GetLocationWithPrice(auth, GID, childLocation.ID)
 		if err != nil {
