@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"strings"
+	"math/big"
 
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/core/services"
@@ -79,7 +80,17 @@ func (ctrl *V1Controller) HandleItemsGetAll() errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := services.NewContext(r.Context())
 
+		// deal with floating point precision
 		items, err := ctrl.repo.Items.QueryByGroup(ctx, ctx.GID, extractQuery(r))
+		totalPrice := new(big.Int)
+		for _, item := range items.Items {
+			totalPrice.Add(totalPrice, big.NewInt(int64(item.PurchasePrice * 100)))
+		}
+
+		totalPriceFloat := new(big.Float).SetInt(totalPrice)
+		totalPriceFloat.Quo(totalPriceFloat, big.NewFloat(100))
+		items.TotalPrice, _ = totalPriceFloat.Float64()
+
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				return server.JSON(w, http.StatusOK, repo.PaginationResult[repo.ItemSummary]{
