@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"path/filepath"
+	"strings"
 
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/attachment"
@@ -70,7 +71,7 @@ func (ctrl *V1Controller) HandleItemAttachmentCreate() errchain.HandlerFunc {
 			// Attempt to auto-detect the type of the file
 			ext := filepath.Ext(attachmentName)
 
-			switch ext {
+			switch strings.ToLower(ext) {
 			case ".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp", ".tiff":
 				attachmentType = attachment.TypePhoto.String()
 			default:
