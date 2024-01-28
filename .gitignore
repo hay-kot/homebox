@@ -47,6 +47,7 @@ node_modules
 dist
 
 .pnpm-store
+backend/api
 backend/app/api/app
 backend/app/api/__debug_bin
 dist/
