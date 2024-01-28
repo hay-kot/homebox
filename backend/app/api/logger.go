@@ -2,7 +2,6 @@ package main
 
 import (
 	"os"
-	"strings"
 
 	"github.com/hay-kot/homebox/backend/internal/sys/config"
 	"github.com/rs/zerolog"
@@ -18,24 +17,8 @@ func (a *app) setupLogger() {
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr}).With().Caller().Logger()
 	}
 
-	log.Level(getLevel(a.conf.Log.Level))
-}
-
-func getLevel(l string) zerolog.Level {
-	switch strings.ToLower(l) {
-	case "debug":
-		return zerolog.DebugLevel
-	case "info":
-		return zerolog.InfoLevel
-	case "warn":
-		return zerolog.WarnLevel
-	case "error":
-		return zerolog.ErrorLevel
-	case "fatal":
-		return zerolog.FatalLevel
-	case "panic":
-		return zerolog.PanicLevel
-	default:
-		return zerolog.InfoLevel
+	level, err := zerolog.ParseLevel(a.conf.Log.Level)
+	if err == nil {
+		zerolog.SetGlobalLevel(level)
 	}
 }
