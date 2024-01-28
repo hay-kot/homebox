@@ -54,3 +54,4 @@ dist/
 # Nuxt Publish Dir
 backend/app/api/static/public/*
 !backend/app/api/static/public/.gitkeep
+backend/api
