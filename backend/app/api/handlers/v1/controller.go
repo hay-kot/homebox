@@ -154,31 +154,6 @@ func (ctrl *V1Controller) HandleCacheWS() errchain.HandlerFunc {
 	m.HandleConnect(func(s *melody.Session) {
 		auth := services.NewContext(s.Request.Context())
 		s.Set("gid", auth.GID)
-
-		// Asynchronous ticker that keeps the websocket connection alive with periodic pings.
-		go func() {
-			const interval = 10 * time.Second
-
-			ping := time.NewTicker(interval)
-			defer ping.Stop()
-
-			for {
-				select {
-				case <-s.Request.Context().Done():
-					return
-
-				case <-ping.C:
-					msg := &eventMsg{Event: "ping"}
-
-					pingBytes, err := json.Marshal(msg)
-					if err != nil {
-						log.Log().Msgf("error marshaling ping: %v", err)
-					} else {
-						_ = m.BroadcastMultiple(pingBytes, []*melody.Session{s})
-					}
-				}
-			}
-		}()
 	})
 
 	factory := func(e string) func(data any) {
@@ -212,6 +187,25 @@ func (ctrl *V1Controller) HandleCacheWS() errchain.HandlerFunc {
 	ctrl.bus.Subscribe(eventbus.EventLabelMutation, factory("label.mutation"))
 	ctrl.bus.Subscribe(eventbus.EventLocationMutation, factory("location.mutation"))
 	ctrl.bus.Subscribe(eventbus.EventItemMutation, factory("item.mutation"))
+
+	// Persistent asynchronous ticker that keeps all websocket connections alive with periodic pings.
+	go func() {
+		const interval = 10 * time.Second
+
+		ping := time.NewTicker(interval)
+		defer ping.Stop()
+
+		for range ping.C {
+			msg := &eventMsg{Event: "ping"}
+
+			pingBytes, err := json.Marshal(msg)
+			if err != nil {
+				log.Log().Msgf("error marshaling ping: %v", err)
+			} else {
+				_ = m.Broadcast(pingBytes)
+			}
+		}
+	}()
 
 	return func(w http.ResponseWriter, r *http.Request) error {
 		return m.HandleRequest(w, r)
