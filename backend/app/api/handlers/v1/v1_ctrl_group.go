@@ -57,7 +57,7 @@ func (ctrl *V1Controller) HandleGroupUpdate() errchain.HandlerFunc {
 		ok := ctrl.svc.Currencies.IsSupported(body.Currency)
 		if !ok {
 			return repo.Group{}, validate.NewFieldErrors(
-				validate.NewFieldError("currency", "currency '" + body.Currency + "' is not supported"),
+				validate.NewFieldError("currency", "currency '"+body.Currency+"' is not supported"),
 			)
 		}
 
