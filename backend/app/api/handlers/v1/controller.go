@@ -2,8 +2,9 @@
 package v1
 
 import (
-	"fmt"
+	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/core/services"
@@ -144,11 +145,40 @@ func (ctrl *V1Controller) HandleCurrency() errchain.HandlerFunc {
 }
 
 func (ctrl *V1Controller) HandleCacheWS() errchain.HandlerFunc {
+	type eventMsg struct {
+		Event string `json:"event"`
+	}
+
 	m := melody.New()
 
 	m.HandleConnect(func(s *melody.Session) {
 		auth := services.NewContext(s.Request.Context())
 		s.Set("gid", auth.GID)
+
+		// Asynchronous ticker that keeps the websocket connection alive with periodic pings.
+		go func() {
+			const interval = 10 * time.Second
+
+			ping := time.NewTicker(interval)
+			defer ping.Stop()
+
+			for {
+				select {
+				case <-s.Request.Context().Done():
+					return
+
+				case <-ping.C:
+					msg := &eventMsg{Event: "ping"}
+
+					pingBytes, err := json.Marshal(msg)
+					if err != nil {
+						log.Log().Msgf("error marshaling ping: %v", err)
+					} else {
+						_ = m.BroadcastMultiple(pingBytes, []*melody.Session{s})
+					}
+				}
+			}
+		}()
 	})
 
 	factory := func(e string) func(data any) {
@@ -159,9 +189,15 @@ func (ctrl *V1Controller) HandleCacheWS() errchain.HandlerFunc {
 				return
 			}
 
-			jsonStr := fmt.Sprintf(`{"event": "%s"}`, e)
+			msg := &eventMsg{Event: e}
 
-			_ = m.BroadcastFilter([]byte(jsonStr), func(s *melody.Session) bool {
+			jsonBytes, err := json.Marshal(msg)
+			if err != nil {
+				log.Log().Msgf("error marshling event data %v: %v", data, err)
+				return
+			}
+
+			_ = m.BroadcastFilter(jsonBytes, func(s *melody.Session) bool {
 				groupIDStr, ok := s.Get("gid")
 				if !ok {
 					return false
