@@ -27,7 +27,7 @@ import (
 //	@Param    pageSize  query    int      false "items per page"
 //	@Param    labels    query    []string false "label Ids"    collectionFormat(multi)
 //	@Param    locations query    []string false "location Ids" collectionFormat(multi)
-//  @Param    parentIds query    []string false "parent Ids"   collectionFormat(multi)
+//	@Param    parentIds query    []string false "parent Ids"   collectionFormat(multi)
 //	@Success  200       {object} repo.PaginationResult[repo.ItemSummary]{}
 //	@Router   /v1/items [GET]
 //	@Security Bearer
@@ -57,7 +57,7 @@ func (ctrl *V1Controller) HandleItemsGetAll() errchain.HandlerFunc {
 			Search:          params.Get("q"),
 			LocationIDs:     queryUUIDList(params, "locations"),
 			LabelIDs:        queryUUIDList(params, "labels"),
-      ParentItemIDs:   queryUUIDList(params, "parentIds"),
+			ParentItemIDs:   queryUUIDList(params, "parentIds"),
 			IncludeArchived: queryBool(params.Get("includeArchived")),
 			Fields:          filterFieldItems(params["fields"]),
 			OrderBy:         params.Get("orderBy"),
