@@ -3,7 +3,7 @@ module github.com/hay-kot/homebox/backend
 go 1.21
 
 require (
-	ariga.io/atlas v0.15.0
+	ariga.io/atlas v0.18.0
 	entgo.io/ent v0.12.5
 	github.com/ardanlabs/conf/v3 v3.1.7
 	github.com/containrrr/shoutrrr v0.8.0
@@ -13,7 +13,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/schema v1.2.1
 	github.com/hay-kot/httpkit v0.0.5
-	github.com/mattn/go-sqlite3 v1.14.19
+	github.com/mattn/go-sqlite3 v1.14.20
 	github.com/olahol/melody v1.1.4
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.31.0
