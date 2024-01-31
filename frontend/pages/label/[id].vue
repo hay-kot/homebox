@@ -84,7 +84,7 @@
       return [];
     }
 
-    return resp.data.items;
+    return resp.data;
   });
 </script>
 
