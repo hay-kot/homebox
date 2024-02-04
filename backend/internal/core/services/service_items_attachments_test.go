@@ -2,11 +2,14 @@ package services
 
 import (
 	"context"
+	"io"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 	"testing"
 
+	"github.com/hay-kot/homebox/backend/internal/core/blobstore"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -14,6 +17,8 @@ import (
 
 func TestItemService_AddAttachment(t *testing.T) {
 	temp := os.TempDir()
+
+	bs := blobstore.NewLocalBlobStore(filepath.Join(temp, "homebox"))
 
 	svc := &ItemService{
 		repo:     tRepos,
@@ -53,10 +58,12 @@ func TestItemService_AddAttachment(t *testing.T) {
 	storedPath := afterAttachment.Attachments[0].Document.Path
 
 	// {root}/{group}/{item}/{attachment}
-	assert.Equal(t, path.Join(temp, "homebox", tGroup.ID.String(), "documents"), path.Dir(storedPath))
+	assert.Equal(t, path.Join(tGroup.ID.String(), "documents"), path.Dir(storedPath))
 
 	// Check that the file contents are correct
-	bts, err := os.ReadFile(storedPath)
+	bts, err := bs.Get(storedPath)
 	require.NoError(t, err)
-	assert.Equal(t, contents, string(bts))
+	buf, err := io.ReadAll(bts)
+	require.NoError(t, err)
+	assert.Equal(t, contents, string(buf))
 }

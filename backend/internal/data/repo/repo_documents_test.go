@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"os"
+	"io"
 	"path/filepath"
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/hay-kot/homebox/backend/internal/core/blobstore"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -47,8 +48,8 @@ func useDocs(t *testing.T, num int) []DocumentOut {
 func TestDocumentRepository_CreateUpdateDelete(t *testing.T) {
 	temp := t.TempDir()
 	r := DocumentRepository{
-		db:  tClient,
-		dir: temp,
+		db: tClient,
+		bs: blobstore.NewLocalBlobStore(temp),
 	}
 
 	type args struct {
@@ -83,13 +84,15 @@ func TestDocumentRepository_CreateUpdateDelete(t *testing.T) {
 			got, err := r.Create(tt.args.ctx, tt.args.gid, tt.args.doc)
 			require.NoError(t, err)
 			assert.Equal(t, tt.title, got.Title)
-			assert.Equal(t, fmt.Sprintf("%s/%s/documents", temp, tt.args.gid), filepath.Dir(got.Path))
+			assert.Equal(t, fmt.Sprintf("%s/documents", tt.args.gid), filepath.Dir(got.Path))
 
 			ensureRead := func() {
 				// Read Document
-				bts, err := os.ReadFile(got.Path)
+				bts, err := r.bs.Get(got.Path)
 				require.NoError(t, err)
-				assert.Equal(t, tt.content, string(bts))
+				buf, err := io.ReadAll(bts)
+				require.NoError(t, err)
+				assert.Equal(t, tt.content, string(buf))
 			}
 			ensureRead()
 
@@ -104,7 +107,7 @@ func TestDocumentRepository_CreateUpdateDelete(t *testing.T) {
 			err = r.Delete(tt.args.ctx, got.ID)
 			require.NoError(t, err)
 
-			_, err = os.Stat(got.Path)
+			_, err = r.bs.Get(got.Path)
 			require.Error(t, err)
 		})
 	}
