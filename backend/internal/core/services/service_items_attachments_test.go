@@ -61,7 +61,7 @@ func TestItemService_AddAttachment(t *testing.T) {
 	assert.Equal(t, path.Join(tGroup.ID.String(), "documents"), path.Dir(storedPath))
 
 	// Check that the file contents are correct
-	bts, err := bs.Get(storedPath)
+	bts, err := bs.Get(context.Background(), storedPath)
 	require.NoError(t, err)
 	buf, err := io.ReadAll(bts)
 	require.NoError(t, err)

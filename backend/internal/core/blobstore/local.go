@@ -1,6 +1,7 @@
 package blobstore
 
 import (
+	"context"
 	"io"
 	"os"
 	"path/filepath"
@@ -29,11 +30,11 @@ func NewLocalBlobStore(root string) BlobStore {
 	}
 }
 
-func (l *localBlobStore) Get(key string) (io.ReadCloser, error) {
+func (l *localBlobStore) Get(ctx context.Context, key string) (io.ReadCloser, error) {
 	return os.Open(l.resolvePath(key))
 }
 
-func (l *localBlobStore) Put(key string, content io.Reader) (string, error) {
+func (l *localBlobStore) Put(ctx context.Context, key string, content io.Reader) (string, error) {
 	path := pathlib.Safe(l.resolvePath(key))
 
 	parent := filepath.Dir(path)
@@ -55,7 +56,7 @@ func (l *localBlobStore) Put(key string, content io.Reader) (string, error) {
 	return key, nil
 }
 
-func (l *localBlobStore) Delete(key string) error {
+func (l *localBlobStore) Delete(ctx context.Context, key string) error {
 	return os.Remove(l.resolvePath(key))
 }
 

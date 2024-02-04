@@ -68,7 +68,7 @@ func (r *DocumentRepository) Read(ctx context.Context, id uuid.UUID) (io.ReadClo
 		return nil, err
 	}
 
-	content, err := r.bs.Get(doc.Path)
+	content, err := r.bs.Get(ctx, doc.Path)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func (r *DocumentRepository) Create(ctx context.Context, gid uuid.UUID, doc Docu
 
 	key := r.blobKey(gid, ext)
 
-	path, err := r.bs.Put(key, doc.Content)
+	path, err := r.bs.Put(ctx, key, doc.Content)
 	if err != nil {
 		return DocumentOut{}, err
 	}
@@ -109,7 +109,7 @@ func (r *DocumentRepository) Delete(ctx context.Context, id uuid.UUID) error {
 		return err
 	}
 
-	err = r.bs.Delete(doc.Path)
+	err = r.bs.Delete(ctx, doc.Path)
 	if err != nil {
 		return err
 	}

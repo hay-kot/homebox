@@ -88,7 +88,7 @@ func TestDocumentRepository_CreateUpdateDelete(t *testing.T) {
 
 			ensureRead := func() {
 				// Read Document
-				bts, err := r.bs.Get(got.Path)
+				bts, err := r.bs.Get(tt.args.ctx, got.Path)
 				require.NoError(t, err)
 				buf, err := io.ReadAll(bts)
 				require.NoError(t, err)
@@ -107,7 +107,7 @@ func TestDocumentRepository_CreateUpdateDelete(t *testing.T) {
 			err = r.Delete(tt.args.ctx, got.ID)
 			require.NoError(t, err)
 
-			_, err = r.bs.Get(got.Path)
+			_, err = r.bs.Get(tt.args.ctx, got.Path)
 			require.Error(t, err)
 		})
 	}
