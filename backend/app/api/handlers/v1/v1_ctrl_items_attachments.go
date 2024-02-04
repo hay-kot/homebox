@@ -165,7 +165,9 @@ func (ctrl *V1Controller) handleItemAttachmentsHandler(w http.ResponseWriter, r 
 			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		defer content.Close()
+		defer func() {
+			_ = content.Close()
+		}()
 
 		buf, err := io.ReadAll(content)
 		if err != nil {

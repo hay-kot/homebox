@@ -1,3 +1,4 @@
+// Package blobstore provides blob storage abstractions for reading and writing binary blobs.
 package blobstore
 
 import (
