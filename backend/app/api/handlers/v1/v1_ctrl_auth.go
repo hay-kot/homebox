@@ -3,6 +3,7 @@ package v1
 import (
 	"errors"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -38,6 +39,30 @@ type CookieContents struct {
 	Token     string
 	ExpiresAt time.Time
 	Remember  bool
+}
+
+func GetHostFromHeader(r *http.Request, header string) string {
+	value := r.Header.Get(header)
+	if value == "" {
+		return ""
+	}
+	url, err := url.Parse(value)
+	if err != nil {
+		return ""
+	}
+	return url.Hostname()
+}
+
+func GetOriginRefererHost(r *http.Request) string {
+	origin := GetHostFromHeader(r, "Origin")
+	if origin != "" {
+		return origin
+	}
+	referer := GetHostFromHeader(r, "Referer")
+	if referer != "" {
+		return referer
+	}
+	return r.Host
 }
 
 func GetCookies(r *http.Request) (*CookieContents, error) {
@@ -120,7 +145,7 @@ func (ctrl *V1Controller) HandleAuthLogin(ps ...AuthProvider) errchain.HandlerFu
 			return server.JSON(w, http.StatusInternalServerError, err.Error())
 		}
 
-		ctrl.setCookies(w, noPort(r.Host), newToken.Raw, newToken.ExpiresAt, true)
+		ctrl.setCookies(w, noPort(GetOriginRefererHost(r)), newToken.Raw, newToken.ExpiresAt, true)
 		return server.JSON(w, http.StatusOK, TokenResponse{
 			Token:           "Bearer " + newToken.Raw,
 			ExpiresAt:       newToken.ExpiresAt,
@@ -148,7 +173,7 @@ func (ctrl *V1Controller) HandleAuthLogout() errchain.HandlerFunc {
 			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		ctrl.unsetCookies(w, noPort(r.Host))
+		ctrl.unsetCookies(w, noPort(GetOriginRefererHost(r)))
 		return server.JSON(w, http.StatusNoContent, nil)
 	}
 }
@@ -174,7 +199,7 @@ func (ctrl *V1Controller) HandleAuthRefresh() errchain.HandlerFunc {
 			return validate.NewUnauthorizedError()
 		}
 
-		ctrl.setCookies(w, noPort(r.Host), newToken.Raw, newToken.ExpiresAt, false)
+		ctrl.setCookies(w, noPort(GetOriginRefererHost(r)), newToken.Raw, newToken.ExpiresAt, false)
 		return server.JSON(w, http.StatusOK, newToken)
 	}
 }
