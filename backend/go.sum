@@ -84,6 +84,8 @@ github.com/hashicorp/hcl/v2 v2.19.1 h1://i05Jqznmb2EXqa39Nsvyan2o5XyMowW5fnCKW5R
 github.com/hashicorp/hcl/v2 v2.19.1/go.mod h1:ThLC89FV4p9MPW804KVbe/cEXoQ8NZEh+JtMeeGErHE=
 github.com/hay-kot/httpkit v0.0.5 h1:jy0sWtYJ0CtKzKNd6VUv5dLBTUgo6hk6i4RP6aCxw/g=
 github.com/hay-kot/httpkit v0.0.5/go.mod h1:1s/OJwWRyH6tBtTw76jTp6kwBYvjswziXaokPQH7eKQ=
+github.com/hay-kot/httpkit v0.0.6 h1:BidC4UrkS7zRhoTdpKLeF8ODJPKcOZkJ2tk2t2ZIQjQ=
+github.com/hay-kot/httpkit v0.0.6/go.mod h1:1s/OJwWRyH6tBtTw76jTp6kwBYvjswziXaokPQH7eKQ=
 github.com/jarcoal/httpmock v1.3.0 h1:2RJ8GP0IIaWwcC9Fp2BmVi8Kog3v2Hn7VXM3fTd+nuc=
 github.com/jarcoal/httpmock v1.3.0/go.mod h1:3yb8rc4BI7TCBhFY8ng0gjuLKJNquuDNiPaZjnENuYg=
 github.com/josharian/intern v1.0.0 h1:vlS4z54oSdjm0bgjRigI+G1HpF+tI+9rE5LLzOg8HmY=
