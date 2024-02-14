@@ -3,8 +3,8 @@ module github.com/hay-kot/homebox/backend
 go 1.21
 
 require (
-	ariga.io/atlas v0.19.0
-	entgo.io/ent v0.12.5
+	ariga.io/atlas v0.19.1-0.20240203083654-5948b60a8e43
+	entgo.io/ent v0.13.0
 	github.com/ardanlabs/conf/v3 v3.1.7
 	github.com/containrrr/shoutrrr v0.8.0
 	github.com/go-chi/chi/v5 v5.0.11
@@ -61,10 +61,10 @@ require (
 	github.com/zclconf/go-cty v1.14.1 // indirect
 	golang.org/x/image v0.14.0 // indirect
 	golang.org/x/mod v0.14.0 // indirect
-	golang.org/x/net v0.18.0 // indirect
+	golang.org/x/net v0.20.0 // indirect
 	golang.org/x/sys v0.17.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
-	golang.org/x/tools v0.15.0 // indirect
+	golang.org/x/tools v0.17.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	lukechampine.com/uint128 v1.3.0 // indirect
 	modernc.org/cc/v3 v3.41.0 // indirect
