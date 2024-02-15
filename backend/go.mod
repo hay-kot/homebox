@@ -12,7 +12,7 @@ require (
 	github.com/gocarina/gocsv v0.0.0-20231116093920-b87c2d0e983a
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/schema v1.2.1
-	github.com/hay-kot/httpkit v0.0.6
+	github.com/hay-kot/httpkit v0.0.9
 	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/olahol/melody v1.1.4
 	github.com/pkg/errors v0.9.1
