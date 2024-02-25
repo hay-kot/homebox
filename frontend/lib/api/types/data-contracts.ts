@@ -128,6 +128,12 @@ export interface ItemPatch {
   quantity?: number | null;
 }
 
+export interface ItemPath {
+  id: string;
+  name: string;
+  type: ItemType;
+}
+
 export interface ItemSummary {
   archived: boolean;
   createdAt: Date | string;
@@ -143,6 +149,11 @@ export interface ItemSummary {
   purchasePrice: string;
   quantity: number;
   updatedAt: Date | string;
+}
+
+export enum ItemType {
+  ItemTypeLocation = "location",
+  ItemTypeItem = "item",
 }
 
 export interface ItemUpdate {
