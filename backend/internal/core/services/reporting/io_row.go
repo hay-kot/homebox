@@ -84,7 +84,7 @@ func (csf LocationString) String() string {
 	return strings.Join(csf, " / ")
 }
 
-func fromPathSlice(s []repo.LocationPath) LocationString {
+func fromPathSlice(s []repo.ItemPath) LocationString {
 	v := make(LocationString, len(s))
 
 	for i := range s {

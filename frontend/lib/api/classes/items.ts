@@ -5,6 +5,7 @@ import {
   ItemCreate,
   ItemOut,
   ItemPatch,
+  ItemPath,
   ItemSummary,
   ItemUpdate,
   MaintenanceEntry,
@@ -103,6 +104,10 @@ export class ItemsApi extends BaseAPI {
     this.fields = new FieldsAPI(http);
     this.attachments = new AttachmentsAPI(http);
     this.maintenance = new MaintenanceAPI(http);
+  }
+
+  fullpath(id: string) {
+    return this.http.get<ItemPath[]>({ url: route(`/items/${id}/path`) });
   }
 
   getAll(q: ItemsQuery = {}) {

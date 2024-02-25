@@ -93,6 +93,48 @@ func (ctrl *V1Controller) HandleItemsGetAll() errchain.HandlerFunc {
 	}
 }
 
+// HandleItemFullPath godoc
+//
+// @Summary Get the full path of an item
+// @Tags Items
+// @Produce json
+// @Param id path string true "Item ID"
+// @Success 200 {object} []repo.ItemPath
+// @Router /v1/items/{id}/path [GET]
+// @Security Bearer
+func (ctrl *V1Controller) HandleItemFullPath() errchain.HandlerFunc {
+	fn := func(r *http.Request, ID uuid.UUID) ([]repo.ItemPath, error) {
+		auth := services.NewContext(r.Context())
+		item, err := ctrl.repo.Items.GetOneByGroup(auth, auth.GID, ID)
+		if err != nil {
+			return nil, err
+		}
+
+		paths, err := ctrl.repo.Locations.PathForLoc(auth, auth.GID, item.Location.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		if item.Parent != nil {
+			paths = append(paths, repo.ItemPath{
+				Type: repo.ItemTypeItem,
+				ID:   item.Parent.ID,
+				Name: item.Parent.Name,
+			})
+		}
+
+		paths = append(paths, repo.ItemPath{
+			Type: repo.ItemTypeItem,
+			ID:   item.ID,
+			Name: item.Name,
+		})
+
+		return paths, nil
+	}
+
+	return adapters.CommandID("id", fn, http.StatusOK)
+}
+
 // HandleItemsCreate godoc
 //
 //	@Summary  Create Item

@@ -122,6 +122,7 @@ func (a *app) mountRoutes(r *chi.Mux, chain *errchain.ErrChain, repos *repo.AllR
 	r.Get(v1Base("/items/fields/values"), chain.ToHandlerFunc(v1Ctrl.HandleGetAllCustomFieldValues(), userMW...))
 
 	r.Get(v1Base("/items/{id}"), chain.ToHandlerFunc(v1Ctrl.HandleItemGet(), userMW...))
+	r.Get(v1Base("/items/{id}/path"), chain.ToHandlerFunc(v1Ctrl.HandleItemFullPath(), userMW...))
 	r.Put(v1Base("/items/{id}"), chain.ToHandlerFunc(v1Ctrl.HandleItemUpdate(), userMW...))
 	r.Patch(v1Base("/items/{id}"), chain.ToHandlerFunc(v1Ctrl.HandleItemPatch(), userMW...))
 	r.Delete(v1Base("/items/{id}"), chain.ToHandlerFunc(v1Ctrl.HandleItemDelete(), userMW...))

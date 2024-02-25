@@ -206,6 +206,15 @@ definitions:
         x-nullable: true
         x-omitempty: true
     type: object
+  repo.ItemPath:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/repo.ItemType'
+    type: object
   repo.ItemSummary:
     properties:
       archived:
@@ -240,6 +249,14 @@ definitions:
       updatedAt:
         type: string
     type: object
+  repo.ItemType:
+    enum:
+    - location
+    - item
+    type: string
+    x-enum-varnames:
+    - ItemTypeLocation
+    - ItemTypeItem
   repo.ItemUpdate:
     properties:
       archived:
@@ -1264,6 +1281,28 @@ paths:
       summary: Update Maintenance Entry
       tags:
       - Maintenance
+  /v1/items/{id}/path:
+    get:
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/repo.ItemPath'
+            type: array
+      security:
+      - Bearer: []
+      summary: Get the full path of an item
+      tags:
+      - Items
   /v1/items/export:
     get:
       responses:

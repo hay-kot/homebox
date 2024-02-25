@@ -1017,6 +1017,42 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/items/{id}/path": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Items"
+                ],
+                "summary": "Get the full path of an item",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/repo.ItemPath"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/v1/labels": {
             "get": {
                 "security": [
@@ -2168,6 +2204,20 @@ const docTemplate = `{
                 }
             }
         },
+        "repo.ItemPath": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/repo.ItemType"
+                }
+            }
+        },
         "repo.ItemSummary": {
             "type": "object",
             "properties": {
@@ -2219,6 +2269,17 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "repo.ItemType": {
+            "type": "string",
+            "enum": [
+                "location",
+                "item"
+            ],
+            "x-enum-varnames": [
+                "ItemTypeLocation",
+                "ItemTypeItem"
+            ]
         },
         "repo.ItemUpdate": {
             "type": "object",
