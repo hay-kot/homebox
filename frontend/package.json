@@ -41,6 +41,7 @@
     "@tailwindcss/aspect-ratio": "^0.4.0",
     "@tailwindcss/forms": "^0.5.2",
     "@tailwindcss/typography": "^0.5.4",
+    "@vuepic/vue-datepicker": "^8.1.1",
     "@vueuse/nuxt": "^10.0.0",
     "@vueuse/router": "^10.0.0",
     "autoprefixer": "^10.4.8",

@@ -9,11 +9,14 @@
     <label class="label">
       <span class="label-text"> {{ label }} </span>
     </label>
-    <input v-model="selected" type="date" class="input input-bordered col-span-3 w-full mt-2" />
+    <VueDatePicker v-model="selected" :enable-time-picker="false" clearable :dark="isDark" />
   </div>
 </template>
 
 <script setup lang="ts">
+  // @ts-ignore
+  import VueDatePicker from "@vuepic/vue-datepicker";
+  import "@vuepic/vue-datepicker/dist/main.css";
   const emit = defineEmits(["update:modelValue", "update:text"]);
 
   const props = defineProps({
@@ -31,6 +34,8 @@
       default: "Date",
     },
   });
+
+  const isDark = useIsDark();
 
   const selected = computed({
     get() {
@@ -54,12 +59,16 @@
 
       // Date
       if (props.modelValue instanceof Date) {
+        if (props.modelValue.getFullYear() < 1000) {
+          return null;
+        }
+
         if (isNaN(props.modelValue.getTime())) {
           return null;
         }
 
         // Valid Date
-        return props.modelValue.toISOString().split("T")[0];
+        return props.modelValue;
       }
 
       return null;
