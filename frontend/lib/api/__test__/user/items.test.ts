@@ -188,8 +188,8 @@ describe("user should be able to create an item and add an attachment", () => {
 
     const names = fullpath.map(p => p.name);
 
-    expect(names).toHaveLength(locations.length);
-    expect(names).toEqual(locations);
+    expect(names).toHaveLength(locations.length + 1);
+    expect(names).toEqual([...locations, item.name]);
 
     cleanup();
   });
