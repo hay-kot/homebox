@@ -420,7 +420,7 @@
           </BaseSectionHeader>
         </template>
 
-        <div v-if="group" class="p-5 pt-0">
+        <div v-if="group && currencies && currencies.length > 0" class="p-5 pt-0">
           <FormSelect v-model="currency" label="Currency Format" :items="currencies" />
           <p class="m-2 text-sm">Example: {{ currencyExample }}</p>
 

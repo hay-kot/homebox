@@ -1,5 +1,11 @@
 [
   {
+    "code": "USD",
+    "local": "United States",
+    "symbol": "$",
+    "name": "United States Dollar"
+  },
+  {
     "code": "AED",
     "local": "United Arab Emirates",
     "symbol": "د.إ",

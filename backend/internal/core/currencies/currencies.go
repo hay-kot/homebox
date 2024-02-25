@@ -74,17 +74,22 @@ func (cs *CurrencyRegistry) Slice() []Currency {
 	cs.mu.RLock()
 	defer cs.mu.RUnlock()
 
-	keys := make([]string, 0, len(cs.registry))
-	for key := range cs.registry {
-		keys = append(keys, key)
-	}
-
-	slices.Sort(keys)
-
 	out := make([]Currency, 0, len(cs.registry))
-	for i := range keys {
-		out = append(out, cs.registry[keys[i]])
+	for key := range cs.registry {
+		out = append(out, cs.registry[key])
 	}
+
+	slices.SortFunc(out, func(a, b Currency) int {
+		if a.Name < b.Name {
+			return -1
+		}
+
+		if a.Name > b.Name {
+			return 1
+		}
+
+		return 0
+	})
 
 	return out
 }
