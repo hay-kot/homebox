@@ -127,27 +127,31 @@
     return "";
   }
 
-  const index = lunr(function () {
-    this.ref("id");
-    this.field("display");
+  function lunrFactory() {
+    return lunr(function () {
+      this.ref("id");
+      this.field("display");
 
-    for (let i = 0; i < props.items.length; i++) {
-      const item = props.items[i];
-      const display = extractDisplay(item);
-      this.add({ id: i, display });
-    }
-  });
+      for (let i = 0; i < props.items.length; i++) {
+        const item = props.items[i];
+        const display = extractDisplay(item);
+        this.add({ id: i, display });
+      }
+    });
+  }
+
+  const index = ref<ReturnType<typeof lunrFactory>>(lunrFactory());
 
   watchEffect(() => {
-    if (props.modelValue) {
-      search.value = extractDisplay(props.modelValue);
+    if (props.items) {
+      index.value = lunrFactory();
     }
   });
 
   const computedItems = computed<ComboItem[]>(() => {
     const list: ComboItem[] = [];
 
-    const matches = index.search("*" + search.value + "*");
+    const matches = index.value.search("*" + search.value + "*");
 
     for (let i = 0; i < matches.length; i++) {
       const match = matches[i];
