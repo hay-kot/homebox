@@ -17,6 +17,7 @@
   // @ts-ignore
   import VueDatePicker from "@vuepic/vue-datepicker";
   import "@vuepic/vue-datepicker/dist/main.css";
+  import * as datelib from "~/lib/datelib/datelib";
   const emit = defineEmits(["update:modelValue", "update:text"]);
 
   const props = defineProps({
@@ -37,10 +38,8 @@
 
   const isDark = useIsDark();
 
-  const selected = computed({
+  const selected = computed<Date | null>({
     get() {
-      // return modelValue as string as YYYY-MM-DD or null
-
       // String
       if (typeof props.modelValue === "string") {
         // Empty string
@@ -53,8 +52,7 @@
           return null;
         }
 
-        // Valid Date string
-        return props.modelValue;
+        return datelib.parse(props.modelValue);
       }
 
       // Date
@@ -73,9 +71,9 @@
 
       return null;
     },
-    set(value: string | null) {
+    set(value: Date | null) {
       // emit update:modelValue with a Date object or null
-      console.log("SET", value);
+      console.debug("DatePicker: SET", value);
       emit("update:modelValue", value ? new Date(value) : null);
     },
   });
