@@ -26,6 +26,9 @@ dependencies:
   '@tailwindcss/typography':
     specifier: ^0.5.4
     version: 0.5.8(tailwindcss@3.2.4)
+  '@types/lunr':
+    specifier: ^2.3.7
+    version: 2.3.7
   '@vuepic/vue-datepicker':
     specifier: ^8.1.1
     version: 8.1.1(vue@3.3.4)
@@ -53,6 +56,9 @@ dependencies:
   http-proxy:
     specifier: ^1.18.1
     version: 1.18.1
+  lunr:
+    specifier: ^2.3.9
+    version: 2.3.9
   markdown-it:
     specifier: ^14.0.0
     version: 14.0.0
@@ -2796,6 +2802,10 @@ packages:
   /@types/linkify-it@3.0.2:
     resolution: {integrity: sha512-HZQYqbiFVWufzCwexrvh694SOim8z2d+xJl5UNamcvQFejLY/2YUtzXHYi3cHdI7PMlS8ejH2slRAOJQ32aNbA==}
     dev: true
+
+  /@types/lunr@2.3.7:
+    resolution: {integrity: sha512-Tb/kUm38e8gmjahQzdCKhbdsvQ9/ppzHFfsJ0dMs3ckqQsRj+P5IkSAwFTBrBxdyr3E/LoMUUrZngjDYAjiE3A==}
+    dev: false
 
   /@types/markdown-it@13.0.2:
     resolution: {integrity: sha512-Tla7hH9oeXHOlJyBFdoqV61xWE9FZf/y2g+gFVwQ2vE1/eBzjUno5JCd3Hdb5oATve5OF6xNjZ/4VIZhVVx+hA==}
@@ -6585,6 +6595,10 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       yallist: 4.0.0
+
+  /lunr@2.3.9:
+    resolution: {integrity: sha512-zTU3DaZaF3Rt9rhN3uBMGQD3dD2/vFQqnvZCDv4dl5iOzq2IZQqTxu90r4E5J+nP70J3ilqVCrbho2eWaeW8Ow==}
+    dev: false
 
   /magic-string-ast@0.1.2:
     resolution: {integrity: sha512-P53AZrzq7hclCU6HWj88xNZHmP15DKjMmK/vBytO1qnpYP3ul4IEZlyCE0aU3JRnmgWmZPmoTKj4Bls7v0pMyA==}
