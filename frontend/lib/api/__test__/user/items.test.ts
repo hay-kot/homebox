@@ -155,4 +155,42 @@ describe("user should be able to create an item and add an attachment", () => {
 
     cleanup();
   });
+
+  test("full path of item should be retrievable", async () => {
+    const api = await sharedUserClient();
+    const [location, cleanup] = await useLocation(api);
+
+    const locations = [location.name, faker.animal.dog(), faker.animal.cat(), faker.animal.cow(), faker.animal.bear()];
+
+    let lastLocationId = location.id;
+    for (let i = 1; i < locations.length; i++) {
+      // Skip first one
+      const { response, data: loc } = await api.locations.create({
+        parentId: lastLocationId,
+        name: locations[i],
+        description: "",
+      });
+      expect(response.status).toBe(201);
+
+      lastLocationId = loc.id;
+    }
+
+    const { response, data: item } = await api.items.create({
+      name: faker.vehicle.model(),
+      labelIds: [],
+      description: faker.lorem.paragraph(1),
+      locationId: lastLocationId,
+    });
+    expect(response.status).toBe(201);
+
+    const { response: pathResponse, data: fullpath } = await api.items.fullpath(item.id);
+    expect(pathResponse.status).toBe(200);
+
+    const names = fullpath.map(p => p.name);
+
+    expect(names).toHaveLength(locations.length + 1);
+    expect(names).toEqual([...locations, item.name]);
+
+    cleanup();
+  });
 });

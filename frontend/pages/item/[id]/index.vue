@@ -147,11 +147,6 @@
 
     const ret: Details = [
       {
-        name: "Description",
-        type: "markdown",
-        text: item.value?.description,
-      },
-      {
         name: "Quantity",
         text: item.value?.quantity,
         slot: "quantity",
@@ -405,6 +400,20 @@
     ];
   });
 
+  const fullpath = computedAsync(async () => {
+    if (!item.value) {
+      return [];
+    }
+
+    const resp = await api.items.fullpath(item.value.id);
+    if (resp.error) {
+      toast.error("Failed to load item");
+      return [];
+    }
+
+    return resp.data;
+  });
+
   const items = computedAsync(async () => {
     if (!item.value) {
       return [];
@@ -442,33 +451,45 @@
     </dialog>
 
     <section>
-      <BaseSectionHeader>
-        <Icon name="mdi-package-variant" class="mr-2 -mt-1 text-base-content" />
-        <span class="text-base-content">
-          {{ item ? item.name : "" }}
-        </span>
-
-        <div v-if="item.parent" class="text-sm breadcrumbs pb-0">
-          <ul class="text-base-content/70">
-            <li>
-              <NuxtLink :to="`/item/${item.parent.id}`"> {{ item.parent.name }}</NuxtLink>
-            </li>
-            <li>{{ item.name }}</li>
-          </ul>
-        </div>
-        <template #description>
-          <Markdown :source="item.description"> </Markdown>
-          <div class="flex flex-wrap gap-2 mt-3">
-            <NuxtLink v-if="item.location" ref="badge" class="badge p-3" :to="`/location/${item.location.id}`">
-              <Icon name="heroicons-map-pin" class="mr-2 swap-on"></Icon>
-              {{ item.location.name }}
-            </NuxtLink>
-            <template v-if="item.labels && item.labels.length > 0">
-              <LabelChip v-for="label in item.labels" :key="label.id" class="badge-primary" :label="label" />
-            </template>
+      <div class="bg-base-100 rounded p-3">
+        <header class="mb-2">
+          <div class="flex flex-wrap items-end gap-2">
+            <div class="avatar placeholder mb-auto">
+              <div class="bg-neutral-focus text-neutral-content rounded-full w-12">
+                <Icon name="mdi-package-variant" class="h-7 w-7" />
+              </div>
+            </div>
+            <div>
+              <div v-if="fullpath && fullpath.length > 0" class="text-sm breadcrumbs pt-0 pb-0">
+                <ul class="text-base-content/70">
+                  <li v-for="part in fullpath" :key="part.id">
+                    <NuxtLink :to="`/${part.type}/${part.id}`"> {{ part.name }}</NuxtLink>
+                  </li>
+                </ul>
+              </div>
+              <h1 class="text-2xl pb-1">
+                {{ item ? item.name : "" }}
+              </h1>
+              <div class="flex gap-1 flex-wrap text-xs">
+                <div>
+                  Created
+                  <DateTime :date="item?.createdAt" />
+                </div>
+                -
+                <div>
+                  Updated
+                  <DateTime :date="item?.updatedAt" />
+                </div>
+              </div>
+            </div>
           </div>
-        </template>
-      </BaseSectionHeader>
+        </header>
+        <div class="divider my-0 mb-1"></div>
+        <div class="p-1 prose max-w-[100%]">
+          <Markdown v-if="item && item.description" class="text-base" :source="item.description"> </Markdown>
+        </div>
+      </div>
+
       <div class="flex flex-wrap items-center justify-between mb-6 mt-3">
         <div class="btn-group">
           <NuxtLink

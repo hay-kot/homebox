@@ -261,12 +261,20 @@ type TreeQuery struct {
 	WithItems bool `json:"withItems" schema:"withItems"`
 }
 
-type LocationPath struct {
+type ItemType string
+
+const (
+	ItemTypeLocation ItemType = "location"
+	ItemTypeItem     ItemType = "item"
+)
+
+type ItemPath struct {
+	Type ItemType  `json:"type"`
 	ID   uuid.UUID `json:"id"`
 	Name string    `json:"name"`
 }
 
-func (r *LocationRepository) PathForLoc(ctx context.Context, GID, locID uuid.UUID) ([]LocationPath, error) {
+func (r *LocationRepository) PathForLoc(ctx context.Context, GID, locID uuid.UUID) ([]ItemPath, error) {
 	query := `WITH RECURSIVE location_path AS (
 		SELECT id, name, location_children
 		FROM locations
@@ -289,10 +297,11 @@ func (r *LocationRepository) PathForLoc(ctx context.Context, GID, locID uuid.UUI
 	}
 	defer func() { _ = rows.Close() }()
 
-	var locations []LocationPath
+	var locations []ItemPath
 
 	for rows.Next() {
-		var location LocationPath
+		var location ItemPath
+		location.Type = ItemTypeLocation
 		if err := rows.Scan(&location.ID, &location.Name); err != nil {
 			return nil, err
 		}
