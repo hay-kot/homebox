@@ -23,7 +23,7 @@
     "@vite-pwa/nuxt": "^0.2.0",
     "eslint": "^8.23.0",
     "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-vue": "^9.4.0",
     "h3": "^1.7.1",
     "isomorphic-fetch": "^3.0.0",
