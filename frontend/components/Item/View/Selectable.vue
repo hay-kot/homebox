@@ -26,7 +26,7 @@
 <template>
   <section>
     <BaseSectionHeader class="mb-2 flex justify-between items-center">
-      Items
+      {{ $t("item.selectable.title") }}
       <template #description>
         <div v-if="!viewSet" class="dropdown dropdown-hover dropdown-left">
           <label tabindex="0" class="btn btn-ghost m-1">
@@ -36,13 +36,13 @@
             <li>
               <button @click="setViewPreference('card')">
                 <Icon name="mdi-card-text-outline" class="h-5 w-5" />
-                Card
+                {{ $t("item.selectable.card") }}
               </button>
             </li>
             <li>
               <button @click="setViewPreference('table')">
                 <Icon name="mdi-table" class="h-5 w-5" />
-                Table
+                {{ $t("item.selectable.table") }}
               </button>
             </li>
           </ul>
@@ -56,7 +56,7 @@
     <template v-else>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         <ItemCard v-for="item in items" :key="item.id" :item="item" />
-        <div class="first:block hidden text-lg">No Items to Display</div>
+        <div class="first:block hidden text-lg">{{ $t("item.selectable.empty") }}</div>
       </div>
     </template>
   </section>

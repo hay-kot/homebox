@@ -61,7 +61,7 @@
 
 <template>
   <BaseContainer class="mb-16">
-    <BaseSectionHeader> Locations </BaseSectionHeader>
+    <BaseSectionHeader>{{ $t("default.nav.locations") }} </BaseSectionHeader>
     <BaseCard>
       <div class="p-4">
         <div class="flex justify-end mb-2">

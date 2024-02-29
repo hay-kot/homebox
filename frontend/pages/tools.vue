@@ -6,25 +6,23 @@
         <template #title>
           <BaseSectionHeader>
             <Icon name="mdi-file-chart" class="mr-2 -mt-1" />
-            <span> Reports </span>
-            <template #description> Generate different reports for your inventory. </template>
+            <span> {{ $t("tools.report.title") }} </span>
+            <template #description> {{ $t("tools.report.desp") }} </template>
           </BaseSectionHeader>
         </template>
         <div class="border-t px-6 pb-3 border-gray-300 divide-gray-300 divide-y">
           <DetailAction @action="navigateTo('/reports/label-generator')">
-            <template #title>Asset ID Labels</template>
-            Generates a printable PDF of labels for a range of Asset ID. These are not specific to your inventory so you
-            are able to print labels ahead of time and apply them to your inventory when you receive them.
+            <template #title> {{ $t("tools.report.asset.title") }} </template>
+            {{ $t("tools.report.asset.desp") }}
             <template #button>
-              Label Generator
+              {{ $t("tools.report.asset.button") }}
               <Icon name="mdi-arrow-right" class="ml-2" />
             </template>
           </DetailAction>
           <DetailAction @action="getBillOfMaterials()">
-            <template #title>Bill of Materials</template>
-            Generates a TSV (Tab Separated Values) file that can be imported into a spreadsheet program. This is a
-            summary of your inventory with basic item and pricing information.
-            <template #button> Generate BOM </template>
+            <template #title>{{ $t("tools.report.bom.title") }}</template>
+            {{ $t("tools.report.bom.desp") }}
+            <template #button> {{ $t("tools.report.bom.button") }} </template>
           </DetailAction>
         </div>
       </BaseCard>
@@ -32,22 +30,20 @@
         <template #title>
           <BaseSectionHeader>
             <Icon name="mdi-database" class="mr-2 -mt-1" />
-            <span> Import / Export </span>
+            <span> {{ $t("tools.import_export.title") }} </span>
             <template #description>
-              Import and export your inventory to and from a CSV file. This is useful for migrating your inventory to a
-              new instance of Homebox.
+              {{ $t("tools.import_export.desp") }}
             </template>
           </BaseSectionHeader>
         </template>
         <div class="border-t px-6 pb-3 border-gray-300 divide-gray-300 divide-y">
           <DetailAction @action="modals.import = true">
-            <template #title>Import Inventory</template>
-            Imports the standard CSV format for Homebox. This will <b>not</b> overwrite any existing items in your
-            inventory. It will only add new items.
+            <template #title> {{ $t("tools.import_export.import.title") }} </template>
+            {{ $t("tools.import_export.import.desp") }}
           </DetailAction>
           <DetailAction @action="getExportTSV()">
-            <template #title>Export Inventory</template>
-            Exports the standard CSV format for Homebox. This will export all items in your inventory.
+            <template #title>{{ $t("tools.import_export.export.title") }}</template>
+            {{ $t("tools.import_export.export.desp") }}
           </DetailAction>
         </div>
       </BaseCard>
@@ -55,38 +51,32 @@
         <template #title>
           <BaseSectionHeader>
             <Icon name="mdi-warning" class="mr-2 -mt-1" />
-            <span> Inventory Actions </span>
+            <span> {{ $t("tools.inventory.title") }} </span>
             <template #description>
-              Apply Actions to your inventory in bulk. These are irreversible actions. <b>Be careful.</b>
+              {{ $t("tools.inventory.desp") }}
             </template>
           </BaseSectionHeader>
         </template>
         <div class="border-t px-6 pb-3 border-gray-300 divide-gray-300 divide-y">
           <DetailAction @action="ensureAssetIDs">
-            <template #title>Ensure Asset IDs</template>
-            Ensures that all items in your inventory have a valid asset_id field. This is done by finding the highest
-            current asset_id field in the database and applying the next value to each item that has an unset asset_id
-            field. This is done in order of the created_at field.
+            <template #title> {{ $t("tools.inventory.ensureAssetIDs.title") }} </template>
+            {{ $t("tools.inventory.ensureAssetIDs.desp") }}
           </DetailAction>
           <DetailAction @action="ensureImportRefs">
-            <template #title>Ensures Import Refs</template>
-            Ensures that all items in your inventory have a valid import_ref field. This is done by randomly generating
-            a 8 character string for each item that has an unset import_ref field.
+            <template #title> {{ $t("tools.inventory.ensureImportRefs.title") }} </template>
+            {{ $t("tools.inventory.ensureImportRefs.desp") }}
           </DetailAction>
           <DetailAction @action="resetItemDateTimes">
-            <template #title> Zero Item Date Times</template>
-            Resets the time value for all date time fields in your inventory to the beginning of the date. This is to
-            fix a bug that was introduced early on in the development of the site that caused the time value to be
-            stored with the time which caused issues with date fields displaying accurate values.
+            <template #title> {{ $t("tools.inventory.resetItemDateTimes.title") }}</template>
+            {{ $t("tools.inventory.resetItemDateTimes.desp") }}
             <a class="link" href="https://github.com/hay-kot/homebox/issues/236" target="_blank">
               See Github Issue #236 for more details.
             </a>
           </DetailAction>
           <DetailAction @action="setPrimaryPhotos">
-            <template #title> Set Primary Photos </template>
-            In version v0.10.0 of Homebox, the primary image field was added to attachments of type photo. This action
-            will set the primary image field to the first image in the attachments array in the database, if it is not
-            already set. <a class="link" href="https://github.com/hay-kot/homebox/pull/576">See GitHub PR #576</a>
+            <template #title> {{ $t("tools.inventory.setPrimaryPhotos.title") }}</template>
+            {{ $t("tools.inventory.setPrimaryPhotos.desp") }}
+             <a class="link" href="https://github.com/hay-kot/homebox/pull/576">See GitHub PR #576</a>
           </DetailAction>
         </div>
       </BaseCard>

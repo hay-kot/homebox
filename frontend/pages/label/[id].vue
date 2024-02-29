@@ -91,12 +91,12 @@
 <template>
   <BaseContainer>
     <BaseModal v-model="updateModal">
-      <template #title> Update Label </template>
+      <template #title> {{ $t("label.update.title") }} </template>
       <form v-if="label" @submit.prevent="update">
-        <FormTextField v-model="updateData.name" :autofocus="true" label="Label Name" />
-        <FormTextArea v-model="updateData.description" label="Label Description" />
+        <FormTextField v-model="updateData.name" :autofocus="true" :label="$t('label.update.name')" />
+        <FormTextArea v-model="updateData.description" :label="$t('label.update.desp')" />
         <div class="modal-action">
-          <BaseButton type="submit" :loading="updating"> Update </BaseButton>
+          <BaseButton type="submit" :loading="updating"> {{ $t("label.update.button") }} </BaseButton>
         </div>
       </form>
     </BaseModal>
@@ -116,7 +116,7 @@
               </h1>
               <div class="flex gap-1 flex-wrap text-xs">
                 <div>
-                  Created
+                  {{ $t("label.edit.created") }}
                   <DateTime :date="label?.createdAt" />
                 </div>
               </div>
@@ -126,12 +126,12 @@
                 <PageQRCode class="dropdown-left" />
                 <BaseButton size="sm" @click="openUpdate">
                   <Icon class="mr-1" name="mdi-pencil" />
-                  Edit
+                  {{ $t("label.edit.edit_button") }}
                 </BaseButton>
               </div>
               <BaseButton class="btn btn-sm" @click="confirmDelete()">
                 <Icon name="mdi-delete" class="mr-2" />
-                Delete
+                {{ $t("label.edit.delete_button") }}
               </BaseButton>
             </div>
           </div>

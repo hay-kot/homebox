@@ -106,13 +106,13 @@
   <div>
     <!-- Update Dialog -->
     <BaseModal v-model="updateModal">
-      <template #title> Update Location </template>
+      <template #title> {{ $t("location.update.title") }} </template>
       <form v-if="location" @submit.prevent="update">
-        <FormTextField v-model="updateData.name" :autofocus="true" label="Location Name" />
-        <FormTextArea v-model="updateData.description" label="Location Description" />
+        <FormTextField v-model="updateData.name" :autofocus="true" :label="$t('location.update.name')" />
+        <FormTextArea v-model="updateData.description" :label="$t('location.update.desp')" />
         <LocationSelector v-model="parent" />
         <div class="modal-action">
-          <BaseButton type="submit" :loading="updating"> Update </BaseButton>
+          <BaseButton type="submit" :loading="updating"> {{ $t("location.update.button") }} </BaseButton>
         </div>
       </form>
     </BaseModal>
@@ -140,7 +140,7 @@
               </h1>
               <div class="flex gap-1 flex-wrap text-xs">
                 <div>
-                  Created
+                  {{ $t("location.edit.created") }}
                   <DateTime :date="location?.createdAt" />
                 </div>
               </div>
@@ -150,12 +150,12 @@
                 <PageQRCode class="dropdown-left" />
                 <BaseButton size="sm" @click="openUpdate">
                   <Icon class="mr-1" name="mdi-pencil" />
-                  Edit
+                  {{ $t("location.edit.edit_button") }}
                 </BaseButton>
               </div>
               <BaseButton class="btn btn-sm" @click="confirmDelete()">
                 <Icon name="mdi-delete" class="mr-2" />
-                Delete
+                {{ $t("location.edit.delete_button") }}
               </BaseButton>
             </div>
           </div>
@@ -168,7 +168,7 @@
       </section>
 
       <section v-if="location && location.children.length > 0" class="mt-6">
-        <BaseSectionHeader class="mb-5"> Child Locations </BaseSectionHeader>
+        <BaseSectionHeader class="mb-5"> {{ $t("location.child_locations") }} </BaseSectionHeader>
         <div class="grid gap-2 grid-cols-1 sm:grid-cols-3">
           <LocationCard v-for="item in location.children" :key="item.id" :location="item" />
         </div>

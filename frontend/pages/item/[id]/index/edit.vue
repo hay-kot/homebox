@@ -412,12 +412,12 @@
 <template>
   <div v-if="item" class="pb-8">
     <BaseModal v-model="editState.modal">
-      <template #title> Attachment Edit </template>
+      <template #title> {{ $t("item.edit.editState.title") }} </template>
 
-      <FormTextField v-model="editState.title" label="Attachment Title" />
+      <FormTextField v-model="editState.title" :label="$t('item.edit.editState.attachment.title')" />
       <FormSelect
         v-model:value="editState.type"
-        label="Attachment Type"
+        :label="$t('item.edit.editState.attachment.type')"
         value-key="value"
         name="text"
         :items="attachmentOpts"
@@ -426,12 +426,11 @@
         <input v-model="editState.primary" type="checkbox" class="checkbox" />
         <p class="text-sm">
           <span class="font-semibold">Primary Photo</span>
-          This options is only available for photos. Only one photo can be primary. If you select this option, the
-          current primary photo, if any will be unselected.
+          {{ $t("item.edit.editState.tips") }}
         </p>
       </div>
       <div class="modal-action">
-        <BaseButton :loading="editState.loading" @click="updateAttachment"> Update </BaseButton>
+        <BaseButton :loading="editState.loading" @click="updateAttachment"> {{ $t("item.edit.editState.button") }} </BaseButton>
       </div>
     </BaseModal>
 
@@ -440,36 +439,36 @@
         <div class="mr-auto tooltip tooltip-right" data-tip="Show Advanced View Options">
           <label class="label cursor-pointer mr-auto">
             <input v-model="preferences.editorAdvancedView" type="checkbox" class="toggle toggle-primary" />
-            <span class="label-text ml-4"> Advanced </span>
+            <span class="label-text ml-4"> {{ $t("item.edit.advanced") }} </span>
           </label>
         </div>
         <BaseButton size="sm" @click="saveItem">
           <template #icon>
             <Icon name="mdi-content-save-outline" />
           </template>
-          Save
+          {{ $t("item.edit.save_button") }}
         </BaseButton>
         <BaseButton class="btn btn-sm btn-error" @click="deleteItem()">
           <Icon name="mdi-delete" class="mr-2" />
-          Delete
+          {{ $t("item.edit.delete_button") }}
         </BaseButton>
       </div>
       <div v-if="!requestPending" class="space-y-6">
         <BaseCard class="overflow-visible">
-          <template #title> Edit Details </template>
+          <template #title> {{ $t("item.edit.details.title") }} </template>
           <template #title-actions>
             <div class="flex flex-wrap justify-between items-center mt-2 gap-4"></div>
           </template>
           <div class="px-5 pt-2 border-t mb-6 grid md:grid-cols-2 gap-4">
             <LocationSelector v-model="item.location" />
-            <FormMultiselect v-model="item.labels" label="Labels" :items="labels ?? []" />
+            <FormMultiselect v-model="item.labels" :label="$t('item.edit.details.labels')" :items="labels ?? []" />
             <Autocomplete
               v-if="preferences.editorAdvancedView"
               v-model="parent"
               v-model:search="query"
               :items="results"
               item-text="name"
-              label="Parent Item"
+              :label="$t('item.edit.details.parent')"
               no-results-text="Type to search..."
             />
           </div>
@@ -509,7 +508,7 @@
         </BaseCard>
 
         <BaseCard>
-          <template #title> Custom Fields </template>
+          <template #title> {{ $t("item.edit.custom.title") }} </template>
           <div class="px-5 border-t divide-y divide-gray-300 space-y-4">
             <div
               v-for="(field, idx) in item.fields"
@@ -517,9 +516,9 @@
               class="grid grid-cols-2 md:grid-cols-4 gap-2"
             >
               <!-- <FormSelect v-model:value="field.type" label="Field Type" :items="fieldTypes" value-key="value" /> -->
-              <FormTextField v-model="field.name" label="Name" />
+              <FormTextField v-model="field.name" :label="$t('item.edit.custom.name')" />
               <div class="flex items-end col-span-3">
-                <FormTextField v-model="field.textValue" label="Value" />
+                <FormTextField v-model="field.textValue" :label="$t('item.edit.custom.value')" />
                 <div class="tooltip" data-tip="Delete">
                   <button class="btn btn-sm btn-square mb-2 ml-2" @click="item.fields.splice(idx, 1)">
                     <Icon name="mdi-delete" />
@@ -529,7 +528,7 @@
             </div>
           </div>
           <div class="px-5 pb-4 mt-4 flex justify-end">
-            <BaseButton size="sm" @click="addField"> Add </BaseButton>
+            <BaseButton size="sm" @click="addField"> {{ $t("item.edit.custom.button") }} </BaseButton>
           </div>
         </BaseCard>
 
@@ -539,16 +538,16 @@
           class="overflow-visible card bg-base-100 shadow-xl sm:rounded-lg"
         >
           <div class="px-4 py-5 sm:px-6">
-            <h3 class="text-lg font-medium leading-6">Attachments</h3>
-            <p class="text-xs">Changes to attachments will be saved immediately</p>
+            <h3 class="text-lg font-medium leading-6">{{ $t("item.edit.attachments.title") }}</h3>
+            <p class="text-xs">{{ $t("item.edit.attachments.tips") }}</p>
           </div>
           <div class="border-t border-gray-300 p-4">
             <div v-if="attDropZoneActive" class="grid grid-cols-4 gap-4">
-              <DropZone @drop="dropPhoto"> Photo </DropZone>
-              <DropZone @drop="dropWarranty"> Warranty </DropZone>
-              <DropZone @drop="dropManual"> Manual </DropZone>
-              <DropZone @drop="dropAttachment"> Attachment </DropZone>
-              <DropZone @drop="dropReceipt"> Receipt </DropZone>
+              <DropZone @drop="dropPhoto"> {{ $t("item.edit.attachments.dropZone.photo") }} </DropZone>
+              <DropZone @drop="dropWarranty"> {{ $t("item.edit.attachments.dropZone.warranty") }} </DropZone>
+              <DropZone @drop="dropManual"> {{ $t("item.edit.attachments.dropZone.manual") }} </DropZone>
+              <DropZone @drop="dropAttachment"> {{ $t("item.edit.attachments.dropZone.attachment") }} </DropZone>
+              <DropZone @drop="dropReceipt"> {{ $t("item.edit.attachments.dropZone.receipt") }} </DropZone>
             </div>
             <button
               v-else
@@ -556,7 +555,7 @@
               @click="clickUpload"
             >
               <input ref="refAttachmentInput" hidden type="file" @change="uploadImage" />
-              <p>Drag and drop files here or click to select files</p>
+              <p>{{ $t("item.edit.attachments.dropZone.tips") }}</p>
             </button>
           </div>
 
@@ -592,7 +591,7 @@
 
         <div v-if="preferences.editorAdvancedView" class="overflow-visible card bg-base-100 shadow-xl sm:rounded-lg">
           <div class="px-4 py-5 sm:px-6">
-            <h3 class="text-lg font-medium leading-6">Purchase Details</h3>
+            <h3 class="text-lg font-medium leading-6">{{ $t("item.edit.purchase.title") }}</h3>
           </div>
           <div class="border-t border-gray-300 sm:p-0">
             <div
@@ -634,7 +633,7 @@
 
         <div v-if="preferences.editorAdvancedView" class="overflow-visible card bg-base-100 shadow-xl sm:rounded-lg">
           <div class="px-4 py-5 sm:px-6">
-            <h3 class="text-lg font-medium leading-6">Warranty Details</h3>
+            <h3 class="text-lg font-medium leading-6">{{ $t("item.edit.warranty.title") }}</h3>
           </div>
           <div class="border-t border-gray-300 sm:p-0">
             <div
@@ -676,7 +675,7 @@
 
         <div v-if="preferences.editorAdvancedView" class="overflow-visible card bg-base-100 shadow-xl sm:rounded-lg">
           <div class="px-4 py-5 sm:px-6">
-            <h3 class="text-lg font-medium leading-6">Sold Details</h3>
+            <h3 class="text-lg font-medium leading-6">{{ $t("item.edit.sold.title") }}</h3>
           </div>
           <div class="border-t border-gray-300 sm:p-0">
             <div v-for="field in soldFields" :key="field.ref" class="sm:divide-y sm:divide-gray-300 grid grid-cols-1">

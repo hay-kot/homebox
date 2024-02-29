@@ -1,25 +1,25 @@
 <template>
   <BaseModal v-model="modal">
-    <template #title> Create Label </template>
+    <template #title> {{ $t("label.create.title") }} </template>
     <form @submit.prevent="create()">
       <FormTextField
         ref="locationNameRef"
         v-model="form.name"
         :trigger-focus="focused"
         :autofocus="true"
-        label="Label Name"
+        :label="$t('label.create.name')"
       />
-      <FormTextArea v-model="form.description" label="Label Description" />
+      <FormTextArea v-model="form.description" :label="$t('label.create.desp')" />
       <div class="modal-action">
         <div class="flex justify-center">
-          <BaseButton class="rounded-r-none" :loading="loading" type="submit"> Create </BaseButton>
+          <BaseButton class="rounded-r-none" :loading="loading" type="submit"> {{ $t("label.create.button1") }} </BaseButton>
           <div class="dropdown dropdown-top">
             <label tabindex="0" class="btn rounded-l-none rounded-r-xl">
               <Icon class="h-5 w-5" name="mdi-chevron-down" />
             </label>
             <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-64 right-0">
               <li>
-                <button type="button" @click="create(false)">Create and Add Another</button>
+                <button type="button" @click="create(false)">{{ $t("label.create.button2") }}</button>
               </li>
             </ul>
           </div>
@@ -27,7 +27,7 @@
       </div>
     </form>
     <p class="text-sm text-center mt-4">
-      use <kbd class="kbd kbd-xs">Shift</kbd> + <kbd class="kbd kbd-xs"> Enter </kbd> to create and add another
+      {{ $t("label.create.tips1") }} <kbd class="kbd kbd-xs">Shift</kbd> + <kbd class="kbd kbd-xs"> Enter </kbd> {{ $t("label.create.tips2") }}
     </p>
   </BaseModal>
 </template>

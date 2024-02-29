@@ -1,11 +1,11 @@
 <template>
   <BaseModal v-model="modal">
-    <template #title> Create Item </template>
+    <template #title> {{ $t("item.create.title") }} </template>
     <form @submit.prevent="create()">
       <LocationSelector v-model="form.location" />
-      <FormTextField ref="nameInput" v-model="form.name" :trigger-focus="focused" :autofocus="true" label="Item Name" />
-      <FormTextArea v-model="form.description" label="Item Description" />
-      <FormMultiselect v-model="form.labels" label="Labels" :items="labels ?? []" />
+      <FormTextField ref="nameInput" v-model="form.name" :trigger-focus="focused" :autofocus="true" :label="$t('item.create.name')" />
+      <FormTextArea v-model="form.description" :label="$t('item.create.desp')" />
+      <FormMultiselect v-model="form.labels" :label="$t('item.create.label')" :items="labels ?? []" />
       <div class="modal-action">
         <div class="flex justify-center">
           <BaseButton class="rounded-r-none" :loading="loading" type="submit">
@@ -13,7 +13,7 @@
               <Icon name="mdi-package-variant" class="swap-off h-5 w-5" />
               <Icon name="mdi-package-variant-closed" class="swap-on h-5 w-5" />
             </template>
-            Create
+            {{ $t("item.create.button1") }}
           </BaseButton>
           <div class="dropdown dropdown-top">
             <label tabindex="0" class="btn rounded-l-none rounded-r-xl">
@@ -21,7 +21,7 @@
             </label>
             <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-64 right-0">
               <li>
-                <button type="button" @click="create(false)">Create and Add Another</button>
+                <button type="button" @click="create(false)">{{ $t("item.create.button2") }}</button>
               </li>
             </ul>
           </div>
@@ -29,7 +29,7 @@
       </div>
     </form>
     <p class="text-sm text-center mt-4">
-      use <kbd class="kbd kbd-xs">Shift</kbd> + <kbd class="kbd kbd-xs"> Enter </kbd> to create and add another
+      {{ $t("item.create.tips1") }} <kbd class="kbd kbd-xs">Shift</kbd> + <kbd class="kbd kbd-xs"> Enter </kbd> {{ $t("item.create.tips2") }}
     </p>
   </BaseModal>
 </template>

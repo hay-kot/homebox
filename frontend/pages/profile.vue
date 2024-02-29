@@ -299,11 +299,15 @@
 <template>
   <div>
     <BaseModal v-model="passwordChange.dialog">
-      <template #title> Change Password </template>
+      <template #title> {{ $t("profile.passwordChangeDialog.title") }} </template>
 
       <form @submit.prevent="changePassword">
-        <FormPassword v-model="passwordChange.current" label="Current Password" placeholder="" />
-        <FormPassword v-model="passwordChange.new" label="New Password" placeholder="" />
+        <FormPassword
+          v-model="passwordChange.current"
+          :label="$t('profile.passwordChangeDialog.current')"
+          placeholder=""
+        />
+        <FormPassword v-model="passwordChange.new" :label="$t('profile.passwordChangeDialog.new')" placeholder="" />
         <PasswordScore v-model:valid="passwordChange.isValid" :password="passwordChange.new" />
 
         <div class="flex">
@@ -313,26 +317,28 @@
             :disabled="!passwordChange.isValid"
             type="submit"
           >
-            Submit
+            {{ $t("profile.passwordChangeDialog.submit") }}
           </BaseButton>
         </div>
       </form>
     </BaseModal>
 
     <BaseModal v-model="notifierDialog">
-      <template #title> {{ notifier ? "Edit" : "Create" }} Notifier </template>
+      <template #title> {{ notifier ? "Edit" : "Create" }} {{ $t("profile.notifierDialog.title") }} </template>
 
       <form @submit.prevent="createNotifier">
         <template v-if="notifier">
-          <FormTextField v-model="notifier.name" label="Name" />
-          <FormTextField v-model="notifier.url" label="URL" />
+          <FormTextField v-model="notifier.name" :label="$t('profile.notifierDialog.name')" />
+          <FormTextField v-model="notifier.url" :label="$t('profile.notifierDialog.url')" />
           <div class="max-w-[100px]">
-            <FormCheckbox v-model="notifier.isActive" label="Enabled" />
+            <FormCheckbox v-model="notifier.isActive" :label="$t('profile.notifierDialog.enable')" />
           </div>
         </template>
         <div class="flex gap-2 justify-between mt-4">
-          <BaseButton :disabled="!(notifier && notifier.url)" type="button" @click="testNotifier"> Test </BaseButton>
-          <BaseButton type="submit"> Submit </BaseButton>
+          <BaseButton :disabled="!(notifier && notifier.url)" type="button" @click="testNotifier">
+            {{ $t("profile.notifierDialog.test") }}
+          </BaseButton>
+          <BaseButton type="submit"> {{ $t("profile.notifierDialog.submit") }} </BaseButton>
         </div>
       </form>
     </BaseModal>
@@ -342,8 +348,8 @@
         <template #title>
           <BaseSectionHeader>
             <Icon name="mdi-account" class="mr-2 -mt-1 text-base-600" />
-            <span class="text-base-600"> User Profile </span>
-            <template #description> Invite users, and manage your account. </template>
+            <span class="text-base-600"> {{ $t("profile.user.title") }} </span>
+            <template #description> {{ $t("profile.user.desp") }} </template>
           </BaseSectionHeader>
         </template>
 
@@ -351,8 +357,8 @@
 
         <div class="p-4">
           <div class="flex gap-2">
-            <BaseButton size="sm" @click="openPassChange"> Change Password </BaseButton>
-            <BaseButton size="sm" @click="generateToken"> Generate Invite Link </BaseButton>
+            <BaseButton size="sm" @click="openPassChange"> {{ $t("profile.user.openPassChange") }} </BaseButton>
+            <BaseButton size="sm" @click="generateToken"> {{ $t("profile.user.generateToken") }} </BaseButton>
           </div>
           <div v-if="token" class="pt-4 flex items-center pl-1">
             <CopyText class="mr-2 btn-primary btn btn-outline btn-square btn-sm" :text="tokenUrl" />
@@ -369,8 +375,8 @@
         <template #title>
           <BaseSectionHeader>
             <Icon name="mdi-megaphone" class="mr-2 -mt-1 text-base-600" />
-            <span class="text-base-600"> Notifiers </span>
-            <template #description> Get notifications for up coming maintenance reminders </template>
+            <span class="text-base-600"> {{ $t("profile.notifier.title") }} </span>
+            <template #description> {{ $t("profile.notifier.desp") }} </template>
           </BaseSectionHeader>
         </template>
 
@@ -393,11 +399,11 @@
             </div>
             <div class="flex justify-between py-1 flex-wrap text-sm">
               <p>
-                <span v-if="n.isActive" class="badge badge-success"> Active </span>
-                <span v-else class="badge badge-error"> Inactive</span>
+                <span v-if="n.isActive" class="badge badge-success"> {{ $t("profile.notifier.active") }} </span>
+                <span v-else class="badge badge-error"> {{ $t("profile.notifier.inactive") }} </span>
               </p>
               <p>
-                Created
+                {{ $t("profile.notifier.created") }}
                 <DateTime format="relative" datetime-type="time" :date="n.createdAt" />
               </p>
             </div>
@@ -405,7 +411,7 @@
         </div>
 
         <div class="p-4">
-          <BaseButton size="sm" @click="openNotifierDialog"> Create </BaseButton>
+          <BaseButton size="sm" @click="openNotifierDialog"> {{ $t("profile.notifier.create") }} </BaseButton>
         </div>
       </BaseCard>
 
@@ -413,19 +419,19 @@
         <template #title>
           <BaseSectionHeader class="pb-0">
             <Icon name="mdi-accounts" class="mr-2 -mt-1 text-base-600" />
-            <span class="text-base-600"> Group Settings </span>
+            <span class="text-base-600"> {{ $t("profile.group.title") }} </span>
             <template #description>
-              Shared Group Settings. You may need to refresh your browser for some settings to apply.
+              {{ $t("profile.group.desp") }}
             </template>
           </BaseSectionHeader>
         </template>
 
         <div v-if="group && currencies && currencies.length > 0" class="p-5 pt-0">
-          <FormSelect v-model="currency" label="Currency Format" :items="currencies" />
-          <p class="m-2 text-sm">Example: {{ currencyExample }}</p>
+          <FormSelect v-model="currency" :label="$t('profile.group.currency_format')" :items="currencies" />
+          <p class="m-2 text-sm">{{ $t("profile.group.example") }}: {{ currencyExample }}</p>
 
           <div class="mt-4">
-            <BaseButton size="sm" @click="updateGroup"> Update Group </BaseButton>
+            <BaseButton size="sm" @click="updateGroup"> {{ $t("profile.group.update_group") }} </BaseButton>
           </div>
         </div>
       </BaseCard>
@@ -434,10 +440,9 @@
         <template #title>
           <BaseSectionHeader>
             <Icon name="mdi-fill" class="mr-2 text-base-600" />
-            <span class="text-base-600"> Theme Settings </span>
+            <span class="text-base-600"> {{ $t("profile.theme.title") }} </span>
             <template #description>
-              Theme settings are stored in your browser's local storage. You can change the theme at any time. If you're
-              having trouble setting your theme try refreshing your browser.
+              {{ $t("profile.theme.desp") }}
             </template>
           </BaseSectionHeader>
         </template>
@@ -485,17 +490,17 @@
         <template #title>
           <BaseSectionHeader>
             <Icon name="mdi-delete" class="mr-2 -mt-1 text-base-600" />
-            <span class="text-base-600"> Delete Account</span>
-            <template #description> Delete your account and all its associated data. </template>
+            <span class="text-base-600"> {{ $t("profile.account.title") }}</span>
+            <template #description> {{ $t("profile.account.desp") }} </template>
           </BaseSectionHeader>
         </template>
         <div class="p-4 px-6 border-t-2 border-gray-300">
-          <BaseButton size="sm" class="btn-error" @click="deleteProfile"> Delete Account </BaseButton>
+          <BaseButton size="sm" class="btn-error" @click="deleteProfile"> {{ $t("profile.account.delete_account") }} </BaseButton>
         </div>
       </BaseCard>
     </BaseContainer>
     <footer v-if="status" class="text-center w-full bottom-0 pb-4">
-      <p class="text-center text-sm">Version: {{ status.build.version }} ~ Build: {{ status.build.commit }}</p>
+      <p class="text-center text-sm">{{ $t("footer.version") }}: {{ status.build.version }} ~ {{ $t("footer.build") }}: {{ status.build.commit }}</p>
     </footer>
   </div>
 </template>

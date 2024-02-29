@@ -111,6 +111,12 @@
   }
 
   const [registerForm, toggleLogin] = useToggle();
+
+  // i18n Lang Switcher
+  const { locale, locales, setLocale } = useI18n()
+  const availableLocales = computed(() => {
+    return locales.value.filter(i => i.code !== locale.value);
+  });
 </script>
 
 <template>
@@ -137,7 +143,7 @@
             <AppLogo class="w-12 -mb-4" />
             x
           </h2>
-          <p class="ml-1 text-lg text-base-content/50">Track, Organize, and Manage your Things.</p>
+          <p class="ml-1 text-lg text-base-content/50">{{ $t("index.slogon") }}</p>
         </div>
         <div class="flex mt-6 sm:mt-0 gap-4 ml-auto text-neutral-content">
           <a class="tooltip" data-tip="Project Github" href="https://github.com/hay-kot/homebox" target="_blank">
@@ -152,6 +158,14 @@
           <a href="https://hay-kot.github.io/homebox/" class="tooltip" data-tip="Read The Docs" target="_blank">
             <Icon name="mdi-folder" class="h-8 w-8" />
           </a>
+          <a
+            v-for="locale in availableLocales"
+            :key="locale.code"
+            href="#"
+            @click.prevent.stop="setLocale(locale.code)"
+          >
+            {{ locale.name }}
+          </a>
         </div>
       </header>
       <div class="grid p-6 sm:place-items-center min-h-[50vh]">
@@ -162,17 +176,17 @@
                 <div class="card-body">
                   <h2 class="card-title text-2xl align-center">
                     <Icon name="heroicons-user" class="mr-1 w-7 h-7" />
-                    Register
+                    {{ $t("index.register") }}
                   </h2>
-                  <FormTextField v-model="email" label="Set your email?" />
-                  <FormTextField v-model="username" label="What's your name?" />
+                  <FormTextField v-model="email" :label="$t('index.register_email')" />
+                  <FormTextField v-model="username" :label="$t('index.register_username')" />
                   <div v-if="!(groupToken == '')" class="pt-4 pb-1 text-center">
                     <p>You're Joining an Existing Group!</p>
                     <button type="button" class="text-xs underline" @click="groupToken = ''">
                       Don't Want To Join a Group?
                     </button>
                   </div>
-                  <FormPassword v-model="password" label="Set your password" />
+                  <FormPassword v-model="password" :label="$t('index.register_password')" />
                   <PasswordScore v-model:valid="canRegister" :password="password" />
                   <div class="card-actions justify-end">
                     <button
@@ -181,7 +195,7 @@
                       :class="loading ? 'loading' : ''"
                       :disabled="loading || !canRegister"
                     >
-                      Register
+                      {{ $t("index.register") }}
                     </button>
                   </div>
                 </div>
@@ -192,17 +206,17 @@
                 <div class="card-body">
                   <h2 class="card-title text-2xl align-center">
                     <Icon name="heroicons-user" class="mr-1 w-7 h-7" />
-                    Login
+                    {{ $t("index.login") }}
                   </h2>
                   <template v-if="status && status.demo">
                     <p class="text-xs italic text-center">This is a demo instance</p>
                     <p class="text-xs text-center"><b>Email</b> demo@example.com</p>
                     <p class="text-xs text-center"><b>Password</b> demo</p>
                   </template>
-                  <FormTextField v-model="email" label="Email" />
-                  <FormPassword v-model="loginPassword" label="Password" />
+                  <FormTextField v-model="email" :label="$t('index.login_email')" />
+                  <FormPassword v-model="loginPassword" :label="$t('index.login_password')" />
                   <div class="max-w-[140px]">
-                    <FormCheckbox v-model="remember" label="Remember Me" />
+                    <FormCheckbox v-model="remember" :label="$t('index.login_remember')" />
                   </div>
                   <div class="card-actions justify-end">
                     <button
@@ -211,7 +225,7 @@
                       :class="loading ? 'loading' : ''"
                       :disabled="loading"
                     >
-                      Login
+                      {{ $t("index.login") }}
                     </button>
                   </div>
                 </div>
@@ -229,18 +243,18 @@
                 <Icon v-else name="mdi-login" class="w-5 h-5 swap-off" />
                 <Icon name="mdi-arrow-right" class="w-5 h-5 swap-on" />
               </template>
-              {{ registerForm ? "Login" : "Register" }}
+              {{ registerForm ? $t("index.login") : $t("index.register") }}
             </BaseButton>
             <p v-else class="text-base-content italic text-sm inline-flex items-center gap-2">
               <Icon name="mdi-lock" class="w-4 h-4 inline-block" />
-              Registration Disabled
+              {{ $t("index.refus") }}
             </p>
           </div>
         </div>
       </div>
     </div>
     <footer v-if="status" class="mt-auto text-center w-full bottom-0 pb-4">
-      <p class="text-center text-sm">Version: {{ status.build.version }} ~ Build: {{ status.build.commit }}</p>
+      <p class="text-center text-sm">{{ $t("footer.version") }}: {{ status.build.version }} ~ {{ $t("footer.build") }}: {{ status.build.commit }}</p>
     </footer>
   </div>
 </template>

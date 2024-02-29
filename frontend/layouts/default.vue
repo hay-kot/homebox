@@ -39,7 +39,7 @@
         <div class="w-60 py-5 md:py-10 bg-base-200 flex flex-grow-1 flex-col">
           <div class="space-y-8">
             <div class="flex flex-col items-center gap-4">
-              <p>Welcome, {{ username }}</p>
+              <p>{{ $t("default.welcome") }}, {{ username }}</p>
               <NuxtLink class="avatar placeholder" to="/home">
                 <div class="bg-base-300 text-neutral-content rounded-full w-24 p-4">
                   <AppLogo />
@@ -53,12 +53,12 @@
                     <span>
                       <Icon name="mdi-plus" class="mr-1 -ml-1" />
                     </span>
-                    Create
+                    {{ $t("default.create") }}
                   </label>
                   <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-40">
                     <li v-for="btn in dropdown" :key="btn.name">
                       <button @click="btn.action">
-                        {{ btn.name }}
+                        {{ $t(btn.name) }}
                       </button>
                     </li>
                   </ul>
@@ -75,7 +75,7 @@
                     }"
                   >
                     <Icon :name="n.icon" class="h-6 w-6 mr-4" />
-                    {{ n.name }}
+                    {{ $t(n.name) }}
                   </NuxtLink>
                 </li>
               </ul>
@@ -83,7 +83,9 @@
           </div>
 
           <!-- Bottom -->
-          <button class="mt-auto mx-2 hover:bg-base-300 p-3 rounded-btn" @click="logout">Sign Out</button>
+          <button class="mt-auto mx-2 hover:bg-base-300 p-3 rounded-btn" @click="logout">
+            {{ $t("default.sign_out") }}
+          </button>
         </div>
       </div>
     </div>
@@ -108,19 +110,19 @@
 
   const dropdown = [
     {
-      name: "Item / Asset",
+      name: "default.dropdown.item_asset",
       action: () => {
         modals.item = true;
       },
     },
     {
-      name: "Location",
+      name: "default.dropdown.location",
       action: () => {
         modals.location = true;
       },
     },
     {
-      name: "Label",
+      name: "default.dropdown.label",
       action: () => {
         modals.label = true;
       },
@@ -141,35 +143,35 @@
       icon: "mdi-home",
       active: computed(() => route.path === "/home"),
       id: 0,
-      name: "Home",
+      name: "default.nav.home",
       to: "/home",
     },
     {
       icon: "mdi-file-tree",
       id: 4,
       active: computed(() => route.path === "/locations"),
-      name: "Locations",
+      name: "default.nav.locations",
       to: "/locations",
     },
     {
       icon: "mdi-magnify",
       id: 3,
       active: computed(() => route.path === "/items"),
-      name: "Search",
+      name: "default.nav.search",
       to: "/items",
     },
     {
       icon: "mdi-account",
       id: 1,
       active: computed(() => route.path === "/profile"),
-      name: "Profile",
+      name: "default.nav.profile",
       to: "/profile",
     },
     {
       icon: "mdi-cog",
       id: 6,
       active: computed(() => route.path === "/tools"),
-      name: "Tools",
+      name: "default.nav.tools",
       to: "/tools",
     },
   ];

@@ -1,0 +1,317 @@
+{
+    "index": {
+        "login": "Login",
+        "login_email": "Email",
+        "login_password": "Password",
+        "login_remember": "Remember me",
+        "register": "Register",
+        "register_email": "Set your email?",
+        "register_username": "What's your name?",
+        "register_password": "Set your password",
+        "slogon": "Track, Organize, and Manage your Things.",
+        "refuse":"Registration Disabled"
+    },
+    "home": {
+        "quick_statistics": "Quick Statistics",
+        "recently_added": "Recently Added",
+        "storage_locations": "Storage Locations",
+        "labels": "Labels"
+    },
+    "label": {
+        "create": {
+            "title": "Create Label",
+            "name": "Label Name",
+            "desp": "Label Description",
+            "button1": "Create",
+            "button2": "Create and Add Another",
+            "tips1": "use",
+            "tips2": "to create and add another"
+        },
+        "update": {
+            "title": "Update Label",
+            "name": "Label Name",
+            "desp": "Label Description",
+            "button": "Update"
+        },
+        "edit": {
+            "created": "Created",
+            "edit_button": "Edit",
+            "delete_button": "Delete"
+        }
+    },
+    "location": {
+        "selectable": {
+            "parent": "Parent Location"
+        },
+        "child_locations": "Child Locations",
+        "create": {
+            "title": "Create Location",
+            "name": "Location Name",
+            "desp": "Location Description",
+            "button1": "Create",
+            "button2": "Create and Add Another",
+            "tips1": "use",
+            "tips2": "to create and add another"
+        },
+        "update": {
+            "title": "Update Location",
+            "name": "Location Name",
+            "desp": "Location Description",
+            "button": "Update"
+        },
+        "edit": {
+            "created": "Created",
+            "edit_button": "Edit",
+            "delete_button": "Delete"
+        }
+    },
+    "item": {
+        "selectable": {
+            "title": "Items",
+            "card": "Card",
+            "table": "Table",
+            "empty": "No Items to Display"
+        },
+        "edit":{
+            "editState":{
+                "title":"Attachment Edit",
+                "attachment":{
+                    "title":"Attachment Title",
+                    "type":"Attachment Type"
+                },
+                "tips":"This options is only available for photos. Only one photo can be primary. If you select this option, the current primary photo, if any will be unselected.",
+                "button":"Update"
+            },
+            "advanced":"Advanced",
+            "save_button":"Save",
+            "delete_button":"Delete",
+            "details":{
+                "title":"Edit Details",
+                "labels":"Labels",
+                "parent":"Parent Item"
+            },
+            "custom":{
+                "title":"Custom Fields",
+                "name":"Name",
+                "value":"Value",
+                "button":"Add"
+            },
+            "attachments":{
+                "title":"Attachments",
+                "tips":"Changes to attachments will be saved immediately",
+                "dropZone":{
+                    "photo":"Photo",
+                    "warranty":"Warranty",
+                    "manual":"Manual",
+                    "attachment":"Attachment",
+                    "receipt":"Receipt",
+                    "tips":"Drag and drop files here or click to select files"
+                }
+            },
+            "purchase":{
+                "title":"Purchase Details"
+            },
+            "warranty":{
+                "title":"Warranty"
+            },
+            "sold":{
+                "title":"Sold Details"
+            }
+        },       
+        "create": {
+            "title": "Create Item",
+            "name": "Item Name",
+            "desp": "Item Description",
+            "label":"Labels",
+            "button1": "Create",
+            "button2": "Create and Add Another",
+            "tips1": "use",
+            "tips2": "to create and add another"
+        },
+        "new":{
+            "title":"Add an Item To Your Inventory",
+            "info":"Required Information",
+            "name":"Name",
+            "desp":"Description",
+            "product":{
+                "button":"Product Information",
+                "serialNumber":"Serial Number",
+                "modelNumber":"Model Number",
+                "manufacturer":"Manufacturer"
+            },
+            "purchase":{
+                "button":"Purchase Information",
+                "purchaseTime":"Purchase Time",
+                "purchasePrice":"Purchase Price",
+                "purchaseFrom":"Purchase From"
+            },
+            "sold":{
+                "button":"Sold Information",
+                "soldTime":"Sold Time",
+                "soldPrice":"Sold Price",
+                "soldTo":"Sold To",
+                "soldNotes":"Sold Notes"
+            },
+            "extras":{
+                "button":"Extras",
+                "notes":"Notes"
+            }
+        }
+    },
+    "assets":{
+        "title":"This Asset Id is associated with multiple items"
+    },
+    "items": {
+        "querying_Asset_ID_Number": "Querying Asset ID Number",
+        "query": {
+            "search": "Search",
+            "locations": "Locations",
+            "labels": "Labels",
+            "options": "Options",
+            "options_dropdown": {
+                "includeArchived": "Include Archived Items",
+                "fieldSelector": "Field Selector",
+                "reset": "Reset Search"
+            },
+            "fieldSelector_dropdown": {
+                "custom_fields": "Custom Fields",
+                "field": "Field",
+                "field_value": "Field Value",
+                "add": "Add"
+            }
+        },
+        "result": {
+            "items": "Items",
+            "results": "Results",
+            "page": "Page",
+            "empty": "No Items Found",
+            "prev": "Prev",
+            "next": "Next",
+            "first": "First",
+            "last": "Last"
+        },
+        "tips": "Tips",
+        "tips_dropdown": {
+            "search_tips": "Search Tips",
+            "tips1": "Location and label filters use the 'OR' operation. If more than one is selected only one will be required for a match.",
+            "tips2": "Searches prefixed with '#' will query for a asset ID (example '#000-001')",
+            "tips3": "Field filters use the 'OR' operation. If more than one is selected only one will be required for a match."
+        }
+    },
+    "default": {
+        "welcome": "Welcome",
+        "create": "Create",
+        "sign_out": "Sign Out",
+        "dropdown": {
+            "item_asset": "Item / Asset",
+            "location": "Location",
+            "label": "Label"
+        },
+        "nav": {
+            "home": "Home",
+            "locations": "Locations",
+            "search": "Search",
+            "profile": "Profile",
+            "tools": "Tools"
+        }
+    },
+    "profile": {
+        "user": {
+            "title": "User Profile",
+            "desp": "Invite users, and manage your account.",
+            "openPassChange": "Change Password",
+            "generateToken": "Generate Invite Link"
+        },
+        "notifier": {
+            "title": "Notifiers",
+            "desp": "Get notifications for up coming maintenance reminders.",
+            "active": "Active",
+            "inactive": "Inactive",
+            "create": "Create",
+            "created": "Created"
+        },
+        "group": {
+            "title": "Group Settings",
+            "desp": "Shared Group Settings. You may need to refresh your browser for some settings to apply.",
+            "currency_format": "Currency Format",
+            "example": "Example",
+            "update_group": "Update Group",
+            "language":"Language"
+        },
+        "theme": {
+            "title": "Theme Settings",
+            "desp": "Theme settings are stored in your browser's local storage. You can change the theme at any time. If you're having trouble setting your theme try refreshing your browser."
+        },
+        "account": {
+            "title": "Delete Account",
+            "desp": "Delete your account and all its associated data.",
+            "delete_account": "Delete Account"
+        },
+        "passwordChangeDialog": {
+            "title": "Change Password",
+            "current": "Current Password",
+            "new": "New Password",
+            "submit": "Submit"
+        },
+        "notifierDialog": {
+            "title": "Notifier",
+            "name": "Name",
+            "url": "URL",
+            "enable": "Enabled",
+            "test": "Test",
+            "submit": "Submit"
+        }
+    },
+    "footer": {
+        "version": "Version",
+        "build": "Build"
+    },
+    "tools": {
+        "report": {
+            "title": "Reports",
+            "desp": "Generate different reports for your inventory.",
+            "asset": {
+                "title": "Asset ID Labels",
+                "desp": "Generates a printable PDF of labels for a range of Asset ID. These are not specific to your inventory so you are able to print labels ahead of time and apply them to your inventory when you receive them.",
+                "button": "Label Generator"
+            },
+            "bom": {
+                "title": "Bill of Materials",
+                "desp": "Generates a TSV (Tab Separated Values) file that can be imported into a spreadsheet program. This is a summary of your inventory with basic item and pricing information.",
+                "button": "Generate BOM"
+            }
+        },
+        "import_export": {
+            "title": "Import / Export",
+            "desp": "Import and export your inventory to and from a CSV file. This is useful for migrating your inventory to a new instance of Homebox.",
+            "import": {
+                "title": "Import Inventory",
+                "desp": "Imports the standard CSV format for Homebox. This will not overwrite any existing items in your inventory. It will only add new items."
+            },
+            "export": {
+                "title": "Export Inventory",
+                "desp": "Exports the standard CSV format for Homebox. This will export all items in your inventory."
+            }
+        },
+        "inventory": {
+            "title": "Inventory Actions",
+            "desp": "Apply Actions to your inventory in bulk. These are irreversible actions. Be careful.",
+            "ensureAssetIDs": {
+                "title": "Ensure Asset IDs",
+                "desp": "Ensures that all items in your inventory have a valid asset_id field. This is done by finding the highest current asset_id field in the database and applying the next value to each item that has an unset asset_id field. This is done in order of the created_at field."
+            },
+            "ensureImportRefs": {
+                "title": "Ensures Import Refs",
+                "desp": "Ensures that all items in your inventory have a valid import_ref field. This is done by randomly generating a 8 character string for each item that has an unset import_ref field."
+            },
+            "resetItemDateTimes": {
+                "title": "Zero Item Date Times",
+                "desp": "Resets the time value for all date time fields in your inventory to the beginning of the date. This is to fix a bug that was introduced early on in the development of the site that caused the time value to be stored with the time which caused issues with date fields displaying accurate values."
+            },
+            "setPrimaryPhotos": {
+                "title": "Set Primary Photos",
+                "desp": "In version v0.10.0 of Homebox, the primary image field was added to attachments of type photo. This action will set the primary image field to the first image in the attachments array in the database, if it is not already set."
+            }
+        }
+    }
+}

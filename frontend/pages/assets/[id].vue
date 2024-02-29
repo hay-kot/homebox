@@ -33,7 +33,7 @@
 <template>
   <BaseContainer>
     <section v-if="!pending">
-      <BaseSectionHeader class="mb-5"> This Asset Id is associated with multiple items</BaseSectionHeader>
+      <BaseSectionHeader class="mb-5"> {{ $t("assets.title") }}</BaseSectionHeader>
       <div class="grid gap-2 grid-cols-1 sm:grid-cols-2">
         <ItemCard v-for="item in items" :key="item.id" :item="item" />
       </div>
