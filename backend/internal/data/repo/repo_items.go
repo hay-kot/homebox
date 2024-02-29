@@ -799,8 +799,11 @@ func (e *ItemsRepository) ZeroOutTimeFields(ctx context.Context, GID uuid.UUID) 
 		item.HasGroupWith(group.ID(GID)),
 		item.Or(
 			item.PurchaseTimeNotNil(),
+			item.PurchaseFromLT("0002-01-01"),
 			item.SoldTimeNotNil(),
+			item.SoldToLT("0002-01-01"),
 			item.WarrantyExpiresNotNil(),
+			item.WarrantyDetailsLT("0002-01-01"),
 		),
 	)
 
@@ -819,15 +822,36 @@ func (e *ItemsRepository) ZeroOutTimeFields(ctx context.Context, GID uuid.UUID) 
 		updateQ := e.db.Item.Update().Where(item.ID(i.ID))
 
 		if !i.PurchaseTime.IsZero() {
-			updateQ.SetPurchaseTime(toDateOnly(i.PurchaseTime))
+			switch {
+			case i.PurchaseTime.Year() < 100:
+				updateQ.ClearPurchaseTime()
+			default:
+				updateQ.SetPurchaseTime(toDateOnly(i.PurchaseTime))
+			}
+		} else {
+			updateQ.ClearPurchaseTime()
 		}
 
 		if !i.SoldTime.IsZero() {
-			updateQ.SetSoldTime(toDateOnly(i.SoldTime))
+			switch {
+			case i.SoldTime.Year() < 100:
+				updateQ.ClearSoldTime()
+			default:
+				updateQ.SetSoldTime(toDateOnly(i.SoldTime))
+			}
+		} else {
+			updateQ.ClearSoldTime()
 		}
 
 		if !i.WarrantyExpires.IsZero() {
-			updateQ.SetWarrantyExpires(toDateOnly(i.WarrantyExpires))
+			switch {
+			case i.WarrantyExpires.Year() < 100:
+				updateQ.ClearWarrantyExpires()
+			default:
+				updateQ.SetWarrantyExpires(toDateOnly(i.WarrantyExpires))
+			}
+		} else {
+			updateQ.ClearWarrantyExpires()
 		}
 
 		_, err = updateQ.Save(ctx)
@@ -879,7 +903,6 @@ func (e *ItemsRepository) SetPrimaryPhotos(ctx context.Context, GID uuid.UUID) (
 		_, err = e.db.Attachment.UpdateOne(a).
 			SetPrimary(true).
 			Save(ctx)
-
 		if err != nil {
 			return updated, err
 		}

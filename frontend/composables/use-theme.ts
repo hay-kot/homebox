@@ -38,3 +38,27 @@ export function useTheme(): UseTheme {
 
   return { theme, setTheme };
 }
+
+export function useIsDark() {
+  const theme = useTheme();
+
+  const darkthemes = [
+    "synthwave",
+    "retro",
+    "cyberpunk",
+    "valentine",
+    "halloween",
+    "forest",
+    "aqua",
+    "black",
+    "luxury",
+    "dracula",
+    "business",
+    "night",
+    "coffee",
+  ];
+
+  return computed(() => {
+    return darkthemes.includes(theme.theme.value);
+  });
+}

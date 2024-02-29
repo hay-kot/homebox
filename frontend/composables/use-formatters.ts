@@ -37,7 +37,7 @@ function ordinalIndicator(num: number) {
   }
 }
 
-export function fmtDate(value: string | Date, fmt: DateTimeFormat = "human", fmtType: DateTimeType): string {
+export function fmtDate(value: string | Date, fmt: DateTimeFormat = "human"): string {
   const months = [
     "January",
     "February",
@@ -60,11 +60,6 @@ export function fmtDate(value: string | Date, fmt: DateTimeFormat = "human", fmt
 
   if (!validDate(dt)) {
     return "";
-  }
-
-  if (fmtType === "date") {
-    // Offset local time
-    dt.setHours(dt.getHours() + dt.getTimezoneOffset() / 60);
   }
 
   switch (fmt) {

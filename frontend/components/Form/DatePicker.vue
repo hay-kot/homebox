@@ -9,11 +9,15 @@
     <label class="label">
       <span class="label-text"> {{ label }} </span>
     </label>
-    <input v-model="selected" type="date" class="input input-bordered col-span-3 w-full mt-2" />
+    <VueDatePicker v-model="selected" :enable-time-picker="false" clearable :dark="isDark" />
   </div>
 </template>
 
 <script setup lang="ts">
+  // @ts-ignore
+  import VueDatePicker from "@vuepic/vue-datepicker";
+  import "@vuepic/vue-datepicker/dist/main.css";
+  import * as datelib from "~/lib/datelib/datelib";
   const emit = defineEmits(["update:modelValue", "update:text"]);
 
   const props = defineProps({
@@ -32,10 +36,10 @@
     },
   });
 
-  const selected = computed({
-    get() {
-      // return modelValue as string as YYYY-MM-DD or null
+  const isDark = useIsDark();
 
+  const selected = computed<Date | null>({
+    get() {
       // String
       if (typeof props.modelValue === "string") {
         // Empty string
@@ -48,26 +52,34 @@
           return null;
         }
 
-        // Valid Date string
-        return props.modelValue;
+        return datelib.parse(props.modelValue);
       }
 
       // Date
       if (props.modelValue instanceof Date) {
+        if (props.modelValue.getFullYear() < 1000) {
+          return null;
+        }
+
         if (isNaN(props.modelValue.getTime())) {
           return null;
         }
 
         // Valid Date
-        return props.modelValue.toISOString().split("T")[0];
+        return props.modelValue;
       }
 
       return null;
     },
-    set(value: string | null) {
-      // emit update:modelValue with a Date object or null
-      console.log("SET", value);
-      emit("update:modelValue", value ? new Date(value) : null);
+    set(value: Date | null) {
+      console.debug("DatePicker: SET", value);
+      if (value instanceof Date) {
+        value = datelib.zeroTime(value);
+        emit("update:modelValue", value);
+      } else {
+        value = value ? datelib.zeroTime(new Date(value)) : null;
+        emit("update:modelValue", value);
+      }
     },
   });
 </script>
