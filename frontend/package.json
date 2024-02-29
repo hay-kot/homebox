@@ -46,6 +46,7 @@
     "@vueuse/router": "^10.0.0",
     "autoprefixer": "^10.4.8",
     "daisyui": "^2.24.0",
+    "date-fns": "^3.3.1",
     "dompurify": "^3.0.0",
     "h3": "^1.7.1",
     "http-proxy": "^1.18.1",

@@ -41,6 +41,9 @@ dependencies:
   daisyui:
     specifier: ^2.24.0
     version: 2.43.0(autoprefixer@10.4.13)(postcss@8.4.19)
+  date-fns:
+    specifier: ^3.3.1
+    version: 3.3.1
   dompurify:
     specifier: ^3.0.0
     version: 3.0.0
