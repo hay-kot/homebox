@@ -72,9 +72,14 @@
       return null;
     },
     set(value: Date | null) {
-      // emit update:modelValue with a Date object or null
       console.debug("DatePicker: SET", value);
-      emit("update:modelValue", value ? new Date(value) : null);
+      if (value instanceof Date) {
+        value = datelib.zeroTime(value);
+        emit("update:modelValue", value);
+      } else {
+        value = value ? datelib.zeroTime(new Date(value)) : null;
+        emit("update:modelValue", value);
+      }
     },
   });
 </script>
