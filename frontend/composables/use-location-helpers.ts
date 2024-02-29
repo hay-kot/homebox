@@ -7,8 +7,8 @@ export interface FlatTreeItem {
   treeString: string;
 }
 
-export function flatTree(tree: TreeItem[]): Ref<FlatTreeItem[]> {
-  const v = ref<FlatTreeItem[]>([]);
+function flatTree(tree: TreeItem[]): FlatTreeItem[] {
+  const v = [] as FlatTreeItem[];
 
   // turns the nested items into a flat items array where
   // the display is a string of the tree hierarchy separated by breadcrumbs
@@ -19,7 +19,7 @@ export function flatTree(tree: TreeItem[]): Ref<FlatTreeItem[]> {
     }
 
     for (const item of items) {
-      v.value.push({
+      v.push({
         id: item.id,
         name: item.name,
         treeString: display + item.name,
@@ -35,14 +35,18 @@ export function flatTree(tree: TreeItem[]): Ref<FlatTreeItem[]> {
   return v;
 }
 
-export async function useFlatLocations(): Promise<Ref<FlatTreeItem[]>> {
-  const api = useUserApi();
+export function useFlatLocations(): Ref<FlatTreeItem[]> {
+  const locations = useLocationStore();
 
-  const locations = await api.locations.getTree();
-
-  if (!locations) {
-    return ref([]);
+  if (locations.tree === null) {
+    locations.refreshTree();
   }
 
-  return flatTree(locations.data);
+  return computed(() => {
+    if (locations.tree === null) {
+      return [];
+    }
+
+    return flatTree(locations.tree);
+  });
 }

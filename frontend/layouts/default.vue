@@ -185,6 +185,7 @@
   onServerEvent(ServerEvent.LocationMutation, () => {
     locationStore.refreshChildren();
     locationStore.refreshParents();
+    locationStore.refreshTree();
   });
 
   onServerEvent(ServerEvent.ItemMutation, () => {

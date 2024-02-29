@@ -61,6 +61,7 @@
 </template>
 
 <script setup lang="ts">
+  import lunr from "lunr";
   import {
     Combobox,
     ComboboxInput,
@@ -126,42 +127,37 @@
     return "";
   }
 
+  function lunrFactory() {
+    return lunr(function () {
+      this.ref("id");
+      this.field("display");
+
+      for (let i = 0; i < props.items.length; i++) {
+        const item = props.items[i];
+        const display = extractDisplay(item);
+        this.add({ id: i, display });
+      }
+    });
+  }
+
+  const index = ref<ReturnType<typeof lunrFactory>>(lunrFactory());
+
+  watchEffect(() => {
+    if (props.items) {
+      index.value = lunrFactory();
+    }
+  });
+
   const computedItems = computed<ComboItem[]>(() => {
     const list: ComboItem[] = [];
 
-    for (let i = 0; i < props.items.length; i++) {
-      const item = props.items[i];
+    const matches = index.value.search("*" + search.value + "*");
 
-      const out: Partial<ComboItem> = {
-        id: i,
-        value: item,
-      };
-
-      switch (typeof item) {
-        case "string":
-          out.display = item;
-          break;
-        case "object":
-          // @ts-ignore - up to the user to provide a valid display key
-          out.display = item[props.display] as string;
-          break;
-        default:
-          out.display = "";
-          break;
-      }
-
-      if (search.value && out.display) {
-        const foldSearch = search.value.toLowerCase();
-        const foldDisplay = out.display.toLowerCase();
-
-        if (foldDisplay.startsWith(foldSearch)) {
-          list.push(out as ComboItem);
-        }
-
-        continue;
-      }
-
-      list.push(out as ComboItem);
+    for (let i = 0; i < matches.length; i++) {
+      const match = matches[i];
+      const item = props.items[parseInt(match.ref)];
+      const display = extractDisplay(item);
+      list.push({ id: i, display, value: item });
     }
 
     return list;

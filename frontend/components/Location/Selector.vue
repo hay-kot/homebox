@@ -37,7 +37,7 @@
   const props = defineProps<Props>();
   const value = useVModel(props, "modelValue");
 
-  const locations = await useFlatLocations();
+  const locations = useFlatLocations();
   const form = ref({
     parent: null as LocationSummary | null,
     search: "",
