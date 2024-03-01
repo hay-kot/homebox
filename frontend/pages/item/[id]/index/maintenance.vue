@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import DatePicker from "~~/components/Form/DatePicker.vue";
-  import { StatsFormat } from "~~/components/global/StatCard/types";
-  import { ItemOut, MaintenanceEntry } from "~~/lib/api/types/data-contracts";
+  import type { StatsFormat } from "~~/components/global/StatCard/types";
+  import type { ItemOut, MaintenanceEntry } from "~~/lib/api/types/data-contracts";
   import MdiPost from "~icons/mdi/post";
   import MdiPlus from "~icons/mdi/plus";
   import MdiCheck from "~icons/mdi/check";

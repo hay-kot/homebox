@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
-import { LocationsApi } from "~~/lib/api/classes/locations";
-import { LocationOutCount, TreeItem } from "~~/lib/api/types/data-contracts";
+import type { LocationsApi } from "~~/lib/api/classes/locations";
+import type { LocationOutCount, TreeItem } from "~~/lib/api/types/data-contracts";
 
 export const useLocationStore = defineStore("locations", {
   state: () => ({

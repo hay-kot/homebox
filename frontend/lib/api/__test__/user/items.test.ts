@@ -1,8 +1,8 @@
 import { faker } from "@faker-js/faker";
 import { describe, test, expect } from "vitest";
-import { ItemField, ItemUpdate, LocationOut } from "../../types/data-contracts";
+import type { ItemField, ItemUpdate, LocationOut } from "../../types/data-contracts";
 import { AttachmentTypes } from "../../types/non-generated";
-import { UserClient } from "../../user";
+import type { UserClient } from "../../user";
 import { factories } from "../factories";
 import { sharedUserClient } from "../test-utils";
 

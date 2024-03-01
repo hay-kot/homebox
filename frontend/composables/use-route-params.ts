@@ -1,7 +1,7 @@
 import { useRouteQuery as useRouteQueryBase } from "@vueuse/router";
 
 /* eslint no-redeclare: 0 */
-import { WritableComputedRef } from "vue";
+import type { WritableComputedRef } from "vue";
 
 export function useRouteQuery(q: string, def: string[]): WritableComputedRef<string[]>;
 export function useRouteQuery(q: string, def: string): WritableComputedRef<string>;

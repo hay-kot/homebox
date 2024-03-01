@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ItemAttachment } from "~~/lib/api/types/data-contracts";
+  import type { ItemAttachment } from "~~/lib/api/types/data-contracts";
   import MdiPaperclip from "~icons/mdi/paperclip";
   import MdiDownload from "~icons/mdi/download";
   import MdiOpenInNew from "~icons/mdi/open-in-new";

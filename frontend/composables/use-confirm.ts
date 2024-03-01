@@ -1,5 +1,5 @@
-import { UseConfirmDialogRevealResult, UseConfirmDialogReturn } from "@vueuse/core";
-import { Ref } from "vue";
+import type { UseConfirmDialogRevealResult, UseConfirmDialogReturn } from "@vueuse/core";
+import type { Ref } from "vue";
 
 type Store = UseConfirmDialogReturn<any, boolean, boolean> & {
   text: Ref<string>;

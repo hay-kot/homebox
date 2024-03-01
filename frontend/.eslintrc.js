@@ -25,6 +25,7 @@ module.exports = {
     "vue/no-setup-props-destructure": 0,
     "vue/no-multiple-template-root": 0,
     "vue/no-v-model-argument": 0,
+    "@typescript-eslint/consistent-type-imports": "error",
     "@typescript-eslint/ban-ts-comment": 0,
     "@typescript-eslint/no-unused-vars": [
       "error",

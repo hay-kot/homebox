@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { TreeItem } from "~~/lib/api/types/data-contracts";
+  import type { TreeItem } from "~~/lib/api/types/data-contracts";
 
   type Props = {
     locs: TreeItem[];

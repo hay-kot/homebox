@@ -1,5 +1,5 @@
-import { ItemSummary, LabelSummary, LocationSummary } from "~~/lib/api/types/data-contracts";
-import { UserClient } from "~~/lib/api/user";
+import type { ItemSummary, LabelSummary, LocationSummary } from "~~/lib/api/types/data-contracts";
+import type { UserClient } from "~~/lib/api/user";
 
 type SearchOptions = {
   immediate?: boolean;

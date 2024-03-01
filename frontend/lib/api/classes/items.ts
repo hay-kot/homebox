@@ -1,6 +1,6 @@
 import { BaseAPI, route } from "../base";
 import { parseDate } from "../base/base-api";
-import {
+import type {
   ItemAttachmentUpdate,
   ItemCreate,
   ItemOut,
@@ -13,8 +13,8 @@ import {
   MaintenanceEntryUpdate,
   MaintenanceLog,
 } from "../types/data-contracts";
-import { AttachmentTypes, PaginationResult } from "../types/non-generated";
-import { Requests } from "~~/lib/requests";
+import type { AttachmentTypes, PaginationResult } from "../types/non-generated";
+import type { Requests } from "~~/lib/requests";
 
 export type ItemsQuery = {
   orderBy?: string;

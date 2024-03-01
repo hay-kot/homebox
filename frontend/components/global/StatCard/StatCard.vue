@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-  import { StatsFormat } from "./types";
+  import type { StatsFormat } from "./types";
 
   type Props = {
     title: string;

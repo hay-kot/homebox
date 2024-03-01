@@ -1,4 +1,4 @@
-import { UserClient } from "~~/lib/api/user";
+import type { UserClient } from "~~/lib/api/user";
 
 type StatCard = {
   label: string;

@@ -1,6 +1,6 @@
 import { beforeAll, expect } from "vitest";
 import { faker } from "@faker-js/faker";
-import { UserClient } from "../user";
+import type { UserClient } from "../user";
 import { factories } from "./factories";
 
 const cache = {

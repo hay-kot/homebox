@@ -1,5 +1,5 @@
-import { ComputedRef } from "vue";
-import { DaisyTheme } from "~~/lib/data/themes";
+import type { ComputedRef } from "vue";
+import type { DaisyTheme } from "~~/lib/data/themes";
 
 export interface UseTheme {
   theme: ComputedRef<DaisyTheme>;

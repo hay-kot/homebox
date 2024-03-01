@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { LocationOut, LocationOutCount, LocationSummary } from "~~/lib/api/types/data-contracts";
+  import type { LocationOut, LocationOutCount, LocationSummary } from "~~/lib/api/types/data-contracts";
   import MdiArrowRight from "~icons/mdi/arrow-right";
   import MdiMapMarkerOutline from "~icons/mdi/map-marker-outline";
 

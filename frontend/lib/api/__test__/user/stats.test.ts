@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { beforeAll, describe, expect, test } from "vitest";
-import { UserClient } from "../../user";
+import type { UserClient } from "../../user";
 import { factories } from "../factories";
 
 type ImportObj = {

@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ItemCreate, LabelOut, LocationOut } from "~~/lib/api/types/data-contracts";
+  import type { ItemCreate, LabelOut, LocationOut } from "~~/lib/api/types/data-contracts";
   import { useLabelStore } from "~~/stores/labels";
   import { useLocationStore } from "~~/stores/locations";
   import MdiPackageVariant from "~icons/mdi/package-variant";
