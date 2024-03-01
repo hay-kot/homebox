@@ -2,6 +2,13 @@
   import DatePicker from "~~/components/Form/DatePicker.vue";
   import { StatsFormat } from "~~/components/global/StatCard/types";
   import { ItemOut, MaintenanceEntry } from "~~/lib/api/types/data-contracts";
+  import MdiPost from "~icons/mdi/post";
+  import MdiPlus from "~icons/mdi/plus";
+  import MdiCheck from "~icons/mdi/check";
+  import MdiDelete from "~icons/mdi/delete";
+  import MdiEdit from "~icons/mdi/edit";
+  import MdiCalendar from "~icons/mdi/calendar";
+  import MdiWrenchClock from "~icons/mdi/wrench-clock";
 
   const props = defineProps<{
     item: ItemOut;
@@ -184,7 +191,7 @@
         <div class="py-2 flex justify-end">
           <BaseButton type="submit" class="ml-2 mt-2">
             <template #icon>
-              <Icon name="mdi-post" />
+              <MdiPost />
             </template>
             {{ entry.id ? "Update" : "Create" }}
           </BaseButton>
@@ -214,7 +221,7 @@
         </div>
         <BaseButton class="ml-auto" size="sm" @click="newEntry()">
           <template #icon>
-            <Icon name="mdi-plus" />
+            <MdiPlus />
           </template>
           New
         </BaseButton>
@@ -228,11 +235,11 @@
             <template #description>
               <div class="flex flex-wrap gap-2">
                 <div v-if="validDate(e.completedDate)" class="badge p-3">
-                  <Icon name="mdi-check" class="mr-2" />
+                  <MdiCheck class="mr-2" />
                   <DateTime :date="e.completedDate" format="human" datetime-type="date" />
                 </div>
                 <div v-else-if="validDate(e.scheduledDate)" class="badge p-3">
-                  <Icon name="mdi-calendar" class="mr-2" />
+                  <MdiCalendar class="mr-2" />
                   <DateTime :date="e.scheduledDate" format="human" datetime-type="date" />
                 </div>
                 <div class="tooltip tooltip-primary" data-tip="Cost">
@@ -249,13 +256,13 @@
           <div class="flex justify-end p-4 gap-1">
             <BaseButton size="sm" @click="openEditDialog(e)">
               <template #icon>
-                <Icon name="mdi-edit" />
+                <MdiEdit />
               </template>
               Edit
             </BaseButton>
             <BaseButton size="sm" @click="deleteEntry(e.id)">
               <template #icon>
-                <Icon name="mdi-delete" />
+                <MdiDelete />
               </template>
               Delete
             </BaseButton>
@@ -267,7 +274,7 @@
             class="relative block w-full rounded-lg border-2 border-dashed border-base-content p-12 text-center"
             @click="newEntry()"
           >
-            <Icon name="mdi-wrench-clock" class="h-16 w-16"></Icon>
+            <MdiWrenchClock class="h-16 w-16" />
             <span class="mt-2 block text-sm font-medium text-gray-900"> Create Your First Entry </span>
           </button>
         </div>

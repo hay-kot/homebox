@@ -1,6 +1,11 @@
 <script setup lang="ts">
   import { AnyDetail, Detail, Details, filterZeroValues } from "~~/components/global/DetailsSection/types";
   import { ItemAttachment } from "~~/lib/api/types/data-contracts";
+  import MdiClose from "~icons/mdi/close";
+  import MdiPackageVariant from "~icons/mdi/package-variant";
+  import MdiPlus from "~icons/mdi/plus";
+  import MdiMinus from "~icons/mdi/minus";
+  import MdiDownload from "~icons/mdi/download";
 
   definePageMeta({
     middleware: ["auth"],
@@ -439,10 +444,10 @@
       <div ref="refDialogBody" class="relative">
         <div class="absolute right-0 -mt-3 -mr-3 sm:-mt-4 sm:-mr-4 space-x-1">
           <a class="btn btn-sm sm:btn-md btn-primary btn-circle" :href="dialoged.src" download>
-            <Icon class="h-5 w-5" name="mdi-download" />
+            <MdiDownload class="h-5 w-5" />
           </a>
           <button class="btn btn-sm sm:btn-md btn-primary btn-circle" @click="closeDialog()">
-            <Icon class="h-5 w-5" name="mdi-close" />
+            <MdiClose class="h-5 w-5" />
           </button>
         </div>
 
@@ -456,7 +461,7 @@
           <div class="flex flex-wrap items-end gap-2">
             <div class="avatar placeholder mb-auto">
               <div class="bg-neutral-focus text-neutral-content rounded-full w-12">
-                <Icon name="mdi-package-variant" class="h-7 w-7" />
+                <MdiPackageVariant class="h-7 w-7" />
               </div>
             </div>
             <div>
@@ -525,10 +530,10 @@
                 class="opacity-0 group-hover:opacity-100 ml-4 my-0 duration-75 transition-opacity inline-flex gap-2"
               >
                 <button class="btn btn-circle btn-xs" @click="adjustQuantity(-1)">
-                  <Icon name="mdi-minus" class="h-3 w-3" />
+                  <MdiMinus class="h-3 w-3" />
                 </button>
                 <button class="btn btn-circle btn-xs" @click="adjustQuantity(1)">
-                  <Icon name="mdi-plus" class="h-3 w-3" />
+                  <MdiPlus class="h-3 w-3" />
                 </button>
               </span>
             </template>

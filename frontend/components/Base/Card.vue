@@ -6,8 +6,8 @@
           <slot name="title"></slot>
           <template v-if="collapsable">
             <span class="ml-2 swap swap-rotate" :class="`${collapsed ? 'swap-active' : ''}`">
-              <Icon class="h-6 w-6 swap-on" name="mdi-chevron-right" />
-              <Icon class="h-6 w-6 swap-off" name="mdi-chevron-down" />
+              <MdiChevronRight class="h-6 w-6 swap-on" />
+              <MdiChevronDown class="h-6 w-6 swap-off" />
             </span>
           </template>
         </h3>
@@ -34,6 +34,9 @@
 </template>
 
 <script setup lang="ts">
+  import MdiChevronDown from "~icons/mdi/chevron-down";
+  import MdiChevronRight from "~icons/mdi/chevron-right";
+
   defineProps<{
     collapsable?: boolean;
   }>();

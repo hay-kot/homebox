@@ -7,12 +7,14 @@
       data-tip="Toggle Password Show"
       @click="toggle()"
     >
-      <Icon name="mdi-eye" class="h-5 w-5" />
+      <MdiEye name="mdi-eye" class="h-5 w-5" />
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
+  import MdiEye from "~icons/mdi/eye";
+
   type Props = {
     modelValue: string;
     placeholder?: string;

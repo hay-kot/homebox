@@ -2,6 +2,12 @@
   import { Detail } from "~~/components/global/DetailsSection/types";
   import { themes } from "~~/lib/data/themes";
   import { CurrenciesCurrency, NotifierCreate, NotifierOut } from "~~/lib/api/types/data-contracts";
+  import MdiAccount from "~icons/mdi/account";
+  import MdiMegaphone from "~icons/mdi/megaphone";
+  import MdiDelete from "~icons/mdi/delete";
+  import MdiFill from "~icons/mdi/fill";
+  import MdiPencil from "~icons/mdi/pencil";
+  import MdiAccountMultiple from "~icons/mdi/account-multiple";
 
   definePageMeta({
     middleware: ["auth"],
@@ -341,7 +347,7 @@
       <BaseCard>
         <template #title>
           <BaseSectionHeader>
-            <Icon name="mdi-account" class="mr-2 -mt-1 text-base-600" />
+            <MdiAccount class="mr-2 -mt-1 text-base-600" />
             <span class="text-base-600"> User Profile </span>
             <template #description> Invite users, and manage your account. </template>
           </BaseSectionHeader>
@@ -368,7 +374,7 @@
       <BaseCard>
         <template #title>
           <BaseSectionHeader>
-            <Icon name="mdi-megaphone" class="mr-2 -mt-1 text-base-600" />
+            <MdiMegaphone class="mr-2 -mt-1 text-base-600" />
             <span class="text-base-600"> Notifiers </span>
             <template #description> Get notifications for up coming maintenance reminders </template>
           </BaseSectionHeader>
@@ -381,12 +387,12 @@
               <div class="flex gap-2 justify-end">
                 <div class="tooltip" data-tip="Delete">
                   <button class="btn btn-sm btn-square" @click="deleteNotifier(n.id)">
-                    <Icon name="mdi-delete" />
+                    <MdiDelete />
                   </button>
                 </div>
                 <div class="tooltip" data-tip="Edit">
                   <button class="btn btn-sm btn-square" @click="openNotifierDialog(n)">
-                    <Icon name="mdi-pencil" />
+                    <MdiPencil />
                   </button>
                 </div>
               </div>
@@ -412,7 +418,7 @@
       <BaseCard>
         <template #title>
           <BaseSectionHeader class="pb-0">
-            <Icon name="mdi-accounts" class="mr-2 -mt-1 text-base-600" />
+            <MdiAccountMultiple class="mr-2 -mt-1 text-base-600" />
             <span class="text-base-600"> Group Settings </span>
             <template #description>
               Shared Group Settings. You may need to refresh your browser for some settings to apply.
@@ -433,7 +439,7 @@
       <BaseCard>
         <template #title>
           <BaseSectionHeader>
-            <Icon name="mdi-fill" class="mr-2 text-base-600" />
+            <MdiFill class="mr-2 text-base-600" />
             <span class="text-base-600"> Theme Settings </span>
             <template #description>
               Theme settings are stored in your browser's local storage. You can change the theme at any time. If you're
@@ -484,7 +490,7 @@
       <BaseCard>
         <template #title>
           <BaseSectionHeader>
-            <Icon name="mdi-delete" class="mr-2 -mt-1 text-base-600" />
+            <MdiDelete class="mr-2 -mt-1 text-base-600" />
             <span class="text-base-600"> Delete Account</span>
             <template #description> Delete your account and all its associated data. </template>
           </BaseSectionHeader>

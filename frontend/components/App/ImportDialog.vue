@@ -32,7 +32,7 @@
         <input ref="importRef" type="file" class="hidden" accept=".csv,.tsv" @change="setFile" />
 
         <BaseButton type="button" @click="uploadCsv">
-          <Icon class="h-5 w-5 mr-2" name="mdi-upload" />
+          <MdiUpload class="h-5 w-5 mr-2" />
           Upload
         </BaseButton>
         <p class="text-center pt-4 -mb-5">
@@ -48,6 +48,7 @@
 </template>
 
 <script setup lang="ts">
+  import MdiUpload from "~icons/mdi/upload";
   type Props = {
     modelValue: boolean;
   };

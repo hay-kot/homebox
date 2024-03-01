@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import { useTreeState } from "~~/components/Location/Tree/tree-state";
+  import MdiCollapseAllOutline from "~icons/mdi/collapse-all-outline";
 
   definePageMeta({
     middleware: ["auth"],
@@ -67,7 +68,7 @@
         <div class="flex justify-end mb-2">
           <div class="btn-group">
             <button class="btn btn-sm tooltip tooltip-top" data-tip="Collapse Tree" @click="closeAll">
-              <Icon name="mdi-collapse-all-outline" />
+              <MdiCollapseAllOutline />
             </button>
           </div>
         </div>

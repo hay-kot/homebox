@@ -5,7 +5,7 @@
       <BaseCard>
         <template #title>
           <BaseSectionHeader>
-            <Icon name="mdi-file-chart" class="mr-2 -mt-1" />
+            <MdiFileChart class="mr-2" />
             <span> Reports </span>
             <template #description> Generate different reports for your inventory. </template>
           </BaseSectionHeader>
@@ -17,7 +17,7 @@
             are able to print labels ahead of time and apply them to your inventory when you receive them.
             <template #button>
               Label Generator
-              <Icon name="mdi-arrow-right" class="ml-2" />
+              <MdiArrowRight class="ml-2" />
             </template>
           </DetailAction>
           <DetailAction @action="getBillOfMaterials()">
@@ -31,7 +31,7 @@
       <BaseCard>
         <template #title>
           <BaseSectionHeader>
-            <Icon name="mdi-database" class="mr-2 -mt-1" />
+            <MdiDatabase class="mr-2" />
             <span> Import / Export </span>
             <template #description>
               Import and export your inventory to and from a CSV file. This is useful for migrating your inventory to a
@@ -54,7 +54,7 @@
       <BaseCard>
         <template #title>
           <BaseSectionHeader>
-            <Icon name="mdi-warning" class="mr-2 -mt-1" />
+            <MdiAlert class="mr-2" />
             <span> Inventory Actions </span>
             <template #description>
               Apply Actions to your inventory in bulk. These are irreversible actions. <b>Be careful.</b>
@@ -95,6 +95,11 @@
 </template>
 
 <script setup lang="ts">
+  import MdiFileChart from "~icons/mdi/file-chart";
+  import MdiArrowRight from "~icons/mdi/arrow-right";
+  import MdiDatabase from "~icons/mdi/database";
+  import MdiAlert from "~icons/mdi/alert";
+
   definePageMeta({
     middleware: ["auth"],
   });

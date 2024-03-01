@@ -5,6 +5,9 @@
   import { useLocationStore } from "~~/stores/locations";
   import { capitalize } from "~~/lib/strings";
   import Autocomplete from "~~/components/Form/Autocomplete.vue";
+  import MdiDelete from "~icons/mdi/delete";
+  import MdiPencil from "~icons/mdi/pencil";
+  import MdiContentSaveOutline from "~icons/mdi/content-save-outline";
 
   definePageMeta({
     middleware: ["auth"],
@@ -445,12 +448,12 @@
         </div>
         <BaseButton size="sm" @click="saveItem">
           <template #icon>
-            <Icon name="mdi-content-save-outline" />
+            <MdiContentSaveOutline />
           </template>
           Save
         </BaseButton>
         <BaseButton class="btn btn-sm btn-error" @click="deleteItem()">
-          <Icon name="mdi-delete" class="mr-2" />
+          <MdiDelete class="mr-2" />
           Delete
         </BaseButton>
       </div>
@@ -522,7 +525,7 @@
                 <FormTextField v-model="field.textValue" label="Value" />
                 <div class="tooltip" data-tip="Delete">
                   <button class="btn btn-sm btn-square mb-2 ml-2" @click="item.fields.splice(idx, 1)">
-                    <Icon name="mdi-delete" />
+                    <MdiDelete />
                   </button>
                 </div>
               </div>
@@ -576,12 +579,12 @@
                 <div class="flex gap-2 justify-end">
                   <div class="tooltip" data-tip="Delete">
                     <button class="btn btn-sm btn-square" @click="deleteAttachment(attachment.id)">
-                      <Icon name="mdi-delete" />
+                      <MdiDelete />
                     </button>
                   </div>
                   <div class="tooltip" data-tip="Edit">
                     <button class="btn btn-sm btn-square" @click="openAttachmentEditDialog(attachment)">
-                      <Icon name="mdi-pencil" />
+                      <MdiPencil />
                     </button>
                   </div>
                 </div>

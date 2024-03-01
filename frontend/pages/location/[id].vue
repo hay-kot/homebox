@@ -1,6 +1,9 @@
 <script setup lang="ts">
   import { LocationSummary, LocationUpdate } from "~~/lib/api/types/data-contracts";
   import { useLocationStore } from "~~/stores/locations";
+  import MdiPackageVariant from "~icons/mdi/package-variant";
+  import MdiPencil from "~icons/mdi/pencil";
+  import MdiDelete from "~icons/mdi/delete";
 
   definePageMeta({
     middleware: ["auth"],
@@ -123,7 +126,7 @@
           <div class="flex flex-wrap items-end gap-2">
             <div class="avatar placeholder mb-auto">
               <div class="bg-neutral-focus text-neutral-content rounded-full w-12">
-                <Icon name="mdi-package-variant" class="h-7 w-7" />
+                <MdiPackageVariant name="mdi-package-variant" class="h-7 w-7" />
               </div>
             </div>
             <div>
@@ -149,12 +152,12 @@
               <div class="btn-group">
                 <PageQRCode class="dropdown-left" />
                 <BaseButton size="sm" @click="openUpdate">
-                  <Icon class="mr-1" name="mdi-pencil" />
+                  <MdiPencil class="mr-1" name="mdi-pencil" />
                   Edit
                 </BaseButton>
               </div>
               <BaseButton class="btn btn-sm" @click="confirmDelete()">
-                <Icon name="mdi-delete" class="mr-2" />
+                <MdiDelete name="mdi-delete" class="mr-2" />
                 Delete
               </BaseButton>
             </div>

@@ -13,18 +13,13 @@
     >
       <h2 class="flex items-center justify-between gap-2">
         <label class="swap swap-rotate" :class="isActive ? 'swap-active' : ''">
-          <Icon name="heroicons-arrow-right" class="swap-on h-6 w-6" />
-          <Icon name="heroicons-map-pin" class="swap-off h-6 w-6" />
+          <MdiArrowRight class="swap-on h-6 w-6" />
+          <MdiMapMarker class="swap-off h-6 w-6" />
         </label>
         <span class="mx-auto">
           {{ location.name }}
         </span>
-        <span
-          class="badge badge-primary h-6 badge-lg"
-          :class="{
-            'opacity-0': !hasCount,
-          }"
-        >
+        <span class="badge badge-primary h-6 badge-lg" :class="{ 'opacity-0': !hasCount }">
           {{ count }}
         </span>
       </h2>
@@ -34,6 +29,8 @@
 
 <script lang="ts" setup>
   import { LocationOut, LocationOutCount, LocationSummary } from "~~/lib/api/types/data-contracts";
+  import MdiArrowRight from "~icons/mdi/arrow-right";
+  import MdiMapMarker from "~icons/mdi/map-marker";
 
   const props = defineProps({
     location: {

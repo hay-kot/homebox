@@ -6,15 +6,15 @@
       class="flex items-center justify-between py-3 pl-3 pr-4 text-sm"
     >
       <div class="flex w-0 flex-1 items-center">
-        <Icon name="mdi-paperclip" class="h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+        <MdiPaperclip class="h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
         <span class="ml-2 w-0 flex-1 truncate"> {{ attachment.document.title }}</span>
       </div>
       <div class="ml-4 flex-shrink-0">
         <a class="tooltip mr-2" data-tip="Download" :href="attachmentURL(attachment.id)" target="_blank">
-          <Icon class="h-5 w-5" name="mdi-download" />
+          <MdiDownload class="h-5 w-5" />
         </a>
         <a class="tooltip" data-tip="Open" :href="attachmentURL(attachment.id)" target="_blank">
-          <Icon class="h-5 w-5" name="mdi-open-in-new" />
+          <MdiOpenInNew class="h-5 w-5" />
         </a>
       </div>
     </li>
@@ -23,6 +23,9 @@
 
 <script setup lang="ts">
   import { ItemAttachment } from "~~/lib/api/types/data-contracts";
+  import MdiPaperclip from "~icons/mdi/paperclip";
+  import MdiDownload from "~icons/mdi/download";
+  import MdiOpenInNew from "~icons/mdi/open-in-new";
 
   const props = defineProps({
     attachments: {
