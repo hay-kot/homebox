@@ -2,6 +2,7 @@
 package eventbus
 
 import (
+	"context"
 	"sync"
 
 	"github.com/google/uuid"
@@ -43,24 +44,29 @@ func New() *EventBus {
 	}
 }
 
-func (e *EventBus) Run() {
+func (e *EventBus) Run(ctx context.Context) error {
 	if e.started {
 		panic("event bus already started")
 	}
 
 	e.started = true
 
-	for event := range e.ch {
-		e.mu.RLock()
-		arr, ok := e.subscribers[event.event]
-		e.mu.RUnlock()
+	for {
+		select {
+		case <-ctx.Done():
+			return nil
+		case event := <-e.ch:
+			e.mu.RLock()
+			arr, ok := e.subscribers[event.event]
+			e.mu.RUnlock()
 
-		if !ok {
-			continue
-		}
+			if !ok {
+				continue
+			}
 
-		for _, fn := range arr {
-			fn(event.data)
+			for _, fn := range arr {
+				fn(event.data)
+			}
 		}
 	}
 }

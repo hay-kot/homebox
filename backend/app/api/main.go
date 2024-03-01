@@ -23,7 +23,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/sys/config"
 	"github.com/hay-kot/homebox/backend/internal/web/mid"
 	"github.com/hay-kot/httpkit/errchain"
-	"github.com/hay-kot/httpkit/server"
+	"github.com/hay-kot/httpkit/graceful"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/rs/zerolog/pkgerrors"
@@ -182,19 +182,31 @@ func run(cfg *config.Config) error {
 
 	app.mountRoutes(router, chain, app.repos)
 
-	app.server = server.NewServer(
-		server.WithHost(app.conf.Web.Host),
-		server.WithPort(app.conf.Web.Port),
-		server.WithReadTimeout(app.conf.Web.ReadTimeout),
-		server.WithWriteTimeout(app.conf.Web.WriteTimeout),
-		server.WithIdleTimeout(app.conf.Web.IdleTimeout),
-	)
+	runner := graceful.NewRunner()
+
+	runner.AddFunc("server", func(ctx context.Context) error {
+		httpserver := http.Server{
+			Addr:         fmt.Sprintf("%s:%s", app.server.Host, app.server.Port),
+      Handler:      router,
+			ReadTimeout:  cfg.Web.ReadTimeout,
+			WriteTimeout: cfg.Web.WriteTimeout,
+			IdleTimeout:  cfg.Web.IdleTimeout,
+		}
+
+		go func() {
+			<-ctx.Done()
+			httpserver.Shutdown(context.Background())
+		}()
+
+		return httpserver.ListenAndServe()
+	})
+
 	log.Info().Msgf("Starting HTTP Server on %s:%s", app.server.Host, app.server.Port)
 
 	// =========================================================================
 	// Start Reoccurring Tasks
 
-	go app.bus.Run()
+	runner.AddFunc("eventbus", app.bus.Run)
 
 	go app.startBgTask(time.Duration(24)*time.Hour, func() {
 		_, err := app.repos.AuthTokens.PurgeExpiredTokens(context.Background())
@@ -233,13 +245,23 @@ func run(cfg *config.Config) error {
 	}
 
 	if cfg.Debug.Enabled {
-		debugrouter := app.debugRouter()
-		go func() {
-			if err := http.ListenAndServe(":"+cfg.Debug.Port, debugrouter); err != nil {
-				log.Fatal().Err(err).Msg("failed to start debug server")
+		runner.AddFunc("debug", func(ctx context.Context) error {
+			debugserver := http.Server{
+				Addr:         fmt.Sprintf("%s:%s", cfg.Web.Host, cfg.Debug.Port),
+				Handler:      app.debugRouter(),
+				ReadTimeout:  cfg.Web.ReadTimeout,
+				WriteTimeout: cfg.Web.WriteTimeout,
+				IdleTimeout:  cfg.Web.IdleTimeout,
 			}
-		}()
+
+			go func() {
+				<-ctx.Done()
+				debugserver.Shutdown(context.Background())
+			}()
+
+			return debugserver.ListenAndServe()
+		})
 	}
 
-	return app.server.Start(router)
+	return runner.Start(context.Background())
 }
