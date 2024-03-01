@@ -45,7 +45,9 @@ func TestMain(m *testing.M) {
 		log.Fatalf("failed opening connection to sqlite: %v", err)
 	}
 
-	go tbus.Run()
+	go func() {
+		_ = tbus.Run(context.Background())
+	}()
 
 	err = client.Schema.Create(context.Background())
 	if err != nil {

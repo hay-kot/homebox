@@ -16,7 +16,7 @@ type ErrorResponse struct {
 	Fields map[string]string `json:"fields,omitempty"`
 }
 
-func Errors(svr *server.Server, log zerolog.Logger) errchain.ErrorHandler {
+func Errors(log zerolog.Logger) errchain.ErrorHandler {
 	return func(h errchain.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			err := h.ServeHTTP(w, r)
@@ -70,14 +70,6 @@ func Errors(svr *server.Server, log zerolog.Logger) errchain.ErrorHandler {
 
 				if err := server.JSON(w, code, resp); err != nil {
 					log.Err(err).Msg("failed to write response")
-				}
-
-				// If Showdown error, return error
-				if server.IsShutdownError(err) {
-					err := svr.Shutdown(err.Error())
-					if err != nil {
-						log.Err(err).Msg("failed to shutdown server")
-					}
 				}
 			}
 		})

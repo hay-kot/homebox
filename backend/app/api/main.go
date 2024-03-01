@@ -178,7 +178,7 @@ func run(cfg *config.Config) error {
 		middleware.StripSlashes,
 	)
 
-	chain := errchain.New(mid.Errors(app.server, logger))
+	chain := errchain.New(mid.Errors(logger))
 
 	app.mountRoutes(router, chain, app.repos)
 
@@ -186,8 +186,8 @@ func run(cfg *config.Config) error {
 
 	runner.AddFunc("server", func(ctx context.Context) error {
 		httpserver := http.Server{
-			Addr:         fmt.Sprintf("%s:%s", app.server.Host, app.server.Port),
-      Handler:      router,
+			Addr:         fmt.Sprintf("%s:%s", cfg.Web.Host, cfg.Web.Port),
+			Handler:      router,
 			ReadTimeout:  cfg.Web.ReadTimeout,
 			WriteTimeout: cfg.Web.WriteTimeout,
 			IdleTimeout:  cfg.Web.IdleTimeout,
@@ -195,36 +195,37 @@ func run(cfg *config.Config) error {
 
 		go func() {
 			<-ctx.Done()
-			httpserver.Shutdown(context.Background())
+			_ = httpserver.Shutdown(context.Background())
 		}()
 
+		log.Info().Msgf("Server is running on %s:%s", cfg.Web.Host, cfg.Web.Port)
 		return httpserver.ListenAndServe()
 	})
-
-	log.Info().Msgf("Starting HTTP Server on %s:%s", app.server.Host, app.server.Port)
 
 	// =========================================================================
 	// Start Reoccurring Tasks
 
 	runner.AddFunc("eventbus", app.bus.Run)
 
-	go app.startBgTask(time.Duration(24)*time.Hour, func() {
-		_, err := app.repos.AuthTokens.PurgeExpiredTokens(context.Background())
+	runner.AddPlugin(NewTask("purge-tokens", time.Duration(24)*time.Hour, func(ctx context.Context) {
+		_, err := app.repos.AuthTokens.PurgeExpiredTokens(ctx)
 		if err != nil {
 			log.Error().
 				Err(err).
 				Msg("failed to purge expired tokens")
 		}
-	})
-	go app.startBgTask(time.Duration(24)*time.Hour, func() {
-		_, err := app.repos.Groups.InvitationPurge(context.Background())
+	}))
+
+	runner.AddPlugin(NewTask("purge-invitations", time.Duration(24)*time.Hour, func(ctx context.Context) {
+		_, err := app.repos.Groups.InvitationPurge(ctx)
 		if err != nil {
 			log.Error().
 				Err(err).
 				Msg("failed to purge expired invitations")
 		}
-	})
-	go app.startBgTask(time.Duration(1)*time.Hour, func() {
+	}))
+
+	runner.AddPlugin(NewTask("send-notifications", time.Duration(1)*time.Hour, func(ctx context.Context) {
 		now := time.Now()
 
 		if now.Hour() == 8 {
@@ -236,7 +237,7 @@ func run(cfg *config.Config) error {
 					Msg("failed to send notifiers")
 			}
 		}
-	})
+	}))
 
 	// TODO: Remove through external API that does setup
 	if cfg.Demo {
@@ -256,9 +257,10 @@ func run(cfg *config.Config) error {
 
 			go func() {
 				<-ctx.Done()
-				debugserver.Shutdown(context.Background())
+				_ = debugserver.Shutdown(context.Background())
 			}()
 
+			log.Info().Msgf("Debug server is running on %s:%s", cfg.Web.Host, cfg.Debug.Port)
 			return debugserver.ListenAndServe()
 		})
 	}
