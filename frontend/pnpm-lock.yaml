@@ -98,8 +98,8 @@ devDependencies:
     specifier: ^6.0.0
     version: 6.0.0(eslint@8.29.0)(typescript@5.0.2)
   '@vite-pwa/nuxt':
-    specifier: ^0.2.0
-    version: 0.2.3(@nuxt/kit@3.10.3)(vite-plugin-pwa@0.19.2)
+    specifier: ^0.5.0
+    version: 0.5.0(rollup@2.79.1)(vite@5.1.4)(workbox-build@7.0.0)(workbox-window@7.0.0)
   eslint:
     specifier: ^8.23.0
     version: 8.29.0
@@ -3916,16 +3916,20 @@ packages:
       - encoding
       - supports-color
 
-  /@vite-pwa/nuxt@0.2.3(@nuxt/kit@3.10.3)(vite-plugin-pwa@0.19.2):
-    resolution: {integrity: sha512-dAf7crzDth3/hXQ/JAcO0vh9alFl6gUZ3Sw2so1wL4W4VZOMYIA8D3sMo5AH8zV+loUlkqsb6kutmz8IKdpjmQ==}
-    peerDependencies:
-      '@nuxt/kit': ^3.6.2
-      vite-plugin-pwa: '>=0.16.5 <1'
+  /@vite-pwa/nuxt@0.5.0(rollup@2.79.1)(vite@5.1.4)(workbox-build@7.0.0)(workbox-window@7.0.0):
+    resolution: {integrity: sha512-5Si0Qpj9FGYmgrX52HJtY1OZKNDXJVmx17yULk0Karb7+6GKXhRcWP3DnFTEG7zkctXuzBli5sXjQaEEbEgy6w==}
     dependencies:
       '@nuxt/kit': 3.10.3(rollup@2.79.1)
-      pathe: 1.1.1
-      ufo: 1.3.2
+      pathe: 1.1.2
+      ufo: 1.4.0
       vite-plugin-pwa: 0.19.2(vite@5.1.4)(workbox-build@7.0.0)(workbox-window@7.0.0)
+    transitivePeerDependencies:
+      - '@vite-pwa/assets-generator'
+      - rollup
+      - supports-color
+      - vite
+      - workbox-build
+      - workbox-window
     dev: true
 
   /@vitejs/plugin-vue-jsx@3.0.1(vite@4.3.9)(vue@3.3.4):
