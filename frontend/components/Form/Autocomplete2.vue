@@ -16,10 +16,10 @@
           class="absolute inset-y-0 right-6 flex items-center rounded-r-md px-2 focus:outline-none"
           @click="clear"
         >
-          <Icon name="mdi-close" class="w-5 h-5" />
+          <MdiClose class="w-5 h-5" />
         </button>
         <ComboboxButton class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-          <Icon name="mdi-chevron-down" class="w-5 h-5" />
+          <MdiChevronDown class="w-5 h-5" />
         </ComboboxButton>
         <ComboboxOptions
           v-if="computedItems.length > 0"
@@ -49,7 +49,7 @@
                     active ? 'text-primary-content' : 'bg-primary',
                   ]"
                 >
-                  <Icon name="mdi-check" class="h-5 w-5" aria-hidden="true" />
+                  <MdiCheck class="h-5 w-5" aria-hidden="true" />
                 </span>
               </slot>
             </li>
@@ -70,6 +70,9 @@
     ComboboxButton,
     ComboboxLabel,
   } from "@headlessui/vue";
+  import MdiClose from "~icons/mdi/close";
+  import MdiChevronDown from "~icons/mdi/chevron-down";
+  import MdiCheck from "~icons/mdi/check";
 
   type SupportValues = string | { [key: string]: any };
 

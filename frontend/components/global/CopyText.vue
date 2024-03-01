@@ -6,17 +6,15 @@
         'swap-active': copied,
       }"
     >
-      <Icon
+      <MdiContentCopy
         class="swap-off"
-        name="mdi-content-copy"
         :style="{
           height: `${iconSize}px`,
           width: `${iconSize}px`,
         }"
       />
-      <Icon
+      <MdiClipboard
         class="swap-on"
-        name="mdi-clipboard"
         :style="{
           height: `${iconSize}px`,
           width: `${iconSize}px`,
@@ -27,6 +25,9 @@
 </template>
 
 <script setup lang="ts">
+  import MdiContentCopy from "~icons/mdi/content-copy";
+  import MdiClipboard from "~icons/mdi/clipboard";
+
   const props = defineProps({
     text: {
       type: String as () => string,
@@ -51,5 +52,3 @@
     }, 1000);
   }
 </script>
-
-<style scoped></style>

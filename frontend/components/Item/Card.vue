@@ -17,7 +17,7 @@
       <div class="divider my-0"></div>
       <div class="flex justify-between gap-2">
         <div v-if="item.insured" class="tooltip z-10" data-tip="Insured">
-          <Icon class="h-5 w-5 text-primary" name="mdi-shield-check" />
+          <MdiShieldCheck class="h-5 w-5 text-primary" />
         </div>
         <div class="tooltip" data-tip="Quantity">
           <span class="badge h-5 w-5 badge-primary badge-sm text-xs">
@@ -35,6 +35,7 @@
 
 <script setup lang="ts">
   import { ItemOut, ItemSummary } from "~~/lib/api/types/data-contracts";
+  import MdiShieldCheck from "~icons/mdi/shield-check";
 
   const api = useUserApi();
 

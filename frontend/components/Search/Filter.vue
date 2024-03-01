@@ -1,7 +1,7 @@
 <template>
   <div ref="el" class="dropdown" :class="{ 'dropdown-open': dropdownOpen }">
     <button ref="btn" tabindex="0" class="btn btn-xs" @click="toggle">
-      {{ label }} {{ len }} <Icon name="mdi-chevron-down" class="h-4 w-4" />
+      {{ label }} {{ len }} <MdiChevronDown class="h-4 w-4" />
     </button>
     <div tabindex="0" class="dropdown-content mt-1 w-64 shadow bg-base-100 rounded-md">
       <div class="pt-4 px-4 shadow-sm mb-1">
@@ -39,6 +39,7 @@
 </template>
 
 <script setup lang="ts">
+  import MdiChevronDown from "~icons/mdi/chevron-down";
   type Props = {
     label: string;
     options: any[];

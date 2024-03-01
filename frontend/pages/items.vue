@@ -2,6 +2,11 @@
   import { ItemSummary, LabelSummary, LocationOutCount } from "~~/lib/api/types/data-contracts";
   import { useLabelStore } from "~~/stores/labels";
   import { useLocationStore } from "~~/stores/locations";
+  import MdiLoading from "~icons/mdi/loading";
+  import MdiMagnify from "~icons/mdi/magnify";
+  import MdiDelete from "~icons/mdi/delete";
+  import MdiChevronRight from "~icons/mdi/chevron-right";
+  import MdiChevronLeft from "~icons/mdi/chevron-left";
 
   definePageMeta({
     middleware: ["auth"],
@@ -319,8 +324,8 @@
         </div>
         <BaseButton class="btn-block md:w-auto" @click.prevent="submit">
           <template #icon>
-            <Icon v-if="loading" name="mdi-loading" class="animate-spin" />
-            <Icon v-else name="mdi-search" />
+            <MdiLoading v-if="loading" class="animate-spin" />
+            <MdiMagnify v-else />
           </template>
           Search
         </BaseButton>
@@ -408,7 +413,7 @@
             class="btn btn-square btn-sm md:ml-0 ml-auto mt-auto mb-2"
             @click="fieldTuples.splice(idx, 1)"
           >
-            <Icon name="mdi-trash" class="w-5 h-5" />
+            <MdiDelete class="w-5 h-5" />
           </button>
         </div>
         <BaseButton type="button" class="btn-sm mt-2" @click="() => fieldTuples.push(['', ''])"> Add</BaseButton>
@@ -431,14 +436,14 @@
         <div class="flex">
           <div class="btn-group">
             <button :disabled="!hasPrev" class="btn text-no-transform" @click="prev">
-              <Icon class="mr-1 h-6 w-6" name="mdi-chevron-left" />
+              <MdiChevronLeft class="mr-1 h-6 w-6" name="mdi-chevron-left" />
               Prev
             </button>
             <button v-if="hasPrev" class="btn text-no-transform" @click="page = 1">First</button>
             <button v-if="hasNext" class="btn text-no-transform" @click="page = totalPages">Last</button>
             <button :disabled="!hasNext" class="btn text-no-transform" @click="next">
               Next
-              <Icon class="ml-1 h-6 w-6" name="mdi-chevron-right" />
+              <MdiChevronRight class="ml-1 h-6 w-6" name="mdi-chevron-right" />
             </button>
           </div>
         </div>

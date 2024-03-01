@@ -1,6 +1,10 @@
 <script setup lang="ts">
   import { useTreeState } from "./tree-state";
   import { TreeItem } from "~~/lib/api/types/data-contracts";
+  import MdiChevronDown from "~icons/mdi/chevron-down";
+  import MdiChevronRight from "~icons/mdi/chevron-right";
+  import MdiMapMarker from "~icons/mdi/map-marker";
+  import MdiPackageVariant from "~icons/mdi/package-variant";
 
   type Props = {
     treeId: string;
@@ -56,12 +60,12 @@
             'swap-active': openRef,
           }"
         >
-          <Icon name="mdi-chevron-right" class="h-6 w-6 swap-off" />
-          <Icon name="mdi-chevron-down" class="h-6 w-6 swap-on" />
+          <MdiChevronRight name="mdi-chevron-right" class="h-6 w-6 swap-off" />
+          <MdiChevronDown name="mdi-chevron-down" class="h-6 w-6 swap-on" />
         </label>
       </div>
-      <Icon v-if="item.type === 'location'" name="mdi-map-marker" class="h-4 w-4" />
-      <Icon v-else name="mdi-package-variant" class="h-4 w-4" />
+      <MdiMapMarker v-if="item.type === 'location'" class="h-4 w-4" />
+      <MdiPackageVariant v-else class="h-4 w-4" />
       <NuxtLink class="hover:link text-lg" :to="link" @click.stop>{{ item.name }} </NuxtLink>
     </div>
     <div v-if="openRef" class="ml-4">

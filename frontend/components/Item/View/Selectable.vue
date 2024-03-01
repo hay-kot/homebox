@@ -1,6 +1,9 @@
 <script setup lang="ts">
   import { ViewType } from "~~/composables/use-preferences";
   import { ItemSummary } from "~~/lib/api/types/data-contracts";
+  import MdiDotsVertical from "~icons/mdi/dots-vertical";
+  import MdiCardTextOutline from "~icons/mdi/card-text-outline";
+  import MdiTable from "~icons/mdi/table";
 
   type Props = {
     view?: ViewType;
@@ -30,18 +33,18 @@
       <template #description>
         <div v-if="!viewSet" class="dropdown dropdown-hover dropdown-left">
           <label tabindex="0" class="btn btn-ghost m-1">
-            <Icon name="mdi-dots-vertical" class="h-7 w-7" />
+            <MdiDotsVertical class="h-7 w-7" />
           </label>
           <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-32">
             <li>
               <button @click="setViewPreference('card')">
-                <Icon name="mdi-card-text-outline" class="h-5 w-5" />
+                <MdiCardTextOutline class="h-5 w-5" />
                 Card
               </button>
             </li>
             <li>
               <button @click="setViewPreference('table')">
-                <Icon name="mdi-table" class="h-5 w-5" />
+                <MdiTable class="h-5 w-5" />
                 Table
               </button>
             </li>
