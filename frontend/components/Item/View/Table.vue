@@ -74,8 +74,8 @@
 </template>
 
 <script setup lang="ts">
-  import { TableData, TableHeader } from "./Table.types";
-  import { ItemSummary } from "~~/lib/api/types/data-contracts";
+  import type { TableData, TableHeader } from "./Table.types";
+  import type { ItemSummary } from "~~/lib/api/types/data-contracts";
   import MdiArrowDown from "~icons/mdi/arrow-down";
   import MdiArrowUp from "~icons/mdi/arrow-up";
   import MdiCheck from "~icons/mdi/check";

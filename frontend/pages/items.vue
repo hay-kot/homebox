@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ItemSummary, LabelSummary, LocationOutCount } from "~~/lib/api/types/data-contracts";
+  import type { ItemSummary, LabelSummary, LocationOutCount } from "~~/lib/api/types/data-contracts";
   import { useLabelStore } from "~~/stores/labels";
   import { useLocationStore } from "~~/stores/locations";
   import MdiLoading from "~icons/mdi/loading";

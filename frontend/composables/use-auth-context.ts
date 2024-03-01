@@ -1,7 +1,7 @@
-import { CookieRef } from "nuxt/app";
-import { PublicApi } from "~~/lib/api/public";
-import { UserOut } from "~~/lib/api/types/data-contracts";
-import { UserClient } from "~~/lib/api/user";
+import type { CookieRef } from "nuxt/app";
+import type { PublicApi } from "~~/lib/api/public";
+import type { UserOut } from "~~/lib/api/types/data-contracts";
+import type { UserClient } from "~~/lib/api/user";
 
 export interface IAuthContext {
   get token(): boolean | null;

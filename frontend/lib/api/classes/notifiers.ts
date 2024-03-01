@@ -1,5 +1,5 @@
 import { BaseAPI, route } from "../base";
-import { NotifierCreate, NotifierOut, NotifierUpdate } from "../types/data-contracts";
+import type { NotifierCreate, NotifierOut, NotifierUpdate } from "../types/data-contracts";
 
 export class NotifiersAPI extends BaseAPI {
   getAll() {

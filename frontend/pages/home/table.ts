@@ -1,4 +1,4 @@
-import { UserClient } from "~~/lib/api/user";
+import type { UserClient } from "~~/lib/api/user";
 
 export function itemsTable(api: UserClient) {
   const { data: items, refresh } = useAsyncData(async () => {

@@ -1,5 +1,5 @@
 import { BaseAPI, route } from "../base";
-import {
+import type {
   CurrenciesCurrency,
   Group,
   GroupInvitation,

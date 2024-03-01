@@ -1,5 +1,5 @@
 import { BaseAPI, route } from "../base";
-import { ActionAmountResult } from "../types/data-contracts";
+import type { ActionAmountResult } from "../types/data-contracts";
 
 export class ActionsAPI extends BaseAPI {
   ensureAssetIDs() {

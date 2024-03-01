@@ -1,5 +1,5 @@
-import { Ref } from "vue";
-import { DaisyTheme } from "~~/lib/data/themes";
+import type { Ref } from "vue";
+import type { DaisyTheme } from "~~/lib/data/themes";
 
 export type ViewType = "table" | "card" | "tree";
 

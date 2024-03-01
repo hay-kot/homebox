@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-  import { LocationSummary } from "~~/lib/api/types/data-contracts";
+  import type { LocationSummary } from "~~/lib/api/types/data-contracts";
   import MdiChevronDown from "~icons/mdi/chevron-down";
   const props = defineProps({
     modelValue: {

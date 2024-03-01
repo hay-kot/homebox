@@ -9,7 +9,7 @@ import { StatsAPI } from "./classes/stats";
 import { AssetsApi } from "./classes/assets";
 import { ReportsAPI } from "./classes/reports";
 import { NotifiersAPI } from "./classes/notifiers";
-import { Requests } from "~~/lib/requests";
+import type { Requests } from "~~/lib/requests";
 
 export class UserClient extends BaseAPI {
   locations: LocationsApi;

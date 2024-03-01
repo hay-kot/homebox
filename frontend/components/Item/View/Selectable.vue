@@ -1,6 +1,6 @@
 <script setup lang="ts">
-  import { ViewType } from "~~/composables/use-preferences";
-  import { ItemSummary } from "~~/lib/api/types/data-contracts";
+  import type { ViewType } from "~~/composables/use-preferences";
+  import type { ItemSummary } from "~~/lib/api/types/data-contracts";
   import MdiDotsVertical from "~icons/mdi/dots-vertical";
   import MdiCardTextOutline from "~icons/mdi/card-text-outline";
   import MdiTable from "~icons/mdi/table";

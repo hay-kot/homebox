@@ -1,6 +1,6 @@
 // https://gist.github.com/ucw/67f7291c64777fb24341e8eae72bcd24
-import { IncomingMessage } from "http";
-import internal from "stream";
+import type { IncomingMessage } from "http";
+import type internal from "stream";
 import { defineNuxtModule, logger } from "@nuxt/kit";
 // Related To
 // - https://github.com/nuxt/nuxt/issues/15417
@@ -8,7 +8,8 @@ import { defineNuxtModule, logger } from "@nuxt/kit";
 //
 // fix from
 // - https://gist.github.com/ucw/67f7291c64777fb24341e8eae72bcd24
-import { createProxyServer } from "http-proxy"; // eslint-disable-line import/named
+// eslint-disable-next-line
+import { createProxyServer } from "http-proxy";
 
 export default defineNuxtModule({
   defaults: {

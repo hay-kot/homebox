@@ -1,4 +1,4 @@
-import { WritableComputedRef } from "vue";
+import type { WritableComputedRef } from "vue";
 
 export function useMinLoader(ms = 500): WritableComputedRef<boolean> {
   const loading = ref(false);

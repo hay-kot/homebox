@@ -20,8 +20,9 @@
 </template>
 
 <script lang="ts" setup>
-  import { FlatTreeItem, useFlatLocations } from "~~/composables/use-location-helpers";
-  import { LocationSummary } from "~~/lib/api/types/data-contracts";
+  import type { FlatTreeItem } from "~~/composables/use-location-helpers";
+  import { useFlatLocations } from "~~/composables/use-location-helpers";
+  import type { LocationSummary } from "~~/lib/api/types/data-contracts";
   import MdiCheck from "~icons/mdi/check";
 
   type Props = {

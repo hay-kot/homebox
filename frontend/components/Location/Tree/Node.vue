@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { useTreeState } from "./tree-state";
-  import { TreeItem } from "~~/lib/api/types/data-contracts";
+  import type { TreeItem } from "~~/lib/api/types/data-contracts";
   import MdiChevronDown from "~icons/mdi/chevron-down";
   import MdiChevronRight from "~icons/mdi/chevron-right";
   import MdiMapMarker from "~icons/mdi/map-marker";

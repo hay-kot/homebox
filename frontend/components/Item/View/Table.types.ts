@@ -1,4 +1,4 @@
-import { ItemSummary } from "~~/lib/api/types/data-contracts";
+import type { ItemSummary } from "~~/lib/api/types/data-contracts";
 
 export type TableHeader = {
   text: string;

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-  import { AnyDetail, Detail, Details, filterZeroValues } from "~~/components/global/DetailsSection/types";
-  import { ItemAttachment } from "~~/lib/api/types/data-contracts";
+  import type { AnyDetail, Detail, Details } from "~~/components/global/DetailsSection/types";
+  import { filterZeroValues } from "~~/components/global/DetailsSection/types";
+  import type { ItemAttachment } from "~~/lib/api/types/data-contracts";
   import MdiClose from "~icons/mdi/close";
   import MdiPackageVariant from "~icons/mdi/package-variant";
   import MdiPlus from "~icons/mdi/plus";

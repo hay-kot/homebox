@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-  import { DateTimeFormat, DateTimeType } from "~~/composables/use-formatters";
+  import type { DateTimeFormat, DateTimeType } from "~~/composables/use-formatters";
 
   type Props = {
     date?: Date | string;

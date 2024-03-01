@@ -1,6 +1,6 @@
 import { BaseAPI, route } from "../base";
-import { ChangePassword, UserOut } from "../types/data-contracts";
-import { Result } from "../types/non-generated";
+import type { ChangePassword, UserOut } from "../types/data-contracts";
+import type { Result } from "../types/non-generated";
 
 export class UserApi extends BaseAPI {
   public self() {

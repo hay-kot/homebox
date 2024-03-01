@@ -1,7 +1,7 @@
 <script setup lang="ts">
-  import { Detail } from "~~/components/global/DetailsSection/types";
+  import type { Detail } from "~~/components/global/DetailsSection/types";
   import { themes } from "~~/lib/data/themes";
-  import { CurrenciesCurrency, NotifierCreate, NotifierOut } from "~~/lib/api/types/data-contracts";
+  import type { CurrenciesCurrency, NotifierCreate, NotifierOut } from "~~/lib/api/types/data-contracts";
   import MdiAccount from "~icons/mdi/account";
   import MdiMegaphone from "~icons/mdi/megaphone";
   import MdiDelete from "~icons/mdi/delete";

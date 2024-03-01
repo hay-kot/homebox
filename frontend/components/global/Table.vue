@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-  import { TableData, TableHeader } from "./Table.types";
+  import type { TableData, TableHeader } from "./Table.types";
 
   type Props = {
     headers: TableHeader[];
