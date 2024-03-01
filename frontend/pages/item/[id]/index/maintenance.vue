@@ -274,7 +274,7 @@
             class="relative block w-full rounded-lg border-2 border-dashed border-base-content p-12 text-center"
             @click="newEntry()"
           >
-            <MdiWrenchClock class="h-16 w-16" />
+            <MdiWrenchClock class="h-16 w-16 inline" />
             <span class="mt-2 block text-sm font-medium text-gray-900"> Create Your First Entry </span>
           </button>
         </div>
