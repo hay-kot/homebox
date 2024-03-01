@@ -11,8 +11,8 @@ type BackgroundTask struct {
 	Fn       func(context.Context)
 }
 
-func (bg *BackgroundTask) Name() string {
-	return bg.name
+func (tsk *BackgroundTask) Name() string {
+	return tsk.name
 }
 
 func NewTask(name string, interval time.Duration, fn func(context.Context)) *BackgroundTask {
