@@ -78,7 +78,7 @@ dependencies:
 devDependencies:
   '@faker-js/faker':
     specifier: ^8.0.0
-    version: 8.0.0
+    version: 8.4.1
   '@iconify-json/mdi':
     specifier: ^1.1.64
     version: 1.1.64
@@ -2425,8 +2425,8 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /@faker-js/faker@8.0.0:
-    resolution: {integrity: sha512-XDR8sApuf78GHx8mLXl3KL/q7eB52A963UGejVbdbj3OZtfGlNwp0J78b7apVzqRi0GF8l9g3eSkkaL2UmU9Aw==}
+  /@faker-js/faker@8.4.1:
+    resolution: {integrity: sha512-XQ3cU+Q8Uqmrbf2e0cIC/QN43sTBSC8KF12u29Mb47tWrt2hAgBXSgpZMj4Ao8Uk0iJcU99QsOCaIL8934obCg==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0, npm: '>=6.14.13'}
     dev: true
 
