@@ -1,0 +1,317 @@
+{
+    "index": {
+        "login": "登录",
+        "login_email": "邮箱",
+        "login_password": "密码",
+        "login_remember": "记住我",
+        "register": "注册",
+        "register_email": "邮箱",
+        "register_username": "用户名",
+        "register_password": "密码",
+        "slogon": "跟踪，组织并管理你的物品",
+        "refuse":"禁止注册"
+    },
+    "home": {
+        "quick_statistics": "快速统计",
+        "recently_added": "最近添加",
+        "storage_locations": "存储位置",
+        "labels": "标签"
+    },
+    "label": {
+        "create": {
+            "title": "创建标签",
+            "name": "标签名称",
+            "desp": "标签描述",
+            "button1": "创建",
+            "button2": "创建并添加下一个",
+            "tips1": "使用",
+            "tips2": "去创建并添加下一个"
+        },
+        "update": {
+            "title": "更新标签",
+            "name": "标签名称",
+            "desp": "标签描述",
+            "button": "更新"
+        },
+        "edit": {
+            "created": "已创建",
+            "edit_button": "编辑",
+            "delete_button": "删除"
+        }
+    },
+    "location": {
+        "selectable": {
+            "parent": "上级位置"
+        },
+        "child_locations": "下级位置",
+        "create": {
+            "title": "创建位置",
+            "name": "位置名称",
+            "desp": "位置描述",
+            "button1": "创建",
+            "button2": "创建并添加下一个",
+            "tips1": "使用",
+            "tips2": "去创建并添加下一个"
+        },
+        "update": {
+            "title": "更新位置",
+            "name": "位置名称",
+            "desp": "位置描述",
+            "button": "更新"
+        },
+        "edit": {
+            "created": "已创建",
+            "edit_button": "编辑",
+            "delete_button": "删除"
+        }
+    },
+    "item": {
+        "selectable": {
+            "title": "物品",
+            "card": "卡片",
+            "table": "表格",
+            "empty": "没有相关物品"
+        },
+        "edit":{
+            "editState":{
+                "title":"附件编辑",
+                "attachment":{
+                    "title":"附件标题",
+                    "type":"附件类型"
+                },
+                "tips":"此选项仅适用于照片。只能有一张照片是主照片。如果选择此选项，则当前的主照片(如果有的话)将被取消选中。",
+                "button":"更新"
+            },
+            "advanced":"高级设置",
+            "save_button":"保存",
+            "delete_button":"删除",
+            "details":{
+                "title":"详细信息",
+                "labels":"标签",
+                "parent":"上级物品"
+            },
+            "custom":{
+                "title":"自定义字段",
+                "name":"名称",
+                "value":"值",
+                "button":"添加"
+            },
+            "attachments":{
+                "title":"附件",
+                "tips":"对附件的更改将立即保存",
+                "dropZone":{
+                    "photo":"图片",
+                    "warranty":"保修",
+                    "manual":"手册",
+                    "attachment":"附件",
+                    "receipt":"收据",
+                    "tips":"向此处拖放文件或单击以选择文件"
+                }
+            },
+            "purchase":{
+                "title":"购买信息"
+            },
+            "warranty":{
+                "title":"保修信息"
+            },
+            "sold":{
+                "title":"销售信息"
+            }
+        },       
+        "create": {
+            "title": "创建物品",
+            "name": "物品名称",
+            "desp": "物品描述",
+            "label":"标签",
+            "button1": "创建",
+            "button2": "创建并添加下一个",
+            "tips1": "使用",
+            "tips2": "去创建并添加下一个"
+        },
+        "new":{
+            "title":"在你的物品清单中添加一个物品",
+            "info":"基本信息",
+            "name":"名称",
+            "desp":"描述",
+            "product":{
+                "button":"产品信息",
+                "serialNumber":"序列号（SN）",
+                "modelNumber":"型号",
+                "manufacturer":"制造商"
+            },
+            "purchase":{
+                "button":"购买信息",
+                "purchaseTime":"购买时间",
+                "purchasePrice":"购买价格",
+                "purchaseFrom":"购买来源"
+            },
+            "sold":{
+                "button":"销售信息",
+                "soldTime":"销售时间",
+                "soldPrice":"销售价格",
+                "soldTo":"购买方",
+                "soldNotes":"销售备注"
+            },
+            "extras":{
+                "button":"附属设备",
+                "notes":"记录"
+            }
+        }
+    },
+    "assets":{
+        "title":"这个资产ID与多个物品关联"
+    },
+    "items": {
+        "querying_Asset_ID_Number": "查询资产ID",
+        "query": {
+            "search": "搜索",
+            "locations": "位置",
+            "labels": "标签",
+            "options": "选项",
+            "options_dropdown": {
+                "includeArchived": "包括已归档物品",
+                "fieldSelector": "字段选择",
+                "reset": "重置"
+            },
+            "fieldSelector_dropdown": {
+                "custom_fields": "自定义字段",
+                "field": "字段",
+                "field_value": "值",
+                "add": "添加"
+            }
+        },
+        "result": {
+            "items": "物品",
+            "results": "结果",
+            "page": "页码",
+            "empty": "未找到物品",
+            "prev": "上一页",
+            "next": "下一页",
+            "first": "第一页",
+            "last": "最后一页"
+        },
+        "tips": "提示",
+        "tips_dropdown": {
+            "search_tips": "搜索提示",
+            "tips1": "位置过滤器和标签过滤器使用 '或' 操作. 如果存在多个符合的选项，则只需一个即可进行匹配。",
+            "tips2": "以“#”为前缀的搜索将查询资产ID(例如“#000-001”)。",
+            "tips3": "字段过滤器使用“或”操作。如果存在多个符合的选项，则只需一个即可进行匹配。"
+        }
+    },
+    "default": {
+        "welcome": "欢迎",
+        "create": "创建",
+        "sign_out": "退出",
+        "dropdown": {
+            "item_asset": "物品/资产",
+            "location": "位置",
+            "label": "标签"
+        },
+        "nav": {
+            "home": "主页",
+            "locations": "位置",
+            "search": "搜索",
+            "profile": "配置",
+            "tools": "工具"
+        }
+    },
+    "profile": {
+        "user": {
+            "title": "用户配置",
+            "desp": "邀请用户并管理你的账户。",
+            "openPassChange": "修改密码",
+            "generateToken": "生成邀请链接"
+        },
+        "notifier": {
+            "title": "通知",
+            "desp": "获取即将到来的维护提醒的通知。",
+            "active": "启用",
+            "inactive": "禁用",
+            "create": "创建",
+            "created": "已创建"
+        },
+        "group": {
+            "title": "群组设置",
+            "desp": "共享群组设置，您可能需要刷新浏览器才能应用某些设置。",
+            "currency_format": "当前格式",
+            "example": "例",
+            "update_group": "保存",
+            "language":"语言"
+        },
+        "theme": {
+            "title": "主题设置",
+            "desp": "主题设置存储在浏览器的本地存储中。您可以随时更改主题。如果你在设置主题时遇到问题，可以尝试刷新浏览器。"
+        },
+        "account": {
+            "title": "删除账户",
+            "desp": "删除您的帐户及其所有相关数据。",
+            "delete_account": "删除"
+        },
+        "passwordChangeDialog": {
+            "title": "修改密码",
+            "current": "当前密码",
+            "new": "新密码",
+            "submit": "提交"
+        },
+        "notifierDialog": {
+            "title": "通知",
+            "name": "名称",
+            "url": "URL",
+            "enable": "启用",
+            "test": "测试",
+            "submit": "提交"
+        }
+    },
+    "footer": {
+        "version": "版本",
+        "build": "构建号"
+    },
+    "tools": {
+        "report": {
+            "title": "报告",
+            "desp": "为您的库存生成不同的报告。",
+            "asset": {
+                "title": "资产ID标签",
+                "desp": "生成资产ID标签的可打印PDF。这些标签不是特定于您的库存，所以您可以提前打印标签，并在收到资产时将其应用于您的库存。",
+                "button": "标签生成"
+            },
+            "bom": {
+                "title": "物料清单",
+                "desp": "生成一个TSV(Tab Separated Values)文件，可以导入到电子表格程序。这是一个包含基本项目和价格信息的库存摘要。",
+                "button": "生成BOM"
+            }
+        },
+        "import_export": {
+            "title": "导入 / 导出",
+            "desp": "在CSV文件中导入和导出您的库存。这对于将您的库存迁移到Homebox的新实例非常有用。",
+            "import": {
+                "title": "导入库存",
+                "desp": "为Homebox导入标准CSV格式文件。这不会覆盖您的库存中的任何现有项目。它只会添加新项目。"
+            },
+            "export": {
+                "title": "导出库存",
+                "desp": "为Homebox导出标准CSV格式文件。这将导出您的库存中的所有项目。"
+            }
+        },
+        "inventory": {
+            "title": "库存操作",
+            "desp": "批量对库存应用操作。这些都是不可逆转的行为。（慎重）",
+            "ensureAssetIDs": {
+                "title": "维护 Asset IDs",
+                "desp": "确保库存中的所有物品都有一个有效的asset_id字段。这是通过在数据库中查找当前最高的asset_id字段，并将下一个值应用于具有未设置的asset_id字段的每个项来完成的。这是按照created_at字段的顺序完成的。"
+            },
+            "ensureImportRefs": {
+                "title": "维护 Import Refs",
+                "desp": "确保库存中的所有项目都有一个有效的import_ref字段。这是通过为每个具有未设置的import_ref字段的项目随机生成一个8个字符的字符串来实现的。"
+            },
+            "resetItemDateTimes": {
+                "title": "重置日期",
+                "desp": "将库存中所有日期时间字段的时间值重置为日期的开始。这是为了修复在网站开发早期引入的一个错误，该错误导致时间值与时间一起存储，从而导致日期字段显示准确值的问题。"
+            },
+            "setPrimaryPhotos": {
+                "title": "设置主图",
+                "desp": "在Homebox v0.10.0版本中，主图像字段被添加到photo类型的附件中。此操作将主图像字段设置为数据库中附件数组中的第一个图像(如果尚未设置)。"
+            }
+        }
+    }
+}

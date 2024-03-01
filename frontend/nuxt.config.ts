@@ -5,6 +5,7 @@ export default defineNuxtConfig({
   ssr: false,
   modules: [
     "@nuxtjs/tailwindcss",
+    "@nuxtjs/i18n",
     "@pinia/nuxt",
     "@vueuse/nuxt",
     "@vite-pwa/nuxt",
@@ -58,5 +59,30 @@ export default defineNuxtConfig({
         },
       ],
     },
+  },
+  i18n: {
+    strategy: "no_prefix",
+    lazy: true,
+    langDir: "lang",
+    defaultLocale: "en",
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: "i18n_redirected",
+      redirectOn: "root",
+    },
+    locales: [
+      {
+        code: "en",
+        name: "English",
+        iso: "en-US",
+        file: "en-US.json",
+      },
+      {
+        code: "zh",
+        name: "简体中文",
+        iso: "zh-Hans",
+        file: "zh-CN.json",
+      },
+    ],
   },
 });
