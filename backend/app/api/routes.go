@@ -17,7 +17,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authroles"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/httpkit/errchain"
-	httpSwagger "github.com/swaggo/http-swagger" // http-swagger middleware
+	httpSwagger "github.com/swaggo/http-swagger/v2" // http-swagger middleware
 )
 
 const prefix = "/api"
