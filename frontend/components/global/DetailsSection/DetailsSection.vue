@@ -16,7 +16,7 @@
             <template v-else-if="detail.type === 'link'">
               <div class="tooltip tooltip-primary tooltip-right" :data-tip="detail.href">
                 <a class="btn btn-primary btn-xs" :href="detail.href" target="_blank">
-                  <Icon name="mdi-open-in-new" class="mr-2 swap-on"></Icon>
+                  <MdiOpenInNew class="mr-2 swap-on" />
                   {{ detail.text }}
                 </a>
               </div>
@@ -51,6 +51,7 @@
 
 <script setup lang="ts">
   import type { AnyDetail, Detail } from "./types";
+  import MdiOpenInNew from "~icons/mdi/open-in-new";
 
   defineProps({
     details: {

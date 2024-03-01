@@ -17,7 +17,7 @@
         <!-- Button -->
         <div class="navbar z-[99] lg:hidden top-0 fixed bg-primary shadow-md drawer-button">
           <label for="my-drawer-2" class="btn btn-square btn-ghost text-base-100 drawer-button lg:hidden">
-            <Icon name="mdi-menu" class="h-6 w-6" />
+            <MdiMenu class="h-6 w-6" />
           </label>
           <NuxtLink to="/home">
             <h2 class="text-3xl font-bold tracking-tight text-base-100 flex">
@@ -51,7 +51,7 @@
                 <div class="dropdown overflow visible w-40">
                   <label tabindex="0" class="btn btn-primary btn-block text-lg text-no-transform">
                     <span>
-                      <Icon name="mdi-plus" class="mr-1 -ml-1" />
+                      <MdiPlus class="mr-1 -ml-1" />
                     </span>
                     {{ $t("default.create") }}
                   </label>
@@ -74,7 +74,7 @@
                       'bg-secondary text-secondary-content': n.active?.value,
                     }"
                   >
-                    <Icon :name="n.icon" class="h-6 w-6 mr-4" />
+                    <component :is="n.icon" class="h-6 w-6 mr-4" />
                     {{ $t(n.name) }}
                   </NuxtLink>
                 </li>
@@ -95,6 +95,14 @@
 <script lang="ts" setup>
   import { useLabelStore } from "~~/stores/labels";
   import { useLocationStore } from "~~/stores/locations";
+  import MdiMenu from "~icons/mdi/menu";
+  import MdiPlus from "~icons/mdi/plus";
+
+  import MdiHome from "~icons/mdi/home";
+  import MdiFileTree from "~icons/mdi/file-tree";
+  import MdiMagnify from "~icons/mdi/magnify";
+  import MdiAccount from "~icons/mdi/account";
+  import MdiCog from "~icons/mdi/cog";
 
   const username = computed(() => authCtx.user?.name || "User");
 
@@ -140,35 +148,35 @@
 
   const nav = [
     {
-      icon: "mdi-home",
+      icon: MdiHome,
       active: computed(() => route.path === "/home"),
       id: 0,
       name: "default.nav.home",
       to: "/home",
     },
     {
-      icon: "mdi-file-tree",
+      icon: MdiFileTree,
       id: 4,
       active: computed(() => route.path === "/locations"),
       name: "default.nav.locations",
       to: "/locations",
     },
     {
-      icon: "mdi-magnify",
+      icon: MdiMagnify,
       id: 3,
       active: computed(() => route.path === "/items"),
       name: "default.nav.search",
       to: "/items",
     },
     {
-      icon: "mdi-account",
+      icon: MdiAccount,
       id: 1,
       active: computed(() => route.path === "/profile"),
       name: "default.nav.profile",
       to: "/profile",
     },
     {
-      icon: "mdi-cog",
+      icon: MdiCog,
       id: 6,
       active: computed(() => route.path === "/tools"),
       name: "default.nav.tools",
@@ -187,6 +195,7 @@
   onServerEvent(ServerEvent.LocationMutation, () => {
     locationStore.refreshChildren();
     locationStore.refreshParents();
+    locationStore.refreshTree();
   });
 
   onServerEvent(ServerEvent.ItemMutation, () => {

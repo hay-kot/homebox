@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     "@vueuse/nuxt",
     "@vite-pwa/nuxt",
     "./nuxt.proxyoverride.ts",
+    "unplugin-icons/nuxt",
   ],
   nitro: {
     devProxy: {

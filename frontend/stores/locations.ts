@@ -1,12 +1,13 @@
 import { defineStore } from "pinia";
 import { LocationsApi } from "~~/lib/api/classes/locations";
-import { LocationOutCount } from "~~/lib/api/types/data-contracts";
+import { LocationOutCount, TreeItem } from "~~/lib/api/types/data-contracts";
 
 export const useLocationStore = defineStore("locations", {
   state: () => ({
     parents: null as LocationOutCount[] | null,
     Locations: null as LocationOutCount[] | null,
     client: useUserApi(),
+    tree: null as TreeItem[] | null,
   }),
   getters: {
     /**
@@ -58,6 +59,15 @@ export const useLocationStore = defineStore("locations", {
       }
 
       this.Locations = result.data;
+      return result;
+    },
+    async refreshTree(): ReturnType<LocationsApi["getTree"]> {
+      const result = await this.client.locations.getTree();
+      if (result.error) {
+        return result;
+      }
+
+      this.tree = result.data;
       return result;
     },
   },

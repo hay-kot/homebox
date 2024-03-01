@@ -19,10 +19,13 @@
             >
               <template v-if="typeof h === 'string'">{{ h }}</template>
               <template v-else>{{ h.text }}</template>
-              <div :class="`inline-flex ${sortByProperty === h.value ? '' : 'opacity-0'}`">
+              <div
+                v-if="sortByProperty === h.value"
+                :class="`inline-flex ${sortByProperty === h.value ? '' : 'opacity-0'}`"
+              >
                 <span class="swap swap-rotate" :class="{ 'swap-active': pagination.descending }">
-                  <Icon name="mdi-arrow-down" class="swap-on h-5 w-5" />
-                  <Icon name="mdi-arrow-up" class="swap-off h-5 w-5" />
+                  <MdiArrowDown class="swap-on h-5 w-5" />
+                  <MdiArrowUp class="swap-off h-5 w-5" />
                 </span>
               </div>
             </div>
@@ -50,8 +53,8 @@
               <Currency :amount="d.purchasePrice" />
             </template>
             <template v-else-if="cell(h) === 'cell-insured'">
-              <Icon v-if="d.insured" name="mdi-check" class="text-green-500 h-5 w-5" />
-              <Icon v-else name="mdi-close" class="text-red-500 h-5 w-5" />
+              <MdiCheck v-if="d.insured" class="text-green-500 h-5 w-5 inline" />
+              <MdiClose v-else class="text-red-500 h-5 w-5 inline" />
             </template>
             <slot v-else :name="cell(h)" v-bind="{ item: d }">
               {{ extractValue(d, h.value) }}
@@ -73,6 +76,10 @@
 <script setup lang="ts">
   import { TableData, TableHeader } from "./Table.types";
   import { ItemSummary } from "~~/lib/api/types/data-contracts";
+  import MdiArrowDown from "~icons/mdi/arrow-down";
+  import MdiArrowUp from "~icons/mdi/arrow-up";
+  import MdiCheck from "~icons/mdi/check";
+  import MdiClose from "~icons/mdi/close";
 
   type Props = {
     items: ItemSummary[];

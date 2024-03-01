@@ -2,6 +2,12 @@
   import { Detail } from "~~/components/global/DetailsSection/types";
   import { themes } from "~~/lib/data/themes";
   import { CurrenciesCurrency, NotifierCreate, NotifierOut } from "~~/lib/api/types/data-contracts";
+  import MdiAccount from "~icons/mdi/account";
+  import MdiMegaphone from "~icons/mdi/megaphone";
+  import MdiDelete from "~icons/mdi/delete";
+  import MdiFill from "~icons/mdi/fill";
+  import MdiPencil from "~icons/mdi/pencil";
+  import MdiAccountMultiple from "~icons/mdi/account-multiple";
 
   definePageMeta({
     middleware: ["auth"],
@@ -347,7 +353,7 @@
       <BaseCard>
         <template #title>
           <BaseSectionHeader>
-            <Icon name="mdi-account" class="mr-2 -mt-1 text-base-600" />
+            <MdiAccount class="mr-2 -mt-1 text-base-600" />
             <span class="text-base-600"> {{ $t("profile.user.title") }} </span>
             <template #description> {{ $t("profile.user.desp") }} </template>
           </BaseSectionHeader>
@@ -374,7 +380,7 @@
       <BaseCard>
         <template #title>
           <BaseSectionHeader>
-            <Icon name="mdi-megaphone" class="mr-2 -mt-1 text-base-600" />
+            <MdiMegaphone class="mr-2 -mt-1 text-base-600" />
             <span class="text-base-600"> {{ $t("profile.notifier.title") }} </span>
             <template #description> {{ $t("profile.notifier.desp") }} </template>
           </BaseSectionHeader>
@@ -387,12 +393,12 @@
               <div class="flex gap-2 justify-end">
                 <div class="tooltip" data-tip="Delete">
                   <button class="btn btn-sm btn-square" @click="deleteNotifier(n.id)">
-                    <Icon name="mdi-delete" />
+                    <MdiDelete />
                   </button>
                 </div>
                 <div class="tooltip" data-tip="Edit">
                   <button class="btn btn-sm btn-square" @click="openNotifierDialog(n)">
-                    <Icon name="mdi-pencil" />
+                    <MdiPencil />
                   </button>
                 </div>
               </div>
@@ -418,7 +424,7 @@
       <BaseCard>
         <template #title>
           <BaseSectionHeader class="pb-0">
-            <Icon name="mdi-accounts" class="mr-2 -mt-1 text-base-600" />
+            <MdiAccountMultiple class="mr-2 -mt-1 text-base-600" />
             <span class="text-base-600"> {{ $t("profile.group.title") }} </span>
             <template #description>
               {{ $t("profile.group.desp") }}
@@ -439,7 +445,7 @@
       <BaseCard>
         <template #title>
           <BaseSectionHeader>
-            <Icon name="mdi-fill" class="mr-2 text-base-600" />
+            <MdiFill class="mr-2 text-base-600" />
             <span class="text-base-600"> {{ $t("profile.theme.title") }} </span>
             <template #description>
               {{ $t("profile.theme.desp") }}
@@ -489,7 +495,7 @@
       <BaseCard>
         <template #title>
           <BaseSectionHeader>
-            <Icon name="mdi-delete" class="mr-2 -mt-1 text-base-600" />
+            <MdiDelete class="mr-2 -mt-1 text-base-600" />
             <span class="text-base-600"> {{ $t("profile.account.title") }}</span>
             <template #description> {{ $t("profile.account.desp") }} </template>
           </BaseSectionHeader>

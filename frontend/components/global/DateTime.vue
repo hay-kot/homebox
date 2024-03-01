@@ -22,6 +22,6 @@
       return "";
     }
 
-    return fmtDate(props.date, props.format, props.datetimeType);
+    return fmtDate(props.date, props.format);
   });
 </script>

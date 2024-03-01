@@ -1,5 +1,7 @@
 <script setup lang="ts">
   import { LabelOut, LabelSummary } from "~~/lib/api/types/data-contracts";
+  import MdiArrowRight from "~icons/mdi/arrow-right";
+  import MdiTagOutline from "~icons/mdi/tag-outline";
 
   export type sizes = "sm" | "md" | "lg" | "xl";
   defineProps({
@@ -32,8 +34,8 @@
     :to="`/label/${label.id}`"
   >
     <label class="swap swap-rotate" :class="isActive ? 'swap-active' : ''">
-      <Icon name="heroicons-arrow-right" class="mr-2 swap-on"></Icon>
-      <Icon name="heroicons-tag" class="mr-2 swap-off"></Icon>
+      <MdiArrowRight class="mr-2 swap-on" />
+      <MdiTagOutline class="mr-2 swap-off" />
     </label>
     {{ label.name }}
   </NuxtLink>

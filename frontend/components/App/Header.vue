@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+  import MdiPlus from "~icons/mdi/mdi-plus";
+
   const ctx = useAuthContext();
   const api = useUserApi();
 
@@ -103,7 +105,7 @@
         <div class="dropdown">
           <label tabindex="0" class="btn btn-primary btn-sm">
             <span>
-              <Icon name="mdi-plus" class="mr-1 -ml-1" />
+              <MdiPlus class="mr-1 -ml-1" />
             </span>
             Create
           </label>

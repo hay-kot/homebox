@@ -14,7 +14,7 @@
             v-if="selected"
             :class="['absolute inset-y-0 right-0 flex  items-center pr-4', active ? 'text-white' : 'text-primary']"
           >
-            <Icon name="mdi-check" class="h-5 w-5" aria-hidden="true" />
+            <MdiCheck class="h-5 w-5" aria-hidden="true" />
           </span>
         </div>
         <div v-if="cast(item.value).name != cast(item.value).treeString" class="text-xs mt-1">
@@ -28,6 +28,7 @@
 <script lang="ts" setup>
   import { FlatTreeItem, useFlatLocations } from "~~/composables/use-location-helpers";
   import { LocationSummary } from "~~/lib/api/types/data-contracts";
+  import MdiCheck from "~icons/mdi/check";
 
   type Props = {
     modelValue?: LocationSummary | null;
@@ -43,7 +44,7 @@
   const props = defineProps<Props>();
   const value = useVModel(props, "modelValue");
 
-  const locations = await useFlatLocations();
+  const locations = useFlatLocations();
   const form = ref({
     parent: null as LocationSummary | null,
     search: "",

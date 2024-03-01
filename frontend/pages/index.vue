@@ -1,4 +1,14 @@
 <script setup lang="ts">
+  import MdiGithub from "~icons/mdi/github";
+  import MdiTwitter from "~icons/mdi/twitter";
+  import MdiDiscord from "~icons/mdi/discord";
+  import MdiFolder from "~icons/mdi/folder";
+  import MdiAccount from "~icons/mdi/account";
+  import MdiAccountPlus from "~icons/mdi/account-plus";
+  import MdiLogin from "~icons/mdi/login";
+  import MdiArrowRight from "~icons/mdi/arrow-right";
+  import MdiLock from "~icons/mdi/lock";
+
   useHead({
     title: "Homebox | Organize and Tag Your Stuff",
   });
@@ -147,16 +157,16 @@
         </div>
         <div class="flex mt-6 sm:mt-0 gap-4 ml-auto text-neutral-content">
           <a class="tooltip" data-tip="Project Github" href="https://github.com/hay-kot/homebox" target="_blank">
-            <Icon name="mdi-github" class="h-8 w-8" />
+            <MdiGithub class="h-8 w-8" />
           </a>
           <a href="https://twitter.com/haybytes" class="tooltip" data-tip="Follow The Developer" target="_blank">
-            <Icon name="mdi-twitter" class="h-8 w-8" />
+            <MdiTwitter class="h-8 w-8" />
           </a>
           <a href="https://discord.gg/tuncmNrE4z" class="tooltip" data-tip="Join The Discord" target="_blank">
-            <Icon name="mdi-discord" class="h-8 w-8" />
+            <MdiDiscord class="h-8 w-8" />
           </a>
           <a href="https://hay-kot.github.io/homebox/" class="tooltip" data-tip="Read The Docs" target="_blank">
-            <Icon name="mdi-folder" class="h-8 w-8" />
+            <MdiFolder class="h-8 w-8" />
           </a>
           <a
             v-for="locale in availableLocales"
@@ -175,7 +185,7 @@
               <div class="card w-max-[500px] md:w-[500px] bg-base-100 shadow-xl">
                 <div class="card-body">
                   <h2 class="card-title text-2xl align-center">
-                    <Icon name="heroicons-user" class="mr-1 w-7 h-7" />
+                    <MdiAccount class="mr-1 w-7 h-7" />
                     {{ $t("index.register") }}
                   </h2>
                   <FormTextField v-model="email" :label="$t('index.register_email')" />
@@ -205,7 +215,7 @@
               <div class="card w-max-[500px] md:w-[500px] bg-base-100 shadow-xl">
                 <div class="card-body">
                   <h2 class="card-title text-2xl align-center">
-                    <Icon name="heroicons-user" class="mr-1 w-7 h-7" />
+                    <MdiAccount class="mr-1 w-7 h-7" />
                     {{ $t("index.login") }}
                   </h2>
                   <template v-if="status && status.demo">
@@ -239,14 +249,14 @@
               @click="() => toggleLogin()"
             >
               <template #icon>
-                <Icon v-if="!registerForm" name="mdi-account-plus-outline" class="w-5 h-5 swap-off" />
-                <Icon v-else name="mdi-login" class="w-5 h-5 swap-off" />
-                <Icon name="mdi-arrow-right" class="w-5 h-5 swap-on" />
+                <MdiAccountPlus v-if="!registerForm" class="w-5 h-5 swap-off" />
+                <MdiLogin v-else class="w-5 h-5 swap-off" />
+                <MdiArrowRight class="w-5 h-5 swap-on" />
               </template>
               {{ registerForm ? $t("index.login") : $t("index.register") }}
             </BaseButton>
             <p v-else class="text-base-content italic text-sm inline-flex items-center gap-2">
-              <Icon name="mdi-lock" class="w-4 h-4 inline-block" />
+              <MdiLock class="w-4 h-4 inline-block" />
               {{ $t("index.refus") }}
             </p>
           </div>

@@ -10,14 +10,14 @@
         <div class="flex justify-center">
           <BaseButton class="rounded-r-none" :loading="loading" type="submit">
             <template #icon>
-              <Icon name="mdi-package-variant" class="swap-off h-5 w-5" />
-              <Icon name="mdi-package-variant-closed" class="swap-on h-5 w-5" />
+              <MdiPackageVariant class="swap-off h-5 w-5" />
+              <MdiPackageVariantClosed class="swap-on h-5 w-5" />
             </template>
             {{ $t("item.create.button1") }}
           </BaseButton>
           <div class="dropdown dropdown-top">
             <label tabindex="0" class="btn rounded-l-none rounded-r-xl">
-              <Icon class="h-5 w-5" name="mdi-chevron-down" />
+              <MdiChevronDown class="h-5 w-5" name="mdi-chevron-down" />
             </label>
             <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-64 right-0">
               <li>
@@ -38,6 +38,9 @@
   import { ItemCreate, LabelOut, LocationOut } from "~~/lib/api/types/data-contracts";
   import { useLabelStore } from "~~/stores/labels";
   import { useLocationStore } from "~~/stores/locations";
+  import MdiPackageVariant from "~icons/mdi/package-variant";
+  import MdiPackageVariantClosed from "~icons/mdi/package-variant-closed";
+  import MdiChevronDown from "~icons/mdi/chevron-down";
 
   const props = defineProps({
     modelValue: {

@@ -15,7 +15,7 @@
           <BaseButton class="rounded-r-none" :loading="loading" type="submit"> {{ $t("label.create.button1") }} </BaseButton>
           <div class="dropdown dropdown-top">
             <label tabindex="0" class="btn rounded-l-none rounded-r-xl">
-              <Icon class="h-5 w-5" name="mdi-chevron-down" />
+              <MdiChevronDown class="h-5 w-5" />
             </label>
             <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-64 right-0">
               <li>
@@ -33,6 +33,7 @@
 </template>
 
 <script setup lang="ts">
+  import MdiChevronDown from "~icons/mdi/chevron-down";
   const props = defineProps({
     modelValue: {
       type: Boolean,

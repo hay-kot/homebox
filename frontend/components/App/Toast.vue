@@ -14,14 +14,14 @@
       >
         <div class="flex gap-1">
           <template v-if="notify.type == 'success'">
-            <Icon name="heroicons-check" class="h-5 w-5" />
+            <MdiCheckboxMarkedCircle class="h-5 w-5" />
           </template>
           <template v-if="notify.type == 'info'">
-            <Icon name="heroicons-information-circle" class="h-5 w-5" />
+            <MdiInformationSlabCircle class="h-5 w-5" />
           </template>
 
           <template v-if="notify.type == 'error'">
-            <Icon name="heroicons-bell-alert" class="h-5 w-5" />
+            <MdiAlert class="h-5 w-5" />
           </template>
           {{ notify.message }}
         </div>
@@ -31,6 +31,10 @@
 </template>
 
 <script setup lang="ts">
+  import MdiCheckboxMarkedCircle from "~icons/mdi/checkbox-marked-circle";
+  import MdiInformationSlabCircle from "~icons/mdi/information-slab-circle";
+  import MdiAlert from "~icons/mdi/alert";
+
   import { useNotifications } from "@/composables/use-notifier";
 
   const { notifications, dropNotification } = useNotifications();

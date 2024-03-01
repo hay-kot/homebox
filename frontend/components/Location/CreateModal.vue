@@ -16,7 +16,7 @@
           <BaseButton class="rounded-r-none" type="submit" :loading="loading"> {{ $t("location.create.button1") }} </BaseButton>
           <div class="dropdown dropdown-top">
             <label tabindex="0" class="btn rounded-l-none rounded-r-xl">
-              <Icon class="h-5 w-5" name="mdi-chevron-down" />
+              <MdiChevronDown class="h-5 w-5" />
             </label>
             <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-64 right-0">
               <li>
@@ -35,6 +35,7 @@
 
 <script setup lang="ts">
   import { LocationSummary } from "~~/lib/api/types/data-contracts";
+  import MdiChevronDown from "~icons/mdi/chevron-down";
   const props = defineProps({
     modelValue: {
       type: Boolean,

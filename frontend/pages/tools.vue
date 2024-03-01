@@ -5,7 +5,7 @@
       <BaseCard>
         <template #title>
           <BaseSectionHeader>
-            <Icon name="mdi-file-chart" class="mr-2 -mt-1" />
+            <MdiFileChart class="mr-2" />
             <span> {{ $t("tools.report.title") }} </span>
             <template #description> {{ $t("tools.report.desp") }} </template>
           </BaseSectionHeader>
@@ -16,7 +16,7 @@
             {{ $t("tools.report.asset.desp") }}
             <template #button>
               {{ $t("tools.report.asset.button") }}
-              <Icon name="mdi-arrow-right" class="ml-2" />
+              <MdiArrowRight class="ml-2" />
             </template>
           </DetailAction>
           <DetailAction @action="getBillOfMaterials()">
@@ -29,7 +29,7 @@
       <BaseCard>
         <template #title>
           <BaseSectionHeader>
-            <Icon name="mdi-database" class="mr-2 -mt-1" />
+            <MdiDatabase class="mr-2" />
             <span> {{ $t("tools.import_export.title") }} </span>
             <template #description>
               {{ $t("tools.import_export.desp") }}
@@ -50,7 +50,7 @@
       <BaseCard>
         <template #title>
           <BaseSectionHeader>
-            <Icon name="mdi-warning" class="mr-2 -mt-1" />
+            <MdiAlert class="mr-2" />
             <span> {{ $t("tools.inventory.title") }} </span>
             <template #description>
               {{ $t("tools.inventory.desp") }}
@@ -85,6 +85,11 @@
 </template>
 
 <script setup lang="ts">
+  import MdiFileChart from "~icons/mdi/file-chart";
+  import MdiArrowRight from "~icons/mdi/arrow-right";
+  import MdiDatabase from "~icons/mdi/database";
+  import MdiAlert from "~icons/mdi/alert";
+
   definePageMeta({
     middleware: ["auth"],
   });

@@ -2,7 +2,7 @@
   <div class="dropdown dropdown-left">
     <slot>
       <label tabindex="0" class="btn btn-circle btn-sm">
-        <Icon name="mdi-qrcode" />
+        <MdiQrcode />
       </label>
     </slot>
     <div tabindex="0" class="card compact dropdown-content shadow-lg bg-base-100 rounded-box w-64">
@@ -16,6 +16,7 @@
 
 <script setup lang="ts">
   import { route } from "../../lib/api/base";
+  import MdiQrcode from "~icons/mdi/qrcode";
 
   function getQRCodeUrl(): string {
     const currentURL = window.location.href;
