@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import MdiPlus from "~icons/mdi/mdi-plus";
+  import MdiPlus from "~icons/mdi/plus";
 
   const ctx = useAuthContext();
   const api = useUserApi();
