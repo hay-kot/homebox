@@ -1,9 +1,11 @@
 module github.com/hay-kot/homebox/backend
 
-go 1.21
+go 1.22
+
+toolchain go1.22.0
 
 require (
-	ariga.io/atlas v0.19.0
+	ariga.io/atlas v0.19.1
 	entgo.io/ent v0.12.5
 	github.com/ardanlabs/conf/v3 v3.1.7
 	github.com/containrrr/shoutrrr v0.8.0
@@ -61,7 +63,7 @@ require (
 	github.com/yeqown/reedsolomon v1.0.0 // indirect
 	github.com/zclconf/go-cty v1.14.1 // indirect
 	golang.org/x/image v0.14.0 // indirect
-	golang.org/x/mod v0.14.0 // indirect
+	golang.org/x/mod v0.15.0 // indirect
 	golang.org/x/net v0.21.0 // indirect
 	golang.org/x/sys v0.17.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
