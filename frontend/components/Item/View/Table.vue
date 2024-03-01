@@ -19,7 +19,10 @@
             >
               <template v-if="typeof h === 'string'">{{ h }}</template>
               <template v-else>{{ h.text }}</template>
-              <div :class="`inline-flex ${sortByProperty === h.value ? '' : 'opacity-0'}`">
+              <div
+                v-if="sortByProperty === h.value"
+                :class="`inline-flex ${sortByProperty === h.value ? '' : 'opacity-0'}`"
+              >
                 <span class="swap swap-rotate" :class="{ 'swap-active': pagination.descending }">
                   <MdiArrowDown class="swap-on h-5 w-5" />
                   <MdiArrowUp class="swap-off h-5 w-5" />
@@ -50,8 +53,8 @@
               <Currency :amount="d.purchasePrice" />
             </template>
             <template v-else-if="cell(h) === 'cell-insured'">
-              <MdiCheck v-if="d.insured" class="text-green-500 h-5 w-5" />
-              <MdiClose v-else class="text-red-500 h-5 w-5" />
+              <MdiCheck v-if="d.insured" class="text-green-500 h-5 w-5 inline" />
+              <MdiClose v-else class="text-red-500 h-5 w-5 inline" />
             </template>
             <slot v-else :name="cell(h)" v-bind="{ item: d }">
               {{ extractValue(d, h.value) }}
