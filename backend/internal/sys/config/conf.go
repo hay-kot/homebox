@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/ardanlabs/conf/v3"
 )
@@ -39,12 +40,12 @@ type DebugConf struct {
 }
 
 type WebConfig struct {
-	Port          string `yaml:"port"            conf:"default:7745"`
-	Host          string `yaml:"host"`
-	MaxUploadSize int64  `yaml:"max_file_upload" conf:"default:10"`
-	ReadTimeout   int    `yaml:"read_timeout"    conf:"default:10"`
-	WriteTimeout  int    `yaml:"write_timeout"   conf:"default:10"`
-	IdleTimeout   int    `yaml:"idle_timeout"    conf:"default:30"`
+	Port          string        `yaml:"port"            conf:"default:7745"`
+	Host          string        `yaml:"host"`
+	MaxUploadSize int64         `yaml:"max_file_upload" conf:"default:10"`
+	ReadTimeout   time.Duration `yaml:"read_timeout"    conf:"default:10s"`
+	WriteTimeout  time.Duration `yaml:"write_timeout"   conf:"default:10s"`
+	IdleTimeout   time.Duration `yaml:"idle_timeout"    conf:"default:30s"`
 }
 
 // New parses the CLI/Config file and returns a Config struct. If the file argument is an empty string, the
