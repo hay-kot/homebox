@@ -22,6 +22,11 @@ var (
 	ErrorTokenIDMismatch = errors.New("token id mismatch")
 )
 
+func init() {
+	easyemails.ImageLogoHeader = "https://raw.githubusercontent.com/hay-kot/homebox/af9aa239af66df17478f5ed9283e303daf7c6775/docs/docs/assets/img/homebox-email-banner.jpg"
+	easyemails.ColorPrimary = "#5D7F67"
+}
+
 type UserService struct {
 	repos   *repo.AllRepos
 	mailer  *mailer.Mailer
