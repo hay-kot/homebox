@@ -28,7 +28,7 @@ dependencies:
     version: 2.3.7
   '@vuepic/vue-datepicker':
     specifier: ^8.1.1
-    version: 8.1.1(vue@3.4.8)
+    version: 8.2.0(vue@3.4.8)
   '@vueuse/nuxt':
     specifier: ^10.0.0
     version: 10.0.0(nuxt@3.6.5)(rollup@2.79.1)(vue@3.4.8)
@@ -2380,7 +2380,7 @@ packages:
     resolution: {integrity: sha512-UTYAUj/wviwdsMfzoSJspJxbkH5o1snzwX0//0ENX1u/55kkZZkcTZP6u9bwKGkv+dkk9at4m1Cpt0uY80kcpQ==}
     dependencies:
       '@jridgewell/gen-mapping': 0.3.5
-      '@jridgewell/trace-mapping': 0.3.24
+      '@jridgewell/trace-mapping': 0.3.25
     dev: true
 
   /@jridgewell/sourcemap-codec@1.4.14:
@@ -2406,6 +2406,13 @@ packages:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.4.15
+
+  /@jridgewell/trace-mapping@0.3.25:
+    resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
+    dependencies:
+      '@jridgewell/resolve-uri': 3.1.2
+      '@jridgewell/sourcemap-codec': 1.4.15
+    dev: true
 
   /@koa/router@12.0.1:
     resolution: {integrity: sha512-ribfPYfHb+Uw3b27Eiw6NPqjhIhTpVFzEWLwyc/1Xp+DCdwRRyIlAUODX+9bPARF6aQtUu1+/PHzdNvRzcs/+Q==}
@@ -3826,8 +3833,8 @@ packages:
   /@vue/shared@3.4.8:
     resolution: {integrity: sha512-ChLCWzXiJboQ009oVkemhEoUdrxHme7v3ip+Kh+/kDDeF1WtHWGt0knRLGm1Y4YqCRTSs9QxsZIY8paJj5Szrw==}
 
-  /@vuepic/vue-datepicker@8.1.1(vue@3.4.8):
-    resolution: {integrity: sha512-/t9+dROb/hYN/DInff8ctIiVm5tVyuJdiWA+nWcjHOLjUhvAQ9vyJwhxAkoWX5o0EB5x5XeCME2cajfTPz86RA==}
+  /@vuepic/vue-datepicker@8.2.0(vue@3.4.8):
+    resolution: {integrity: sha512-H3X9/XRvF4/ttdgxgNhFCp9m9gt9UVsiuv8FXOfAPpfQvVlmlTHZ3yf3E5oAxzP/INVhBIJCGrkijhCl5+UAPg==}
     engines: {node: '>=18.12.0'}
     peerDependencies:
       vue: '>=3.2.0'
