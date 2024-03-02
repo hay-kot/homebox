@@ -40,7 +40,7 @@ dependencies:
     version: 10.4.18(postcss@8.4.35)
   daisyui:
     specifier: ^2.24.0
-    version: 2.43.0(autoprefixer@10.4.18)(postcss@8.4.35)
+    version: 2.52.0(autoprefixer@10.4.18)(postcss@8.4.35)
   date-fns:
     specifier: ^3.3.1
     version: 3.3.1
@@ -2380,7 +2380,7 @@ packages:
     resolution: {integrity: sha512-UTYAUj/wviwdsMfzoSJspJxbkH5o1snzwX0//0ENX1u/55kkZZkcTZP6u9bwKGkv+dkk9at4m1Cpt0uY80kcpQ==}
     dependencies:
       '@jridgewell/gen-mapping': 0.3.5
-      '@jridgewell/trace-mapping': 0.3.24
+      '@jridgewell/trace-mapping': 0.3.25
     dev: true
 
   /@jridgewell/sourcemap-codec@1.4.14:
@@ -2406,6 +2406,13 @@ packages:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.4.15
+
+  /@jridgewell/trace-mapping@0.3.25:
+    resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
+    dependencies:
+      '@jridgewell/resolve-uri': 3.1.2
+      '@jridgewell/sourcemap-codec': 1.4.15
+    dev: true
 
   /@koa/router@12.0.1:
     resolution: {integrity: sha512-ribfPYfHb+Uw3b27Eiw6NPqjhIhTpVFzEWLwyc/1Xp+DCdwRRyIlAUODX+9bPARF6aQtUu1+/PHzdNvRzcs/+Q==}
@@ -4836,8 +4843,8 @@ packages:
   /cuint@0.2.2:
     resolution: {integrity: sha512-d4ZVpCW31eWwCMe1YT3ur7mUDnTXbgwyzaL320DrcRT45rfjYxkt5QWLrmOJ+/UEAI2+fQgKe/fCjR8l4TpRgw==}
 
-  /daisyui@2.43.0(autoprefixer@10.4.18)(postcss@8.4.35):
-    resolution: {integrity: sha512-0nwDQggoRB6F6Oezmgkx+9bJG7Xz8IYxgZK6/wdKN1RQZtYOTk+9DO1bsf9lyYyJ/NSBwgPKwkNnuuQFAPJCGg==}
+  /daisyui@2.52.0(autoprefixer@10.4.18)(postcss@8.4.35):
+    resolution: {integrity: sha512-LQTA5/IVXAJHBMFoeaEMfd7/akAFPPcdQPR3O9fzzcFiczneJFM73CFPnScmW2sOgn/D83cvkP854ep2T9OfTg==}
     peerDependencies:
       autoprefixer: ^10.0.2
       postcss: ^8.1.6
@@ -4846,7 +4853,7 @@ packages:
       color: 4.2.3
       css-selector-tokenizer: 0.8.0
       postcss: 8.4.35
-      postcss-js: 4.0.0(postcss@8.4.35)
+      postcss-js: 4.0.1(postcss@8.4.35)
       tailwindcss: 3.2.4(postcss@8.4.35)
     transitivePeerDependencies:
       - ts-node
