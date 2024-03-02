@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/actiontoken"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authtokens"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/notifier"
@@ -179,6 +180,21 @@ func (uc *UserCreate) AddNotifiers(n ...*Notifier) *UserCreate {
 		ids[i] = n[i].ID
 	}
 	return uc.AddNotifierIDs(ids...)
+}
+
+// AddActionTokenIDs adds the "action_tokens" edge to the ActionToken entity by IDs.
+func (uc *UserCreate) AddActionTokenIDs(ids ...uuid.UUID) *UserCreate {
+	uc.mutation.AddActionTokenIDs(ids...)
+	return uc
+}
+
+// AddActionTokens adds the "action_tokens" edges to the ActionToken entity.
+func (uc *UserCreate) AddActionTokens(a ...*ActionToken) *UserCreate {
+	ids := make([]uuid.UUID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return uc.AddActionTokenIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -404,6 +420,22 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(notifier.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.ActionTokensIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ActionTokensTable,
+			Columns: []string{user.ActionTokensColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(actiontoken.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

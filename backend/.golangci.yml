@@ -71,4 +71,4 @@ linters:
     - sqlclosecheck
 issues:
   exclude-use-default: false
-  fix: true
+  fix: false

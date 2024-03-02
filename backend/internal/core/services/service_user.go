@@ -3,12 +3,15 @@ package services
 import (
 	"context"
 	"errors"
+	"net/url"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/hay-kot/easyemails"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authroles"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/pkgs/hasher"
+	"github.com/hay-kot/homebox/backend/pkgs/mailer"
 	"github.com/rs/zerolog/log"
 )
 
@@ -20,7 +23,9 @@ var (
 )
 
 type UserService struct {
-	repos *repo.AllRepos
+	repos   *repo.AllRepos
+	mailer  *mailer.Mailer
+	baseurl string
 }
 
 type (
@@ -38,6 +43,9 @@ type (
 	LoginForm struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
+	}
+	PasswordResetRequest struct {
+		Email string `json:"email"`
 	}
 )
 
@@ -245,4 +253,51 @@ func (svc *UserService) ChangePassword(ctx Context, current string, new string) 
 	}
 
 	return true
+}
+
+func (svc *UserService) RequestPasswordReset(ctx context.Context, req PasswordResetRequest) error {
+	usr, err := svc.repos.Users.GetOneEmail(ctx, req.Email)
+	if err != nil {
+		log.Err(err).Msg("Failed to get user for email reset")
+		return err
+	}
+
+	token := hasher.GenerateToken()
+	err = svc.repos.Users.PasswordResetCreate(ctx, usr.ID, token.Hash)
+	if err != nil {
+		return err
+	}
+
+	resetURL, err := url.JoinPath(svc.baseurl, "reset-password/")
+	if err != nil {
+		return err
+	}
+
+	resetURL = resetURL + "?token=" + token.Raw
+
+	bldr := easyemails.NewBuilder().Add(
+		easyemails.WithParagraph(
+			easyemails.WithText("You have requested a password reset. Please click the link below to reset your password."),
+		),
+		easyemails.WithButton("Reset Password", resetURL),
+		easyemails.WithParagraph(
+			easyemails.WithText("[Github](https://github.com/hay-kot/homebox) · [Docs](https://hay-kot.github.io/homebox/)").
+				Centered(),
+		).
+			FontSize(12),
+	)
+
+	msg := mailer.NewMessageBuilder().
+		SetBody(bldr.Render()).
+		SetSubject("Password Reset").
+		SetTo(usr.Name, usr.Email).
+		Build()
+
+	err = svc.mailer.Send(msg)
+	if err != nil {
+		log.Err(err).Msg("Failed to send password reset email")
+		return err
+	}
+
+	return nil
 }

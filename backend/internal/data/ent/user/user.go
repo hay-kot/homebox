@@ -40,6 +40,8 @@ const (
 	EdgeAuthTokens = "auth_tokens"
 	// EdgeNotifiers holds the string denoting the notifiers edge name in mutations.
 	EdgeNotifiers = "notifiers"
+	// EdgeActionTokens holds the string denoting the action_tokens edge name in mutations.
+	EdgeActionTokens = "action_tokens"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// GroupTable is the table that holds the group relation/edge.
@@ -63,6 +65,13 @@ const (
 	NotifiersInverseTable = "notifiers"
 	// NotifiersColumn is the table column denoting the notifiers relation/edge.
 	NotifiersColumn = "user_id"
+	// ActionTokensTable is the table that holds the action_tokens relation/edge.
+	ActionTokensTable = "action_tokens"
+	// ActionTokensInverseTable is the table name for the ActionToken entity.
+	// It exists in this package in order to avoid circular dependency with the "actiontoken" package.
+	ActionTokensInverseTable = "action_tokens"
+	// ActionTokensColumn is the table column denoting the action_tokens relation/edge.
+	ActionTokensColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -234,6 +243,20 @@ func ByNotifiers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newNotifiersStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByActionTokensCount orders the results by action_tokens count.
+func ByActionTokensCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newActionTokensStep(), opts...)
+	}
+}
+
+// ByActionTokens orders the results by action_tokens terms.
+func ByActionTokens(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newActionTokensStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newGroupStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -253,5 +276,12 @@ func newNotifiersStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(NotifiersInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, NotifiersTable, NotifiersColumn),
+	)
+}
+func newActionTokensStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ActionTokensInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ActionTokensTable, ActionTokensColumn),
 	)
 }

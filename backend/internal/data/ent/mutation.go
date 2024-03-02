@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/actiontoken"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/attachment"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authroles"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authtokens"
@@ -37,6 +38,7 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
+	TypeActionToken          = "ActionToken"
 	TypeAttachment           = "Attachment"
 	TypeAuthRoles            = "AuthRoles"
 	TypeAuthTokens           = "AuthTokens"
@@ -51,6 +53,608 @@ const (
 	TypeNotifier             = "Notifier"
 	TypeUser                 = "User"
 )
+
+// ActionTokenMutation represents an operation that mutates the ActionToken nodes in the graph.
+type ActionTokenMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *uuid.UUID
+	created_at    *time.Time
+	updated_at    *time.Time
+	action        *actiontoken.Action
+	token         *[]byte
+	clearedFields map[string]struct{}
+	user          *uuid.UUID
+	cleareduser   bool
+	done          bool
+	oldValue      func(context.Context) (*ActionToken, error)
+	predicates    []predicate.ActionToken
+}
+
+var _ ent.Mutation = (*ActionTokenMutation)(nil)
+
+// actiontokenOption allows management of the mutation configuration using functional options.
+type actiontokenOption func(*ActionTokenMutation)
+
+// newActionTokenMutation creates new mutation for the ActionToken entity.
+func newActionTokenMutation(c config, op Op, opts ...actiontokenOption) *ActionTokenMutation {
+	m := &ActionTokenMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeActionToken,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withActionTokenID sets the ID field of the mutation.
+func withActionTokenID(id uuid.UUID) actiontokenOption {
+	return func(m *ActionTokenMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ActionToken
+		)
+		m.oldValue = func(ctx context.Context) (*ActionToken, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ActionToken.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withActionToken sets the old ActionToken of the mutation.
+func withActionToken(node *ActionToken) actiontokenOption {
+	return func(m *ActionTokenMutation) {
+		m.oldValue = func(context.Context) (*ActionToken, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ActionTokenMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ActionTokenMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of ActionToken entities.
+func (m *ActionTokenMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ActionTokenMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ActionTokenMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().ActionToken.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetUserID sets the "user_id" field.
+func (m *ActionTokenMutation) SetUserID(u uuid.UUID) {
+	m.user = &u
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *ActionTokenMutation) UserID() (r uuid.UUID, exists bool) {
+	v := m.user
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the ActionToken entity.
+// If the ActionToken object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ActionTokenMutation) OldUserID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *ActionTokenMutation) ResetUserID() {
+	m.user = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ActionTokenMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ActionTokenMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the ActionToken entity.
+// If the ActionToken object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ActionTokenMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ActionTokenMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ActionTokenMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ActionTokenMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the ActionToken entity.
+// If the ActionToken object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ActionTokenMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ActionTokenMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetAction sets the "action" field.
+func (m *ActionTokenMutation) SetAction(a actiontoken.Action) {
+	m.action = &a
+}
+
+// Action returns the value of the "action" field in the mutation.
+func (m *ActionTokenMutation) Action() (r actiontoken.Action, exists bool) {
+	v := m.action
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAction returns the old "action" field's value of the ActionToken entity.
+// If the ActionToken object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ActionTokenMutation) OldAction(ctx context.Context) (v actiontoken.Action, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAction is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAction requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAction: %w", err)
+	}
+	return oldValue.Action, nil
+}
+
+// ResetAction resets all changes to the "action" field.
+func (m *ActionTokenMutation) ResetAction() {
+	m.action = nil
+}
+
+// SetToken sets the "token" field.
+func (m *ActionTokenMutation) SetToken(b []byte) {
+	m.token = &b
+}
+
+// Token returns the value of the "token" field in the mutation.
+func (m *ActionTokenMutation) Token() (r []byte, exists bool) {
+	v := m.token
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldToken returns the old "token" field's value of the ActionToken entity.
+// If the ActionToken object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ActionTokenMutation) OldToken(ctx context.Context) (v []byte, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldToken is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldToken requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldToken: %w", err)
+	}
+	return oldValue.Token, nil
+}
+
+// ResetToken resets all changes to the "token" field.
+func (m *ActionTokenMutation) ResetToken() {
+	m.token = nil
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (m *ActionTokenMutation) ClearUser() {
+	m.cleareduser = true
+	m.clearedFields[actiontoken.FieldUserID] = struct{}{}
+}
+
+// UserCleared reports if the "user" edge to the User entity was cleared.
+func (m *ActionTokenMutation) UserCleared() bool {
+	return m.cleareduser
+}
+
+// UserIDs returns the "user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserID instead. It exists only for internal usage by the builders.
+func (m *ActionTokenMutation) UserIDs() (ids []uuid.UUID) {
+	if id := m.user; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUser resets all changes to the "user" edge.
+func (m *ActionTokenMutation) ResetUser() {
+	m.user = nil
+	m.cleareduser = false
+}
+
+// Where appends a list predicates to the ActionTokenMutation builder.
+func (m *ActionTokenMutation) Where(ps ...predicate.ActionToken) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ActionTokenMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ActionTokenMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.ActionToken, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ActionTokenMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ActionTokenMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (ActionToken).
+func (m *ActionTokenMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ActionTokenMutation) Fields() []string {
+	fields := make([]string, 0, 5)
+	if m.user != nil {
+		fields = append(fields, actiontoken.FieldUserID)
+	}
+	if m.created_at != nil {
+		fields = append(fields, actiontoken.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, actiontoken.FieldUpdatedAt)
+	}
+	if m.action != nil {
+		fields = append(fields, actiontoken.FieldAction)
+	}
+	if m.token != nil {
+		fields = append(fields, actiontoken.FieldToken)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ActionTokenMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case actiontoken.FieldUserID:
+		return m.UserID()
+	case actiontoken.FieldCreatedAt:
+		return m.CreatedAt()
+	case actiontoken.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case actiontoken.FieldAction:
+		return m.Action()
+	case actiontoken.FieldToken:
+		return m.Token()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ActionTokenMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case actiontoken.FieldUserID:
+		return m.OldUserID(ctx)
+	case actiontoken.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case actiontoken.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case actiontoken.FieldAction:
+		return m.OldAction(ctx)
+	case actiontoken.FieldToken:
+		return m.OldToken(ctx)
+	}
+	return nil, fmt.Errorf("unknown ActionToken field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ActionTokenMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case actiontoken.FieldUserID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case actiontoken.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case actiontoken.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case actiontoken.FieldAction:
+		v, ok := value.(actiontoken.Action)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAction(v)
+		return nil
+	case actiontoken.FieldToken:
+		v, ok := value.([]byte)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetToken(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ActionToken field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ActionTokenMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ActionTokenMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ActionTokenMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown ActionToken numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ActionTokenMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ActionTokenMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ActionTokenMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown ActionToken nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ActionTokenMutation) ResetField(name string) error {
+	switch name {
+	case actiontoken.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case actiontoken.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case actiontoken.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case actiontoken.FieldAction:
+		m.ResetAction()
+		return nil
+	case actiontoken.FieldToken:
+		m.ResetToken()
+		return nil
+	}
+	return fmt.Errorf("unknown ActionToken field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ActionTokenMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.user != nil {
+		edges = append(edges, actiontoken.EdgeUser)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ActionTokenMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case actiontoken.EdgeUser:
+		if id := m.user; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ActionTokenMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ActionTokenMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ActionTokenMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.cleareduser {
+		edges = append(edges, actiontoken.EdgeUser)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ActionTokenMutation) EdgeCleared(name string) bool {
+	switch name {
+	case actiontoken.EdgeUser:
+		return m.cleareduser
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ActionTokenMutation) ClearEdge(name string) error {
+	switch name {
+	case actiontoken.EdgeUser:
+		m.ClearUser()
+		return nil
+	}
+	return fmt.Errorf("unknown ActionToken unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ActionTokenMutation) ResetEdge(name string) error {
+	switch name {
+	case actiontoken.EdgeUser:
+		m.ResetUser()
+		return nil
+	}
+	return fmt.Errorf("unknown ActionToken edge %s", name)
+}
 
 // AttachmentMutation represents an operation that mutates the Attachment nodes in the graph.
 type AttachmentMutation struct {
@@ -10672,30 +11276,33 @@ func (m *NotifierMutation) ResetEdge(name string) error {
 // UserMutation represents an operation that mutates the User nodes in the graph.
 type UserMutation struct {
 	config
-	op                 Op
-	typ                string
-	id                 *uuid.UUID
-	created_at         *time.Time
-	updated_at         *time.Time
-	name               *string
-	email              *string
-	password           *string
-	is_superuser       *bool
-	superuser          *bool
-	role               *user.Role
-	activated_on       *time.Time
-	clearedFields      map[string]struct{}
-	group              *uuid.UUID
-	clearedgroup       bool
-	auth_tokens        map[uuid.UUID]struct{}
-	removedauth_tokens map[uuid.UUID]struct{}
-	clearedauth_tokens bool
-	notifiers          map[uuid.UUID]struct{}
-	removednotifiers   map[uuid.UUID]struct{}
-	clearednotifiers   bool
-	done               bool
-	oldValue           func(context.Context) (*User, error)
-	predicates         []predicate.User
+	op                   Op
+	typ                  string
+	id                   *uuid.UUID
+	created_at           *time.Time
+	updated_at           *time.Time
+	name                 *string
+	email                *string
+	password             *string
+	is_superuser         *bool
+	superuser            *bool
+	role                 *user.Role
+	activated_on         *time.Time
+	clearedFields        map[string]struct{}
+	group                *uuid.UUID
+	clearedgroup         bool
+	auth_tokens          map[uuid.UUID]struct{}
+	removedauth_tokens   map[uuid.UUID]struct{}
+	clearedauth_tokens   bool
+	notifiers            map[uuid.UUID]struct{}
+	removednotifiers     map[uuid.UUID]struct{}
+	clearednotifiers     bool
+	action_tokens        map[uuid.UUID]struct{}
+	removedaction_tokens map[uuid.UUID]struct{}
+	clearedaction_tokens bool
+	done                 bool
+	oldValue             func(context.Context) (*User, error)
+	predicates           []predicate.User
 }
 
 var _ ent.Mutation = (*UserMutation)(nil)
@@ -11286,6 +11893,60 @@ func (m *UserMutation) ResetNotifiers() {
 	m.removednotifiers = nil
 }
 
+// AddActionTokenIDs adds the "action_tokens" edge to the ActionToken entity by ids.
+func (m *UserMutation) AddActionTokenIDs(ids ...uuid.UUID) {
+	if m.action_tokens == nil {
+		m.action_tokens = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.action_tokens[ids[i]] = struct{}{}
+	}
+}
+
+// ClearActionTokens clears the "action_tokens" edge to the ActionToken entity.
+func (m *UserMutation) ClearActionTokens() {
+	m.clearedaction_tokens = true
+}
+
+// ActionTokensCleared reports if the "action_tokens" edge to the ActionToken entity was cleared.
+func (m *UserMutation) ActionTokensCleared() bool {
+	return m.clearedaction_tokens
+}
+
+// RemoveActionTokenIDs removes the "action_tokens" edge to the ActionToken entity by IDs.
+func (m *UserMutation) RemoveActionTokenIDs(ids ...uuid.UUID) {
+	if m.removedaction_tokens == nil {
+		m.removedaction_tokens = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.action_tokens, ids[i])
+		m.removedaction_tokens[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedActionTokens returns the removed IDs of the "action_tokens" edge to the ActionToken entity.
+func (m *UserMutation) RemovedActionTokensIDs() (ids []uuid.UUID) {
+	for id := range m.removedaction_tokens {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ActionTokensIDs returns the "action_tokens" edge IDs in the mutation.
+func (m *UserMutation) ActionTokensIDs() (ids []uuid.UUID) {
+	for id := range m.action_tokens {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetActionTokens resets all changes to the "action_tokens" edge.
+func (m *UserMutation) ResetActionTokens() {
+	m.action_tokens = nil
+	m.clearedaction_tokens = false
+	m.removedaction_tokens = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -11564,7 +12225,7 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.group != nil {
 		edges = append(edges, user.EdgeGroup)
 	}
@@ -11573,6 +12234,9 @@ func (m *UserMutation) AddedEdges() []string {
 	}
 	if m.notifiers != nil {
 		edges = append(edges, user.EdgeNotifiers)
+	}
+	if m.action_tokens != nil {
+		edges = append(edges, user.EdgeActionTokens)
 	}
 	return edges
 }
@@ -11597,18 +12261,27 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeActionTokens:
+		ids := make([]ent.Value, 0, len(m.action_tokens))
+		for id := range m.action_tokens {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.removedauth_tokens != nil {
 		edges = append(edges, user.EdgeAuthTokens)
 	}
 	if m.removednotifiers != nil {
 		edges = append(edges, user.EdgeNotifiers)
+	}
+	if m.removedaction_tokens != nil {
+		edges = append(edges, user.EdgeActionTokens)
 	}
 	return edges
 }
@@ -11629,13 +12302,19 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeActionTokens:
+		ids := make([]ent.Value, 0, len(m.removedaction_tokens))
+		for id := range m.removedaction_tokens {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedgroup {
 		edges = append(edges, user.EdgeGroup)
 	}
@@ -11644,6 +12323,9 @@ func (m *UserMutation) ClearedEdges() []string {
 	}
 	if m.clearednotifiers {
 		edges = append(edges, user.EdgeNotifiers)
+	}
+	if m.clearedaction_tokens {
+		edges = append(edges, user.EdgeActionTokens)
 	}
 	return edges
 }
@@ -11658,6 +12340,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedauth_tokens
 	case user.EdgeNotifiers:
 		return m.clearednotifiers
+	case user.EdgeActionTokens:
+		return m.clearedaction_tokens
 	}
 	return false
 }
@@ -11685,6 +12369,9 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	case user.EdgeNotifiers:
 		m.ResetNotifiers()
+		return nil
+	case user.EdgeActionTokens:
+		m.ResetActionTokens()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)

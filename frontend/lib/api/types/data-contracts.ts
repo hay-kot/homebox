@@ -373,6 +373,10 @@ export interface ValueOverTimeEntry {
   value: number;
 }
 
+export interface PasswordResetRequest {
+  email: string;
+}
+
 export interface UserRegistration {
   email: string;
   name: string;

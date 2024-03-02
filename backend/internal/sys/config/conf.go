@@ -18,13 +18,14 @@ const (
 
 type Config struct {
 	conf.Version
-	Mode    string     `yaml:"mode"    conf:"default:development"` // development or production
+	Mode    string     `yaml:"mode"     conf:"default:development"` // development or production
 	Web     WebConfig  `yaml:"web"`
 	Storage Storage    `yaml:"storage"`
 	Log     LoggerConf `yaml:"logger"`
 	Mailer  MailerConf `yaml:"mailer"`
 	Demo    bool       `yaml:"demo"`
 	Debug   DebugConf  `yaml:"debug"`
+	BaseURL string     `yaml:"base_url" conf:"default:http://localhost:3000"`
 	Options Options    `yaml:"options"`
 }
 

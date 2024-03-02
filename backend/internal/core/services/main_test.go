@@ -11,6 +11,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/pkgs/faker"
+	"github.com/hay-kot/homebox/backend/pkgs/mailer"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -67,7 +68,7 @@ func TestMain(m *testing.M) {
 		currencies.CollectDefaults(),
 	)
 
-	tSvc = New(tRepos, WithCurrencies(defaults))
+	tSvc = New(tRepos, "", &mailer.Mailer{}, WithCurrencies(defaults))
 	defer func() { _ = client.Close() }()
 
 	bootstrap()

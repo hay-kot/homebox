@@ -52,13 +52,11 @@ func (User) Fields() []ent.Field {
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("auth_tokens", AuthTokens.Type).
-			Annotations(entsql.Annotation{
-				OnDelete: entsql.Cascade,
-			}),
+			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
 		edge.To("notifiers", Notifier.Type).
-			Annotations(entsql.Annotation{
-				OnDelete: entsql.Cascade,
-			}),
+			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
+		edge.To("action_tokens", ActionToken.Type).
+			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
 	}
 }
 
