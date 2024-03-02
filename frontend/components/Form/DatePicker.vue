@@ -3,7 +3,7 @@
     <label class="label">
       <span class="label-text"> {{ label }}</span>
     </label>
-    <input ref="input" v-model="selected" type="date" class="input input-bordered w-full" />
+    <VueDatePicker v-model="selected" :enable-time-picker="false" clearable :dark="isDark" />
   </div>
   <div v-else class="sm:grid sm:grid-cols-4 sm:items-start sm:gap-4">
     <label class="label">
