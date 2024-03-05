@@ -207,6 +207,15 @@ func run(cfg *config.Config) error {
 
 	runner.AddFunc("eventbus", app.bus.Run)
 
+	runner.AddFunc("seed_database", func(ctx context.Context) error {
+		// TODO: Remove through external API that does setup
+		if cfg.Demo {
+			log.Info().Msg("Running in demo mode, creating demo data")
+			app.SetupDemo()
+		}
+		return nil
+	})
+
 	runner.AddPlugin(NewTask("purge-tokens", time.Duration(24)*time.Hour, func(ctx context.Context) {
 		_, err := app.repos.AuthTokens.PurgeExpiredTokens(ctx)
 		if err != nil {
@@ -238,12 +247,6 @@ func run(cfg *config.Config) error {
 			}
 		}
 	}))
-
-	// TODO: Remove through external API that does setup
-	if cfg.Demo {
-		log.Info().Msg("Running in demo mode, creating demo data")
-		app.SetupDemo()
-	}
 
 	if cfg.Debug.Enabled {
 		runner.AddFunc("debug", func(ctx context.Context) error {
