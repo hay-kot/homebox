@@ -35,7 +35,7 @@ type EventBus struct {
 
 func New() *EventBus {
 	return &EventBus{
-		ch: make(chan eventData, 10),
+		ch: make(chan eventData, 100),
 		subscribers: map[Event][]func(any){
 			EventLabelMutation:    {},
 			EventLocationMutation: {},
