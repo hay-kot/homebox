@@ -624,6 +624,12 @@
     "name": "Nicaraguan Córdoba"
   },
   {
+    "code": "NOK",
+    "local": "Norway",
+    "symbol": "kr",
+    "name": "Norwegian Krone"
+  },
+  {
     "code": "UAH",
     "local": "Ukraine",
     "symbol": "₴",
