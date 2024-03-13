@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"strings"
+	"time"
 
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/rs/zerolog/log"
@@ -18,6 +19,9 @@ func (a *app) SetupDemo() {
 ,Kitchen,IOT;Home Assistant; Z-Wave,1,Smart Rocker Light Dimmer,"UltraPro Z-Wave Smart Rocker Light Dimmer with QuickFit and SimpleWire, 3-Way Ready, Compatible with Alexa, Google Assistant, ZWave Hub Required, Repeater/Range Extender, White Paddle Only, 39351",,,39351,Honeywell,,Amazon,65.98,09/30/0202,,,,,,,
 `
 
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	registration := services.UserRegistration{
 		Email:    "demo@example.com",
 		Name:     "Demo",
@@ -25,21 +29,34 @@ func (a *app) SetupDemo() {
 	}
 
 	// First check if we've already setup a demo user and skip if so
-	_, err := a.services.User.Login(context.Background(), registration.Email, registration.Password, false)
+	log.Debug().Msg("Checking if demo user already exists")
+	_, err := a.services.User.Login(ctx, registration.Email, registration.Password, false)
 	if err == nil {
+		log.Info().Msg("Demo user already exists, skipping setup")
 		return
 	}
 
-	_, err = a.services.User.RegisterUser(context.Background(), registration)
+	log.Debug().Msg("Demo user does not exist, setting up demo")
+	_, err = a.services.User.RegisterUser(ctx, registration)
 	if err != nil {
 		log.Err(err).Msg("Failed to register demo user")
 		log.Fatal().Msg("Failed to setup demo")
 	}
 
-	token, _ := a.services.User.Login(context.Background(), registration.Email, registration.Password, false)
-	self, _ := a.services.User.GetSelf(context.Background(), token.Raw)
+	token, err := a.services.User.Login(ctx, registration.Email, registration.Password, false)
+	if err != nil {
+		log.Err(err).Msg("Failed to login demo user")
+		log.Fatal().Msg("Failed to setup demo")
+		return
+	}
+	self, err := a.services.User.GetSelf(ctx, token.Raw)
+	if err != nil {
+		log.Err(err).Msg("Failed to get self")
+		log.Fatal().Msg("Failed to setup demo")
+		return
+	}
 
-	_, err = a.services.Items.CsvImport(context.Background(), self.GroupID, strings.NewReader(csvText))
+	_, err = a.services.Items.CsvImport(ctx, self.GroupID, strings.NewReader(csvText))
 	if err != nil {
 		log.Err(err).Msg("Failed to import CSV")
 		log.Fatal().Msg("Failed to setup demo")

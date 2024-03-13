@@ -92,9 +92,11 @@ func (svc *UserService) RegisterUser(ctx context.Context, data UserRegistration)
 	if err != nil {
 		return repo.UserOut{}, err
 	}
+	log.Debug().Msg("user created")
 
 	// Create the default labels and locations for the group.
 	if creatingGroup {
+		log.Debug().Msg("creating default labels")
 		for _, label := range defaultLabels() {
 			_, err := svc.repos.Labels.Create(ctx, usr.GroupID, label)
 			if err != nil {
@@ -102,6 +104,7 @@ func (svc *UserService) RegisterUser(ctx context.Context, data UserRegistration)
 			}
 		}
 
+		log.Debug().Msg("creating default locations")
 		for _, location := range defaultLocations() {
 			_, err := svc.repos.Locations.Create(ctx, usr.GroupID, location)
 			if err != nil {
@@ -112,6 +115,7 @@ func (svc *UserService) RegisterUser(ctx context.Context, data UserRegistration)
 
 	// Decrement the invitation token if it was used.
 	if token.ID != uuid.Nil {
+		log.Debug().Msg("decrementing invitation token")
 		err = svc.repos.Groups.InvitationUpdate(ctx, token.ID, token.Uses-1)
 		if err != nil {
 			log.Err(err).Msg("Failed to update invitation token")
