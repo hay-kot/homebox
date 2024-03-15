@@ -4,21 +4,20 @@ import (
 	"context"
 	"errors"
 	"io"
-	"os"
 	"path/filepath"
 
 	"github.com/google/uuid"
+	"github.com/hay-kot/homebox/backend/internal/core/blobstore"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/document"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
-	"github.com/hay-kot/homebox/backend/pkgs/pathlib"
 )
 
 var ErrInvalidDocExtension = errors.New("invalid document extension")
 
 type DocumentRepository struct {
-	db  *ent.Client
-	dir string
+	db *ent.Client
+	bs blobstore.BlobStore
 }
 
 type (
@@ -47,8 +46,8 @@ var (
 	mapDocumentOutEachErr = mapTEachErrFunc(mapDocumentOut)
 )
 
-func (r *DocumentRepository) path(gid uuid.UUID, ext string) string {
-	return pathlib.Safe(filepath.Join(r.dir, gid.String(), "documents", uuid.NewString()+ext))
+func (r *DocumentRepository) blobKey(gid uuid.UUID, ext string) string {
+	return filepath.Join(gid.String(), "documents", uuid.NewString()+ext)
 }
 
 func (r *DocumentRepository) GetAll(ctx context.Context, gid uuid.UUID) ([]DocumentOut, error) {
@@ -63,26 +62,29 @@ func (r *DocumentRepository) Get(ctx context.Context, id uuid.UUID) (DocumentOut
 	return mapDocumentOutErr(r.db.Document.Get(ctx, id))
 }
 
+func (r *DocumentRepository) Read(ctx context.Context, id uuid.UUID) (io.ReadCloser, error) {
+	doc, err := r.db.Document.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	content, err := r.bs.Get(ctx, doc.Path)
+	if err != nil {
+		return nil, err
+	}
+
+	return content, nil
+}
+
 func (r *DocumentRepository) Create(ctx context.Context, gid uuid.UUID, doc DocumentCreate) (DocumentOut, error) {
 	ext := filepath.Ext(doc.Title)
 	if ext == "" {
 		return DocumentOut{}, ErrInvalidDocExtension
 	}
 
-	path := r.path(gid, ext)
+	key := r.blobKey(gid, ext)
 
-	parent := filepath.Dir(path)
-	err := os.MkdirAll(parent, 0o755)
-	if err != nil {
-		return DocumentOut{}, err
-	}
-
-	f, err := os.Create(path)
-	if err != nil {
-		return DocumentOut{}, err
-	}
-
-	_, err = io.Copy(f, doc.Content)
+	path, err := r.bs.Put(ctx, key, doc.Content)
 	if err != nil {
 		return DocumentOut{}, err
 	}
@@ -107,7 +109,7 @@ func (r *DocumentRepository) Delete(ctx context.Context, id uuid.UUID) error {
 		return err
 	}
 
-	err = os.Remove(doc.Path)
+	err = r.bs.Delete(ctx, doc.Path)
 	if err != nil {
 		return err
 	}

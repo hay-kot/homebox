@@ -2,6 +2,7 @@
 package repo
 
 import (
+	"github.com/hay-kot/homebox/backend/internal/core/blobstore"
 	"github.com/hay-kot/homebox/backend/internal/core/services/reporting/eventbus"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 )
@@ -28,7 +29,7 @@ func New(db *ent.Client, bus *eventbus.EventBus, root string) *AllRepos {
 		Locations:   &LocationRepository{db, bus},
 		Labels:      &LabelRepository{db, bus},
 		Items:       &ItemsRepository{db, bus},
-		Docs:        &DocumentRepository{db, root},
+		Docs:        &DocumentRepository{db, blobstore.NewLocalBlobStore(root)},
 		Attachments: &AttachmentRepo{db},
 		MaintEntry:  &MaintenanceEntryRepository{db},
 		Notifiers:   NewNotifierRepository(db),
