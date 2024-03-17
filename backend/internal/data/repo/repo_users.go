@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/actiontoken"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/user"
 )
 
@@ -132,4 +133,19 @@ func (r *UserRepository) GetSuperusers(ctx context.Context) ([]*ent.User, error)
 
 func (r *UserRepository) ChangePassword(ctx context.Context, UID uuid.UUID, pw string) error {
 	return r.db.User.UpdateOneID(UID).SetPassword(pw).Exec(ctx)
+}
+
+func (r *UserRepository) PasswordResetCreate(ctx context.Context, UID uuid.UUID, token []byte) error {
+	return r.db.ActionToken.Create().
+		SetUserID(UID).
+		SetToken(token).
+		SetAction(actiontoken.ActionResetPassword).
+		Exec(ctx)
+}
+
+func (r *UserRepository) PasswordResetGet(ctx context.Context, token []byte) (*ent.ActionToken, error) {
+	return r.db.ActionToken.Query().
+		Where(actiontoken.Token(token)).
+		WithUser().
+		Only(ctx)
 }

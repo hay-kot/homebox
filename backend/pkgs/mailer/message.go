@@ -9,6 +9,10 @@ type Message struct {
 	Body    string
 }
 
+func (m Message) ToAddresses() []string {
+	return []string{m.To.Address}
+}
+
 type MessageBuilder struct {
 	subject string
 	to      mail.Address
@@ -20,8 +24,8 @@ func NewMessageBuilder() *MessageBuilder {
 	return &MessageBuilder{}
 }
 
-func (mb *MessageBuilder) Build() *Message {
-	return &Message{
+func (mb *MessageBuilder) Build() Message {
+	return Message{
 		Subject: mb.subject,
 		To:      mb.to,
 		From:    mb.from,

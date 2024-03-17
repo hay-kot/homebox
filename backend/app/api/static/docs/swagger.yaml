@@ -620,6 +620,11 @@ definitions:
       value:
         type: number
     type: object
+  services.PasswordResetRequest:
+    properties:
+      email:
+        type: string
+    type: object
   services.UserRegistration:
     properties:
       email:
@@ -1815,6 +1820,23 @@ paths:
         "204":
           description: No Content
       summary: Register New User
+      tags:
+      - User
+  /v1/users/request-password-reset:
+    post:
+      parameters:
+      - description: User Data
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/services.PasswordResetRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      summary: Request Password Reset
       tags:
       - User
   /v1/users/self:

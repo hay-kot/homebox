@@ -8,6 +8,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/sys/validate"
+	"github.com/hay-kot/homebox/backend/internal/web/adapters"
 	"github.com/hay-kot/httpkit/errchain"
 	"github.com/hay-kot/httpkit/server"
 	"github.com/rs/zerolog/log"
@@ -150,5 +151,33 @@ func (ctrl *V1Controller) HandleUserSelfChangePassword() errchain.HandlerFunc {
 		}
 
 		return server.JSON(w, http.StatusNoContent, nil)
+	}
+}
+
+// HandleUserRequestPasswordReset godoc
+//
+// @Summary Request Password Reset
+// @Tags    User
+// @Produce json
+// @Param   payload body services.PasswordResetRequest true "User Data"
+// @Success 204
+// @Router  /v1/users/request-password-reset [Post]
+func (ctrl *V1Controller) HandleUserRequestPasswordReset() errchain.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) error {
+		v, err := adapters.DecodeBody[services.PasswordResetRequest](r)
+		if err != nil {
+			return err
+		}
+
+		err = ctrl.svc.User.RequestPasswordReset(r.Context(), v)
+		if err != nil {
+			log.Err(err).Msg("failed to request password reset")
+			return server.Error().
+				Msg("unknow error occurred").
+				Status(http.StatusInternalServerError).
+				Write(r.Context(), w)
+		}
+
+		return nil
 	}
 }

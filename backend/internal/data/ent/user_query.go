@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/actiontoken"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authtokens"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/group"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/notifier"
@@ -22,14 +23,15 @@ import (
 // UserQuery is the builder for querying User entities.
 type UserQuery struct {
 	config
-	ctx            *QueryContext
-	order          []user.OrderOption
-	inters         []Interceptor
-	predicates     []predicate.User
-	withGroup      *GroupQuery
-	withAuthTokens *AuthTokensQuery
-	withNotifiers  *NotifierQuery
-	withFKs        bool
+	ctx              *QueryContext
+	order            []user.OrderOption
+	inters           []Interceptor
+	predicates       []predicate.User
+	withGroup        *GroupQuery
+	withAuthTokens   *AuthTokensQuery
+	withNotifiers    *NotifierQuery
+	withActionTokens *ActionTokenQuery
+	withFKs          bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -125,6 +127,28 @@ func (uq *UserQuery) QueryNotifiers() *NotifierQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(notifier.Table, notifier.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.NotifiersTable, user.NotifiersColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryActionTokens chains the current query on the "action_tokens" edge.
+func (uq *UserQuery) QueryActionTokens() *ActionTokenQuery {
+	query := (&ActionTokenClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(actiontoken.Table, actiontoken.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ActionTokensTable, user.ActionTokensColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -319,14 +343,15 @@ func (uq *UserQuery) Clone() *UserQuery {
 		return nil
 	}
 	return &UserQuery{
-		config:         uq.config,
-		ctx:            uq.ctx.Clone(),
-		order:          append([]user.OrderOption{}, uq.order...),
-		inters:         append([]Interceptor{}, uq.inters...),
-		predicates:     append([]predicate.User{}, uq.predicates...),
-		withGroup:      uq.withGroup.Clone(),
-		withAuthTokens: uq.withAuthTokens.Clone(),
-		withNotifiers:  uq.withNotifiers.Clone(),
+		config:           uq.config,
+		ctx:              uq.ctx.Clone(),
+		order:            append([]user.OrderOption{}, uq.order...),
+		inters:           append([]Interceptor{}, uq.inters...),
+		predicates:       append([]predicate.User{}, uq.predicates...),
+		withGroup:        uq.withGroup.Clone(),
+		withAuthTokens:   uq.withAuthTokens.Clone(),
+		withNotifiers:    uq.withNotifiers.Clone(),
+		withActionTokens: uq.withActionTokens.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
@@ -363,6 +388,17 @@ func (uq *UserQuery) WithNotifiers(opts ...func(*NotifierQuery)) *UserQuery {
 		opt(query)
 	}
 	uq.withNotifiers = query
+	return uq
+}
+
+// WithActionTokens tells the query-builder to eager-load the nodes that are connected to
+// the "action_tokens" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithActionTokens(opts ...func(*ActionTokenQuery)) *UserQuery {
+	query := (&ActionTokenClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withActionTokens = query
 	return uq
 }
 
@@ -445,10 +481,11 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		nodes       = []*User{}
 		withFKs     = uq.withFKs
 		_spec       = uq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			uq.withGroup != nil,
 			uq.withAuthTokens != nil,
 			uq.withNotifiers != nil,
+			uq.withActionTokens != nil,
 		}
 	)
 	if uq.withGroup != nil {
@@ -492,6 +529,13 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		if err := uq.loadNotifiers(ctx, query, nodes,
 			func(n *User) { n.Edges.Notifiers = []*Notifier{} },
 			func(n *User, e *Notifier) { n.Edges.Notifiers = append(n.Edges.Notifiers, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withActionTokens; query != nil {
+		if err := uq.loadActionTokens(ctx, query, nodes,
+			func(n *User) { n.Edges.ActionTokens = []*ActionToken{} },
+			func(n *User, e *ActionToken) { n.Edges.ActionTokens = append(n.Edges.ActionTokens, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -576,6 +620,36 @@ func (uq *UserQuery) loadNotifiers(ctx context.Context, query *NotifierQuery, no
 	}
 	query.Where(predicate.Notifier(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(user.NotifiersColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.UserID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadActionTokens(ctx context.Context, query *ActionTokenQuery, nodes []*User, init func(*User), assign func(*User, *ActionToken)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(actiontoken.FieldUserID)
+	}
+	query.Where(predicate.ActionToken(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.ActionTokensColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {

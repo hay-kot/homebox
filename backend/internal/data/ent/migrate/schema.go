@@ -8,6 +8,46 @@ import (
 )
 
 var (
+	// ActionTokensColumns holds the columns for the "action_tokens" table.
+	ActionTokensColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "action", Type: field.TypeEnum, Enums: []string{"reset_password"}, Default: "reset_password"},
+		{Name: "token", Type: field.TypeBytes, Unique: true},
+		{Name: "user_id", Type: field.TypeUUID},
+	}
+	// ActionTokensTable holds the schema information for the "action_tokens" table.
+	ActionTokensTable = &schema.Table{
+		Name:       "action_tokens",
+		Columns:    ActionTokensColumns,
+		PrimaryKey: []*schema.Column{ActionTokensColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "action_tokens_users_action_tokens",
+				Columns:    []*schema.Column{ActionTokensColumns[5]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "actiontoken_token",
+				Unique:  false,
+				Columns: []*schema.Column{ActionTokensColumns[4]},
+			},
+			{
+				Name:    "actiontoken_action",
+				Unique:  false,
+				Columns: []*schema.Column{ActionTokensColumns[3]},
+			},
+			{
+				Name:    "actiontoken_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{ActionTokensColumns[5]},
+			},
+		},
+	}
 	// AttachmentsColumns holds the columns for the "attachments" table.
 	AttachmentsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -453,6 +493,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		ActionTokensTable,
 		AttachmentsTable,
 		AuthRolesTable,
 		AuthTokensTable,
@@ -471,6 +512,7 @@ var (
 )
 
 func init() {
+	ActionTokensTable.ForeignKeys[0].RefTable = UsersTable
 	AttachmentsTable.ForeignKeys[0].RefTable = DocumentsTable
 	AttachmentsTable.ForeignKeys[1].RefTable = ItemsTable
 	AuthRolesTable.ForeignKeys[0].RefTable = AuthTokensTable

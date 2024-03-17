@@ -1,4 +1,4 @@
-// Package mailer provides a simple mailer for sending emails.
+// Package mailer provides a simple interface to send emails using SMTP.
 package mailer
 
 import (
@@ -25,16 +25,16 @@ func (m *Mailer) server() string {
 	return m.Host + ":" + strconv.Itoa(m.Port)
 }
 
-func (m *Mailer) Send(msg *Message) error {
+func (m *Mailer) Send(msg Message) error {
 	server := m.server()
 
-	header := make(map[string]string)
-	header["From"] = msg.From.String()
-	header["To"] = msg.To.String()
-	header["Subject"] = mime.QEncoding.Encode("UTF-8", msg.Subject)
-	header["MIME-Version"] = "1.0"
-	header["Content-Type"] = "text/html; charset=\"utf-8\""
-	header["Content-Transfer-Encoding"] = "base64"
+	header := map[string]string{
+		"From":                      m.From,
+		"Subject":                   mime.QEncoding.Encode("UTF-8", msg.Subject),
+		"MIME-Version":              "1.0",
+		"Content-Type":              "text/html; charset=\"utf-8\"",
+		"Content-Transfer-Encoding": "base64",
+	}
 
 	message := ""
 	for k, v := range header {
@@ -46,7 +46,7 @@ func (m *Mailer) Send(msg *Message) error {
 		server,
 		smtp.PlainAuth("", m.Username, m.Password, m.Host),
 		m.From,
-		[]string{msg.To.Address},
+		msg.ToAddresses(),
 		[]byte(message),
 	)
 }

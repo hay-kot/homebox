@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/actiontoken"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/attachment"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authtokens"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/document"
@@ -25,6 +26,25 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	actiontokenMixin := schema.ActionToken{}.Mixin()
+	actiontokenMixinFields1 := actiontokenMixin[1].Fields()
+	_ = actiontokenMixinFields1
+	actiontokenFields := schema.ActionToken{}.Fields()
+	_ = actiontokenFields
+	// actiontokenDescCreatedAt is the schema descriptor for created_at field.
+	actiontokenDescCreatedAt := actiontokenMixinFields1[1].Descriptor()
+	// actiontoken.DefaultCreatedAt holds the default value on creation for the created_at field.
+	actiontoken.DefaultCreatedAt = actiontokenDescCreatedAt.Default.(func() time.Time)
+	// actiontokenDescUpdatedAt is the schema descriptor for updated_at field.
+	actiontokenDescUpdatedAt := actiontokenMixinFields1[2].Descriptor()
+	// actiontoken.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	actiontoken.DefaultUpdatedAt = actiontokenDescUpdatedAt.Default.(func() time.Time)
+	// actiontoken.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	actiontoken.UpdateDefaultUpdatedAt = actiontokenDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// actiontokenDescID is the schema descriptor for id field.
+	actiontokenDescID := actiontokenMixinFields1[0].Descriptor()
+	// actiontoken.DefaultID holds the default value on creation for the id field.
+	actiontoken.DefaultID = actiontokenDescID.Default.(func() uuid.UUID)
 	attachmentMixin := schema.Attachment{}.Mixin()
 	attachmentMixinFields0 := attachmentMixin[0].Fields()
 	_ = attachmentMixinFields0

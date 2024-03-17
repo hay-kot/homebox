@@ -9,6 +9,18 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 )
 
+// The ActionTokenFunc type is an adapter to allow the use of ordinary
+// function as ActionToken mutator.
+type ActionTokenFunc func(context.Context, *ent.ActionTokenMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ActionTokenFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ActionTokenMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ActionTokenMutation", m)
+}
+
 // The AttachmentFunc type is an adapter to allow the use of ordinary
 // function as Attachment mutator.
 type AttachmentFunc func(context.Context, *ent.AttachmentMutation) (ent.Value, error)

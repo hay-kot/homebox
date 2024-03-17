@@ -4,6 +4,10 @@ package ent
 
 import "github.com/google/uuid"
 
+func (at *ActionToken) GetID() uuid.UUID {
+	return at.ID
+}
+
 func (a *Attachment) GetID() uuid.UUID {
 	return a.ID
 }

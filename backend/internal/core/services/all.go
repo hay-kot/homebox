@@ -4,6 +4,7 @@ package services
 import (
 	"github.com/hay-kot/homebox/backend/internal/core/currencies"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
+	"github.com/hay-kot/homebox/backend/pkgs/mailer"
 )
 
 type AllServices struct {
@@ -33,7 +34,7 @@ func WithCurrencies(v []currencies.Currency) func(*options) {
 	}
 }
 
-func New(repos *repo.AllRepos, opts ...OptionsFunc) *AllServices {
+func New(repos *repo.AllRepos, baseurl string, sender *mailer.Mailer, opts ...OptionsFunc) *AllServices {
 	if repos == nil {
 		panic("repos cannot be nil")
 	}
@@ -55,7 +56,11 @@ func New(repos *repo.AllRepos, opts ...OptionsFunc) *AllServices {
 	}
 
 	return &AllServices{
-		User:  &UserService{repos},
+		User: &UserService{
+			repos:   repos,
+			mailer:  sender,
+			baseurl: baseurl,
+		},
 		Group: &GroupService{repos},
 		Items: &ItemService{
 			repo:                 repos,

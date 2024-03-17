@@ -160,6 +160,8 @@ func run(cfg *config.Config) error {
 	app.repos = repo.New(c, app.bus, cfg.Storage.Data)
 	app.services = services.New(
 		app.repos,
+		app.conf.BaseURL,
+		app.mailer,
 		services.WithAutoIncrementAssetID(cfg.Options.AutoIncrementAssetID),
 		services.WithCurrencies(currencies),
 	)
@@ -180,7 +182,7 @@ func run(cfg *config.Config) error {
 
 	chain := errchain.New(mid.Errors(logger))
 
-	app.mountRoutes(router, chain, app.repos)
+	app.mountRoutes(router, chain)
 
 	runner := graceful.NewRunner()
 

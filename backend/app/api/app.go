@@ -11,7 +11,7 @@ import (
 
 type app struct {
 	conf     *config.Config
-	mailer   mailer.Mailer
+	mailer   *mailer.Mailer
 	db       *ent.Client
 	repos    *repo.AllRepos
 	services *services.AllServices
@@ -23,7 +23,7 @@ func new(conf *config.Config) *app {
 		conf: conf,
 	}
 
-	s.mailer = mailer.Mailer{
+	s.mailer = &mailer.Mailer{
 		Host:     s.conf.Mailer.Host,
 		Port:     s.conf.Mailer.Port,
 		Username: s.conf.Mailer.Username,

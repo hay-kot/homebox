@@ -52,9 +52,11 @@ type UserEdges struct {
 	AuthTokens []*AuthTokens `json:"auth_tokens,omitempty"`
 	// Notifiers holds the value of the notifiers edge.
 	Notifiers []*Notifier `json:"notifiers,omitempty"`
+	// ActionTokens holds the value of the action_tokens edge.
+	ActionTokens []*ActionToken `json:"action_tokens,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // GroupOrErr returns the Group value or an error if the edge
@@ -86,6 +88,15 @@ func (e UserEdges) NotifiersOrErr() ([]*Notifier, error) {
 		return e.Notifiers, nil
 	}
 	return nil, &NotLoadedError{edge: "notifiers"}
+}
+
+// ActionTokensOrErr returns the ActionTokens value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) ActionTokensOrErr() ([]*ActionToken, error) {
+	if e.loadedTypes[3] {
+		return e.ActionTokens, nil
+	}
+	return nil, &NotLoadedError{edge: "action_tokens"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -211,6 +222,11 @@ func (u *User) QueryAuthTokens() *AuthTokensQuery {
 // QueryNotifiers queries the "notifiers" edge of the User entity.
 func (u *User) QueryNotifiers() *NotifierQuery {
 	return NewUserClient(u.config).QueryNotifiers(u)
+}
+
+// QueryActionTokens queries the "action_tokens" edge of the User entity.
+func (u *User) QueryActionTokens() *ActionTokenQuery {
+	return NewUserClient(u.config).QueryActionTokens(u)
 }
 
 // Update returns a builder for updating this User.

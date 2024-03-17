@@ -16,6 +16,7 @@ import (
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/hay-kot/homebox/backend/internal/data/ent/actiontoken"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/attachment"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authroles"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authtokens"
@@ -36,6 +37,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// ActionToken is the client for interacting with the ActionToken builders.
+	ActionToken *ActionTokenClient
 	// Attachment is the client for interacting with the Attachment builders.
 	Attachment *AttachmentClient
 	// AuthRoles is the client for interacting with the AuthRoles builders.
@@ -73,6 +76,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.ActionToken = NewActionTokenClient(c.config)
 	c.Attachment = NewAttachmentClient(c.config)
 	c.AuthRoles = NewAuthRolesClient(c.config)
 	c.AuthTokens = NewAuthTokensClient(c.config)
@@ -178,6 +182,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:                  ctx,
 		config:               cfg,
+		ActionToken:          NewActionTokenClient(cfg),
 		Attachment:           NewAttachmentClient(cfg),
 		AuthRoles:            NewAuthRolesClient(cfg),
 		AuthTokens:           NewAuthTokensClient(cfg),
@@ -210,6 +215,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		ctx:                  ctx,
 		config:               cfg,
+		ActionToken:          NewActionTokenClient(cfg),
 		Attachment:           NewAttachmentClient(cfg),
 		AuthRoles:            NewAuthRolesClient(cfg),
 		AuthTokens:           NewAuthTokensClient(cfg),
@@ -229,7 +235,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Attachment.
+//		ActionToken.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -252,7 +258,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.Attachment, c.AuthRoles, c.AuthTokens, c.Document, c.Group,
+		c.ActionToken, c.Attachment, c.AuthRoles, c.AuthTokens, c.Document, c.Group,
 		c.GroupInvitationToken, c.Item, c.ItemField, c.Label, c.Location,
 		c.MaintenanceEntry, c.Notifier, c.User,
 	} {
@@ -264,7 +270,7 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.Attachment, c.AuthRoles, c.AuthTokens, c.Document, c.Group,
+		c.ActionToken, c.Attachment, c.AuthRoles, c.AuthTokens, c.Document, c.Group,
 		c.GroupInvitationToken, c.Item, c.ItemField, c.Label, c.Location,
 		c.MaintenanceEntry, c.Notifier, c.User,
 	} {
@@ -275,6 +281,8 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
+	case *ActionTokenMutation:
+		return c.ActionToken.mutate(ctx, m)
 	case *AttachmentMutation:
 		return c.Attachment.mutate(ctx, m)
 	case *AuthRolesMutation:
@@ -303,6 +311,155 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.User.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
+	}
+}
+
+// ActionTokenClient is a client for the ActionToken schema.
+type ActionTokenClient struct {
+	config
+}
+
+// NewActionTokenClient returns a client for the ActionToken from the given config.
+func NewActionTokenClient(c config) *ActionTokenClient {
+	return &ActionTokenClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `actiontoken.Hooks(f(g(h())))`.
+func (c *ActionTokenClient) Use(hooks ...Hook) {
+	c.hooks.ActionToken = append(c.hooks.ActionToken, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `actiontoken.Intercept(f(g(h())))`.
+func (c *ActionTokenClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ActionToken = append(c.inters.ActionToken, interceptors...)
+}
+
+// Create returns a builder for creating a ActionToken entity.
+func (c *ActionTokenClient) Create() *ActionTokenCreate {
+	mutation := newActionTokenMutation(c.config, OpCreate)
+	return &ActionTokenCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ActionToken entities.
+func (c *ActionTokenClient) CreateBulk(builders ...*ActionTokenCreate) *ActionTokenCreateBulk {
+	return &ActionTokenCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ActionTokenClient) MapCreateBulk(slice any, setFunc func(*ActionTokenCreate, int)) *ActionTokenCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ActionTokenCreateBulk{err: fmt.Errorf("calling to ActionTokenClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ActionTokenCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ActionTokenCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ActionToken.
+func (c *ActionTokenClient) Update() *ActionTokenUpdate {
+	mutation := newActionTokenMutation(c.config, OpUpdate)
+	return &ActionTokenUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ActionTokenClient) UpdateOne(at *ActionToken) *ActionTokenUpdateOne {
+	mutation := newActionTokenMutation(c.config, OpUpdateOne, withActionToken(at))
+	return &ActionTokenUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ActionTokenClient) UpdateOneID(id uuid.UUID) *ActionTokenUpdateOne {
+	mutation := newActionTokenMutation(c.config, OpUpdateOne, withActionTokenID(id))
+	return &ActionTokenUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ActionToken.
+func (c *ActionTokenClient) Delete() *ActionTokenDelete {
+	mutation := newActionTokenMutation(c.config, OpDelete)
+	return &ActionTokenDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ActionTokenClient) DeleteOne(at *ActionToken) *ActionTokenDeleteOne {
+	return c.DeleteOneID(at.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ActionTokenClient) DeleteOneID(id uuid.UUID) *ActionTokenDeleteOne {
+	builder := c.Delete().Where(actiontoken.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ActionTokenDeleteOne{builder}
+}
+
+// Query returns a query builder for ActionToken.
+func (c *ActionTokenClient) Query() *ActionTokenQuery {
+	return &ActionTokenQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeActionToken},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ActionToken entity by its id.
+func (c *ActionTokenClient) Get(ctx context.Context, id uuid.UUID) (*ActionToken, error) {
+	return c.Query().Where(actiontoken.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ActionTokenClient) GetX(ctx context.Context, id uuid.UUID) *ActionToken {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a ActionToken.
+func (c *ActionTokenClient) QueryUser(at *ActionToken) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(actiontoken.Table, actiontoken.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, actiontoken.UserTable, actiontoken.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ActionTokenClient) Hooks() []Hook {
+	return c.hooks.ActionToken
+}
+
+// Interceptors returns the client interceptors.
+func (c *ActionTokenClient) Interceptors() []Interceptor {
+	return c.inters.ActionToken
+}
+
+func (c *ActionTokenClient) mutate(ctx context.Context, m *ActionTokenMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ActionTokenCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ActionTokenUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ActionTokenUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ActionTokenDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ActionToken mutation op: %q", m.Op())
 	}
 }
 
@@ -2586,6 +2743,22 @@ func (c *UserClient) QueryNotifiers(u *User) *NotifierQuery {
 	return query
 }
 
+// QueryActionTokens queries the action_tokens edge of a User.
+func (c *UserClient) QueryActionTokens(u *User) *ActionTokenQuery {
+	query := (&ActionTokenClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(actiontoken.Table, actiontoken.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ActionTokensTable, user.ActionTokensColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
 	return c.hooks.User
@@ -2614,11 +2787,13 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Attachment, AuthRoles, AuthTokens, Document, Group, GroupInvitationToken, Item,
-		ItemField, Label, Location, MaintenanceEntry, Notifier, User []ent.Hook
+		ActionToken, Attachment, AuthRoles, AuthTokens, Document, Group,
+		GroupInvitationToken, Item, ItemField, Label, Location, MaintenanceEntry,
+		Notifier, User []ent.Hook
 	}
 	inters struct {
-		Attachment, AuthRoles, AuthTokens, Document, Group, GroupInvitationToken, Item,
-		ItemField, Label, Location, MaintenanceEntry, Notifier, User []ent.Interceptor
+		ActionToken, Attachment, AuthRoles, AuthTokens, Document, Group,
+		GroupInvitationToken, Item, ItemField, Label, Location, MaintenanceEntry,
+		Notifier, User []ent.Interceptor
 	}
 )
