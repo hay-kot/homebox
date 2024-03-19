@@ -132,6 +132,13 @@
     "name": "Bahamian Dollar"
   },
   {
+    "code": "BTC",
+    "local": "Bitcoin",
+    "symbol": "₿",
+    "name": "Bitcoin"
+  },
+  {
+  {
     "code": "BTN",
     "local": "Bhutan",
     "symbol": "Nu.",
