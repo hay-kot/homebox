@@ -10,6 +10,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/core/services/reporting/eventbus"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
+	"github.com/hay-kot/homebox/backend/pkgs/ipcheck"
 	"github.com/hay-kot/httpkit/errchain"
 	"github.com/hay-kot/httpkit/server"
 	"github.com/rs/zerolog/log"
@@ -57,14 +58,28 @@ func WithSecureCookies(secure bool) func(*V1Controller) {
 	}
 }
 
+func WithForwardAuthHeader(forwardAuthHeader string) func(*V1Controller) {
+	return func(ctrl *V1Controller) {
+		ctrl.forwardAuthHeader = forwardAuthHeader
+	}
+}
+
+func WithForwardAuthAllowedIps(forwardAuthAllowedIps string) func(*V1Controller) {
+	return func(ctrl *V1Controller) {
+		ctrl.forwardAuthAllowedIps = forwardAuthAllowedIps
+	}
+}
+
 type V1Controller struct {
-	cookieSecure      bool
-	repo              *repo.AllRepos
-	svc               *services.AllServices
-	maxUploadSize     int64
-	isDemo            bool
-	allowRegistration bool
-	bus               *eventbus.EventBus
+	cookieSecure          bool
+	repo                  *repo.AllRepos
+	svc                   *services.AllServices
+	maxUploadSize         int64
+	isDemo                bool
+	allowRegistration     bool
+	bus                   *eventbus.EventBus
+	forwardAuthHeader     string
+	forwardAuthAllowedIps string
 }
 
 type (
@@ -77,13 +92,14 @@ type (
 	}
 
 	APISummary struct {
-		Healthy           bool     `json:"health"`
-		Versions          []string `json:"versions"`
-		Title             string   `json:"title"`
-		Message           string   `json:"message"`
-		Build             Build    `json:"build"`
-		Demo              bool     `json:"demo"`
-		AllowRegistration bool     `json:"allowRegistration"`
+		Healthy              bool     `json:"health"`
+		Versions             []string `json:"versions"`
+		Title                string   `json:"title"`
+		Message              string   `json:"message"`
+		Build                Build    `json:"build"`
+		Demo                 bool     `json:"demo"`
+		AllowRegistration    bool     `json:"allowRegistration"`
+		ForwardAuthAvailable bool     `json:"forwardAuthAvailable"`
 	}
 )
 
@@ -117,13 +133,16 @@ func NewControllerV1(svc *services.AllServices, repos *repo.AllRepos, bus *event
 //	@Router  /v1/status [GET]
 func (ctrl *V1Controller) HandleBase(ready ReadyFunc, build Build) errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
+		forwardAuthAvailable := r.Header.Get(ctrl.forwardAuthHeader) != "" && ipcheck.ValidateAgainstList(r.RemoteAddr, ctrl.forwardAuthAllowedIps)
+
 		return server.JSON(w, http.StatusOK, APISummary{
-			Healthy:           ready(),
-			Title:             "Homebox",
-			Message:           "Track, Manage, and Organize your Things",
-			Build:             build,
-			Demo:              ctrl.isDemo,
-			AllowRegistration: ctrl.allowRegistration,
+			Healthy:              ready(),
+			Title:                "Homebox",
+			Message:              "Track, Manage, and Organize your Things",
+			Build:                build,
+			Demo:                 ctrl.isDemo,
+			AllowRegistration:    ctrl.allowRegistration,
+			ForwardAuthAvailable: forwardAuthAvailable,
 		})
 	}
 }

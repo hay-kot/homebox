@@ -56,6 +56,8 @@ func (a *app) mountRoutes(r *chi.Mux, chain *errchain.ErrChain, repos *repo.AllR
 		v1.WithMaxUploadSize(a.conf.Web.MaxUploadSize),
 		v1.WithRegistration(a.conf.Options.AllowRegistration),
 		v1.WithDemoStatus(a.conf.Demo), // Disable Password Change in Demo Mode
+		v1.WithForwardAuthHeader(a.conf.Auth.ForwardAuthHeader),
+		v1.WithForwardAuthAllowedIps(a.conf.Auth.ForwardAuthAllowedIps),
 	)
 
 	r.Get(v1Base("/status"), chain.ToHandlerFunc(v1Ctrl.HandleBase(func() bool { return true }, v1.Build{
@@ -67,6 +69,7 @@ func (a *app) mountRoutes(r *chi.Mux, chain *errchain.ErrChain, repos *repo.AllR
 	r.Get(v1Base("/currencies"), chain.ToHandlerFunc(v1Ctrl.HandleCurrency()))
 
 	providers := []v1.AuthProvider{
+		providers.NewForwardAuthProvider(a.services.User, &a.conf.Auth),
 		providers.NewLocalProvider(a.services.User),
 	}
 

@@ -20,6 +20,7 @@ type Config struct {
 	conf.Version
 	Mode    string     `yaml:"mode"    conf:"default:development"` // development or production
 	Web     WebConfig  `yaml:"web"`
+	Auth    AuthConfig `yaml:"auth"`
 	Storage Storage    `yaml:"storage"`
 	Log     LoggerConf `yaml:"logger"`
 	Mailer  MailerConf `yaml:"mailer"`
@@ -46,6 +47,12 @@ type WebConfig struct {
 	ReadTimeout   time.Duration `yaml:"read_timeout"    conf:"default:10s"`
 	WriteTimeout  time.Duration `yaml:"write_timeout"   conf:"default:10s"`
 	IdleTimeout   time.Duration `yaml:"idle_timeout"    conf:"default:30s"`
+}
+
+type AuthConfig struct {
+	ForwardAuthHeader       string `yaml:"forward_auth_header"        conf:"default:Remote-Email"`
+	ForwardAuthAllowedIps   string `yaml:"forward_auth_allowed_ips"`
+	ForwardAuthAutoRegister bool   `yaml:"forward_auth_auto_register" conf:"default:false"`
 }
 
 // New parses the CLI/Config file and returns a Config struct. If the file argument is an empty string, the

@@ -45,6 +45,9 @@
       email.value = "demo@example.com";
       loginPassword.value = "demo";
     }
+    if (status?.forwardAuthAvailable) {
+      loginViaForwardAuth()
+    }
   });
 
   const route = useRoute();
@@ -118,6 +121,16 @@
 
     navigateTo("/home");
     loading.value = false;
+  }
+
+  async function loginViaForwardAuth() {
+    const { error } = await ctx.login(api, email.value, loginPassword.value, remember.value, "forwardauth");
+
+    if (error) {
+      return;
+    }
+
+    navigateTo("/home");
   }
 
   const [registerForm, toggleLogin] = useToggle();

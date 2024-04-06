@@ -13,9 +13,9 @@ export class PublicApi extends BaseAPI {
     return this.http.get<APISummary>({ url: route("/status") });
   }
 
-  public login(username: string, password: string, stayLoggedIn = false) {
+  public login(username: string, password: string, stayLoggedIn = false, provider = "local") {
     return this.http.post<LoginForm, TokenResponse>({
-      url: route("/users/login"),
+      url: route("/users/login?provider=" + provider),
       body: {
         username,
         password,
