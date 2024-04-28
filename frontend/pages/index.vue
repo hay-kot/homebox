@@ -1,9 +1,5 @@
 <script setup lang="ts">
   import { useRouteHash } from "@vueuse/router";
-  import MdiGithub from "~icons/mdi/github";
-  import MdiTwitter from "~icons/mdi/twitter";
-  import MdiDiscord from "~icons/mdi/discord";
-  import MdiFolder from "~icons/mdi/folder";
   import MdiAccount from "~icons/mdi/account";
   import MdiAccountPlus from "~icons/mdi/account-plus";
   import MdiLogin from "~icons/mdi/login";
@@ -39,23 +35,6 @@
 
   const pageForm = useRouteHash(PageForms.Login);
   const pageFormStr = computed(() => (pageForm.value[0] === "#" ? pageForm.value.slice(1) : pageForm.value));
-
-  const { data: status } = useAsyncData(async () => {
-    const { data } = await api.status();
-
-    if (data.demo) {
-      username.value = "demo@example.com";
-      password.value = "demo";
-    }
-    return data;
-  });
-
-  whenever(status, status => {
-    if (status?.demo) {
-      email.value = "demo@example.com";
-      loginPassword.value = "demo";
-    }
-  });
 
   const route = useRoute();
   const router = useRouter();
@@ -148,162 +127,117 @@
 </script>
 
 <template>
-  <div class="flex flex-col min-h-screen">
-    <div class="fill-primary min-w-full absolute top-0 z-[-1]">
-      <div class="bg-primary flex-col flex min-h-[20vh]" />
-      <svg
-        class="fill-primary drop-shadow-xl"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 1440 320"
-        preserveAspectRatio="none"
-      >
-        <path
-          fill-opacity="1"
-          d="M0,32L80,69.3C160,107,320,181,480,181.3C640,181,800,107,960,117.3C1120,128,1280,224,1360,272L1440,320L1440,0L1360,0C1280,0,1120,0,960,0C800,0,640,0,480,0C320,0,160,0,80,0L0,0Z"
-        ></path>
-      </svg>
-    </div>
+  <NuxtLayout v-slot="{ status }" name="center-card">
     <div>
-      <header class="p-4 sm:px-6 lg:p-14 sm:py-6 sm:flex sm:items-end mx-auto">
-        <div>
-          <h2 class="mt-1 text-4xl font-bold tracking-tight text-neutral-content sm:text-5xl lg:text-6xl flex">
-            HomeB
-            <AppLogo class="w-12 -mb-4" />
-            x
-          </h2>
-          <p class="ml-1 text-lg text-base-content/50">Track, Organize, and Manage your Things.</p>
-        </div>
-        <div class="flex mt-6 sm:mt-0 gap-4 ml-auto text-neutral-content">
-          <a class="tooltip" data-tip="Project Github" href="https://github.com/hay-kot/homebox" target="_blank">
-            <MdiGithub class="h-8 w-8" />
-          </a>
-          <a href="https://twitter.com/haybytes" class="tooltip" data-tip="Follow The Developer" target="_blank">
-            <MdiTwitter class="h-8 w-8" />
-          </a>
-          <a href="https://discord.gg/tuncmNrE4z" class="tooltip" data-tip="Join The Discord" target="_blank">
-            <MdiDiscord class="h-8 w-8" />
-          </a>
-          <a href="https://hay-kot.github.io/homebox/" class="tooltip" data-tip="Read The Docs" target="_blank">
-            <MdiFolder class="h-8 w-8" />
-          </a>
-        </div>
-      </header>
-      <div class="grid p-6 sm:place-items-center min-h-[50vh]">
-        <div>
-          <Transition name="slide-fade">
-            <form v-if="pageFormStr === PageForms.Register" @submit.prevent="registerUser">
-              <div class="card w-max-[500px] md:w-[500px] bg-base-100 shadow-xl">
-                <div class="card-body">
-                  <h2 class="card-title text-2xl align-center">
-                    <MdiAccount class="mr-1 w-7 h-7" />
-                    Register
-                  </h2>
-                  <FormTextField v-model="email" label="Set your email?" />
-                  <FormTextField v-model="username" label="What's your name?" />
-                  <div v-if="!(groupToken == '')" class="pt-4 pb-1 text-center">
-                    <p>You're Joining an Existing Group!</p>
-                    <button type="button" class="text-xs underline" @click="groupToken = ''">
-                      Don't Want To Join a Group?
-                    </button>
-                  </div>
-                  <FormPassword v-model="password" label="Set your password" />
-                  <PasswordScore v-model:valid="canRegister" :password="password" />
-                  <div class="card-actions justify-end">
-                    <button
-                      type="submit"
-                      class="btn btn-primary mt-2"
-                      :class="loading ? 'loading' : ''"
-                      :disabled="loading || !canRegister"
-                    >
-                      Register
-                    </button>
-                  </div>
-                </div>
+      <Transition name="slide-fade">
+        <form v-if="pageFormStr === PageForms.Register" @submit.prevent="registerUser">
+          <div class="card w-max-[500px] md:w-[500px] bg-base-100 shadow-xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl align-center">
+                <MdiAccount class="mr-1 w-7 h-7" />
+                Register
+              </h2>
+              <FormTextField v-model="email" label="Set your email?" />
+              <FormTextField v-model="username" label="What's your name?" />
+              <div v-if="!(groupToken == '')" class="pt-4 pb-1 text-center">
+                <p>You're Joining an Existing Group!</p>
+                <button type="button" class="text-xs underline" @click="groupToken = ''">
+                  Don't Want To Join a Group?
+                </button>
               </div>
-            </form>
-            <form v-else-if="pageFormStr === PageForms.ForgotPassword" @submit.prevent="resetPassword">
-              <div class="card w-max-[500px] md:w-[500px] bg-base-100 shadow-xl">
-                <div class="card-body">
-                  <h2 class="card-title text-2xl align-center">
-                    <MdiAccount class="mr-1 w-7 h-7" />
-                    Reset Password
-                  </h2>
-                  <FormTextField v-model="email" label="Email" />
-                  <p class="text-sm text-base-content/50">
-                    If you have an account with us, we will send you a password reset link.
-                  </p>
-                  <div class="card-actions justify-end mt-4">
-                    <button
-                      type="submit"
-                      class="btn btn-primary btn-block"
-                      :class="loading ? 'loading' : ''"
-                      :disabled="loading"
-                    >
-                      Reset Password
-                    </button>
-                  </div>
-                </div>
+              <FormPassword v-model="password" label="Set your password" />
+              <PasswordScore v-model:valid="canRegister" :password="password" />
+              <div class="card-actions justify-end">
+                <button
+                  type="submit"
+                  class="btn btn-primary mt-2"
+                  :class="loading ? 'loading' : ''"
+                  :disabled="loading || !canRegister"
+                >
+                  Register
+                </button>
               </div>
-            </form>
-            <form v-else @submit.prevent="login">
-              <div class="card w-max-[500px] md:w-[500px] bg-base-100 shadow-xl">
-                <div class="card-body">
-                  <h2 class="card-title text-2xl align-center">
-                    <MdiAccount class="mr-1 w-7 h-7" />
-                    Login
-                  </h2>
-                  <template v-if="status && status.demo">
-                    <p class="text-xs italic text-center">This is a demo instance</p>
-                    <p class="text-xs text-center"><b>Email</b> demo@example.com</p>
-                    <p class="text-xs text-center"><b>Password</b> demo</p>
-                  </template>
-                  <FormTextField v-model="email" label="Email" />
-                  <FormPassword v-model="loginPassword" label="Password" />
-                  <div class="max-w-[140px]">
-                    <FormCheckbox v-model="remember" label="Remember Me" />
-                  </div>
-                  <div class="card-actions justify-end">
-                    <button
-                      type="submit"
-                      class="btn btn-primary btn-block"
-                      :class="loading ? 'loading' : ''"
-                      :disabled="loading"
-                    >
-                      Login
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </form>
-          </Transition>
-          <div class="text-center mt-6">
-            <BaseButton
-              v-if="status && status.allowRegistration"
-              class="btn-primary btn-wide"
-              :to="pageFormStr === PageForms.Register ? `#${PageForms.Login}` : `#${PageForms.Register}`"
-            >
-              <template #icon>
-                <MdiAccountPlus v-if="pageFormStr === PageForms.Register" class="w-5 h-5 swap-off" />
-                <MdiLogin v-else class="w-5 h-5 swap-off" />
-                <MdiArrowRight class="w-5 h-5 swap-on" />
-              </template>
-              {{ pageFormStr === PageForms.Register ? "Login" : "Register" }}
-            </BaseButton>
-            <p v-else class="text-base-content italic text-sm inline-flex items-center gap-2">
-              <MdiLock class="w-4 h-4 inline-block" />
-              Registration Disabled
-            </p>
-            <NuxtLink :to="`#${PageForms.ForgotPassword}`">
-              <p class="text-xs text-base-content/50 mt-2">Forgot your password?</p>
-            </NuxtLink>
+            </div>
           </div>
-        </div>
+        </form>
+        <form v-else-if="pageFormStr === PageForms.ForgotPassword" @submit.prevent="resetPassword">
+          <div class="card w-max-[500px] md:w-[500px] bg-base-100 shadow-xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl align-center">
+                <MdiAccount class="mr-1 w-7 h-7" />
+                Reset Password
+              </h2>
+              <FormTextField v-model="email" label="Email" />
+              <p class="text-sm text-base-content/50">
+                If you have an account with us, we will send you a password reset link.
+              </p>
+              <div class="card-actions justify-end mt-4">
+                <button
+                  type="submit"
+                  class="btn btn-primary btn-block"
+                  :class="loading ? 'loading' : ''"
+                  :disabled="loading"
+                >
+                  Reset Password
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+        <form v-else @submit.prevent="login">
+          <div class="card w-max-[500px] md:w-[500px] bg-base-100 shadow-xl">
+            <div class="card-body">
+              <h2 class="card-title text-2xl align-center">
+                <MdiAccount class="mr-1 w-7 h-7" />
+                Login
+              </h2>
+              <template v-if="status && status.demo">
+                <p class="text-xs italic text-center">This is a demo instance</p>
+                <p class="text-xs text-center"><b>Email</b> demo@example.com</p>
+                <p class="text-xs text-center"><b>Password</b> demo</p>
+              </template>
+              <FormTextField v-model="email" label="Email" />
+              <FormPassword v-model="loginPassword" label="Password" />
+              <div class="max-w-[140px]">
+                <FormCheckbox v-model="remember" label="Remember Me" />
+              </div>
+              <div class="card-actions justify-end">
+                <button
+                  type="submit"
+                  class="btn btn-primary btn-block"
+                  :class="loading ? 'loading' : ''"
+                  :disabled="loading"
+                >
+                  Login
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </Transition>
+      <div class="text-center mt-6">
+        <BaseButton
+          v-if="status && status.allowRegistration"
+          class="btn-primary btn-wide"
+          :to="pageFormStr === PageForms.Register ? `#${PageForms.Login}` : `#${PageForms.Register}`"
+        >
+          <template #icon>
+            <MdiAccountPlus v-if="pageFormStr === PageForms.Register" class="w-5 h-5 swap-off" />
+            <MdiLogin v-else class="w-5 h-5 swap-off" />
+            <MdiArrowRight class="w-5 h-5 swap-on" />
+          </template>
+          {{ pageFormStr === PageForms.Register ? "Login" : "Register" }}
+        </BaseButton>
+        <p v-else class="text-base-content italic text-sm inline-flex items-center gap-2">
+          <MdiLock class="w-4 h-4 inline-block" />
+          Registration Disabled
+        </p>
+        <NuxtLink :to="`#${PageForms.ForgotPassword}`">
+          <p class="text-xs text-base-content/50 mt-2">Forgot your password?</p>
+        </NuxtLink>
       </div>
     </div>
-    <footer v-if="status" class="mt-auto text-center w-full bottom-0 pb-4">
-      <p class="text-center text-sm">Version: {{ status.build.version }} ~ Build: {{ status.build.commit }}</p>
-    </footer>
-  </div>
+  </NuxtLayout>
 </template>
 
 <style lang="css" scoped>
