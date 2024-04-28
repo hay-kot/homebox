@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -169,15 +170,18 @@ func (ctrl *V1Controller) HandleUserRequestPasswordReset() errchain.HandlerFunc 
 			return err
 		}
 
-		err = ctrl.svc.User.RequestPasswordReset(r.Context(), v)
-		if err != nil {
-			log.Err(err).Msg("failed to request password reset")
-			return server.Error().
-				Msg("unknow error occurred").
-				Status(http.StatusInternalServerError).
-				Write(r.Context(), w)
-		}
+		go func() {
+			ctx := context.Background()
 
-		return nil
+			err = ctrl.svc.User.RequestPasswordReset(ctx, v)
+			if err != nil {
+				log.Warn().
+					Err(err).
+					Str("email", v.Email).
+					Msg("failed to request password reset")
+			}
+		}()
+
+		return server.JSON(w, http.StatusNoContent, nil)
 	}
 }
