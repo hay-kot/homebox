@@ -69,14 +69,15 @@ func TestMain(m *testing.M) {
 	)
 
 	tSvc = New(tRepos, "", &mailer.Mailer{}, WithCurrencies(defaults))
-	defer func() { _ = client.Close() }()
 
 	bootstrap()
 	tCtx = Context{
 		Context: context.Background(),
-		GID:     tGroup.ID,
-		UID:     tUser.ID,
+		GroupID: tGroup.ID,
+		UserID:  tUser.ID,
 	}
 
-	os.Exit(m.Run())
+	exit := m.Run()
+	_ = client.Close()
+	os.Exit(exit)
 }

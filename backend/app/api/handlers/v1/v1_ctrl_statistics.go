@@ -23,7 +23,7 @@ import (
 func (ctrl *V1Controller) HandleGroupStatisticsLocations() errchain.HandlerFunc {
 	fn := func(r *http.Request) ([]repo.TotalsByOrganizer, error) {
 		auth := services.NewContext(r.Context())
-		return ctrl.repo.Groups.StatsLocationsByPurchasePrice(auth, auth.GID)
+		return ctrl.repo.Groups.StatsLocationsByPurchasePrice(auth, auth.GroupID)
 	}
 
 	return adapters.Command(fn, http.StatusOK)
@@ -40,7 +40,7 @@ func (ctrl *V1Controller) HandleGroupStatisticsLocations() errchain.HandlerFunc 
 func (ctrl *V1Controller) HandleGroupStatisticsLabels() errchain.HandlerFunc {
 	fn := func(r *http.Request) ([]repo.TotalsByOrganizer, error) {
 		auth := services.NewContext(r.Context())
-		return ctrl.repo.Groups.StatsLabelsByPurchasePrice(auth, auth.GID)
+		return ctrl.repo.Groups.StatsLabelsByPurchasePrice(auth, auth.GroupID)
 	}
 
 	return adapters.Command(fn, http.StatusOK)
@@ -57,7 +57,7 @@ func (ctrl *V1Controller) HandleGroupStatisticsLabels() errchain.HandlerFunc {
 func (ctrl *V1Controller) HandleGroupStatistics() errchain.HandlerFunc {
 	fn := func(r *http.Request) (repo.GroupStatistics, error) {
 		auth := services.NewContext(r.Context())
-		return ctrl.repo.Groups.StatsGroup(auth, auth.GID)
+		return ctrl.repo.Groups.StatsGroup(auth, auth.GroupID)
 	}
 
 	return adapters.Command(fn, http.StatusOK)
@@ -94,7 +94,7 @@ func (ctrl *V1Controller) HandleGroupStatisticsPriceOverTime() errchain.HandlerF
 			return validate.NewRequestError(err, http.StatusBadRequest)
 		}
 
-		stats, err := ctrl.repo.Groups.StatsPurchasePrice(ctx, ctx.GID, startDate, endDate)
+		stats, err := ctrl.repo.Groups.StatsPurchasePrice(ctx, ctx.GroupID, startDate, endDate)
 		if err != nil {
 			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}

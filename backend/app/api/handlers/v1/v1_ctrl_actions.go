@@ -20,7 +20,7 @@ func actionHandlerFactory(ref string, fn func(context.Context, uuid.UUID) (int, 
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := services.NewContext(r.Context())
 
-		totalCompleted, err := fn(ctx, ctx.GID)
+		totalCompleted, err := fn(ctx, ctx.GroupID)
 		if err != nil {
 			log.Err(err).Str("action_ref", ref).Msg("failed to run action")
 			return validate.NewRequestError(err, http.StatusInternalServerError)

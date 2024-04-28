@@ -153,7 +153,7 @@ func (ctrl *V1Controller) HandleCacheWS() errchain.HandlerFunc {
 
 	m.HandleConnect(func(s *melody.Session) {
 		auth := services.NewContext(s.Request.Context())
-		s.Set("gid", auth.GID)
+		s.Set("gid", auth.GroupID)
 	})
 
 	factory := func(e string) func(data any) {

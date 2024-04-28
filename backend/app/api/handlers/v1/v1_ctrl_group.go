@@ -35,7 +35,7 @@ type (
 func (ctrl *V1Controller) HandleGroupGet() errchain.HandlerFunc {
 	fn := func(r *http.Request) (repo.Group, error) {
 		auth := services.NewContext(r.Context())
-		return ctrl.repo.Groups.GroupByID(auth, auth.GID)
+		return ctrl.repo.Groups.GroupByID(auth, auth.GroupID)
 	}
 
 	return adapters.Command(fn, http.StatusOK)

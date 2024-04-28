@@ -35,7 +35,7 @@ func (svc *ItemService) AttachmentUpdate(ctx Context, itemID uuid.UUID, data *re
 		return repo.ItemOut{}, err
 	}
 
-	return svc.repo.Items.GetOneByGroup(ctx, ctx.GID, itemID)
+	return svc.repo.Items.GetOneByGroup(ctx, ctx.GroupID, itemID)
 }
 
 // AttachmentAdd adds an attachment to an item by creating an entry in the Documents table and linking it to the Attachment
@@ -43,13 +43,13 @@ func (svc *ItemService) AttachmentUpdate(ctx Context, itemID uuid.UUID, data *re
 // relative path during construction of the service.
 func (svc *ItemService) AttachmentAdd(ctx Context, itemID uuid.UUID, filename string, attachmentType attachment.Type, file io.Reader) (repo.ItemOut, error) {
 	// Get the Item
-	_, err := svc.repo.Items.GetOneByGroup(ctx, ctx.GID, itemID)
+	_, err := svc.repo.Items.GetOneByGroup(ctx, ctx.GroupID, itemID)
 	if err != nil {
 		return repo.ItemOut{}, err
 	}
 
 	// Create the document
-	doc, err := svc.repo.Docs.Create(ctx, ctx.GID, repo.DocumentCreate{Title: filename, Content: file})
+	doc, err := svc.repo.Docs.Create(ctx, ctx.GroupID, repo.DocumentCreate{Title: filename, Content: file})
 	if err != nil {
 		log.Err(err).Msg("failed to create document")
 		return repo.ItemOut{}, err
@@ -62,7 +62,7 @@ func (svc *ItemService) AttachmentAdd(ctx Context, itemID uuid.UUID, filename st
 		return repo.ItemOut{}, err
 	}
 
-	return svc.repo.Items.GetOneByGroup(ctx, ctx.GID, itemID)
+	return svc.repo.Items.GetOneByGroup(ctx, ctx.GroupID, itemID)
 }
 
 func (svc *ItemService) AttachmentDelete(ctx context.Context, gid, itemID, attachmentID uuid.UUID) error {

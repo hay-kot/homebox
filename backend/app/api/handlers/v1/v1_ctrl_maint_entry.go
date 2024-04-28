@@ -21,7 +21,7 @@ import (
 func (ctrl *V1Controller) HandleMaintenanceLogGet() errchain.HandlerFunc {
 	fn := func(r *http.Request, ID uuid.UUID, q repo.MaintenanceLogQuery) (repo.MaintenanceLog, error) {
 		auth := services.NewContext(r.Context())
-		return ctrl.repo.MaintEntry.GetLog(auth, auth.GID, ID, q)
+		return ctrl.repo.MaintEntry.GetLog(auth, auth.GroupID, ID, q)
 	}
 
 	return adapters.QueryID("id", fn, http.StatusOK)

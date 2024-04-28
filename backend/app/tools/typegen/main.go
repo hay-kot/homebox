@@ -71,7 +71,7 @@ func main() {
 		text = replace.Regex.ReplaceAllString(text, replace.Text)
 	}
 
-	err = os.WriteFile(path, []byte(text), 0644)
+	err = os.WriteFile(path, []byte(text), 0o644)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

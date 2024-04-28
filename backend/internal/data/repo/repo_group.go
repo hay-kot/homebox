@@ -109,12 +109,12 @@ func (r *GroupRepository) GetAllGroups(ctx context.Context) ([]Group, error) {
 	return r.groupMapper.MapEachErr(r.db.Group.Query().All(ctx))
 }
 
-func (r *GroupRepository) StatsLocationsByPurchasePrice(ctx context.Context, GID uuid.UUID) ([]TotalsByOrganizer, error) {
+func (r *GroupRepository) StatsLocationsByPurchasePrice(ctx context.Context, groupID uuid.UUID) ([]TotalsByOrganizer, error) {
 	var v []TotalsByOrganizer
 
 	err := r.db.Location.Query().
 		Where(
-			location.HasGroupWith(group.ID(GID)),
+			location.HasGroupWith(group.ID(groupID)),
 		).
 		GroupBy(location.FieldID, location.FieldName).
 		Aggregate(func(sq *sql.Selector) string {
@@ -131,12 +131,12 @@ func (r *GroupRepository) StatsLocationsByPurchasePrice(ctx context.Context, GID
 	return v, err
 }
 
-func (r *GroupRepository) StatsLabelsByPurchasePrice(ctx context.Context, GID uuid.UUID) ([]TotalsByOrganizer, error) {
+func (r *GroupRepository) StatsLabelsByPurchasePrice(ctx context.Context, groupID uuid.UUID) ([]TotalsByOrganizer, error) {
 	var v []TotalsByOrganizer
 
 	err := r.db.Label.Query().
 		Where(
-			label.HasGroupWith(group.ID(GID)),
+			label.HasGroupWith(group.ID(groupID)),
 		).
 		GroupBy(label.FieldID, label.FieldName).
 		Aggregate(func(sq *sql.Selector) string {
@@ -157,7 +157,7 @@ func (r *GroupRepository) StatsLabelsByPurchasePrice(ctx context.Context, GID uu
 	return v, err
 }
 
-func (r *GroupRepository) StatsPurchasePrice(ctx context.Context, GID uuid.UUID, start, end time.Time) (*ValueOverTime, error) {
+func (r *GroupRepository) StatsPurchasePrice(ctx context.Context, groupID uuid.UUID, start, end time.Time) (*ValueOverTime, error) {
 	// Get the Totals for the Start and End of the Given Time Period
 	q := `
 	SELECT
@@ -180,7 +180,7 @@ func (r *GroupRepository) StatsPurchasePrice(ctx context.Context, GID uuid.UUID,
 	var maybeStart *float64
 	var maybeEnd *float64
 
-	row := r.db.Sql().QueryRowContext(ctx, q, GID, sqliteDateFormat(start), GID, sqliteDateFormat(end))
+	row := r.db.Sql().QueryRowContext(ctx, q, groupID, sqliteDateFormat(start), groupID, sqliteDateFormat(end))
 	err := row.Scan(&maybeStart, &maybeEnd)
 	if err != nil {
 		return nil, err
@@ -198,7 +198,7 @@ func (r *GroupRepository) StatsPurchasePrice(ctx context.Context, GID uuid.UUID,
 	// Get Created Date and Price of all items between start and end
 	err = r.db.Item.Query().
 		Where(
-			item.HasGroupWith(group.ID(GID)),
+			item.HasGroupWith(group.ID(groupID)),
 			item.CreatedAtGTE(start),
 			item.CreatedAtLTE(end),
 			item.Archived(false),
@@ -209,7 +209,6 @@ func (r *GroupRepository) StatsPurchasePrice(ctx context.Context, GID uuid.UUID,
 			item.FieldPurchasePrice,
 		).
 		Scan(ctx, &v)
-
 	if err != nil {
 		return nil, err
 	}
@@ -226,7 +225,7 @@ func (r *GroupRepository) StatsPurchasePrice(ctx context.Context, GID uuid.UUID,
 	return &stats, nil
 }
 
-func (r *GroupRepository) StatsGroup(ctx context.Context, GID uuid.UUID) (GroupStatistics, error) {
+func (r *GroupRepository) StatsGroup(ctx context.Context, groupID uuid.UUID) (GroupStatistics, error) {
 	q := `
 		SELECT
 			(SELECT COUNT(*) FROM users WHERE group_users = ?) AS total_users,
@@ -242,7 +241,7 @@ func (r *GroupRepository) StatsGroup(ctx context.Context, GID uuid.UUID) (GroupS
 				) AS total_with_warranty
 `
 	var stats GroupStatistics
-	row := r.db.Sql().QueryRowContext(ctx, q, GID, GID, GID, GID, GID, GID)
+	row := r.db.Sql().QueryRowContext(ctx, q, groupID, groupID, groupID, groupID, groupID, groupID)
 
 	var maybeTotalItemPrice *float64
 	var maybeTotalWithWarranty *int
@@ -264,8 +263,8 @@ func (r *GroupRepository) GroupCreate(ctx context.Context, name string) (Group, 
 		Save(ctx))
 }
 
-func (r *GroupRepository) GroupUpdate(ctx context.Context, ID uuid.UUID, data GroupUpdate) (Group, error) {
-	entity, err := r.db.Group.UpdateOneID(ID).
+func (r *GroupRepository) GroupUpdate(ctx context.Context, groupID uuid.UUID, data GroupUpdate) (Group, error) {
+	entity, err := r.db.Group.UpdateOneID(groupID).
 		SetName(data.Name).
 		SetCurrency(strings.ToLower(data.Currency)).
 		Save(ctx)
@@ -273,8 +272,8 @@ func (r *GroupRepository) GroupUpdate(ctx context.Context, ID uuid.UUID, data Gr
 	return r.groupMapper.MapErr(entity, err)
 }
 
-func (r *GroupRepository) GroupByID(ctx context.Context, id uuid.UUID) (Group, error) {
-	return r.groupMapper.MapErr(r.db.Group.Get(ctx, id))
+func (r *GroupRepository) GroupByID(ctx context.Context, groupID uuid.UUID) (Group, error) {
+	return r.groupMapper.MapErr(r.db.Group.Get(ctx, groupID))
 }
 
 func (r *GroupRepository) InvitationGet(ctx context.Context, token []byte) (GroupInvitation, error) {

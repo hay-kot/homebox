@@ -66,7 +66,6 @@ func (svc *BackgroundService) SendNotifiersToday(ctx context.Context) error {
 		var sendErrs []error
 		for i := range urls {
 			err := shoutrrr.Send(urls[i], bldr.String())
-
 			if err != nil {
 				sendErrs = append(sendErrs, err)
 			}

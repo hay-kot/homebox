@@ -19,11 +19,11 @@ var (
 type Context struct {
 	context.Context
 
-	// UID is a unique identifier for the acting user.
-	UID uuid.UUID
+	// UserID is a unique identifier for the acting user.
+	UserID uuid.UUID
 
-	// GID is a unique identifier for the acting users group.
-	GID uuid.UUID
+	// GroupID is a unique identifier for the acting users group.
+	GroupID uuid.UUID
 
 	// User is the acting user.
 	User *repo.UserOut
@@ -35,8 +35,8 @@ func NewContext(ctx context.Context) Context {
 	user := UseUserCtx(ctx)
 	return Context{
 		Context: ctx,
-		UID:     user.ID,
-		GID:     user.GroupID,
+		UserID:  user.ID,
+		GroupID: user.GroupID,
 		User:    user,
 	}
 }

@@ -153,7 +153,7 @@ func (s *IOSheet) Read(data io.Reader) error {
 }
 
 // ReadItems writes the sheet to a writer.
-func (s *IOSheet) ReadItems(ctx context.Context, items []repo.ItemOut, GID uuid.UUID, repos *repo.AllRepos) error {
+func (s *IOSheet) ReadItems(ctx context.Context, items []repo.ItemOut, groupID uuid.UUID, repos *repo.AllRepos) error {
 	s.Rows = make([]ExportTSVRow, len(items))
 
 	extraHeaders := map[string]struct{}{}
@@ -164,7 +164,7 @@ func (s *IOSheet) ReadItems(ctx context.Context, items []repo.ItemOut, GID uuid.
 		// TODO: Support fetching nested locations
 		locID := item.Location.ID
 
-		locPaths, err := repos.Locations.PathForLoc(context.Background(), GID, locID)
+		locPaths, err := repos.Locations.PathForLoc(context.Background(), groupID, locID)
 		if err != nil {
 			log.Error().Err(err).Msg("could not get location path")
 			return err

@@ -40,20 +40,18 @@ func (a *app) SetupDemo() {
 	_, err = a.services.User.RegisterUser(ctx, registration)
 	if err != nil {
 		log.Err(err).Msg("Failed to register demo user")
-		log.Fatal().Msg("Failed to setup demo")
+		log.Fatal().Msg("Failed to setup demo") // nolint
 	}
 
 	token, err := a.services.User.Login(ctx, registration.Email, registration.Password, false)
 	if err != nil {
 		log.Err(err).Msg("Failed to login demo user")
 		log.Fatal().Msg("Failed to setup demo")
-		return
 	}
 	self, err := a.services.User.GetSelf(ctx, token.Raw)
 	if err != nil {
 		log.Err(err).Msg("Failed to get self")
 		log.Fatal().Msg("Failed to setup demo")
-		return
 	}
 
 	_, err = a.services.Items.CsvImport(ctx, self.GroupID, strings.NewReader(csvText))

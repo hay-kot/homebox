@@ -115,11 +115,11 @@ func run(cfg *config.Config) error {
 
 	err = c.Schema.Create(context.Background(), options...)
 	if err != nil {
-		log.Fatal().
-			Err(err).
-			Str("driver", "sqlite").
-			Str("url", cfg.Storage.SqliteURL).
-			Msg("failed creating schema resources")
+		log.Fatal(). // nolint
+				Err(err).
+				Str("driver", "sqlite").
+				Str("url", cfg.Storage.SqliteURL).
+				Msg("failed creating schema resources")
 	}
 
 	err = os.RemoveAll(temp)

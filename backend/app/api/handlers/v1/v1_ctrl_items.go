@@ -79,7 +79,7 @@ func (ctrl *V1Controller) HandleItemsGetAll() errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := services.NewContext(r.Context())
 
-		items, err := ctrl.repo.Items.QueryByGroup(ctx, ctx.GID, extractQuery(r))
+		items, err := ctrl.repo.Items.QueryByGroup(ctx, ctx.GroupID, extractQuery(r))
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				return server.JSON(w, http.StatusOK, repo.PaginationResult[repo.ItemSummary]{
@@ -105,12 +105,12 @@ func (ctrl *V1Controller) HandleItemsGetAll() errchain.HandlerFunc {
 func (ctrl *V1Controller) HandleItemFullPath() errchain.HandlerFunc {
 	fn := func(r *http.Request, ID uuid.UUID) ([]repo.ItemPath, error) {
 		auth := services.NewContext(r.Context())
-		item, err := ctrl.repo.Items.GetOneByGroup(auth, auth.GID, ID)
+		item, err := ctrl.repo.Items.GetOneByGroup(auth, auth.GroupID, ID)
 		if err != nil {
 			return nil, err
 		}
 
-		paths, err := ctrl.repo.Locations.PathForLoc(auth, auth.GID, item.Location.ID)
+		paths, err := ctrl.repo.Locations.PathForLoc(auth, auth.GroupID, item.Location.ID)
 		if err != nil {
 			return nil, err
 		}
@@ -165,7 +165,7 @@ func (ctrl *V1Controller) HandleItemGet() errchain.HandlerFunc {
 	fn := func(r *http.Request, ID uuid.UUID) (repo.ItemOut, error) {
 		auth := services.NewContext(r.Context())
 
-		return ctrl.repo.Items.GetOneByGroup(auth, auth.GID, ID)
+		return ctrl.repo.Items.GetOneByGroup(auth, auth.GroupID, ID)
 	}
 
 	return adapters.CommandID("id", fn, http.StatusOK)
@@ -183,7 +183,7 @@ func (ctrl *V1Controller) HandleItemGet() errchain.HandlerFunc {
 func (ctrl *V1Controller) HandleItemDelete() errchain.HandlerFunc {
 	fn := func(r *http.Request, ID uuid.UUID) (any, error) {
 		auth := services.NewContext(r.Context())
-		err := ctrl.repo.Items.DeleteByGroup(auth, auth.GID, ID)
+		err := ctrl.repo.Items.DeleteByGroup(auth, auth.GroupID, ID)
 		return nil, err
 	}
 
@@ -205,7 +205,7 @@ func (ctrl *V1Controller) HandleItemUpdate() errchain.HandlerFunc {
 		auth := services.NewContext(r.Context())
 
 		body.ID = ID
-		return ctrl.repo.Items.UpdateByGroup(auth, auth.GID, body)
+		return ctrl.repo.Items.UpdateByGroup(auth, auth.GroupID, body)
 	}
 
 	return adapters.ActionID("id", fn, http.StatusOK)
@@ -226,12 +226,12 @@ func (ctrl *V1Controller) HandleItemPatch() errchain.HandlerFunc {
 		auth := services.NewContext(r.Context())
 
 		body.ID = ID
-		err := ctrl.repo.Items.Patch(auth, auth.GID, ID, body)
+		err := ctrl.repo.Items.Patch(auth, auth.GroupID, ID, body)
 		if err != nil {
 			return repo.ItemOut{}, err
 		}
 
-		return ctrl.repo.Items.GetOneByGroup(auth, auth.GID, ID)
+		return ctrl.repo.Items.GetOneByGroup(auth, auth.GroupID, ID)
 	}
 
 	return adapters.ActionID("id", fn, http.StatusOK)
@@ -249,7 +249,7 @@ func (ctrl *V1Controller) HandleItemPatch() errchain.HandlerFunc {
 func (ctrl *V1Controller) HandleGetAllCustomFieldNames() errchain.HandlerFunc {
 	fn := func(r *http.Request) ([]string, error) {
 		auth := services.NewContext(r.Context())
-		return ctrl.repo.Items.GetAllCustomFieldNames(auth, auth.GID)
+		return ctrl.repo.Items.GetAllCustomFieldNames(auth, auth.GroupID)
 	}
 
 	return adapters.Command(fn, http.StatusOK)
@@ -271,7 +271,7 @@ func (ctrl *V1Controller) HandleGetAllCustomFieldValues() errchain.HandlerFunc {
 
 	fn := func(r *http.Request, q query) ([]string, error) {
 		auth := services.NewContext(r.Context())
-		return ctrl.repo.Items.GetAllCustomFieldValues(auth, auth.GID, q.Field)
+		return ctrl.repo.Items.GetAllCustomFieldValues(auth, auth.GroupID, q.Field)
 	}
 
 	return adapters.Query(fn, http.StatusOK)
@@ -323,7 +323,7 @@ func (ctrl *V1Controller) HandleItemsExport() errchain.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := services.NewContext(r.Context())
 
-		csvData, err := ctrl.svc.Items.ExportTSV(r.Context(), ctx.GID)
+		csvData, err := ctrl.svc.Items.ExportTSV(r.Context(), ctx.GroupID)
 		if err != nil {
 			log.Err(err).Msg("failed to export items")
 			return validate.NewRequestError(err, http.StatusInternalServerError)

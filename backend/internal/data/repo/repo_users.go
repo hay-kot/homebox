@@ -61,9 +61,9 @@ func mapUserOut(user *ent.User) UserOut {
 	}
 }
 
-func (r *UserRepository) GetOneID(ctx context.Context, ID uuid.UUID) (UserOut, error) {
+func (r *UserRepository) GetOneID(ctx context.Context, userID uuid.UUID) (UserOut, error) {
 	return mapUserOutErr(r.db.User.Query().
-		Where(user.ID(ID)).
+		Where(user.ID(userID)).
 		WithGroup().
 		Only(ctx))
 }
@@ -102,9 +102,9 @@ func (r *UserRepository) Create(ctx context.Context, usr UserCreate) (UserOut, e
 	return r.GetOneID(ctx, entUser.ID)
 }
 
-func (r *UserRepository) Update(ctx context.Context, ID uuid.UUID, data UserUpdate) error {
+func (r *UserRepository) Update(ctx context.Context, userID uuid.UUID, data UserUpdate) error {
 	q := r.db.User.Update().
-		Where(user.ID(ID)).
+		Where(user.ID(userID)).
 		SetName(data.Name).
 		SetEmail(data.Email)
 
@@ -131,13 +131,13 @@ func (r *UserRepository) GetSuperusers(ctx context.Context) ([]*ent.User, error)
 	return users, nil
 }
 
-func (r *UserRepository) ChangePassword(ctx context.Context, UID uuid.UUID, pw string) error {
-	return r.db.User.UpdateOneID(UID).SetPassword(pw).Exec(ctx)
+func (r *UserRepository) ChangePassword(ctx context.Context, userID uuid.UUID, pw string) error {
+	return r.db.User.UpdateOneID(userID).SetPassword(pw).Exec(ctx)
 }
 
-func (r *UserRepository) PasswordResetCreate(ctx context.Context, UID uuid.UUID, token []byte) error {
+func (r *UserRepository) PasswordResetCreate(ctx context.Context, userID uuid.UUID, token []byte) error {
 	return r.db.ActionToken.Create().
-		SetUserID(UID).
+		SetUserID(userID).
 		SetToken(token).
 		SetAction(actiontoken.ActionResetPassword).
 		Exec(ctx)

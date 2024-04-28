@@ -56,9 +56,10 @@ func TestMain(m *testing.M) {
 
 	tClient = client
 	tRepos = New(tClient, tbus, os.TempDir())
-	defer func() { _ = client.Close() }()
 
 	bootstrap()
 
-	os.Exit(m.Run())
+	exit := m.Run()
+	_ = client.Close()
+	os.Exit(exit)
 }

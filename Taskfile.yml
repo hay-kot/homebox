@@ -84,6 +84,12 @@ tasks:
     cmds:
       - go mod tidy
 
+  go:fmt:
+    desc: Runs go fmt on the backend
+    dir: backend
+    cmds:
+      - gofumpt -w .
+
   go:lint:
     desc: Runs golangci-lint
     dir: backend
