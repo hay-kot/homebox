@@ -1,4 +1,5 @@
 <script setup lang="ts">
+  import { useRouteHash } from "@vueuse/router";
   import MdiGithub from "~icons/mdi/github";
   import MdiTwitter from "~icons/mdi/twitter";
   import MdiDiscord from "~icons/mdi/discord";
@@ -8,6 +9,12 @@
   import MdiLogin from "~icons/mdi/login";
   import MdiArrowRight from "~icons/mdi/arrow-right";
   import MdiLock from "~icons/mdi/lock";
+
+  enum PageForms {
+    Register = "register",
+    Login = "login",
+    ForgotPassword = "forgot-password",
+  }
 
   useHead({
     title: "Homebox | Organize and Tag Your Stuff",
@@ -29,6 +36,9 @@
 
   const api = usePublicApi();
   const toast = useNotifier();
+
+  const pageForm = useRouteHash(PageForms.Login);
+  const pageFormStr = computed(() => (pageForm.value[0] === "#" ? pageForm.value.slice(1) : pageForm.value));
 
   const { data: status } = useAsyncData(async () => {
     const { data } = await api.status();
@@ -92,12 +102,12 @@
     toast.success("User registered");
 
     loading.value = false;
-    registerForm.value = false;
+    pageForm.value = PageForms.Login;
   }
 
   onMounted(() => {
     if (groupToken.value !== "") {
-      registerForm.value = true;
+      pageForm.value = PageForms.Register;
     }
   });
 
@@ -120,7 +130,21 @@
     loading.value = false;
   }
 
-  const [registerForm, toggleLogin] = useToggle();
+  async function resetPassword() {
+    if (email.value === "") {
+      toast.error("Email is required");
+      return;
+    }
+
+    const resp = await api.resetPasseord(email.value);
+    if (resp.error) {
+      toast.error("Problem resetting password");
+      return;
+    }
+
+    toast.success("Password reset link sent to your email");
+    return await Promise.resolve();
+  }
 </script>
 
 <template>
@@ -167,7 +191,7 @@
       <div class="grid p-6 sm:place-items-center min-h-[50vh]">
         <div>
           <Transition name="slide-fade">
-            <form v-if="registerForm" @submit.prevent="registerUser">
+            <form v-if="pageFormStr === PageForms.Register" @submit.prevent="registerUser">
               <div class="card w-max-[500px] md:w-[500px] bg-base-100 shadow-xl">
                 <div class="card-body">
                   <h2 class="card-title text-2xl align-center">
@@ -192,6 +216,30 @@
                       :disabled="loading || !canRegister"
                     >
                       Register
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+            <form v-else-if="pageFormStr === PageForms.ForgotPassword" @submit.prevent="resetPassword">
+              <div class="card w-max-[500px] md:w-[500px] bg-base-100 shadow-xl">
+                <div class="card-body">
+                  <h2 class="card-title text-2xl align-center">
+                    <MdiAccount class="mr-1 w-7 h-7" />
+                    Reset Password
+                  </h2>
+                  <FormTextField v-model="email" label="Email" />
+                  <p class="text-sm text-base-content/50">
+                    If you have an account with us, we will send you a password reset link.
+                  </p>
+                  <div class="card-actions justify-end mt-4">
+                    <button
+                      type="submit"
+                      class="btn btn-primary btn-block"
+                      :class="loading ? 'loading' : ''"
+                      :disabled="loading"
+                    >
+                      Reset Password
                     </button>
                   </div>
                 </div>
@@ -232,19 +280,22 @@
             <BaseButton
               v-if="status && status.allowRegistration"
               class="btn-primary btn-wide"
-              @click="() => toggleLogin()"
+              :to="pageFormStr === PageForms.Register ? `#${PageForms.Login}` : `#${PageForms.Register}`"
             >
               <template #icon>
-                <MdiAccountPlus v-if="!registerForm" class="w-5 h-5 swap-off" />
+                <MdiAccountPlus v-if="pageFormStr === PageForms.Register" class="w-5 h-5 swap-off" />
                 <MdiLogin v-else class="w-5 h-5 swap-off" />
                 <MdiArrowRight class="w-5 h-5 swap-on" />
               </template>
-              {{ registerForm ? "Login" : "Register" }}
+              {{ pageFormStr === PageForms.Register ? "Login" : "Register" }}
             </BaseButton>
             <p v-else class="text-base-content italic text-sm inline-flex items-center gap-2">
               <MdiLock class="w-4 h-4 inline-block" />
               Registration Disabled
             </p>
+            <NuxtLink :to="`#${PageForms.ForgotPassword}`">
+              <p class="text-xs text-base-content/50 mt-2">Forgot your password?</p>
+            </NuxtLink>
           </div>
         </div>
       </div>
