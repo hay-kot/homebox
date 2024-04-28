@@ -263,7 +263,7 @@ func (svc *UserService) ChangePassword(ctx Context, current string, new string) 
 func (svc *UserService) RequestPasswordReset(ctx context.Context, req PasswordResetRequest) error {
 	usr, err := svc.repos.Users.GetOneEmail(ctx, req.Email)
 	if err != nil {
-		log.Err(err).Msg("Failed to get user for email reset")
+		log.Warn().Err(err).Msg("failed to get user for email reset")
 		return err
 	}
 
