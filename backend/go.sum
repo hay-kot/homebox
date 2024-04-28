@@ -92,6 +92,8 @@ github.com/hay-kot/httpkit v0.0.8 h1:n+Z5z35YZcdD9cGwbnIPRbrgDw9LY6lqakH4zYr5z+A
 github.com/hay-kot/httpkit v0.0.8/go.mod h1:AD22YluZrvBDxmtB3Pw2SOyp3A2PZqcmBZa0+COrhoU=
 github.com/hay-kot/httpkit v0.0.9 h1:hu2TPY9awmIYWXxWGubaXl2U61pPvaVsm9YwboBRGu0=
 github.com/hay-kot/httpkit v0.0.9/go.mod h1:AD22YluZrvBDxmtB3Pw2SOyp3A2PZqcmBZa0+COrhoU=
+github.com/hay-kot/httpkit v0.0.11 h1:ZdB2uqsFBSDpfUoClGK5c5orjBjQkEVSXh7fZX5FKEk=
+github.com/hay-kot/httpkit v0.0.11/go.mod h1:0kZdk5/swzdfqfg2c6pBWimcgeJ9PTyO97EbHnYl2Sw=
 github.com/jarcoal/httpmock v1.3.0 h1:2RJ8GP0IIaWwcC9Fp2BmVi8Kog3v2Hn7VXM3fTd+nuc=
 github.com/jarcoal/httpmock v1.3.0/go.mod h1:3yb8rc4BI7TCBhFY8ng0gjuLKJNquuDNiPaZjnENuYg=
 github.com/josharian/intern v1.0.0 h1:vlS4z54oSdjm0bgjRigI+G1HpF+tI+9rE5LLzOg8HmY=
