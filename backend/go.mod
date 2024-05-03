@@ -22,7 +22,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/swaggo/http-swagger/v2 v2.0.2
 	github.com/swaggo/swag v1.16.3
-	github.com/yeqown/go-qrcode/v2 v2.2.2
+	github.com/yeqown/go-qrcode/v2 v2.2.4
 	github.com/yeqown/go-qrcode/writer/standard v1.2.2
 	golang.org/x/crypto v0.19.0
 	modernc.org/sqlite v1.29.2
