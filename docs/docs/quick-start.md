@@ -27,8 +27,6 @@ $ docker run -d \
 ## Docker-Compose
 
 ```yaml
-version: "3.4"
-
 services:
   homebox:
     image: ghcr.io/hay-kot/homebox:latest
