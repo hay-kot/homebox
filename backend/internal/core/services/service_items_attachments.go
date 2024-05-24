@@ -3,7 +3,6 @@ package services
 import (
 	"context"
 	"io"
-	"os"
 
 	"github.com/google/uuid"
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
@@ -12,13 +11,18 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (svc *ItemService) AttachmentPath(ctx context.Context, attachmentID uuid.UUID) (*ent.Document, error) {
+func (svc *ItemService) AttachmentData(ctx context.Context, attachmentID uuid.UUID) (*ent.Document, io.ReadCloser, error) {
 	attachment, err := svc.repo.Attachments.Get(ctx, attachmentID)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return attachment.Edges.Document, nil
+	content, err := svc.repo.Docs.Read(ctx, attachment.Edges.Document.ID)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return attachment.Edges.Document, content, nil
 }
 
 func (svc *ItemService) AttachmentUpdate(ctx Context, itemID uuid.UUID, data *repo.ItemAttachmentUpdate) (repo.ItemOut, error) {
@@ -83,8 +87,8 @@ func (svc *ItemService) AttachmentDelete(ctx context.Context, gid, itemID, attac
 		return err
 	}
 
-	// Remove File
-	err = os.Remove(attachment.Edges.Document.Path)
+	// Delete the document
+	err = svc.repo.Docs.Delete(ctx, attachment.Edges.Document.ID)
 
 	return err
 }

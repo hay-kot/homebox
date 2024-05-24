@@ -1,7 +1,9 @@
 package v1
 
 import (
+	"bytes"
 	"errors"
+	"io"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -157,13 +159,23 @@ func (ctrl *V1Controller) handleItemAttachmentsHandler(w http.ResponseWriter, r 
 	ctx := services.NewContext(r.Context())
 	switch r.Method {
 	case http.MethodGet:
-		doc, err := ctrl.svc.Items.AttachmentPath(r.Context(), attachmentID)
+		attachment, content, err := ctrl.svc.Items.AttachmentData(r.Context(), attachmentID)
 		if err != nil {
-			log.Err(err).Msg("failed to get attachment path")
+			log.Err(err).Msg("failed to get attachment data")
 			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
 
-		http.ServeFile(w, r, doc.Path)
+		defer func() {
+			_ = content.Close()
+		}()
+
+		buf, err := io.ReadAll(content)
+		if err != nil {
+			log.Err(err).Msg("failed to buffer attachment contents")
+			return validate.NewRequestError(err, http.StatusInternalServerError)
+		}
+
+		http.ServeContent(w, r, attachment.Title, attachment.UpdatedAt, bytes.NewReader(buf))
 		return nil
 
 	// Delete Attachment Handler
