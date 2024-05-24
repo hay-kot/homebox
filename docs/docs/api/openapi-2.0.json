@@ -2847,6 +2847,9 @@
                 "demo": {
                     "type": "boolean"
                 },
+                "forwardAuthAvailable": {
+                    "type": "boolean"
+                },
                 "health": {
                     "type": "boolean"
                 },

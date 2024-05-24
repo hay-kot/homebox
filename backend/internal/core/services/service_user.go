@@ -197,6 +197,30 @@ func (svc *UserService) Login(ctx context.Context, username, password string, ex
 	return svc.createSessionToken(ctx, usr.ID, extendedSession)
 }
 
+func (svc *UserService) PasswordlessLogin(ctx context.Context, username string, autoRegister bool) (UserAuthTokenDetail, error) {
+	usr, err := svc.repos.Users.GetOneEmail(ctx, username)
+	if err == nil {
+		return svc.createSessionToken(ctx, usr.ID, false)
+	}
+
+	if !autoRegister {
+		return UserAuthTokenDetail{}, ErrorInvalidLogin
+	}
+
+	data := UserRegistration{
+		Name:     username,
+		Email:    username,
+		Password: uuid.NewString(),
+	}
+
+	usr, err = svc.RegisterUser(ctx, data)
+	if err != nil {
+		return UserAuthTokenDetail{}, err
+	}
+
+	return svc.createSessionToken(ctx, usr.ID, false)
+}
+
 func (svc *UserService) Logout(ctx context.Context, token string) error {
 	hash := hasher.HashToken(token)
 	err := svc.repos.AuthTokens.DeleteToken(ctx, hash)

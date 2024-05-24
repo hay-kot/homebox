@@ -84,8 +84,8 @@ class AuthContext implements IAuthContext {
     console.log("Session invalidated");
   }
 
-  async login(api: PublicApi, email: string, password: string, stayLoggedIn: boolean) {
-    const r = await api.login(email, password, stayLoggedIn);
+  async login(api: PublicApi, email: string, password: string, stayLoggedIn: boolean, provider = "local") {
+    const r = await api.login(email, password, stayLoggedIn, provider);
 
     if (!r.error) {
       const expiresAt = new Date(r.data.expiresAt);
