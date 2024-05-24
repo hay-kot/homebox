@@ -18,6 +18,7 @@ module.exports = {
     sourceType: "module",
   },
   plugins: ["vue", "@typescript-eslint"],
+  ignores: ["nuxt.proxyoverride.ts"],
   rules: {
     "no-console": 0,
     "no-unused-vars": "off",
@@ -27,7 +28,6 @@ module.exports = {
     "vue/no-v-model-argument": 0,
     "@typescript-eslint/consistent-type-imports": "error",
     "@typescript-eslint/ban-ts-comment": 0,
-    "eslint-comments/no-unused-disable": 0,
     "@typescript-eslint/no-unused-vars": [
       "error",
       {
