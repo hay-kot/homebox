@@ -22,7 +22,7 @@ jobs:
           version: 9
 
       - name: Install dependencies
-        run: pnpm install --shamefully-hoist
+        run: pnpm install --shamefully-hoist --dev
         working-directory: frontend
 
       - name: Run Lint
@@ -61,7 +61,7 @@ jobs:
           version: 9
 
       - name: Install dependencies
-        run: pnpm install --shamefully-hoist
+        run: pnpm install --shamefully-hoist --dev
         working-directory: frontend
 
       - name: Run Integration Tests
