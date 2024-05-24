@@ -1,4 +1,5 @@
 module.exports = {
+  ignorePatterns: ["node_modules/", "dist/", "nuxt.proxyoverride.ts"],
   env: {
     browser: true,
     es2021: true,
@@ -18,7 +19,6 @@ module.exports = {
     sourceType: "module",
   },
   plugins: ["vue", "@typescript-eslint"],
-  ignores: ["nuxt.proxyoverride.ts"],
   rules: {
     "no-console": 0,
     "no-unused-vars": "off",
