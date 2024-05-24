@@ -56,7 +56,7 @@ func TestMain(m *testing.M) {
 		log.Fatalf("failed opening connection to sqlite: %v", err)
 	}
 
-	err = client.Schema.Create(tCtx)
+	err = client.Schema.Create(context.Background())
 	if err != nil {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
