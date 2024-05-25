@@ -1,5 +1,5 @@
 module.exports = {
-  ignorePatterns: ["node_modules/", "dist/", "nuxt.proxyoverride.ts"],
+  ignorePatterns: ["nuxt.proxyoverride.ts"],
   env: {
     browser: true,
     es2021: true,
