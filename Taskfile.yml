@@ -5,6 +5,11 @@ env:
   HBOX_STORAGE_SQLITE_URL: .data/homebox.db?_pragma=busy_timeout=1000&_pragma=journal_mode=WAL&_fk=1
   HBOX_OPTIONS_ALLOW_REGISTRATION: true
   UNSAFE_DISABLE_PASSWORD_PROJECTION: "yes_i_am_sure"
+  HBOX_MAILER_HOST: 127.0.0.1
+  HBOX_MAILER_PORT: 1025
+  HBOX_MAILER_USERNAME: c836555d57d205
+  HBOX_MAILER_PASSWORD: 3ff2f9986f3cff
+  HBOX_MAILER_FROM: info@example.com
 tasks:
   setup:
     desc: Install development dependencies
@@ -78,6 +83,12 @@ tasks:
     dir: backend
     cmds:
       - go mod tidy
+
+  go:fmt:
+    desc: Runs go fmt on the backend
+    dir: backend
+    cmds:
+      - gofumpt -w .
 
   go:lint:
     desc: Runs golangci-lint

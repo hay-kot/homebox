@@ -8,8 +8,10 @@ import (
 	"github.com/hay-kot/httpkit/server"
 )
 
-type CommandFunc[T any] func(*http.Request) (T, error)
-type CommandIDFunc[T any] func(*http.Request, uuid.UUID) (T, error)
+type (
+	CommandFunc[T any]   func(*http.Request) (T, error)
+	CommandIDFunc[T any] func(*http.Request, uuid.UUID) (T, error)
+)
 
 // Command is an HandlerAdapter that returns a errchain.HandlerFunc that
 // The command adapters are used to handle commands that do not accept a body

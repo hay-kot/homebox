@@ -15,7 +15,6 @@ import (
 	"github.com/hay-kot/homebox/backend/app/api/providers"
 	_ "github.com/hay-kot/homebox/backend/app/api/static/docs"
 	"github.com/hay-kot/homebox/backend/internal/data/ent/authroles"
-	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/httpkit/errchain"
 	httpSwagger "github.com/swaggo/http-swagger/v2" // http-swagger middleware
 )
@@ -37,7 +36,7 @@ func (a *app) debugRouter() *http.ServeMux {
 }
 
 // registerRoutes registers all the routes for the API
-func (a *app) mountRoutes(r *chi.Mux, chain *errchain.ErrChain, repos *repo.AllRepos) {
+func (a *app) mountRoutes(r *chi.Mux, chain *errchain.ErrChain) {
 	registerMimes()
 
 	r.Get("/swagger/*", httpSwagger.Handler(
@@ -72,6 +71,7 @@ func (a *app) mountRoutes(r *chi.Mux, chain *errchain.ErrChain, repos *repo.AllR
 
 	r.Post(v1Base("/users/register"), chain.ToHandlerFunc(v1Ctrl.HandleUserRegistration()))
 	r.Post(v1Base("/users/login"), chain.ToHandlerFunc(v1Ctrl.HandleAuthLogin(providers...)))
+	r.Post(v1Base("/users/request-password-reset"), chain.ToHandlerFunc(v1Ctrl.HandleUserRequestPasswordReset()))
 
 	userMW := []errchain.Middleware{
 		a.mwAuthToken,
@@ -85,6 +85,7 @@ func (a *app) mountRoutes(r *chi.Mux, chain *errchain.ErrChain, repos *repo.AllR
 	r.Post(v1Base("/users/logout"), chain.ToHandlerFunc(v1Ctrl.HandleAuthLogout(), userMW...))
 	r.Get(v1Base("/users/refresh"), chain.ToHandlerFunc(v1Ctrl.HandleAuthRefresh(), userMW...))
 	r.Put(v1Base("/users/self/change-password"), chain.ToHandlerFunc(v1Ctrl.HandleUserSelfChangePassword(), userMW...))
+	r.Put(v1Base("/users/self/change-password-token"), chain.ToHandlerFunc(v1Ctrl.HandleUserSelfChangePasswordWithToken()))
 
 	r.Post(v1Base("/groups/invitations"), chain.ToHandlerFunc(v1Ctrl.HandleGroupInvitationsCreate(), userMW...))
 	r.Get(v1Base("/groups/statistics"), chain.ToHandlerFunc(v1Ctrl.HandleGroupStatistics(), userMW...))

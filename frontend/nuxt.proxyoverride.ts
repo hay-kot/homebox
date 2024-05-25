@@ -8,7 +8,6 @@ import { defineNuxtModule, logger } from "@nuxt/kit";
 //
 // fix from
 // - https://gist.github.com/ucw/67f7291c64777fb24341e8eae72bcd24
-// eslint-disable-next-line
 import { createProxyServer } from "http-proxy";
 
 export default defineNuxtModule({

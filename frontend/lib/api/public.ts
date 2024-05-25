@@ -1,5 +1,11 @@
 import { BaseAPI, route } from "./base";
-import type { APISummary, LoginForm, TokenResponse, UserRegistration } from "./types/data-contracts";
+import type {
+  APISummary,
+  LoginForm,
+  PasswordResetRequest,
+  TokenResponse,
+  UserRegistration,
+} from "./types/data-contracts";
 
 export type StatusResult = {
   health: boolean;
@@ -26,5 +32,12 @@ export class PublicApi extends BaseAPI {
 
   public register(body: UserRegistration) {
     return this.http.post<UserRegistration, TokenResponse>({ url: route("/users/register"), body });
+  }
+
+  public resetPasseord(email: string) {
+    return this.http.post<PasswordResetRequest, void>({
+      url: route("/users/request-password-reset"),
+      body: { email },
+    });
   }
 }

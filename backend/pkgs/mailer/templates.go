@@ -48,7 +48,6 @@ func render(tpl string, data TemplateProps) (string, error) {
 	var tplBuffer bytes.Buffer
 
 	err = tmpl.Execute(&tplBuffer, data)
-
 	if err != nil {
 		return "", err
 	}

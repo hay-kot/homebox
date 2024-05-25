@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -8,6 +9,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/core/services"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/internal/sys/validate"
+	"github.com/hay-kot/homebox/backend/internal/web/adapters"
 	"github.com/hay-kot/httpkit/errchain"
 	"github.com/hay-kot/httpkit/server"
 	"github.com/rs/zerolog/log"
@@ -115,12 +117,10 @@ func (ctrl *V1Controller) HandleUserSelfDelete() errchain.HandlerFunc {
 	}
 }
 
-type (
-	ChangePassword struct {
-		Current string `json:"current,omitempty"`
-		New     string `json:"new,omitempty"`
-	}
-)
+type ChangePassword struct {
+	Current string `json:"current,omitempty"`
+	New     string `json:"new,omitempty"`
+}
 
 // HandleUserSelfChangePassword godoc
 //
@@ -144,10 +144,80 @@ func (ctrl *V1Controller) HandleUserSelfChangePassword() errchain.HandlerFunc {
 
 		ctx := services.NewContext(r.Context())
 
-		ok := ctrl.svc.User.ChangePassword(ctx, cp.Current, cp.New)
+		ok := ctrl.svc.User.PasswordChange(ctx, cp.Current, cp.New)
 		if !ok {
 			return validate.NewRequestError(err, http.StatusInternalServerError)
 		}
+
+		return server.JSON(w, http.StatusNoContent, nil)
+	}
+}
+
+// HandleUserSelfChangePasswordWithToken godoc
+//
+//	@Summary  Change Password
+//	@Tags     User
+//	@Success  204
+//	@Param    payload body ChangePassword true "Password Payload"
+//	@Router   /v1/users/change-password-token [PUT]
+func (ctrl *V1Controller) HandleUserSelfChangePasswordWithToken() errchain.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) error {
+		tokenQueryParam := r.URL.Query().Get("token")
+		if tokenQueryParam == "" {
+			return validate.NewRequestError(fmt.Errorf("missing token query param"), http.StatusBadRequest)
+		}
+
+		if ctrl.isDemo {
+			return validate.NewRequestError(nil, http.StatusForbidden)
+		}
+
+		var cp ChangePassword
+		err := server.Decode(r, &cp)
+		if err != nil {
+			log.Err(err).Msg("user failed to change password")
+		}
+
+		ctx := services.NewContext(r.Context())
+
+		ok := ctrl.svc.User.PasswordChange(ctx, cp.Current, cp.New)
+		if !ok {
+			return validate.NewRequestError(err, http.StatusInternalServerError)
+		}
+
+		return server.JSON(w, http.StatusNoContent, nil)
+	}
+}
+
+// HandleUserRequestPasswordReset godoc
+//
+// @Summary Request Password Reset
+// @Tags    User
+// @Produce json
+// @Param   payload body services.PasswordResetRequest true "User Data"
+// @Success 204
+// @Router  /v1/users/request-password-reset [Post]
+func (ctrl *V1Controller) HandleUserRequestPasswordReset() errchain.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) error {
+		if ctrl.isDemo {
+			return validate.NewRequestError(nil, http.StatusForbidden)
+		}
+
+		v, err := adapters.DecodeBody[services.PasswordResetRequest](r)
+		if err != nil {
+			return err
+		}
+
+		go func() {
+			ctx := context.Background()
+
+			err = ctrl.svc.User.PasswordResetRequest(ctx, v)
+			if err != nil {
+				log.Warn().
+					Err(err).
+					Str("email", v.Email).
+					Msg("failed to request password reset")
+			}
+		}()
 
 		return server.JSON(w, http.StatusNoContent, nil)
 	}

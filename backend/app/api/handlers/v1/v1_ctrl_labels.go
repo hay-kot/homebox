@@ -21,7 +21,7 @@ import (
 func (ctrl *V1Controller) HandleLabelsGetAll() errchain.HandlerFunc {
 	fn := func(r *http.Request) ([]repo.LabelSummary, error) {
 		auth := services.NewContext(r.Context())
-		return ctrl.repo.Labels.GetAll(auth, auth.GID)
+		return ctrl.repo.Labels.GetAll(auth, auth.GroupID)
 	}
 
 	return adapters.Command(fn, http.StatusOK)
@@ -39,7 +39,7 @@ func (ctrl *V1Controller) HandleLabelsGetAll() errchain.HandlerFunc {
 func (ctrl *V1Controller) HandleLabelsCreate() errchain.HandlerFunc {
 	fn := func(r *http.Request, data repo.LabelCreate) (repo.LabelOut, error) {
 		auth := services.NewContext(r.Context())
-		return ctrl.repo.Labels.Create(auth, auth.GID, data)
+		return ctrl.repo.Labels.Create(auth, auth.GroupID, data)
 	}
 
 	return adapters.Action(fn, http.StatusCreated)
@@ -57,7 +57,7 @@ func (ctrl *V1Controller) HandleLabelsCreate() errchain.HandlerFunc {
 func (ctrl *V1Controller) HandleLabelDelete() errchain.HandlerFunc {
 	fn := func(r *http.Request, ID uuid.UUID) (any, error) {
 		auth := services.NewContext(r.Context())
-		err := ctrl.repo.Labels.DeleteByGroup(auth, auth.GID, ID)
+		err := ctrl.repo.Labels.DeleteByGroup(auth, auth.GroupID, ID)
 		return nil, err
 	}
 
@@ -76,7 +76,7 @@ func (ctrl *V1Controller) HandleLabelDelete() errchain.HandlerFunc {
 func (ctrl *V1Controller) HandleLabelGet() errchain.HandlerFunc {
 	fn := func(r *http.Request, ID uuid.UUID) (repo.LabelOut, error) {
 		auth := services.NewContext(r.Context())
-		return ctrl.repo.Labels.GetOneByGroup(auth, auth.GID, ID)
+		return ctrl.repo.Labels.GetOneByGroup(auth, auth.GroupID, ID)
 	}
 
 	return adapters.CommandID("id", fn, http.StatusOK)
@@ -95,7 +95,7 @@ func (ctrl *V1Controller) HandleLabelUpdate() errchain.HandlerFunc {
 	fn := func(r *http.Request, ID uuid.UUID, data repo.LabelUpdate) (repo.LabelOut, error) {
 		auth := services.NewContext(r.Context())
 		data.ID = ID
-		return ctrl.repo.Labels.UpdateByGroup(auth, auth.GID, data)
+		return ctrl.repo.Labels.UpdateByGroup(auth, auth.GroupID, data)
 	}
 
 	return adapters.ActionID("id", fn, http.StatusOK)

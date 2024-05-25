@@ -1,8 +1,9 @@
 run:
   timeout: 10m
-  skip-dirs:
-    - internal/data/ent.*
 linters-settings:
+  errcheck:
+    exclude-functions:
+      - (net/http.ResponseWriter).Write
   goconst:
     min-len: 5
     min-occurrences: 5
@@ -71,4 +72,6 @@ linters:
     - sqlclosecheck
 issues:
   exclude-use-default: false
-  fix: true
+  fix: false
+  exclude-dirs:
+    - internal/data/ent.*

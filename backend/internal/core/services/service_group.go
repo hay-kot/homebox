@@ -21,13 +21,13 @@ func (svc *GroupService) UpdateGroup(ctx Context, data repo.GroupUpdate) (repo.G
 		return repo.Group{}, errors.New("currency cannot be empty")
 	}
 
-	return svc.repos.Groups.GroupUpdate(ctx.Context, ctx.GID, data)
+	return svc.repos.Groups.GroupUpdate(ctx.Context, ctx.GroupID, data)
 }
 
 func (svc *GroupService) NewInvitation(ctx Context, uses int, expiresAt time.Time) (string, error) {
 	token := hasher.GenerateToken()
 
-	_, err := svc.repos.Groups.InvitationCreate(ctx, ctx.GID, repo.GroupInvitationCreate{
+	_, err := svc.repos.Groups.InvitationCreate(ctx, ctx.GroupID, repo.GroupInvitationCreate{
 		Token:     token.Hash,
 		Uses:      uses,
 		ExpiresAt: expiresAt,

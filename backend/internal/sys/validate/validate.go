@@ -49,7 +49,6 @@ func init() { // nolint
 
 		return false
 	})
-
 	if err != nil {
 		panic(err)
 	}

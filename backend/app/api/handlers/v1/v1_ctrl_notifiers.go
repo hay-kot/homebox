@@ -40,7 +40,7 @@ func (ctrl *V1Controller) HandleGetUserNotifiers() errchain.HandlerFunc {
 func (ctrl *V1Controller) HandleCreateNotifier() errchain.HandlerFunc {
 	fn := func(r *http.Request, in repo.NotifierCreate) (repo.NotifierOut, error) {
 		auth := services.NewContext(r.Context())
-		return ctrl.repo.Notifiers.Create(auth, auth.GID, auth.UID, in)
+		return ctrl.repo.Notifiers.Create(auth, auth.GroupID, auth.UserID, in)
 	}
 
 	return adapters.Action(fn, http.StatusCreated)
@@ -57,7 +57,7 @@ func (ctrl *V1Controller) HandleCreateNotifier() errchain.HandlerFunc {
 func (ctrl *V1Controller) HandleDeleteNotifier() errchain.HandlerFunc {
 	fn := func(r *http.Request, ID uuid.UUID) (any, error) {
 		auth := services.NewContext(r.Context())
-		return nil, ctrl.repo.Notifiers.Delete(auth, auth.UID, ID)
+		return nil, ctrl.repo.Notifiers.Delete(auth, auth.UserID, ID)
 	}
 
 	return adapters.CommandID("id", fn, http.StatusNoContent)
@@ -75,7 +75,7 @@ func (ctrl *V1Controller) HandleDeleteNotifier() errchain.HandlerFunc {
 func (ctrl *V1Controller) HandleUpdateNotifier() errchain.HandlerFunc {
 	fn := func(r *http.Request, ID uuid.UUID, in repo.NotifierUpdate) (repo.NotifierOut, error) {
 		auth := services.NewContext(r.Context())
-		return ctrl.repo.Notifiers.Update(auth, auth.UID, ID, in)
+		return ctrl.repo.Notifiers.Update(auth, auth.UserID, ID, in)
 	}
 
 	return adapters.ActionID("id", fn, http.StatusOK)

@@ -52,7 +52,7 @@ func (ctrl *V1Controller) HandleAssetGet() errchain.HandlerFunc {
 			}
 		}
 
-		items, err := ctrl.repo.Items.QueryByAssetID(r.Context(), ctx.GID, repo.AssetID(assetID), int(page), int(pageSize))
+		items, err := ctrl.repo.Items.QueryByAssetID(r.Context(), ctx.GroupID, repo.AssetID(assetID), int(page), int(pageSize))
 		if err != nil {
 			log.Err(err).Msg("failed to get item")
 			return validate.NewRequestError(err, http.StatusInternalServerError)

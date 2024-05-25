@@ -24,7 +24,6 @@ func GetTestMailer() (*Mailer, error) {
 
 	// Unmarshal JSON
 	err = json.Unmarshal(bytes, mailer)
-
 	if err != nil {
 		return nil, err
 	}

@@ -22,7 +22,7 @@ import (
 func (ctrl *V1Controller) HandleLocationTreeQuery() errchain.HandlerFunc {
 	fn := func(r *http.Request, query repo.TreeQuery) ([]repo.TreeItem, error) {
 		auth := services.NewContext(r.Context())
-		return ctrl.repo.Locations.Tree(auth, auth.GID, query)
+		return ctrl.repo.Locations.Tree(auth, auth.GroupID, query)
 	}
 
 	return adapters.Query(fn, http.StatusOK)
@@ -40,7 +40,7 @@ func (ctrl *V1Controller) HandleLocationTreeQuery() errchain.HandlerFunc {
 func (ctrl *V1Controller) HandleLocationGetAll() errchain.HandlerFunc {
 	fn := func(r *http.Request, q repo.LocationQuery) ([]repo.LocationOutCount, error) {
 		auth := services.NewContext(r.Context())
-		return ctrl.repo.Locations.GetAll(auth, auth.GID, q)
+		return ctrl.repo.Locations.GetAll(auth, auth.GroupID, q)
 	}
 
 	return adapters.Query(fn, http.StatusOK)
@@ -58,7 +58,7 @@ func (ctrl *V1Controller) HandleLocationGetAll() errchain.HandlerFunc {
 func (ctrl *V1Controller) HandleLocationCreate() errchain.HandlerFunc {
 	fn := func(r *http.Request, createData repo.LocationCreate) (repo.LocationOut, error) {
 		auth := services.NewContext(r.Context())
-		return ctrl.repo.Locations.Create(auth, auth.GID, createData)
+		return ctrl.repo.Locations.Create(auth, auth.GroupID, createData)
 	}
 
 	return adapters.Action(fn, http.StatusCreated)
@@ -76,7 +76,7 @@ func (ctrl *V1Controller) HandleLocationCreate() errchain.HandlerFunc {
 func (ctrl *V1Controller) HandleLocationDelete() errchain.HandlerFunc {
 	fn := func(r *http.Request, ID uuid.UUID) (any, error) {
 		auth := services.NewContext(r.Context())
-		err := ctrl.repo.Locations.DeleteByGroup(auth, auth.GID, ID)
+		err := ctrl.repo.Locations.DeleteByGroup(auth, auth.GroupID, ID)
 		return nil, err
 	}
 
@@ -95,7 +95,7 @@ func (ctrl *V1Controller) HandleLocationDelete() errchain.HandlerFunc {
 func (ctrl *V1Controller) HandleLocationGet() errchain.HandlerFunc {
 	fn := func(r *http.Request, ID uuid.UUID) (repo.LocationOut, error) {
 		auth := services.NewContext(r.Context())
-		return ctrl.repo.Locations.GetOneByGroup(auth, auth.GID, ID)
+		return ctrl.repo.Locations.GetOneByGroup(auth, auth.GroupID, ID)
 	}
 
 	return adapters.CommandID("id", fn, http.StatusOK)
@@ -115,7 +115,7 @@ func (ctrl *V1Controller) HandleLocationUpdate() errchain.HandlerFunc {
 	fn := func(r *http.Request, ID uuid.UUID, body repo.LocationUpdate) (repo.LocationOut, error) {
 		auth := services.NewContext(r.Context())
 		body.ID = ID
-		return ctrl.repo.Locations.UpdateByGroup(auth, auth.GID, ID, body)
+		return ctrl.repo.Locations.UpdateByGroup(auth, auth.GroupID, ID, body)
 	}
 
 	return adapters.ActionID("id", fn, http.StatusOK)

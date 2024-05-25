@@ -11,6 +11,7 @@ import (
 	"github.com/hay-kot/homebox/backend/internal/data/ent"
 	"github.com/hay-kot/homebox/backend/internal/data/repo"
 	"github.com/hay-kot/homebox/backend/pkgs/faker"
+	"github.com/hay-kot/homebox/backend/pkgs/mailer"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -67,15 +68,16 @@ func TestMain(m *testing.M) {
 		currencies.CollectDefaults(),
 	)
 
-	tSvc = New(tRepos, WithCurrencies(defaults))
-	defer func() { _ = client.Close() }()
+	tSvc = New(tRepos, "", &mailer.Mailer{}, WithCurrencies(defaults))
 
 	bootstrap()
 	tCtx = Context{
 		Context: context.Background(),
-		GID:     tGroup.ID,
-		UID:     tUser.ID,
+		GroupID: tGroup.ID,
+		UserID:  tUser.ID,
 	}
 
-	os.Exit(m.Run())
+	exit := m.Run()
+	_ = client.Close()
+	os.Exit(exit)
 }
