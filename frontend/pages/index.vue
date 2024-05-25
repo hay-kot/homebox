@@ -34,7 +34,13 @@
   const toast = useNotifier();
 
   const pageForm = useRouteHash(PageForms.Login);
-  const pageFormStr = computed(() => (pageForm.value[0] === "#" ? pageForm.value.slice(1) : pageForm.value));
+  const pageFormStr = computed(() => {
+    if (!pageForm.value) {
+      return PageForms.Login;
+    }
+
+    return pageForm.value[0] === "#" ? pageForm.value.slice(1) : pageForm.value;
+  });
 
   const route = useRoute();
   const router = useRouter();
