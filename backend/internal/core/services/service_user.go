@@ -234,18 +234,18 @@ func (svc *UserService) DeleteSelf(ctx context.Context, userID uuid.UUID) error 
 	return svc.repos.Users.Delete(ctx, userID)
 }
 
-func (svc *UserService) ChangePassword(ctx Context, current string, new string) (ok bool) {
+func (svc *UserService) PasswordChange(ctx Context, currentPassword, newPassword string) (ok bool) {
 	usr, err := svc.repos.Users.GetOneID(ctx, ctx.UserID)
 	if err != nil {
 		return false
 	}
 
-	if !hasher.CheckPasswordHash(current, usr.PasswordHash) {
+	if !hasher.CheckPasswordHash(currentPassword, usr.PasswordHash) {
 		log.Err(errors.New("current password is incorrect")).Msg("Failed to change password")
 		return false
 	}
 
-	hashed, err := hasher.HashPassword(new)
+	hashed, err := hasher.HashPassword(newPassword)
 	if err != nil {
 		log.Err(err).Msg("Failed to hash password")
 		return false
@@ -260,7 +260,37 @@ func (svc *UserService) ChangePassword(ctx Context, current string, new string) 
 	return true
 }
 
-func (svc *UserService) RequestPasswordReset(ctx context.Context, req PasswordResetRequest) error {
+func (svc *UserService) PasswordChangeWithToken(ctx Context, token, newPassword string) error {
+	hashed, err := hasher.HashPassword(newPassword)
+	if err != nil {
+		return err
+	}
+
+	tokenHash := hasher.HashToken(token)
+
+	resetToken, err := svc.repos.Users.PasswordResetGet(ctx.Context, tokenHash)
+	if err != nil {
+		return err
+	}
+
+	if resetToken.UserID != ctx.UserID {
+		return ErrorTokenIDMismatch
+	}
+
+	err = svc.repos.Users.ChangePassword(ctx.Context, ctx.UserID, hashed)
+	if err != nil {
+		return err
+	}
+
+	err = svc.repos.Users.PasswordResetDelete(ctx.Context, tokenHash)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (svc *UserService) PasswordResetRequest(ctx context.Context, req PasswordResetRequest) error {
 	usr, err := svc.repos.Users.GetOneEmail(ctx, req.Email)
 	if err != nil {
 		log.Warn().Err(err).Msg("failed to get user for email reset")

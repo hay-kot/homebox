@@ -85,6 +85,7 @@ func (a *app) mountRoutes(r *chi.Mux, chain *errchain.ErrChain) {
 	r.Post(v1Base("/users/logout"), chain.ToHandlerFunc(v1Ctrl.HandleAuthLogout(), userMW...))
 	r.Get(v1Base("/users/refresh"), chain.ToHandlerFunc(v1Ctrl.HandleAuthRefresh(), userMW...))
 	r.Put(v1Base("/users/self/change-password"), chain.ToHandlerFunc(v1Ctrl.HandleUserSelfChangePassword(), userMW...))
+	r.Put(v1Base("/users/self/change-password-token"), chain.ToHandlerFunc(v1Ctrl.HandleUserSelfChangePasswordWithToken()))
 
 	r.Post(v1Base("/groups/invitations"), chain.ToHandlerFunc(v1Ctrl.HandleGroupInvitationsCreate(), userMW...))
 	r.Get(v1Base("/groups/statistics"), chain.ToHandlerFunc(v1Ctrl.HandleGroupStatistics(), userMW...))

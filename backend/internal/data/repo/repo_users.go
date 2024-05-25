@@ -149,3 +149,10 @@ func (r *UserRepository) PasswordResetGet(ctx context.Context, token []byte) (*e
 		WithUser().
 		Only(ctx)
 }
+
+func (r *UserRepository) PasswordResetDelete(ctx context.Context, token []byte) error {
+	_, err := r.db.ActionToken.Delete().
+		Where(actiontoken.Token(token)).
+		Exec(ctx)
+	return err
+}

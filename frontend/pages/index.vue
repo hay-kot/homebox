@@ -128,7 +128,6 @@
     }
 
     toast.success("Password reset link sent to your email");
-    return await Promise.resolve();
   }
 </script>
 
