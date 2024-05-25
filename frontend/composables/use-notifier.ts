@@ -1,5 +1,3 @@
-import { useId } from "./use-ids";
-
 interface Notification {
   id: string;
   message: string;
