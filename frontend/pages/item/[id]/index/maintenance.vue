@@ -184,10 +184,10 @@
       </template>
       <form @submit.prevent="dispatchFormSubmit">
         <FormTextField v-model="entry.name" autofocus label="Entry Name" />
-        <DatePicker v-model="entry.completedDate" label="Completed Date" />
         <DatePicker v-model="entry.scheduledDate" label="Scheduled Date" />
-        <FormTextArea v-model="entry.description" label="Notes" />
+        <DatePicker v-model="entry.completedDate" label="Completed Date" />
         <FormTextField v-model="entry.cost" autofocus label="Cost" />
+        <FormTextArea v-model="entry.description" label="Notes" />
         <div class="py-2 flex justify-end">
           <BaseButton type="submit" class="ml-2 mt-2">
             <template #icon>
