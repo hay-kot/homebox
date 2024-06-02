@@ -43,6 +43,11 @@ RUN chmod +x /app/api
 LABEL Name=homebox Version=0.0.1
 LABEL org.opencontainers.image.source="https://github.com/hay-kot/homebox"
 EXPOSE 7745
+HEALTHCHECK --interval=30s \
+            --timeout=5s \
+            --start-period=5s \
+            --retries=3 \
+            CMD [ "/usr/bin/wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:7745/api/v1/status" ]
 WORKDIR /app
 VOLUME [ "/data" ]
 
