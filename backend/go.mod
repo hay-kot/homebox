@@ -2,7 +2,7 @@ module github.com/hay-kot/homebox/backend
 
 go 1.22
 
-toolchain go1.22.0
+toolchain go1.22.4
 
 require (
 	ariga.io/atlas v0.19.1
