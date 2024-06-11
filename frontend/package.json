@@ -28,7 +28,7 @@
     "eslint-plugin-vue": "^9.4.0",
     "h3": "^1.7.1",
     "isomorphic-fetch": "^3.0.0",
-    "nuxt": "3.6.5",
+    "nuxt": "3.12.1",
     "prettier": "^3.2.5",
     "typescript": "^5.0.0",
     "unplugin-icons": "^0.18.5",
